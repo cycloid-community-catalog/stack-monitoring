@@ -248,8 +248,7 @@ use_cases:
           key: amg_create_sg
           widget: switch
           type: boolean
-          default: amp-($ environment $)
-          required: false
+          default: true
         - name: AMG notification alerting
           description: Wheter to send notifications to SNS.
           key: amg_allow_sns_notifications

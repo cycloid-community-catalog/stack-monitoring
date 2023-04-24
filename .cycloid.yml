@@ -3,7 +3,7 @@ version: '2'
 # Configuration of the Cycloid stack
 name: 'Monitoring'
 canonical: 'stack-monitoring'
-status: 'private'
+status: 'public'
 description: |
   Deploy a monitoring solution based on Alertmanager, Grafana and Prometheus.
 keywords:

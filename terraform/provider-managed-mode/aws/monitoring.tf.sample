@@ -1,0 +1,101 @@
+module "monitoring" {
+  #####################################
+  # Do not modify the following lines #
+  source = "./monitoring"
+
+  project  = var.project
+  env      = var.env
+  customer = var.customer
+
+  #####################################
+  # AMP Module
+  # Full configuration details here -> https://github.com/terraform-aws-modules/terraform-aws-managed-service-prometheus
+  #####################################
+  create_amp           = true
+  create_amp_workspace = true
+  amp_workspace_name   = "amp-${var.project}-${var.env}"
+  #amp_workspace_id -> only required if var.create_amp_workspacen is false
+  create_amp_cloudwatch_log_group = true
+  amp_cloudwatch_log_group        = "amp-${var.project}-${var.env}"
+  amp_alertmanager_definition     = "alertmanager_config: |\n route:\n receiver: 'default'\n receivers:\n - name: 'default'\n"
+  amp_alertmanager_rules          = {}
+  # EXAMPLE:
+  #{
+  #    first = {
+  #      name = "${local.name}-01"
+  #      data = <<-EOT
+  #      groups:
+  #        - name: test
+  #          rules:
+  #          - record: metric:recording_rule
+  #            expr: avg(rate(container_cpu_usage_seconds_total[5m]))
+  #      EOT
+  #    }
+  #}
+
+  #####################################
+  # AMG Module
+  # Full configuration details here -> https://github.com/terraform-aws-modules/terraform-aws-managed-service-grafana
+  # NOTE! - users need to be authetificated either with SAML or IAM identity center
+  #         if manually creating IAM users permissions here: permissions required for users using IAM https://docs.aws.amazon.com/grafana/latest/userguide/authentication-in-AMG-SSO.html
+  #       - by default grafana workspaces open to all traffic
+  #####################################
+  create_amg           = true
+  create_amg_workspace = true
+  amg_workspace_name   = true
+  # amg_workspace_id -> only required when var.create_amg_workspace is false.
+  amg_datasources       = ["CLOUDWATCH", "PROMETHEUS"]
+  amg_associate_license = false
+  amg_license_type      = "ENTERPRISE_FREE_TRIAL"
+  amg_account_type      = "CURRENT_ACCOUNT"
+  # amg_organization_role_name -> only required when amg_account_type=ORGANIZATION
+  # amg_organizational_units -> only required when amg_account_type=ORGANIZATION
+  amg_subnets_ids = ["subnet1ID", "subnet2ID"]
+  amg_create_sg   = false
+  # amg_sg_rules -> only required if amg_create_sg is true
+  # EXAMPLE
+  #{
+  #  egress_postgresql = {
+  #  description = "Allow egress to PostgreSQL"
+  #  from_port   = 5432
+  #  to_port     = 5432
+  #  protocol    = "tcp"
+  #  cidr_blocks = module.vpc.private_subnets_cidr_blocks
+  #  }
+  #}
+  # amg_sg_name -> only required if amg_create_sg is true
+  # amg_sg_ids ->  only required if amg_create_sg is true
+  amg_permission_type = "SERVICE_MANAGED"
+  # amg_iam_role_arn -> only required if amg_permission_type=CUSTOMER_MANAGED
+  amg_iam_role_name                  = "amg-${var.project}-${var.env}"
+  amg_iam_role_path                  = "/grafana/"
+  amg_iam_role_force_detach_policies = true
+  amg_iam_role_max_session_duration  = 3600
+  amg_iam_role_permissions_boundary  = null
+  amg_iam_role_policy_arns           = []
+  amg_authentication_providers       = ["AWS_SSO"]
+  amg_create_saml_configuration      = false
+  # amg_saml_allowed_organizations -> only required if amg_create_saml_configuration=true
+  # amg_saml_admin_role_values -> only required if amg_create_saml_configuration=true
+  # amg_saml_editor_role_values -> only required if amg_create_saml_configuration=true
+  # amg_saml_email_assertion -> only required if amg_create_saml_configuration=true
+  # amg_saml_groups_assertion -> only required if amg_create_saml_configuration=true
+  # amg_saml_name_assertion -> only required if amg_create_saml_configuration=true
+  # amg_saml_org_assertion -> only required if amg_create_saml_configuration=true
+  # amg_saml_role_assertion -> only required if amg_create_saml_configuration=true
+  # amg_saml_idp_metadata_url -> only required if amg_create_saml_configuration=true
+  # amg_saml_login_validity_duration -> only required if amg_create_saml_configuration=true
+  # amg_saml_login_assertion -> only required if amg_create_saml_configuration=true
+  amg_sso_user_admins         = ["user1", "user2"]
+  amg_sso_group_admins        = ["group1", "group2"]
+  amg_sso_user_editors        = ["user1", "user2"]
+  amg_sso_group_editors       = ["group1", "group2"]
+  amg_sso_user_viewers        = ["user1", "user2"]
+  amg_sso_group_viewers       = ["group1", "group2"]
+  amg_allow_sns_notifications = false
+  #####################################
+  # Common vars
+  #####################################
+  extra_tags = {}
+}
+

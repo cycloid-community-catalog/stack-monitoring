@@ -1,0 +1,56 @@
+---
+version: '2'
+# Configuration of the Cycloid stack
+name: 'Monitoring'
+canonical: 'stack-monitoring'
+status: 'private'
+description: |
+  Deploy a monitoring solution based on Alertmanager, Grafana and Prometheus.
+keywords:
+  - 'prometheus'
+  - 'grafana'
+  - 'alertmanager'
+  - 'monitoring'
+  - 'alerting'
+  - 'observability'
+  - 'k8s'
+  - 'kubernetes'
+author: 'Cycloid'
+image: |
+  https://raw.githubusercontent.com/cycloid-community-catalog/stack-prometheus/master/icon.png
+technologies:
+  - technology: grafana
+    version: n/a
+  - technology: alertmanager
+    version: n/a
+  - technology: prometheus
+    version: n/a
+
+config:
+  # PROVIDER MANAGED MODE
+  aws-managed:
+    name: 'AWS Managed solution'
+    description: 'Managed solution for monitoring using AWS Managed Services'
+    pipeline:
+      pipeline:
+        path: 'pipeline/provider-managed-mode/aws/pipeline.yml'
+      variables:
+        path: 'pipeline/provider-managed-mode/aws/variables.sample.yml'
+        destination: '($ project $)/pipeline/provider-managed-mode/aws/variables-($ environment $).yml'
+    terraform:
+      prometheus:
+        path: 'terraform/provider-managed-mode/aws/monitoring.tf.sample'
+        destination: '($ project $)/terraform/provider-managed-mode/aws/($ environment $)/monitoring.tf'
+#  azure-managed:
+#  gcp-managed:
+#
+  # K8S PROMETHEUS STACK MODE
+#  aws-vm:
+#  azure-vm:
+#  gcp-vm:
+
+  # VM MODE
+#  aws-k8s-stack:
+#  azure-k8s-stack:
+#  gcp-k8s-stack:
+

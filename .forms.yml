@@ -1,0 +1,479 @@
+shared:
+- &aws-global
+  name: Global
+  groups:
+  - name: Global
+    technologies: [pipeline]
+    vars:
+      - name: Display stack advanced options
+        description: Check to see stack options.
+        key: advanced_opt
+        widget: switch
+        type: boolean
+        default: false
+      - name: "Config repository"
+        description: "Git repository URL containing the config of the stack."
+        key: config_git_repository
+        type: string
+        widget: cy_crs
+        required: true
+      - name: "Config branch"
+        description: "The branch used by the config repository"
+        key: config_git_branch
+        widget: cy_branch
+        type: string
+        source: config_git_repository
+        required: true
+      - name: "Config git key"
+        description: "SSH key pair to fetch the config Git repository."
+        key: config_git_private_key
+        type: string
+        widget: cy_cred
+        widget_config:
+          cred_types:
+            - ssh
+        required: true
+  - name: Cloud Provider
+    technologies: [pipeline]
+    vars:
+      - name: "AWS access key"
+        description: "Amazon AWS access key for Terraform."
+        key: aws_access_key
+        widget: cy_cred
+        type: string
+        default: "((aws.access_key))"
+      - name: "AWS secret key"
+        description: "Amazon AWS secret key for Terraform."
+        key: aws_secret_key
+        widget: cy_cred
+        type: string
+        default: "((aws.access_key))"
+      - name: "AWS zones"
+        description: "To use specific AWS Availability Zones."
+        key: zones
+        widget: text_area
+        type: raw
+        default: |+
+          ["eu-west-3a", "eu-west-3b", "eu-west-3c"]
+      - name: "Terraform storage bucket"
+        description: "AWS S3 bucket name to store terraform remote state file."
+        key: terraform_storage_bucket_name
+        widget: simple_text
+        type: string
+        default: ($ organization_canonical $)-terraform-remote-state
+      - name: "Terraform version"
+        description: "Terraform version to use."
+        key: terraform_version
+        widget: simple_text
+        type: string
+        default: "1.3.4"
+  - name: Stack repository (optional)
+    condition: $advanced_opt == true
+    technologies: [pipeline]
+    vars:
+      - name: "Stack repository"
+        description: "Git repository URL containing the stack code."
+        key: stack_git_repository
+        type: string
+        widget: cy_crs
+        default: https://github.com/cycloid-community-catalog/stack-monitoring.git
+      - name: "Stack branch"
+        description: "The branch used by the stack repository"
+        key: stack_git_branch
+        widget: cy_branch
+        type: string
+        source: stack_git_repository
+        default: main
+
+version: "2"
+use_cases:
+- name: aws-managed
+  sections:
+  - *aws-global
+  - name: AMP (Amazon Managed Prometheus) Configuration
+    groups:
+    - name: General
+      technologies: [terraform]
+      vars:
+        - name: Create AMP
+          description: Wheter to create AMP and related resources.
+          key: create_amp
+          widget: switch
+          type: boolean
+          default: true
+    - name: AMP General Configuration
+      condition: $create_amp == true
+      technologies: [terraform]
+      vars:
+        - name: Create AMP Workspace
+          description: Wheter to create AMP Workspace.If false an existing workspace ID should be provided.
+          key: create_amp_workspace
+          widget: switch
+          type: boolean
+          default: true
+        - name: Create Cloudwatch Log Group
+          description: Wheter to create AMP cloudwatch group to be use by the AMP.
+          key: create_amp_cloudwatch_log_group
+          widget: switch
+          type: boolean
+          default: true
+    - name: AMP Workspace Configuration
+      condition: $create_amp == true && $create_amp_workspace == true
+      technologies: [terraform]
+      vars:
+        - name: AMP Workspace Name
+          description: The AMP Workspace name to create.
+          key: amp_workspace_name
+          widget: simple_text
+          type: string
+          default: amp-($ environment $)
+          required: true
+    - name: AMP Workspace Configuration
+      condition: $create_amp == true && $create_amp_workspace == false
+      technologies: [terraform]
+      vars:
+        - name: AMP Workspace ID
+          description: The AMP Workspace ID to use.
+          key: amp_workspace_id
+          widget: simple_text
+          type: string
+          required: true
+    - name: Alertmanager
+      condition: create_amp == true
+      technologies: [terraform]
+      vars:
+        - name: Alertmanager definition
+          description: The alertmanager definition to apply. You should example definition here https://github.com/terraform-aws-modules/terraform-aws-managed-service-prometheus "
+          key: amp_alertmanager_definition
+          widget: text_area
+          type: raw
+          default: |+
+            alertmanager_config:
+              route:
+                receiver: default
+              receivers:
+                - name: default
+        - name: Alertmanager rules
+          description: The alertmanager rules to apply. You should example definition here https://github.com/terraform-aws-modules/terraform-aws-managed-service-prometheus "
+          key: amp_alertmanager_rules
+          widget: text_area
+          type: map
+          default: {}
+    - name: Cloudwatch Log Group Configuration
+      condition: $advanced_opt == true && $create_amp == true && $create_amp_cloudwatch_log_group == true
+      technologies: [terraform]
+      vars:
+        - name: Cloudwatch Log Group Name
+          description: The cloudwatch log group name used by AMP.
+          key: amp_cloudwatch_log_group
+          widget: simple_text
+          type: string
+  - name: AMG (Amazon Managed Grafana) Configuration
+    groups:
+    - name: General
+      technologies: [terraform]
+      vars:
+        - name: Create AMG
+          description: Wheter to create AMG and related resources.
+          key: create_amg
+          widget: switch
+          type: boolean
+          default: true
+    - name: AMG General Configuration
+      condition: $create_amg == true
+      technologies: [terraform]
+      vars:
+        - name: Create AMG Workspace
+          description: Wheter to create AMG Workspace.If false an existing workspace ID should be provided.
+          key: create_amg_workspace
+          widget: switch
+          type: boolean
+          default: true
+        - name: Associate License to AMG Workspace
+          description: Determines whether a license will be associated with the workspace.
+          key: amg_associate_license
+          widget: switch
+          type: boolean
+          default: true
+        - name: Create SAML workspace configuration
+          description: Determines whether the SAML configuration will be created.
+          key: amg_create_saml_configuration
+          widget: switch
+          type: boolean
+          default: false
+    - name: AMG Workspace Configuration
+      condition: $create_amg == true && $create_amg_workspace == true
+      technologies: [terraform]
+      vars:
+        - name: AGP Workspace Name
+          description: The AMG Workspace name to create.
+          key: amg_workspace_name
+          widget: simple_text
+          type: string
+          default: amg-($ environment $)
+          required: true
+        - name: AMG Workspace datasources
+          description: The data sources for the workspace. Valid values are AMAZON_OPENSEARCH_SERVICE, ATHENA, CLOUDWATCH, PROMETHEUS, REDSHIFT, SITEWISE, TIMESTREAM, XRAY.
+          key: amg_datasources
+          widget: text_area
+          type: array
+          default: ["CLOUDWATCH", "PROMETHEUS"]
+        - name: AMG access account type
+          description: The type of account access for the workspace.
+          key: amg_account_type
+          widget: dropdown
+          type: string
+          values:  ["CURRENT_ACCOUNT", "ORGANIZATION"]
+          default: "CURRENT_ACCOUNT"
+        - name: AMG Authetification Providers
+          description: The authentication providers for the workspace. Valid values are AWS_SSO, SAML, or both."
+          key: amg_authentication_providers
+          widget: text_area
+          type: array
+          default: ["AWS_SSO"]
+        - name: AMG Permission type
+          description: The permission type of the workspace to create IAM roles/policies.
+          key: amg_permission_type
+          widget: dropdown
+          type: string
+          values:  ["SERVICE_MANAGED", "CUSTOMER_MANAGED"]
+          default: "SERVICE_MANAGED"
+        - name: AMG Subnet IDs to connect
+          description: he list of subnet IDs created in the Amazon VPC for your Grafana workspace to connect."
+          key: amg_subnets_ids
+          widget: text_area
+          type: map
+        - name: AMG Create Security Group
+          description: Determines if a security group is created for your Grafana workspace to connect.
+          key: amg_create_sg
+          widget: switch
+          type: boolean
+          default: amp-($ environment $)
+          required: false
+        - name: AMG notification alerting
+          description: Wheter to send notifications to SNS.
+          key: amg_allow_sns_notifications
+          widget: switch
+          type: boolean
+          default: false
+    - name: AMG Security Group (SG) configuration
+      condition: $create_amg == true && $create_amg_workspace == true && $amg_create_sg == true
+      technologies: [terraform]
+      vars:
+        - name: AMG SG name
+          description: The name of the security group to be created for your Grafana workspace to connect.
+          key: amg_sg_name
+          widget: simple_text
+          type: string
+          default: amg-($ environment $)
+        - name: AMG SG Rules
+          description: The list of security_group rules to apply
+          key: amg_sg_rules
+          widget: text_area
+          type: array
+          default: []
+    - name: AMG Security Group (SG) configuration
+      condition: $create_amg == true && $create_amg_workspace == true && $amg_create_sg == false
+      technologies: [terraform]
+      vars:
+        - name: AMG SG Ids
+          description: The list of Amazon EC2 security group IDs attached to the Amazon VPC for your Grafana workspace to connect.
+          key: amg_sg_ids
+          widget: text_area
+          type: array
+          default: []
+    - name: AMG IAM Role
+      condition: $create_amg == true && $create_amg_workspace == true && $amg_account_type == 'CUSTOMER_MANAGED'
+      technologies: [terraform]
+      vars:
+        - name: AMG IAM Role ARN
+          description: Existing IAM role ARN for the workspace.
+          key: amg_iam_role_arn
+          widget: simple_text
+          type: string
+          required: true
+    - name: AMG IAM Role
+      condition: $create_amg == true && $create_amg_workspace == true && $amg_account_type == 'SERVICE_MANAGED'
+      technologies: [terraform]
+      vars:
+        - name: AMG IAM Role Name
+          description: Name to use for the workspace IAM role created.
+          key: amg_iam_role_name
+          widget: simple_text
+          type: string
+          default: amg-($ environment $)
+        - name: AMG IAM Role Path
+          description: Path for the workspace IAM role created.
+          key: amg_iam_role_path
+          widget: simple_text
+          type: string
+          default: "/grafana/"
+        - name: AMG IAM Role force detach policies
+          description: Determines whether the workspace IAM role policies will be forced to detach.
+          key: amg_iam_role_force_detach_policies
+          widget: switch
+          type: boolean
+          default: true
+        - name: AMG IAM Role force detach policies
+          description: Determines whether the workspace IAM role policies will be forced to detach.
+          key: amg_iam_role_max_session_duration
+          widget: number
+          type: integer
+          values: [3600, 43200]
+          default: 3600
+        - name: AMG IAM Role Permissions Boundary
+          description: ARN of the policy that is used to set the permissions boundary for the IAM role.
+          key: amg_iam_role_permissions_boundary
+          widget: simple_text
+          type: string
+        - name: AMG IAM Role extra policies
+          description: List of ARNs of IAM policies to attach to the workspace IAM role.
+          key: amg_iam_role_policy_arns
+          widget: text_area
+          type: array
+          default: []
+    - name: AMG Workspace Organizations Access
+      condition: $create_amg == true && $create_amg_workspace == true && $amg_account_type == 'ORGANIZATION'
+      technologies: [terraform]
+      vars:
+        - name: AMG Workspace Org role
+          description: The role name that the workspace uses to access resources through Amazon Organizations.
+          key: amg_organization_role_name
+          widget: simple_text
+          type: string
+        - name: AMG Workspace Org units
+          description: The Amazon Organizations organizational units that the workspace is authorized to use data sources from.
+          key: amg_organizational_units
+          widget: text_area
+          type: array
+          default: []
+    - name: AMG Workspace Configuration
+      condition: $create_amg == true && $create_amg_workspace == false
+      technologies: [terraform]
+      vars:
+        - name: AMG Workspace ID
+          description: The AMG Workspace ID to use.
+          key: amg_workspace_id
+          widget: simple_text
+          type: string
+          required: true
+    - name: AMG Workspace SAML configuration
+      condition: $create_amg == true && $amg_create_saml_configuration == true
+      technologies: [terraform]
+      vars:
+        - name: SAML Editor Role Values
+          description: SAML authentication editor role values.
+          key: amg_saml_editor_role_values
+          widget: text_area
+          type: map
+          required: true
+        - name: SAML Allowed Organizations
+          description: SAML authentication allowed organizations.
+          key: amg_saml_allowed_organizations
+          widget: text_area
+          type: array
+          default: []
+        - name: SAML Admin Role Values
+          description: SAML authentication admin role values.
+          key: amg_saml_admin_role_values
+          widget: text_area
+          type: array
+          default: []
+        - name: SAML Login assertion
+          description: SAML authentication login assertion.
+          key: amg_saml_login_assertion
+          widget: simple_text
+          type: string
+        - name: SAML Email assertion
+          description: SAML authentication email assertion.
+          key: amg_saml_email_assertion
+          widget: simple_text
+          type: string
+        - name: SAML Groups assertion
+          description: SAML authentication groups assertion.
+          key: amg_saml_groups_assertion
+          widget: simple_text
+          type: string
+        - name: SAML Name assertion
+          description: SAML authentication name assertion.
+          key: amg_saml_name_assertion
+          widget: simple_text
+          type: string
+        - name: SAML Org assertion
+          description: SAML authentication org assertion.
+          key: amg_saml_org_assertion
+          widget: simple_text
+          type: string
+        - name: SAML role assertion
+          description: SAML authentication role assertion.
+          key: amg_saml_role_assertion
+          widget: simple_text
+          type: string
+        - name: SAML IDP Metadata URL
+          description: SAML authentication IDP Metadata URL.
+          key: amg_saml_idp_metadata_url
+          widget: simple_text
+          type: string
+        - name: SAML login validity
+          description: SAML authentication login validity duration.
+          key: amg_saml_login_validity_duration
+          widget: number
+          type: integer
+    - name: AMG SSO Workspace Configuration
+      condition: $create_amg == true
+      technologies: [terraform]
+      vars:
+        - name: AWS SSO Users Admin
+          description: The AWS SSO user ids to be assigned the admin role.
+          key: amg_sso_user_admins
+          widget: text_area
+          type: array
+          default: []
+        - name: AWS SSO Groups Admin
+          description: The AWS SSO groups ids to be assigned the admin role.
+          key: amg_sso_group_admins
+          widget: text_area
+          type: array
+          default: []
+        - name: AWS SSO Users Editor
+          description: The AWS SSO user ids to be assigned the editor role.
+          key: amg_sso_user_editors
+          widget: text_area
+          type: array
+          default: []
+        - name: AWS SSO Groups Editor
+          description: The AWS SSO groups ids to be assigned the editor role.
+          key: amg_sso_group_editors
+          widget: text_area
+          type: array
+          default: []
+        - name: AWS SSO Users Viewer
+          description: The AWS SSO user ids to be assigned the viewer role.
+          key: amg_sso_user_viewers
+          widget: text_area
+          type: array
+          default: []
+        - name: AWS SSO Groups Viewer
+          description: The AWS SSO groups ids to be assigned the viewer role.
+          key: amg_sso_group_viewers
+          widget: text_area
+          type: array
+          default: []
+    - name: AMG License Configuration
+      condition: $create_amg == true && $amg_associate_license == true
+      technologies: [terraform]
+      vars:
+        - name: AMG License Type
+          description: The type of license for the workspace license association.
+          key: amg_license_type
+          widget: dropdown
+          type: string
+          values:  ["ENTERPRISE_FREE_TRIAL", "ENTERPRISE"]
+          default: "ENTERPRISE"
+
+#          select multiple values????
+#
+#          to add required
+#
+#          to validate
+# tags to add

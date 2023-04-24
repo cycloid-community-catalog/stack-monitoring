@@ -27,11 +27,8 @@ shared:
       - name: "Config git key"
         description: "SSH key pair to fetch the config Git repository."
         key: config_git_private_key
-        type: string
         widget: cy_cred
-        widget_config:
-          cred_types:
-            - ssh
+        type: string
         required: true
   - name: Cloud Provider
     technologies: [pipeline]

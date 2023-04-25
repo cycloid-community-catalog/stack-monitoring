@@ -65,7 +65,7 @@ resources:
       uri:  ((stack_git_repository))
       branch: ((stack_git_branch))
       paths:
-        - stack-monitoring/terraform/provider-managed-mode/aws/*
+        - terraform/provider-managed-mode/aws/*
 
   - name: git_config-terraform
     type: git
@@ -99,7 +99,7 @@ jobs:
                   path: "stack"
             params:
               CONFIG_PATH: ((project))/terraform/provider-managed-mode/aws/((env))
-              STACK_PATH: stack-monitoring/terraform/provider-managed-mode/aws
+              STACK_PATH: terraform/provider-managed-mode/aws
 
           - put: tfstate
             params:
@@ -142,7 +142,7 @@ jobs:
                   path: "stack"
             params:
               CONFIG_PATH: ((project))/terraform/provider-managed-mode/aws/((env))
-              STACK_PATH: stack-monitoring/terraform/provider-managed-mode/aws
+              STACK_PATH: terraform/provider-managed-mode/aws
 
           - put: tfstate
             params:

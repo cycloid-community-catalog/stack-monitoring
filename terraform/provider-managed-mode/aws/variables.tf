@@ -18,10 +18,10 @@ variable "customer" {
 # AWS variables -> passed via concourse pipeline
 ################################################################################
 
-variable "access_key" {
+variable "aws_access_key" {
   description = "AWS IAM access key ID."
 }
-variable "secret_key" {
+variable "aws_secret_key" {
   description = "AWS IAM access secret key."
 }
 variable "aws_region" {

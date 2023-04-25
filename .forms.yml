@@ -77,7 +77,7 @@ shared:
         description: "Git repository URL containing the stack code."
         key: stack_git_repository
         type: string
-        widget: cy_crs
+        widget: cy_scs
         default: https://github.com/cycloid-community-catalog/stack-monitoring.git
       - name: "Stack branch"
         description: "The branch used by the stack repository"
@@ -149,12 +149,7 @@ use_cases:
           key: amp_alertmanager_definition
           widget: text_area
           type: raw
-          default: |+
-            alertmanager_config:
-              route:
-                receiver: default
-              receivers:
-                - name: default
+          default: "alertmanager_config: |\n route:\n receiver: 'default'\n receivers:\n - name: 'default'\n"
         - name: Alertmanager rules
           description: The alertmanager rules to apply. You should example definition here https://github.com/terraform-aws-modules/terraform-aws-managed-service-prometheus "
           key: amp_alertmanager_rules

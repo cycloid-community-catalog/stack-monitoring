@@ -57,6 +57,13 @@ shared:
         widget: simple_text
         type: string
         required: true
+      - name: "Amazon AWS region"
+        description: "Amazon AWS region to use for Terraform."
+        key: aws_default_region
+        widget: auto_complete
+        type: string
+        values: ["eu-north-1","ap-south-1","eu-west-3","eu-west-2","eu-west-1","ap-northeast-2","ap-northeast-1","sa-east-1","ca-central-1","ap-southeast-1","ap-southeast-2","eu-central-1","us-east-1","us-east-2","us-west-1","us-west-2"]
+        default: eu-west-1
       - name: "Terraform storage bucket"
         description: "AWS S3 bucket name to store terraform remote state file."
         key: terraform_storage_bucket_name

@@ -39,10 +39,22 @@ shared:
   - name: Cloud Provider
     technologies: [pipeline]
     vars:
+      - name: "AWS access key"
+        description: "Amazon AWS access key for Terraform."
+        key: aws_access_key
+        widget: cy_cred
+        type: string
+        default: "((aws.access_key))"
+      - name: "AWS secret key"
+        description: "Amazon AWS secret key for Terraform."
+        key: aws_secret_key
+        widget: cy_cred
+        type: string
+        default: "((aws.secret_key))"
       - name: "AWS Assume Role"
         description: "Amazon AWS access key for Terraform."
         key: aws_role_arn
-        widget: dropdown
+        widget: simple_text
         type: string
         required: true
       - name: "AWS zones"

@@ -57,13 +57,6 @@ shared:
         widget: simple_text
         type: string
         required: true
-      - name: "AWS zones"
-        description: "To use specific AWS Availability Zones."
-        key: zones
-        widget: text_area
-        type: raw
-        default: |+
-          ["eu-west-3a", "eu-west-3b", "eu-west-3c"]
       - name: "Terraform storage bucket"
         description: "AWS S3 bucket name to store terraform remote state file."
         key: terraform_storage_bucket_name

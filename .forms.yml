@@ -241,10 +241,10 @@ use_cases:
           values:  ["SERVICE_MANAGED", "CUSTOMER_MANAGED"]
           default: "SERVICE_MANAGED"
         - name: AMG Subnet IDs to connect
-          description: he list of subnet IDs created in the Amazon VPC for your Grafana workspace to connect."
+          description: The list of subnet IDs created in the Amazon VPC for your Grafana workspace to connect."
           key: amg_subnets_ids
           widget: text_area
-          type: map
+          type: array
         - name: AMG Create Security Group
           description: Determines if a security group is created for your Grafana workspace to connect.
           key: amg_create_sg
@@ -366,7 +366,7 @@ use_cases:
           description: SAML authentication editor role values.
           key: amg_saml_editor_role_values
           widget: text_area
-          type: map
+          type: array
           required: true
         - name: SAML Allowed Organizations
           description: SAML authentication allowed organizations.

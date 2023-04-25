@@ -24,27 +24,27 @@ shared:
         type: string
         source: config_git_repository
         required: true
-      - name: "Config git key"
-        description: "SSH key pair to fetch the config Git repository."
-        key: config_git_private_key
-        widget: cy_cred
+      - name: "Config git username"
+        description: "Gitlab username to use to fetch the config repository."
+        key: config_git_username
         type: string
+        widget: cy_cred
+        required: true
+      - name: "Config git password"
+        description: "Gitlab password to use to fetch the config repository."
+        key: config_git_password
+        type: string
+        widget: cy_cred
         required: true
   - name: Cloud Provider
     technologies: [pipeline]
     vars:
-      - name: "AWS access key"
+      - name: "AWS Assume Role"
         description: "Amazon AWS access key for Terraform."
-        key: aws_access_key
-        widget: cy_cred
+        key: aws_role_arn
+        widget: dropdown
         type: string
-        default: "((aws.access_key))"
-      - name: "AWS secret key"
-        description: "Amazon AWS secret key for Terraform."
-        key: aws_secret_key
-        widget: cy_cred
-        type: string
-        default: "((aws.access_key))"
+        required: true
       - name: "AWS zones"
         description: "To use specific AWS Availability Zones."
         key: zones

@@ -28,3 +28,7 @@ variable "aws_region" {
   description = "AWS region to launch VM."
   default     = "eu-west-1"
 }
+
+variable "aws_role_arn" {
+  description = "AWS ARN role to assume."
+}

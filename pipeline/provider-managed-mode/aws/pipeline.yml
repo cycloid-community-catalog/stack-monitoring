@@ -43,9 +43,11 @@ resources:
         region: ((aws_default_region))
         access_key: ((aws_access_key))
         secret_key: ((aws_secret_key))
+        aws_role_arn: ((aws_role_arn))
       vars:
         aws_access_key: ((aws_access_key))
         aws_secret_key: ((aws_secret_key))
+        role_arn: ((aws_role_arn))
         aws_region: ((aws_default_region))
         env: ((env))
         customer: ((customer))
@@ -70,7 +72,8 @@ resources:
     source:
       uri: ((config_git_repository))
       branch: ((config_git_branch))
-      private_key: ((config_git_private_key))
+      username: ((config_git_username))
+      password: ((config_git_password))
       paths:
         - ((project))/terraform/provider-managed-mode/aws/((env))/*
 

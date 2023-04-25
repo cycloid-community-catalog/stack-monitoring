@@ -43,7 +43,7 @@ resources:
         region: ((aws_default_region))
         access_key: ((aws_access_key))
         secret_key: ((aws_secret_key))
-        aws_role_arn: ((aws_role_arn))
+        role_arn: ((aws_role_arn))
       vars:
         aws_access_key: ((aws_access_key))
         aws_secret_key: ((aws_secret_key))
@@ -56,6 +56,8 @@ resources:
         AWS_ACCESS_KEY_ID: ((aws_access_key))
         AWS_DEFAULT_REGION: ((aws_default_region))
         AWS_SECRET_ACCESS_KEY: ((aws_secret_key))
+        AWS_ROLE_ARN: ((aws_role_arn))
+
 
 
   # The Terraform stack (will be merged with the config)

@@ -50,7 +50,7 @@ module "monitoring" {
   amg_account_type      = "CURRENT_ACCOUNT"
   # amg_organization_role_name -> only required when amg_account_type=ORGANIZATION
   # amg_organizational_units -> only required when amg_account_type=ORGANIZATION
-  amg_subnets_ids = ["subnet1ID", "subnet2ID"]
+  amg_subnets_ids = []
   amg_create_sg   = false
   amg_sg_rules = {}
   # amg_sg_rules
@@ -87,12 +87,12 @@ module "monitoring" {
   # amg_saml_idp_metadata_url -> only required if amg_create_saml_configuration=true
   # amg_saml_login_validity_duration -> only required if amg_create_saml_configuration=true
   # amg_saml_login_assertion -> only required if amg_create_saml_configuration=true
-  amg_sso_user_admins         = ["user1", "user2"]
-  amg_sso_group_admins        = ["group1", "group2"]
-  amg_sso_user_editors        = ["user1", "user2"]
-  amg_sso_group_editors       = ["group1", "group2"]
-  amg_sso_user_viewers        = ["user1", "user2"]
-  amg_sso_group_viewers       = ["group1", "group2"]
+  amg_sso_user_admins         = []
+  amg_sso_group_admins        = []
+  amg_sso_user_editors        = []
+  amg_sso_group_editors       = []
+  amg_sso_user_viewers        = []
+  amg_sso_group_viewers       = []
   amg_allow_sns_notifications = false
   #####################################
   # Common vars

@@ -137,7 +137,7 @@ use_cases:
           type: string
           default: amp-($ environment $)
           required: true
-    - name: AMP Workspace Configuration
+    - name: AMP Workspace ID
       condition: $create_amp == true && $create_amp_workspace == false
       technologies: [terraform]
       vars:

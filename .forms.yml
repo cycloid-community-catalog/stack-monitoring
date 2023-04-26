@@ -136,7 +136,6 @@ use_cases:
           widget: simple_text
           type: string
           default: amp-($ environment $)
-          required: true
     - name: AMP Workspace ID
       condition: $create_amp == true && $create_amp_workspace == false
       technologies: [terraform]
@@ -146,7 +145,6 @@ use_cases:
           key: amp_workspace_id
           widget: simple_text
           type: string
-          required: true
     - name: Alertmanager
       condition: create_amp == true
       technologies: [terraform]

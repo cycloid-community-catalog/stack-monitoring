@@ -273,8 +273,8 @@ use_cases:
           description: The list of security_group rules to apply
           key: amg_sg_rules
           widget: text_area
-          type: array
-          default: []
+          type: map
+          default: {}
     - name: AMG Security Group (SG) configuration
       condition: $create_amg == true && $create_amg_workspace == true && $amg_create_sg == false
       technologies: [terraform]

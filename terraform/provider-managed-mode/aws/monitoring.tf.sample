@@ -42,7 +42,7 @@ module "monitoring" {
   #####################################
   create_amg           = true
   create_amg_workspace = true
-  amg_workspace_name   = true
+  amg_workspace_name   = null
   # amg_workspace_id -> only required when var.create_amg_workspace is false.
   amg_datasources       = ["CLOUDWATCH", "PROMETHEUS"]
   amg_associate_license = false

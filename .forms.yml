@@ -213,7 +213,6 @@ use_cases:
           widget: simple_text
           type: string
           default: amg-($ environment $)
-          required: true
         - name: AMG Workspace datasources
           description: The data sources for the workspace. Valid values are AMAZON_OPENSEARCH_SERVICE, ATHENA, CLOUDWATCH, PROMETHEUS, REDSHIFT, SITEWISE, TIMESTREAM, XRAY.
           key: amg_datasources
@@ -292,7 +291,6 @@ use_cases:
           key: amg_iam_role_arn
           widget: simple_text
           type: string
-          required: true
     - name: AMG IAM Role
       condition: $create_amg == true && $create_amg_workspace == true && $amg_account_type == 'SERVICE_MANAGED'
       technologies: [terraform]
@@ -357,7 +355,6 @@ use_cases:
           key: amg_workspace_id
           widget: simple_text
           type: string
-          required: true
     - name: AMG Workspace SAML configuration
       condition: $create_amg == true && $amg_create_saml_configuration == true
       technologies: [terraform]
@@ -367,7 +364,6 @@ use_cases:
           key: amg_saml_editor_role_values
           widget: text_area
           type: array
-          required: true
         - name: SAML Allowed Organizations
           description: SAML authentication allowed organizations.
           key: amg_saml_allowed_organizations
@@ -471,10 +467,3 @@ use_cases:
           type: string
           values:  ["ENTERPRISE_FREE_TRIAL", "ENTERPRISE"]
           default: "ENTERPRISE"
-
-#          select multiple values????
-#
-#          to add required
-#
-#          to validate
-# tags to add

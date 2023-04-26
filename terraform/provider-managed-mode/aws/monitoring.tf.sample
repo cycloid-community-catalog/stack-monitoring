@@ -52,7 +52,8 @@ module "monitoring" {
   # amg_organizational_units -> only required when amg_account_type=ORGANIZATION
   amg_subnets_ids = ["subnet1ID", "subnet2ID"]
   amg_create_sg   = false
-  # amg_sg_rules -> only required if amg_create_sg is true
+  amg_sg_rules = {}
+  # amg_sg_rules
   # EXAMPLE
   #{
   #  egress_postgresql = {

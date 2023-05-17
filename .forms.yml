@@ -154,7 +154,11 @@ use_cases:
           key: amp_alertmanager_definition
           widget: text_area
           type: raw
-          default: "alertmanager_config: |\n route:\n receiver: 'default'\n receivers:\n - name: 'default'\n"
+          default: |+
+          route:
+            receiver: 'default'
+          receivers:
+            - name: 'default'
         - name: Alertmanager rules
           description: The alertmanager rules to apply. You should example definition here https://github.com/terraform-aws-modules/terraform-aws-managed-service-prometheus "
           key: amp_alertmanager_rules

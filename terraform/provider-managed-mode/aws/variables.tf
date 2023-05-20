@@ -32,3 +32,11 @@ variable "aws_region" {
 variable "aws_role_arn" {
   description = "AWS ARN role to assume."
 }
+
+variable "amp_alertmanager_definition" {
+  description = "The alertmanager definition to apply. You should example definition here https://github.com/terraform-aws-modules/terraform-aws-managed-service-prometheus "
+}
+
+variable "amp_alertmanager_rules" {
+  description = "The alertmanager rules to apply. You should example definition here https://github.com/terraform-aws-modules/terraform-aws-managed-service-prometheus "
+}

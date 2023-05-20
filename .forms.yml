@@ -147,7 +147,7 @@ use_cases:
           type: string
     - name: Alertmanager
       condition: create_amp == true
-      technologies: [terraform]
+      technologies: [pipeline]
       vars:
         - name: Alertmanager definition
           description: The alertmanager definition to apply. You should example definition here https://github.com/terraform-aws-modules/terraform-aws-managed-service-prometheus "

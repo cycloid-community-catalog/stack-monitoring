@@ -17,8 +17,8 @@ module "monitoring" {
   #amp_workspace_id -> only required if var.create_amp_workspacen is false
   create_amp_cloudwatch_log_group = true
   amp_cloudwatch_log_group        = "amp-${var.project}-${var.env}"
-  amp_alertmanager_definition     = "alertmanager_config: |\n route:\n receiver: 'default'\n receivers:\n - name: 'default'\n"
-  amp_alertmanager_rules          = {}
+  amp_alertmanager_definition     = var.amp_alertmanager_definition
+  amp_alertmanager_rules          = var.amp_alertmanager_rules
   # EXAMPLE:
   #{
   #    first = {

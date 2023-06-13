@@ -339,7 +339,18 @@ locals {
     organization = var.customer
   }
   merged_tags        = merge(var.extra_tags, local.default_tags)
+
   amg_authentication_providers = []
   saml_provider = amg_create_saml_configuration == true ? concat(local.amg_authentication_providers, ["SAML"]) : local.amg_authentication_providers
   sso_provider = amg_create_sso_configuration == true ? concat(local.amg_authentication_providers, ["SSO"]) : local.amg_authentication_providers
+
+  vpc_configuration = var.amg_subnets_ids != [] ? merge({}, {subnet_ids = var.amg_subnets_ids,security_group_ids = var.amg_sg_ids}) : {}
+
+  dynamic "vpc_configuration" {
+    for_each = var.amg_sg_ids != [] ? var.amg_sg_ids : []
+    content {
+      subnet_ids         = var.amg_subnets_ids
+      security_group_ids = var.amg_sg_ids
+    }
+  }
 }

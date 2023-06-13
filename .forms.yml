@@ -306,7 +306,7 @@ use_cases:
           default: []
 
     - name: AMG IAM Role
-      condition: $create_amg == true && $create_amg_workspace == true && $amg_account_type == "CUSTOMER_MANAGED"
+      condition: $create_amg == true && $create_amg_workspace == true && $amg_permission_type == "CUSTOMER_MANAGED"
       technologies: [terraform]
       vars:
         - name: AMG IAM Role ARN
@@ -315,7 +315,7 @@ use_cases:
           widget: simple_text
           type: string
     - name: AMG IAM Role
-      condition: $create_amg == true && $create_amg_workspace == true && $amg_account_type == "SERVICE_MANAGED"
+      condition: $create_amg == true && $create_amg_workspace == true && $amg_permission_type == "SERVICE_MANAGED"
       technologies: [terraform]
       vars:
         - name: AMG IAM Role Name

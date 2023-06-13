@@ -66,17 +66,17 @@ module "managed_grafana" {
 
   # Workspace SAML configuration
   create_saml_configuration    = var.amg_create_saml_configuration
-  saml_allowed_organizations   = var.amg_create_saml_configuration && contains(var.amg_authentication_providers, "SAML") ? var.amg_saml_allowed_organizations : []
-  saml_admin_role_values       = var.amg_create_saml_configuration && contains(var.amg_authentication_providers, "SAML") ? var.amg_saml_admin_role_values : []
-  saml_editor_role_values      = var.amg_create_saml_configuration && contains(var.amg_authentication_providers, "SAML") ? var.amg_saml_editor_role_values : []
-  saml_email_assertion         = var.amg_create_saml_configuration && contains(var.amg_authentication_providers, "SAML") ? var.amg_saml_email_assertion : null
-  saml_groups_assertion        = var.amg_create_saml_configuration && contains(var.amg_authentication_providers, "SAML") ? var.amg_saml_groups_assertion : null
-  saml_login_assertion         = var.amg_create_saml_configuration && contains(var.amg_authentication_providers, "SAML") ? var.amg_saml_login_assertion : null
-  saml_name_assertion          = var.amg_create_saml_configuration && contains(var.amg_authentication_providers, "SAML") ? var.amg_saml_name_assertion : null
-  saml_org_assertion           = var.amg_create_saml_configuration && contains(var.amg_authentication_providers, "SAML") ? var.amg_saml_org_assertion : null
-  saml_role_assertion          = var.amg_create_saml_configuration && contains(var.amg_authentication_providers, "SAML") ? var.amg_saml_role_assertion : null
-  saml_idp_metadata_url        = var.amg_create_saml_configuration && contains(var.amg_authentication_providers, "SAML") ? var.amg_saml_idp_metadata_url : null
-  saml_login_validity_duration = var.amg_create_saml_configuration && contains(var.amg_authentication_providers, "SAML") ? var.amg_saml_login_validity_duration : null
+  saml_allowed_organizations   = var.amg_create_saml_configuration && contains(local.amg_authentication_providers, "SAML") ? var.amg_saml_allowed_organizations : []
+  saml_admin_role_values       = var.amg_create_saml_configuration && contains(local.amg_authentication_providers, "SAML") ? var.amg_saml_admin_role_values : []
+  saml_editor_role_values      = var.amg_create_saml_configuration && contains(local.amg_authentication_providers, "SAML") ? var.amg_saml_editor_role_values : []
+  saml_email_assertion         = var.amg_create_saml_configuration && contains(local.amg_authentication_providers, "SAML") ? var.amg_saml_email_assertion : null
+  saml_groups_assertion        = var.amg_create_saml_configuration && contains(local.amg_authentication_providers, "SAML") ? var.amg_saml_groups_assertion : null
+  saml_login_assertion         = var.amg_create_saml_configuration && contains(local.amg_authentication_providers, "SAML") ? var.amg_saml_login_assertion : null
+  saml_name_assertion          = var.amg_create_saml_configuration && contains(local.amg_authentication_providers, "SAML") ? var.amg_saml_name_assertion : null
+  saml_org_assertion           = var.amg_create_saml_configuration && contains(local.amg_authentication_providers, "SAML") ? var.amg_saml_org_assertion : null
+  saml_role_assertion          = var.amg_create_saml_configuration && contains(local.amg_authentication_providers, "SAML") ? var.amg_saml_role_assertion : null
+  saml_idp_metadata_url        = var.amg_create_saml_configuration && contains(local.amg_authentication_providers, "SAML") ? var.amg_saml_idp_metadata_url : null
+  saml_login_validity_duration = var.amg_create_saml_configuration && contains(local.amg_authentication_providers, "SAML") ? var.amg_saml_login_validity_duration : null
 
   # Amazon VPC that contains data sources for your Grafana workspace to connect to
   # will correspond to this format here: https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/grafana_workspace#vpc-configuration
@@ -108,7 +108,7 @@ module "managed_grafana" {
 
 
   # Role associations: associate user/group IDS to a role
-  role_associations = contains(var.amg_authentication_providers, "AWS_SSO") ? local.sso_role_associations : {}
+  role_associations = contains(local.amg_authentication_providers, "AWS_SSO") ? local.sso_role_associations : {}
 
   # grafana notification alerting
   notification_destinations = var.amg_allow_sns_notifications ? ["SNS"] : []

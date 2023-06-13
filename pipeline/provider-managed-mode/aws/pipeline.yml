@@ -40,7 +40,7 @@ resources:
         bucket: ((terraform_storage_bucket_name))
         key: ((project))-((env)).tfstate
         workspace_key_prefix: ((project))
-        region: ((aws_default_region))
+        region: ((terraform_storage_bucket_name_region))
         access_key: ((aws_access_key))
         secret_key: ((aws_secret_key))
         role_arn: ((aws_role_arn))

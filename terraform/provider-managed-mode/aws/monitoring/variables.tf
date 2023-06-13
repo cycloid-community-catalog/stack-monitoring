@@ -342,7 +342,7 @@ locals {
 
 
   saml_provider = var.amg_create_saml_configuration == true ? concat([], ["SAML"]) : []
-  amg_authentication_providers = var.amg_create_sso_configuration == true ? concat(local.saml_provider, ["SSO"]) : local.saml_provider
+  amg_authentication_providers = var.amg_create_sso_configuration == true ? concat(local.saml_provider, ["AWS_SSO"]) : local.saml_provider
 
   vpc_configuration = var.amg_subnets_ids != [] ? merge({}, {subnet_ids = var.amg_subnets_ids,security_group_ids = var.amg_sg_ids}) : {}
 }

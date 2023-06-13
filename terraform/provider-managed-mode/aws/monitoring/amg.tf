@@ -80,12 +80,16 @@ module "managed_grafana" {
 
   # Amazon VPC that contains data sources for your Grafana workspace to connect to
   # will correspond to this format here: https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/grafana_workspace#vpc-configuration
-  create_security_group = var.amg_create_sg
-  vpc_configuration     = {
-    subnet_ids         = var.amg_subnets_ids
-    security_group_ids = var.amg_create_sg ? [] : try(var.amg_sg_ids, null)
+  dynamic "vpc_configuration" {
+    for_each = var.amg_sg_ids != [] ? var.amg_sg_ids : []
+    content {
+      subnet_ids         = var.amg_subnets_ids
+      security_group_ids = var.amg_sg_ids
+    }
   }
+
   # In case a SG needs to be created
+  create_security_group = var.amg_create_sg
   security_group_name        = var.amg_create_sg ? var.amg_sg_name : null
   security_group_rules       = var.amg_create_sg ? var.amg_sg_rules : {}
 

@@ -62,7 +62,7 @@ module "managed_grafana" {
   iam_role_policy_arns           = var.amg_permission_type == "SERVICE_MANAGED" ? var.amg_iam_role_policy_arns : []
 
   # Authentification types
-  authentication_providers  = var.amg_authentication_providers
+  authentication_providers  = local.amg_authentication_providers
 
   # Workspace SAML configuration
   create_saml_configuration    = var.amg_create_saml_configuration

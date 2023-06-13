@@ -214,12 +214,8 @@ variable "amg_iam_role_policy_arns" {
 }
 
 # Authentification types
-variable "amg_authentication_providers" {
-  description = "The authentication providers for the workspace. Valid values are AWS_SSO, SAML, or both."
-  default = ["AWS_SSO"]
-}
 
-# Workspace SAML configuration
+# authentification type: SAML configuration
 variable "amg_create_saml_configuration" {
   description = "Determines whether the SAML configuration will be created."
   default = false
@@ -280,6 +276,12 @@ variable "amg_saml_login_validity_duration" {
   default = null
 }
 
+# authentification type: SSO configuration
+variable "amg_create_sso_configuration" {
+  description = "Determines whether to use SSO authentification."
+  default = false
+}
+
 # Role associations - Map of maps to assocaite user/group IDs to a role. Map key can be used as the role
 # Admin role users
 variable "amg_sso_user_admins" {
@@ -337,4 +339,7 @@ locals {
     organization = var.customer
   }
   merged_tags        = merge(var.extra_tags, local.default_tags)
+  amg_authentication_providers = []
+  saml_provider = amg_create_saml_configuration == true ? concat(local.amg_authentication_providers, ["SAML"]) : local.amg_authentication_providers)
+  sso_provider = amg_create_sso_configuration == true ? concat(local.amg_authentication_providers, ["SSO"]) : local.amg_authentication_providers)
 }

@@ -203,11 +203,18 @@ use_cases:
           type: boolean
           default: true
         - name: Create SAML workspace configuration
-          description: Determines whether the SAML configuration will be created.
+          description: Determines whether the SAML configuration will be created. Note! Both SSO and SAML can be selected and at least one should be
           key: amg_create_saml_configuration
           widget: switch
           type: boolean
           default: false
+        - name: Create SSO workspace configuration
+          description: Determines whether the SSO configuration will be created. Note! Both SSO and SAML can be selected and at least one should be
+          key: amg_create_sso_configuration
+          widget: switch
+          type: boolean
+          default: true
+
     - name: AMG Workspace Configuration
       condition: $create_amg == true && $create_amg_workspace == true
       technologies: [terraform]
@@ -231,12 +238,6 @@ use_cases:
           type: string
           values:  ["CURRENT_ACCOUNT", "ORGANIZATION"]
           default: "CURRENT_ACCOUNT"
-        - name: AMG Authetification Providers
-          description: The authentication providers for the workspace. Valid values are AWS_SSO, SAML, or both."
-          key: amg_authentication_providers
-          widget: text_area
-          type: array
-          default: ["AWS_SSO"]
         - name: AMG Permission type
           description: The permission type of the workspace to create IAM roles/policies.
           key: amg_permission_type
@@ -244,23 +245,38 @@ use_cases:
           type: string
           values:  ["SERVICE_MANAGED", "CUSTOMER_MANAGED"]
           default: "SERVICE_MANAGED"
-        - name: AMG Subnet IDs to connect
-          description: The list of subnet IDs created in the Amazon VPC for your Grafana workspace to connect."
-          key: amg_subnets_ids
-          widget: text_area
-          type: array
-        - name: AMG Create Security Group
-          description: Determines if a security group is created for your Grafana workspace to connect.
-          key: amg_create_sg
-          widget: switch
-          type: boolean
-          default: true
         - name: AMG notification alerting
           description: Wheter to send notifications to SNS.
           key: amg_allow_sns_notifications
           widget: switch
           type: boolean
           default: false
+    - name: AMG Workspace Configuration
+      condition: $create_amg == true && $create_amg_workspace == false
+      technologies: [terraform]
+      vars:
+        - name: AMG Workspace ID
+          description: The AMG Workspace ID to use.
+          key: amg_workspace_id
+          widget: simple_text
+          type: string
+
+    - name: AMG Network Configuration
+      condition: $create_amg == true && $create_amg_workspace == true
+      technologies: [terraform]
+      vars:
+        - name: AMG Subnet IDs to connect
+          description: The list of subnet IDs for your Grafana workspace to connect."
+          key: amg_subnets_ids
+          widget: text_area
+          type: array
+        - name: AMG Create Security Group
+          description: Determines if a security group is created for your Grafana workspace to connect or if you should use an existing one.
+          key: amg_create_sg
+          widget: switch
+          type: boolean
+          default: true
+
     - name: AMG Security Group (SG) configuration
       condition: $create_amg == true && $create_amg_workspace == true && $amg_create_sg == true
       technologies: [terraform]
@@ -287,6 +303,7 @@ use_cases:
           widget: text_area
           type: array
           default: []
+
     - name: AMG IAM Role
       condition: $create_amg == true && $create_amg_workspace == true && $amg_account_type == "CUSTOMER_MANAGED"
       technologies: [terraform]
@@ -336,6 +353,7 @@ use_cases:
           widget: text_area
           type: array
           default: []
+
     - name: AMG Workspace Organizations Access
       condition: $create_amg == true && $create_amg_workspace == true && $amg_account_type == "ORGANIZATION"
       technologies: [terraform]
@@ -351,15 +369,7 @@ use_cases:
           widget: text_area
           type: array
           default: []
-    - name: AMG Workspace Configuration
-      condition: $create_amg == true && $create_amg_workspace == false
-      technologies: [terraform]
-      vars:
-        - name: AMG Workspace ID
-          description: The AMG Workspace ID to use.
-          key: amg_workspace_id
-          widget: simple_text
-          type: string
+
     - name: AMG Workspace SAML configuration
       condition: $create_amg == true && $amg_create_saml_configuration == true
       technologies: [terraform]
@@ -422,7 +432,7 @@ use_cases:
           widget: number
           type: integer
     - name: AMG SSO Workspace Configuration
-      condition: $create_amg == true
+      condition: $create_amg == true && amg_create_sso_configuration == true
       technologies: [terraform]
       vars:
         - name: AWS SSO Users Admin
@@ -461,6 +471,7 @@ use_cases:
           widget: text_area
           type: array
           default: []
+
     - name: AMG License Configuration
       condition: $create_amg == true && $amg_associate_license == true
       technologies: [terraform]

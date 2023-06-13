@@ -83,7 +83,7 @@ module "managed_grafana" {
   create_security_group = var.amg_create_sg
   vpc_configuration     = {
     subnet_ids         = var.amg_subnets_ids
-    security_group_ids = var.amg_create_sg ? [] : try(var.amg_sg_ids, [])
+    security_group_ids = var.amg_create_sg ? [] : try(var.amg_sg_ids, null)
   }
   # In case a SG needs to be created
   security_group_name        = var.amg_create_sg ? var.amg_sg_name : null

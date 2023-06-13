@@ -73,7 +73,7 @@ module "monitoring" {
   amg_iam_role_force_detach_policies = true
   amg_iam_role_max_session_duration  = 3600
   amg_iam_role_permissions_boundary  = null
-  amg_iam_role_policy_arns           = []
+  # amg_iam_role_policy_arns           = []
   amg_authentication_providers       = ["AWS_SSO"]
   amg_create_saml_configuration      = false
   # amg_saml_allowed_organizations -> only required if amg_create_saml_configuration=true

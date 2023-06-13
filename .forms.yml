@@ -212,7 +212,7 @@ use_cases:
       condition: $create_amg == true && $create_amg_workspace == true
       technologies: [terraform]
       vars:
-        - name: AGP Workspace Name
+        - name: AMG Workspace Name
           description: The AMG Workspace name to create.
           key: amg_workspace_name
           widget: simple_text
@@ -288,7 +288,7 @@ use_cases:
           type: array
           default: []
     - name: AMG IAM Role
-      condition: $create_amg == true && $create_amg_workspace == true && $amg_account_type == 'CUSTOMER_MANAGED'
+      condition: $create_amg == true && $create_amg_workspace == true && $amg_account_type == "CUSTOMER_MANAGED"
       technologies: [terraform]
       vars:
         - name: AMG IAM Role ARN
@@ -297,7 +297,7 @@ use_cases:
           widget: simple_text
           type: string
     - name: AMG IAM Role
-      condition: $create_amg == true && $create_amg_workspace == true && $amg_account_type == 'SERVICE_MANAGED'
+      condition: $create_amg == true && $create_amg_workspace == true && $amg_account_type == "SERVICE_MANAGED"
       technologies: [terraform]
       vars:
         - name: AMG IAM Role Name
@@ -337,7 +337,7 @@ use_cases:
           type: array
           default: []
     - name: AMG Workspace Organizations Access
-      condition: $create_amg == true && $create_amg_workspace == true && $amg_account_type == 'ORGANIZATION'
+      condition: $create_amg == true && $create_amg_workspace == true && $amg_account_type == "ORGANIZATION"
       technologies: [terraform]
       vars:
         - name: AMG Workspace Org role

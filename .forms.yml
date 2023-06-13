@@ -292,7 +292,8 @@ use_cases:
           key: amg_sg_rules
           widget: text_area
           type: raw
-          default: {}
+          default: |+
+            {}
     - name: AMG Security Group (SG) configuration
       condition: $create_amg == true && $create_amg_workspace == true && $amg_create_sg == false
       technologies: [terraform]

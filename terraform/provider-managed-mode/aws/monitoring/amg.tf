@@ -6,24 +6,6 @@
 #       - by default grafana workspaces open to all traffic
 ################################################################################
 
-locals{
-  sso_role_associations = {
-    "ADMIN" = {
-      "group_ids" = var.amg_sso_user_admins
-      "user_ids"  = var.amg_sso_group_admins
-    }
-    "EDITOR" = {
-      "group_ids" = var.amg_sso_user_editors
-      "user_ids"  = var.amg_sso_group_editors
-    }
-    "VIEWER" = {
-      "group_ids" = var.amg_sso_user_viewers
-      "user_ids"  = var.amg_sso_group_viewers
-    }
-
-  }
-}
-
 module "managed_grafana" {
   source = "terraform-aws-modules/managed-service-grafana/aws"
 

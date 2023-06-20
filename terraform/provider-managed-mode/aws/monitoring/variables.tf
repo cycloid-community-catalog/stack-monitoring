@@ -350,7 +350,7 @@ locals {
   admin_user_and_group = var.amg_sso_group_admins != [] ? merge(local.admin_user, {"group_ids" = var.amg_sso_group_admins }) : local.admin_user
 
   editor_user = var.amg_sso_user_editors != [] ? {"group_ids" = var.amg_sso_user_editors} : {}
-  editor_user_and_group = var.amg_sso_group_editors != [] ? merge(local.editor_user, {"group_ids" = var.amg_sso_group_editors }) : local.viewer_user
+  editor_user_and_group = var.amg_sso_group_editors != [] ? merge(local.editor_user, {"group_ids" = var.amg_sso_group_editors }) : local.editor_user
 
   viewer_user = var.amg_sso_user_viewers != [] ? {"user_ids" = var.amg_sso_user_viewers} : {}
   viewer_user_and_group = var.amg_sso_group_viewers != [] ? merge(local.viewer_user, {"group_ids" = var.amg_sso_group_viewers }) : local.viewer_user
@@ -359,7 +359,7 @@ locals {
   sso_role_associations = {
     "ADMIN" = local.admin_user_and_group
 
-    "EDITOR" = local.admin_user_and_group
+    "EDITOR" = local.editor_user_and_group
 
     "VIEWER" = local.viewer_user_and_group
   }

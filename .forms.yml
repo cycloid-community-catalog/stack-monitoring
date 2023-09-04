@@ -101,6 +101,64 @@ shared:
         source: stack_git_repository
         default: main
 
+- &azure-global
+  name: Global
+  groups:
+  - name: Global
+    technologies: [pipeline]
+    vars:
+      - name: "Config git key"
+        description: "SSH key pair to fetch the config Git repository."
+        key: config_git_private_key
+        type: string
+        required: true
+        widget: cy_cred
+        widget_config:
+          cred_types: [ssh]
+      - name: "Stack git key"
+        description: "SSH key pair to fetch the stack Git repository."
+        key: stack_git_private_key
+        type: string
+        required: true
+        widget: cy_cred
+        widget_config:
+          cred_types: [ssh]
+  - name: Cloud Provider
+    technologies: [pipeline]
+    vars:
+      - name: "Azure credential"
+        description: "The azure credential containing subscription_id, tenant_id, client_id, client_secret, resource_group_name,resource_group_location"
+        key: azure_cred
+        type: string
+        widget: cy_cred
+        widget_config:
+          display_keys: false
+          cred_types: [azure]
+        default: "((azure))"
+  - name: Tech versions
+    technologies: [pipeline]
+    vars:
+      - name: "Terraform version"
+        description: "Terraform version to use."
+        key: terraform_version
+        widget: simple_text
+        type: string
+        default: "1.3.4"
+      - name: "Ansible version"
+        description: "Ansible version to use."
+        key: ansible_version
+        widget: simple_text
+        type: string
+        default: "2.9"
+
+  - name: SSH Key
+    technologies: [pipeline]
+    vars:
+      - name: "SSH Key"
+        description: "SSH key to use containing ssh_private_key and ssh_public_key."
+        key: ssh_key
+        widget: cy_cred
+        type: string
 version: "2"
 use_cases:
 - name: aws-managed
@@ -491,3 +549,339 @@ use_cases:
           type: string
           values:  ["ENTERPRISE_FREE_TRIAL", "ENTERPRISE"]
           default: "ENTERPRISE"
+
+- name: azure-vm
+  sections:
+  - *azure-global
+  - name: VM Definition
+    groups:
+    - name: General
+      technologies: [terraform]
+      vars:
+        - name: "Instance type"
+          description: "Instance type for the worker."
+          key: vm_size
+          widget: slider_list
+          type: string
+          default: "Standard_DS1_v2"
+          values:
+              - "Standard_DS1_v2"
+              - "Standard_DS2_v2"
+              - "Standard_DS3_v2"
+        - name: "Disk size"
+          unit: Go
+          description: "Root Disk size for the instance."
+          key: os_disk_size
+          widget: slider_range
+          type: integer
+          default: 20
+          values:
+              - 20
+              - 250
+        - name: "Managed Disk size"
+          unit: Go
+          description: "Disk size of the managed disk attached to the instance."
+          key: managed_disk_size
+          widget: slider_range
+          type: integer
+          default: 20
+          values:
+              - 20
+              - 250
+        - name: "Extra tags"
+          description: "Dict of extra tags to add to resources."
+          key: extra_tags
+          widget: text_area
+          type: raw
+          default: "{}"
+    - name: General Network
+      technologies: [terraform]
+      vars:
+        - name: "Subnet ID"
+          description: "Subnet ID where tp create VM."
+          key: subnet_id
+          widget: simple_text
+          type: string
+          required: true
+        - name: "SSH IPs to allow"
+          description: "List of SSH IPs to allow. Note! You should add the cycloid worker by default."
+          key: ssh_ips_to_allow
+          widget: text_area
+          type: array
+          required: true
+    - name: Certificate SSL
+      technologies: [ansible]
+      vars:
+        - name: "Nginx certificate"
+          description: "Credential containing nginx certificate to be used by server"
+          key: nginx_certificate
+          type: string
+          widget: cy_cred
+        - name: "Nginx certificate key"
+          description: "Credential containing nginx certificate to be used by server"
+          key: nginx_certificate_key
+          type: string
+          widget: cy_cred
+
+    - name: DNS
+      technologies: [terraform]
+      vars:
+      - name: Create DNS
+        description: Wheter to create DNS records for prometheus, alertmanager and grafana using Azure DNS. Note! Requires a DNS Zone
+        key: create_dns
+        widget: switch
+        type: boolean
+        default: false
+      - name: "Prometheus DNS"
+        description: "DNS to use for Prometheus."
+        key: prometheus_domain_name
+        widget: simple_text
+        type: string
+        required: true
+      - name: "Grafana DNS"
+        description: "DNS to use for Grafana."
+        key: grafana_domain_name
+        widget: simple_text
+        type: string
+        required: true
+      - name: "Alertmanager DNS"
+        description: "DNS to use for Alertmanager."
+        key: alertmanager_domain_name
+        widget: simple_text
+        type: string
+        required: true
+    - name: DNS Zone
+      technologies: [terraform]
+      condition: $create_dns == true
+      vars:
+        - name: "Azure DNS Zone"
+          description: "Azure DNS Zone name to use for creating the different monitoring records."
+          key: azure_dns_zone_name
+          widget: simple_text
+          type: string
+          default: ""
+
+
+  - name: VM Configuration
+    groups:
+    - name: General Monitoring configuration
+      technologies: [ansible]
+      vars:
+        - name: "Install Grafana"
+          description: "Wheter to install Grafana on the machine."
+          key: install_grafana
+          widget: switch
+          type: boolean
+          default: true
+        - name: "Install Alertmanager"
+          description: "Wheter to install Grafana on the machine."
+          key: install_alertmanager
+          widget: switch
+          type: boolean
+          default: true
+    - name: Prometheus Configuration
+      technologies: [ansible]
+      vars:
+        - name: "Prometheus version"
+          description: "Prometheus version to use."
+          key: prometheus_version
+          widget: simple_text
+          type: string
+          default: "v2.45.0"
+        - name: "Prometheus weblogin"
+          description: "Htpasswd can be generated using `htpasswd -nb user password`"
+          key: prometheus_web_login
+          type: string
+          widget: cy_cred
+        - name: "Prometheus scraping config"
+          description: "Prometheus scraping config to use. Note! prometheus and alertmanager are scraped. By default For more information check [prometheus wiki](https://prometheus.io/docs/prometheus/latest/configuration/configuration/)"
+          key: prometheus_custom_configs
+          widget: text_area
+          type: raw
+          default: |+
+            ## telegraf / node_exporter
+            - job_name: 'telegraf / node_exporter'
+              scheme: http
+              azure_sd_configs:
+              - subscription_id: "{{ azure_subscription_id }}"
+                tenant_id: "{{ azure_tenant_id }}"
+                client_id: "{{ azure_client_id }}"
+                client_secret: "{{ azure_client_secret }}"
+                resource_group: "{{ azure_resource_group }}"
+                port: 9100
+
+              relabel_configs:
+              - source_labels: [__meta_azure_machine_private_ip]
+                regex: '^(.+)$'
+                replacement: '${1}:9100'
+                target_label: __address__
+
+              # Force labels on metrics
+              # Instance label : Public IP, if not, default private IP
+              - source_labels: [__meta_azure_machine_private_ip]
+                action: replace
+                target_label: instance
+              - source_labels: [__meta_azure_machine_public_ip]
+                regex: '^(.+)$'
+                replacement: '${1}'
+                target_label: instance
+
+              # Get some ec2 labels
+              - source_labels: [__meta_azure_machine_tag_Name]
+                target_label: Name
+              - source_labels: [__meta_azure_machine_tag_project]
+                target_label: project
+              - source_labels: [__meta_azure_machine_tag_env]
+                target_label: env
+              - source_labels: [__meta_azure_machine_tag_role]
+                target_label: role
+              - source_labels: [__meta_azure_machine_tag_customer]
+                target_label: customer
+
+              metric_relabel_configs:
+              # Don't store unwanted metrics
+              - source_labels: [__name__]
+                action: drop
+                regex: go_(.*)
+        - name: "Prometheus rules"
+          description: "Definition of prometheus rules. Other default available in the role ansible-prometheus/templates/rules, you can also create news and add to the config repository."
+          key: prometheus_rule_files
+          widget: text_area
+          type: raw
+          default: |+
+            - templates/rules/telegraf.rules
+            - templates/rules/opsgenie.rules
+        - name: "Telegraf plugins"
+          description: "Telegraf input plugins to be used to collect metrics. Check more plugins [here](See telegraf inputs for more plugings https://github.com/influxdata/telegraf/tree/master/plugins/inputs)"
+          key: telegraf_plugins_extra
+          widget: text_area
+          type: raw
+          default: |+
+            processes:
+            kernel:
+            linux_sysctl_fs:
+            conntrack:
+
+            nginx:
+              config:
+                - urls = ["http://127.0.0.1/nginx_status"]
+
+            # Azure
+            azure_monitor:
+              plugin: azure_monitor
+              config:
+                - 'subscription_id = "{{ azure_subscription_id }}"'
+                - 'client_id = "{{ azure_client_id }}"'
+                - 'client_secret = "{{ azure_client_secret }}"'
+                - 'tenant_id = "{{ azure_tenant_id }}"'
+                - "[[inputs.cloudwatch.metrics]]"
+                -   names = ["CPUCreditBalance"]
+                - ## Dimension filters for Metric (optional)
+                -  "[[inputs.azure_monitor.resource_group_target]]"
+                -   'resource_group = "{{ azure_resource_group }}"'
+
+    - name: Alertmanager Configuration
+      technologies: [ansible]
+      condition: $install_alertmanager == true
+      vars:
+        - name: "Alertmanager weblogin"
+          description: "Htpasswd can be generated using `htpasswd -nb user password`"
+          key: alertmanager_web_login
+          type: string
+          widget: cy_cred
+        - name: "Alertmanager global configuration"
+          description: "The global configuration, as specified in the oficial documentation [here](TODO)."
+          key: alertmanager_global
+          widget: text_area
+          type: raw
+          default: |+
+            # ResolveTimeout is the time after which an alert is declared resolved
+            # if it has not been updated.
+            resolve_timeout: 15m
+            # The smarthost and SMTP sender used for mail notifications.
+            smtp_smarthost: "smtp.gmail.com:587"
+            smtp_from: "foo@bar.com"
+            smtp_auth_username: "foo@bar.com"
+            smtp_auth_password: "barfoo"
+
+        - name: "Alertmanager route"
+          description: "The root node of the routing tree, as specified in the oficial documentation [here](TODO)."
+          key: alertmanager_route
+          widget: text_area
+          type: raw
+          default: |+
+            receiver: default
+            group_by:
+              - customer
+              - project
+              - env
+              - alertname
+            group_wait: 30s
+            group_interval: 5m
+            repeat_interval: 15m
+            routes:
+            - match:
+                receiver: 'null'
+              receiver: dev_null
+
+            - match:
+                receiver: email
+                severity: critical
+              receiver: default
+
+        - name: "Alertmanager inhibition rules"
+          description: "A list of inhibition rules, as specified in the oficial documentation [here](TODO)."
+          key: alertmanager_inhibit_rules
+          widget: text_area
+          type: raw
+          default: |+
+            - source_match:
+              severity: critical
+            target_match:
+              severity: warning
+            equal:
+            - instance
+            - customer
+            - project
+            - env
+            - alertname
+        - name: "Alertmanager receivers"
+          description: "A list of notification receivers., as specified in the oficial documentation [here](TODO)."
+          key: alertmanager_receivers
+          widget: text_area
+          type: raw
+          default: |+
+            - name: 'default'
+              email_configs:
+              - to: "foo@bar.com"
+                # Whether or not to notify about resolved alerts.
+                send_resolved: true
+
+            - name: 'dev_null'
+              # Deliberately left empty to not deliver anywhere.
+
+    - name: Alertmanager Configuration
+      technologies: [ansible]
+      condition: $install_alertmanager == false
+      vars:
+        - name: "Specify alertmanager to use"
+          description: "If you don't wish to create an alertmanager you can specify the alertmanagers config to use by prometheus. Examples [here](TODO)"
+          key: prometheus_alerting
+          widget: text_area
+          type: raw
+
+    - name: Grafana Configuration
+      technologies: [ansible]
+      condition: $install_grafana == true
+      vars:
+        - name: "Grafana version"
+          description: "Grafana version to use."
+          key: grafana_version
+          widget: simple_text
+          type: string
+          default: "10.0.1"
+        - name: "Grafana weblogin"
+          description: "Htpasswd can be generated using `htpasswd -nb user password`"
+          key: grafana_web_login
+          type: string
+          widget: cy_cred

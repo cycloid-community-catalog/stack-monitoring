@@ -1,0 +1,159 @@
+# Prometheus
+prometheus_domain_name: "prometheus.localhost"
+prometheus_version: v2.45.0
+prometheus_rule_files:
+  - templates/rules/telegraf.rules
+  - templates/rules/opsgenie.rules
+prometheus_custom_configs:
+  ## telegraf / node_exporter
+  - job_name: 'telegraf / node_exporter'
+    scheme: http
+    azure_sd_configs:
+    - subscription_id: "{{ azure_subscription_id }}"
+      tenant_id: "{{ azure_tenant_id }}"
+      client_id: "{{ azure_client_id }}"
+      client_secret: "{{ azure_client_secret }}"
+      resource_group: "{{ azure_resource_group }}"
+      port: 9100
+
+    relabel_configs:
+    - source_labels: [__meta_azure_machine_private_ip]
+      regex: '^(.+)$'
+      replacement: '${1}:9100'
+      target_label: __address__
+
+    # Force labels on metrics
+    # Instance label : Public IP, if not, default private IP
+    - source_labels: [__meta_azure_machine_private_ip]
+      action: replace
+      target_label: instance
+    - source_labels: [__meta_azure_machine_public_ip]
+      regex: '^(.+)$'
+      replacement: '${1}'
+      target_label: instance
+
+    # Get some ec2 labels
+    - source_labels: [__meta_azure_machine_tag_Name]
+      target_label: Name
+    - source_labels: [__meta_azure_machine_tag_project]
+      target_label: project
+    - source_labels: [__meta_azure_machine_tag_env]
+      target_label: env
+    - source_labels: [__meta_azure_machine_tag_role]
+      target_label: role
+    - source_labels: [__meta_azure_machine_tag_customer]
+      target_label: customer
+
+    metric_relabel_configs:
+    # Don't store unwanted metrics
+    - source_labels: [__name__]
+      action: drop
+      regex: go_(.*)
+#
+# Alertmanager
+#
+# Alertmanager
+install_alertmanager: true
+alertmanager_domain_name: "alertmanager.localhost"
+alertmanager_version: v0.25.0
+alertmanager_global:
+  # ResolveTimeout is the time after which an alert is declared resolved
+  # if it has not been updated.
+  resolve_timeout: 15m
+  # The smarthost and SMTP sender used for mail notifications.
+  smtp_smarthost: "smtp.gmail.com:587"
+  smtp_from: "foo@bar.com"
+  smtp_auth_username: "foo@bar.com"
+  smtp_auth_password: "barfoo"
+alertmanager_route:
+  receiver: default
+  group_by:
+    - customer
+    - project
+    - env
+    - alertname
+  group_wait: 30s
+  group_interval: 5m
+  repeat_interval: 15m
+  routes:
+  - match:
+      receiver: 'null'
+    receiver: dev_null
+  - match:
+      receiver: email
+      severity: critical
+    receiver: default
+
+alertmanager_receivers:
+  - name: 'default'
+    email_configs:
+    - to: "foo@bar.com"
+      # Whether or not to notify about resolved alerts.
+      send_resolved: true
+
+  - name: 'dev_null'
+    # Deliberately left empty to not deliver anywhere.
+
+alertmanager_inhibit_rules:
+- source_match:
+    severity: critical
+  target_match:
+    severity: warning
+  equal:
+  - instance
+  - customer
+  - project
+  - env
+  - alertname
+
+
+#
+# grafana
+#
+grafana_version: 10.0.1
+install_grafana: true
+grafana_domain_name: "grafana.localhost"
+
+#
+# Telegraf
+#
+
+# See telegraf inputs for more plugings https://github.com/influxdata/telegraf/tree/master/plugins/inputs
+telegraf_plugins_extra:
+  processes:
+  kernel:
+  linux_sysctl_fs:
+  conntrack:
+
+  nginx:
+    config:
+      - urls = ["http://127.0.0.1/nginx_status"]
+
+  # Azure
+  azure_monitor:
+    plugin: azure_monitor
+    config:
+      - 'subscription_id = "{{ azure_subscription_id }}"'
+      - 'client_id = "{{ azure_client_id }}"'
+      - 'client_secret = "{{ azure_client_secret }}"'
+      - 'tenant_id = "{{ azure_tenant_id }}"'
+      - "[[inputs.cloudwatch.metrics]]"
+      -   names = ["CPUCreditBalance"]
+      - ## Dimension filters for Metric (optional)
+      -  "[[inputs.azure_monitor.resource_group_target]]"
+      -   'resource_group = "{{ azure_resource_group }}"'
+
+#
+# Nginx
+#
+nginx_auth_basic_files:
+  prometheus:
+    - "{{ prometheus_web_login }}"
+  alertmanager:
+    - "{{ alertmanager_web_login }}"
+  grafana:
+    - "{{ grafana_web_login }}"
+
+# Certificate to use by the different instances
+nginx_certificate: "Filled by stackforms"
+nginx_certificate_key: "Filled by stackforms"

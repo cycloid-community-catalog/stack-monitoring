@@ -1,0 +1,231 @@
+definitions:
+  tasks:
+    # The task producing a configured stack, merging stack and config.
+    - &task-merge-stack-and-config
+      task: merge-stack-and-config
+      config:
+        platform: linux
+        image_resource:
+          type: docker-image
+          source:
+            repository: cycloid/cycloid-toolkit
+            tag: latest
+        run:
+          path: /usr/bin/merge-stack-and-config
+        inputs:
+          - name: git_config_terraform
+            path: "config"
+          - name: git_stack_terraform
+            path: "stack"
+        outputs:
+          - name: merged-stack
+            path: "merged-stack"
+      params:
+        CONFIG_PATH: ((project))/terraform/azure-vm/((env))
+        STACK_PATH: ((stack_path))/terraform/vm-mode/azure
+
+
+resource_types:
+- name: terraform
+  type: docker-image
+  source:
+    repository: cycloid/terraform-resource
+    tag: ((terraform_version))
+
+groups:
+- name: ((project))-((env))
+  jobs:
+  - terraform-plan
+  - terraform-apply
+  - deploy
+- name: destroy
+  jobs:
+  - terraform-destroy
+
+resources:
+- name: tfstate
+  type: terraform
+  icon: terraform
+  source:
+    backend_type: http
+    backend_config:
+      address: '((cycloid_api_url))/inventory?jwt=($ inventory_jwt $)'
+      skip_cert_verification: true
+    env_name: ((env))
+    vars:
+      env: ((env))
+      project: ((project))
+      organization: ((org))
+      keypair_public: ((ssh_key.public_key))
+
+- name: git_stack_ansible
+  type: git
+  icon: github-circle
+  source:
+    uri: ($ scs_url $)
+    branch: ($ scs_branch $)
+    private_key: ((ssh_key.private_key))
+    paths:
+      - ((stack_path))/ansible/*
+
+- name: git_config_ansible
+  type: git
+  source:
+    uri: ($ cr_url $)
+    branch: ($ cr_branch $)
+    private_key: ((config_git_private_key))
+    paths:
+      - ((project))/ansible/azure-vm/((env))/*
+
+- name: git_stack_terraform
+  type: git
+  icon: github-circle
+  source:
+    uri: ($ scs_url $)
+    branch: ($ scs_branch $)
+    private_key: ((stack_git_private_key))
+    # Include only the Terraform files in the specified directory.
+    paths:
+      - ((stack_path))/terraform/vm-mode/azure/*
+
+- name: git_config_terraform
+  type: git
+  icon: github-circle
+  source:
+    uri: ($ cr_url $)
+    branch: ($ cr_branch $)
+    private_key: ((config_git_private_key))
+    # Include only the Terraform files in the specified directory.
+    paths:
+      - ((project))/terraform/azure-vm/((env))/*
+
+jobs:
+  - name: terraform-plan
+    serial: true
+    serial_groups: [terraform]
+    max_in_flight: 1
+    build_logs_to_retain: 10
+    plan:
+      - do:
+        - get: git_stack_terraform
+          trigger: true
+        - get: git_config_terraform
+          trigger: true
+        - *task-merge-stack-and-config
+        - put: tfstate
+          params:
+            plan_only: true
+            terraform_source: merged-stack/
+
+  - name: terraform-apply
+    serial: true
+    serial_groups: [terraform]
+    build_logs_to_retain: 10
+    plan:
+      - do:
+        - get: git_stack_terraform
+          trigger: false
+          passed:
+            - terraform-plan
+        - get: git_config_terraform
+          trigger: false
+          passed:
+            - terraform-plan
+        - get: tfstate
+          trigger: false
+          passed:
+            - terraform-plan
+        - *task-merge-stack-and-config
+        - put: tfstate
+          params:
+            plan_run: true
+            terraform_source: merged-stack/
+
+  - name: deploy
+    build_logs_to_retain: 10
+    plan:
+    - do:
+      - get: tfstate
+        trigger: true
+        passed:
+          - terraform-apply
+
+      - get: git_stack_ansible
+        trigger: true
+
+      - get: git_config_ansible
+        trigger: true
+
+      - task: merge-stack-and-config
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: cycloid/cycloid-toolkit
+              tag: latest
+          run:
+            path: /usr/bin/merge-stack-and-config
+          inputs:
+            - name: git_config_ansible
+              path: "config"
+            - name: git_stack_ansible
+              path: "stack"
+            - name: tfstate
+              path: "terraform"
+          outputs:
+            - name: merged-stack
+              path: "merged-stack"
+        params:
+          CONFIG_PATH: ((project))/terraform/((env))
+          STACK_PATH: ((stack_path))/terraform/vm-mode/azure
+
+      - task: run-ansible
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: cycloid/cycloid-toolkit
+              tag: "v((ansible_version))"
+          run:
+            path: /usr/bin/ansible-runner
+          caches:
+            - path: ansible-playbook/roles
+          inputs:
+          - name: merged-stack
+            path: ansible-playbook
+        params:
+          SSH_PRIVATE_KEY: ((keypair_private))
+          ANSIBLE_PLAYBOOK_PATH: ansible-playbook
+          ANSIBLE_PLAYBOOK_NAME: monitoring.yml
+          EXTRA_ANSIBLE_ARGS: "-i inventory"
+          ANSIBLE_FORCE_GALAXY: false
+          EXTRA_ARGS: "--limit tag_role_azure"
+          EXTRA_ANSIBLE_VARS:
+            env: ((env))
+            project: ((project))
+            customer: ((customer))
+            azure_subscription_id: ((azure_subscription_id))
+            azure_tenant_id: ((azure_tenant_id))
+            azure_client_id: ((azure_client_id))
+            azure_client_secret: ((azure_client_secret))
+            azure_resource_group: ((azure_resource_group))
+
+  - name: terraform-destroy
+    serial: true
+    serial_groups: [terraform]
+    build_logs_to_retain: 10
+    plan:
+      - do:
+          - get: git_stack_terraform
+            trigger: false
+          - get: git_config_terraform
+            trigger: false
+          - *task-merge-stack-and-config
+          - put: tfstate
+            params:
+              action: destroy
+              terraform_source: merged-stack/
+            get_params:
+              action: destroy

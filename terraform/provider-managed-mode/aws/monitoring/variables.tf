@@ -214,12 +214,8 @@ variable "amg_iam_role_policy_arns" {
 }
 
 # Authentification types
-variable "amg_authentication_providers" {
-  description = "The authentication providers for the workspace. Valid values are AWS_SSO, SAML, or both."
-  default = ["AWS_SSO"]
-}
 
-# Workspace SAML configuration
+# authentification type: SAML configuration
 variable "amg_create_saml_configuration" {
   description = "Determines whether the SAML configuration will be created."
   default = false
@@ -280,6 +276,12 @@ variable "amg_saml_login_validity_duration" {
   default = null
 }
 
+# authentification type: SSO configuration
+variable "amg_create_sso_configuration" {
+  description = "Determines whether to use SSO authentification."
+  default = false
+}
+
 # Role associations - Map of maps to assocaite user/group IDs to a role. Map key can be used as the role
 # Admin role users
 variable "amg_sso_user_admins" {
@@ -337,4 +339,24 @@ locals {
     organization = var.customer
   }
   merged_tags        = merge(var.extra_tags, local.default_tags)
+
+
+  saml_provider = var.amg_create_saml_configuration == true ? concat([], ["SAML"]) : []
+  amg_authentication_providers = var.amg_create_sso_configuration == true ? concat(local.saml_provider, ["AWS_SSO"]) : local.saml_provider
+
+  vpc_configuration = var.amg_subnets_ids != [] ? merge({}, {subnet_ids = var.amg_subnets_ids,security_group_ids = var.amg_sg_ids}) : {}
+
+  admin_user = var.amg_sso_user_admins != [] ? {"user_ids" = var.amg_sso_user_admins } : {}
+  admin_user_and_group = var.amg_sso_group_admins != [] ? merge(local.admin_user, {"group_ids" = var.amg_sso_group_admins }) : local.admin_user
+  admin_sso = local.admin_user_and_group != {} ? {"ADMIN" = local.admin_user_and_group} : {}
+
+  editor_user = var.amg_sso_user_editors != [] ? {"group_ids" = var.amg_sso_user_editors} : {}
+  editor_user_and_group = var.amg_sso_group_editors != [] ? merge(local.editor_user, {"group_ids" = var.amg_sso_group_editors }) : local.editor_user
+  editor_sso = local.editor_user_and_group != {} ? {"EDITOR" = local.editor_user_and_group} : {}
+  admin_editor_sso = merge (local.admin_sso, local.editor_sso)
+
+  viewer_user = var.amg_sso_user_viewers != [] ? {"user_ids" = var.amg_sso_user_viewers} : {}
+  viewer_user_and_group = var.amg_sso_group_viewers != [] ? merge(local.viewer_user, {"group_ids" = var.amg_sso_group_viewers }) : local.viewer_user
+  viewer_sso = local.viewer_user_and_group != {} ? {"VIEWER" = local.viewer_user_and_group} : {}
+  sso_role_associations = merge (local.admin_editor_sso, local.viewer_sso)
 }

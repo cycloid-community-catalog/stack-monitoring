@@ -17,8 +17,8 @@ module "monitoring" {
   #amp_workspace_id -> only required if var.create_amp_workspacen is false
   create_amp_cloudwatch_log_group = true
   amp_cloudwatch_log_group        = "amp-${var.project}-${var.env}"
-  amp_alertmanager_definition     = "alertmanager_config: |\n route:\n receiver: 'default'\n receivers:\n - name: 'default'\n"
-  amp_alertmanager_rules          = {}
+  amp_alertmanager_definition     = yamlencode(var.amp_alertmanager_definition)
+  amp_alertmanager_rules          = var.amp_alertmanager_rules
   # EXAMPLE:
   #{
   #    first = {
@@ -42,7 +42,7 @@ module "monitoring" {
   #####################################
   create_amg           = true
   create_amg_workspace = true
-  amg_workspace_name   = true
+  amg_workspace_name   = null
   # amg_workspace_id -> only required when var.create_amg_workspace is false.
   amg_datasources       = ["CLOUDWATCH", "PROMETHEUS"]
   amg_associate_license = false
@@ -50,9 +50,10 @@ module "monitoring" {
   amg_account_type      = "CURRENT_ACCOUNT"
   # amg_organization_role_name -> only required when amg_account_type=ORGANIZATION
   # amg_organizational_units -> only required when amg_account_type=ORGANIZATION
-  amg_subnets_ids = ["subnet1ID", "subnet2ID"]
+  amg_subnets_ids = []
   amg_create_sg   = false
-  # amg_sg_rules -> only required if amg_create_sg is true
+  amg_sg_rules = {}
+  # amg_sg_rules
   # EXAMPLE
   #{
   #  egress_postgresql = {
@@ -72,8 +73,8 @@ module "monitoring" {
   amg_iam_role_force_detach_policies = true
   amg_iam_role_max_session_duration  = 3600
   amg_iam_role_permissions_boundary  = null
-  amg_iam_role_policy_arns           = []
-  amg_authentication_providers       = ["AWS_SSO"]
+  # amg_iam_role_policy_arns -> not required by default
+  amg_create_sso_configuration       = true
   amg_create_saml_configuration      = false
   # amg_saml_allowed_organizations -> only required if amg_create_saml_configuration=true
   # amg_saml_admin_role_values -> only required if amg_create_saml_configuration=true
@@ -86,12 +87,12 @@ module "monitoring" {
   # amg_saml_idp_metadata_url -> only required if amg_create_saml_configuration=true
   # amg_saml_login_validity_duration -> only required if amg_create_saml_configuration=true
   # amg_saml_login_assertion -> only required if amg_create_saml_configuration=true
-  amg_sso_user_admins         = ["user1", "user2"]
-  amg_sso_group_admins        = ["group1", "group2"]
-  amg_sso_user_editors        = ["user1", "user2"]
-  amg_sso_group_editors       = ["group1", "group2"]
-  amg_sso_user_viewers        = ["user1", "user2"]
-  amg_sso_group_viewers       = ["group1", "group2"]
+  amg_sso_user_admins         = []
+  amg_sso_group_admins        = []
+  amg_sso_user_editors        = []
+  amg_sso_group_editors       = []
+  amg_sso_user_viewers        = []
+  amg_sso_group_viewers       = []
   amg_allow_sns_notifications = false
   #####################################
   # Common vars

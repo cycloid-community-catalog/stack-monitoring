@@ -40,13 +40,17 @@ resources:
         bucket: ((terraform_storage_bucket_name))
         key: ((project))-((env)).tfstate
         workspace_key_prefix: ((project))
-        region: ((aws_default_region))
+        region: ((terraform_storage_bucket_name_region))
         access_key: ((aws_access_key))
         secret_key: ((aws_secret_key))
+        role_arn: ((aws_role_arn))
       vars:
         aws_access_key: ((aws_access_key))
         aws_secret_key: ((aws_secret_key))
+        aws_role_arn: ((aws_role_arn))
         aws_region: ((aws_default_region))
+        amp_alertmanager_definition: ((amp_alertmanager_definition))
+        amp_alertmanager_rules: ((amp_alertmanager_rules))
         env: ((env))
         customer: ((customer))
         project: ((project))
@@ -54,6 +58,8 @@ resources:
         AWS_ACCESS_KEY_ID: ((aws_access_key))
         AWS_DEFAULT_REGION: ((aws_default_region))
         AWS_SECRET_ACCESS_KEY: ((aws_secret_key))
+        AWS_ROLE_ARN: ((aws_role_arn))
+
 
 
   # The Terraform stack (will be merged with the config)
@@ -63,14 +69,15 @@ resources:
       uri:  ((stack_git_repository))
       branch: ((stack_git_branch))
       paths:
-        - stack-monitoring/terraform/provider-managed-mode/aws/*
+        - terraform/provider-managed-mode/aws/*
 
   - name: git_config-terraform
     type: git
     source:
       uri: ((config_git_repository))
       branch: ((config_git_branch))
-      private_key: ((config_git_private_key))
+      username: ((config_git_username))
+      password: ((config_git_password))
       paths:
         - ((project))/terraform/provider-managed-mode/aws/((env))/*
 
@@ -96,7 +103,7 @@ jobs:
                   path: "stack"
             params:
               CONFIG_PATH: ((project))/terraform/provider-managed-mode/aws/((env))
-              STACK_PATH: stack-monitoring/terraform/provider-managed-mode/aws
+              STACK_PATH: terraform/provider-managed-mode/aws
 
           - put: tfstate
             params:
@@ -139,7 +146,7 @@ jobs:
                   path: "stack"
             params:
               CONFIG_PATH: ((project))/terraform/provider-managed-mode/aws/((env))
-              STACK_PATH: stack-monitoring/terraform/provider-managed-mode/aws
+              STACK_PATH: terraform/provider-managed-mode/aws
 
           - put: tfstate
             params:

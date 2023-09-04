@@ -5,13 +5,19 @@
 # Amazon access to use to run terraform. Usually admin account to be able to create Amazon services.
 aws_access_key: ((aws.access_key))
 aws_secret_key: ((aws.secret_key))
+aws_role_arn: ""
 aws_default_region: eu-west-1
 
 # AWS S3 bucket name to store terraform remote state file.
 terraform_storage_bucket_name: ($ organization_canonical $)-terraform-remote-state
+terraform_storage_bucket_name_region: eu-west-3
 
 # terraform version used to execute your code.
 terraform_version: "1.3.4"
+
+# amp variables -> passed here because of raw error
+amp_alertmanager_definition: ""
+amp_alertmanager_rules: {}
 
 ###
 # Repos
@@ -20,7 +26,8 @@ terraform_version: "1.3.4"
 # Git repository url containing the config of the stack.
 config_git_repository: git@github.com:MyUser/config.git
 config_git_branch: config
-config_git_private_key: ((ssh_config.ssh_key))
+config_git_username: ((git_config.username))
+config_git_password: ((git_config.password))
 
 # Url to the git repository containing infrastructure stack source code.
 stack_git_repository: https://github.com/cycloid-community-catalog/stack-monitoring.git

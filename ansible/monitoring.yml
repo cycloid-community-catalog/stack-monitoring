@@ -1,0 +1,132 @@
+---
+
+#
+# Prometheus
+#
+- hosts: tag_role_azure:&tag_project_{{project}}:&tag_cycloid_io_true:&tag_env_{{ env }}
+  become: yes
+  serial: 50%
+
+  vars_files:
+    - "environments/default_azure_monitoring.yml"
+    - "environments/{{env}}_azure_monitoring.yml"
+
+  pre_tasks:
+    # Add SSL certificates
+    - name: "Create SSL directory"
+      file:
+        path: "{{ certificates_dest }}"
+        state: directory
+      when: use_ssl | bool
+
+    - name: copy certificate
+      copy:
+        dest: "{{ playbook_dir }}/files/nginx/ssl/{{ item.filename }}"
+        content: "{{ item.content }}"
+      with_items:
+         - {filename: "prometheus.crt", content: "{{ nginx_certificate }}" }
+         - {filename: "prometheus.key", content: "{{ nginx_certificate_key }}" }
+
+    # Mount volume mysql in instance
+    - name: Get device name to use
+      set_fact:
+        device_name: "/dev/{{item}}"
+      when: ansible_facts.devices.{{item}}.partitions == {}
+      with_items: "{{ ansible_facts.devices}}"
+
+    - name: Create partition on data disk
+      parted:
+        device: "{{data_device}}"
+        number: 1
+        state: present
+
+    - name: Create a ext4 fs on data disk
+      filesystem:
+        fstype: ext4
+        dev: "{{device_name}}-part1"
+
+    - name: Get UUID for partition
+      command: blkid -s UUID -o value "{{device_name}}-part1"
+      register: disk_blkid
+
+    - name: Mount data disk
+      mount:
+        path: "{{data_disk_mount}}"
+        src: "UUID={{disk_blkid.stdout}}"
+        fstype: ext4
+        state: mounted
+
+    - name: Create disk mount point
+      file:
+        state: directory
+        path: /data-mysql
+        mode: 0777
+
+    - name: Format disk to ext4
+      filesystem:
+        dev: /dev/nvme1n1
+        fstype: ext4
+        opts: "-L data"
+
+    - name: Mount the EBS in data/
+      mount:
+        name: /data-mysql
+        src: /dev/nvme1n1
+        fstype: ext4
+        state: mounted
+
+    # Install local mysql database
+    - name: install mysql
+      apt:
+        name: mysql
+        state: present
+
+    - name: start and enable mysql service
+      service:
+        name: mysql
+        state: started
+        enabled: yes
+
+    - name: creating mysql admin user
+      mysql_user:
+        name: "{{grafana_admin_user}}"
+        password: "{{grafana_admin_password}}"
+        priv: '*.*:ALL'
+        host: '%'
+        state: present
+
+    - name: creating grafana db
+      mysql_db:
+        name: "{{grafana_database_name}}"
+        state: present
+
+    - name: Restart mysql
+      service:
+        name: mysql
+        state: restarted
+
+  roles:
+    # Install docker
+    - role: geerlingguy.docker
+      docker_packages:
+        - "docker-{{ docker_edition }}"
+        - "docker-{{ docker_edition }}-cli"
+        - "containerd.io"
+      tags:
+        - docker
+
+    # Install prometheus, alertmanager and grafana
+    - role: cycloid.prometheus
+      path: /opt/prometheus
+      tags:
+        - prometheus
+
+    # Monitoring client part
+    - role: cycloid.telegraf
+      tags:
+        - telegraf
+
+    # Install nginx
+    - role: jdauphant.nginx
+      tags:
+        - nginx

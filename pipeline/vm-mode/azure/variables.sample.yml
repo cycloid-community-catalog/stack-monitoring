@@ -1,0 +1,22 @@
+# Azure access to use to run terraform
+azure_cred: "Filled by stackforms"
+
+# terraform version used to execute your code
+terraform_version: "Filled by stackforms"
+
+# SSH key to acess instance
+ssh_key: "Filled by stackforms"
+
+# Repos
+config_git_private_key: "Filled by stackforms"
+stack_git_private_key: "Filled by stackforms"
+stack_path: stack-monitoring # The path of the stack in the service catalog, basically the path to the `.cycloid.yml` file
+
+###
+# Cycloid variables
+###
+env: ($ environment $)
+project: ($ project $)
+org: ($ organization_canonical $)
+customer: ($ organization_canonical $)
+cycloid_api_url: https://http-api.cycloid.io # The URL of the Cycloid API

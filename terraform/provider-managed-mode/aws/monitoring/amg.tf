@@ -6,24 +6,6 @@
 #       - by default grafana workspaces open to all traffic
 ################################################################################
 
-locals{
-  sso_role_associations = {
-    "ADMIN" = {
-      "group_ids" = var.amg_sso_user_admins
-      "user_ids"  = var.amg_sso_group_admins
-    }
-    "EDITOR" = {
-      "group_ids" = var.amg_sso_user_editors
-      "user_ids"  = var.amg_sso_group_editors
-    }
-    "VIEWER" = {
-      "group_ids" = var.amg_sso_user_viewers
-      "user_ids"  = var.amg_sso_group_viewers
-    }
-
-  }
-}
-
 module "managed_grafana" {
   source = "terraform-aws-modules/managed-service-grafana/aws"
 
@@ -62,32 +44,30 @@ module "managed_grafana" {
   iam_role_policy_arns           = var.amg_permission_type == "SERVICE_MANAGED" ? var.amg_iam_role_policy_arns : []
 
   # Authentification types
-  authentication_providers  = var.amg_authentication_providers
+  authentication_providers  = local.amg_authentication_providers
 
   # Workspace SAML configuration
   create_saml_configuration    = var.amg_create_saml_configuration
-  saml_allowed_organizations   = var.amg_create_saml_configuration && contains(var.amg_authentication_providers, "SAML") ? var.amg_saml_allowed_organizations : []
-  saml_admin_role_values       = var.amg_create_saml_configuration && contains(var.amg_authentication_providers, "SAML") ? var.amg_saml_admin_role_values : []
-  saml_editor_role_values      = var.amg_create_saml_configuration && contains(var.amg_authentication_providers, "SAML") ? var.amg_saml_editor_role_values : []
-  saml_email_assertion         = var.amg_create_saml_configuration && contains(var.amg_authentication_providers, "SAML") ? var.amg_saml_email_assertion : null
-  saml_groups_assertion        = var.amg_create_saml_configuration && contains(var.amg_authentication_providers, "SAML") ? var.amg_saml_groups_assertion : null
-  saml_login_assertion         = var.amg_create_saml_configuration && contains(var.amg_authentication_providers, "SAML") ? var.amg_saml_login_assertion : null
-  saml_name_assertion          = var.amg_create_saml_configuration && contains(var.amg_authentication_providers, "SAML") ? var.amg_saml_name_assertion : null
-  saml_org_assertion           = var.amg_create_saml_configuration && contains(var.amg_authentication_providers, "SAML") ? var.amg_saml_org_assertion : null
-  saml_role_assertion          = var.amg_create_saml_configuration && contains(var.amg_authentication_providers, "SAML") ? var.amg_saml_role_assertion : null
-  saml_idp_metadata_url        = var.amg_create_saml_configuration && contains(var.amg_authentication_providers, "SAML") ? var.amg_saml_idp_metadata_url : null
-  saml_login_validity_duration = var.amg_create_saml_configuration && contains(var.amg_authentication_providers, "SAML") ? var.amg_saml_login_validity_duration : null
+  saml_allowed_organizations   = var.amg_create_saml_configuration && contains(local.amg_authentication_providers, "SAML") ? var.amg_saml_allowed_organizations : []
+  saml_admin_role_values       = var.amg_create_saml_configuration && contains(local.amg_authentication_providers, "SAML") ? var.amg_saml_admin_role_values : []
+  saml_editor_role_values      = var.amg_create_saml_configuration && contains(local.amg_authentication_providers, "SAML") ? var.amg_saml_editor_role_values : []
+  saml_email_assertion         = var.amg_create_saml_configuration && contains(local.amg_authentication_providers, "SAML") ? var.amg_saml_email_assertion : null
+  saml_groups_assertion        = var.amg_create_saml_configuration && contains(local.amg_authentication_providers, "SAML") ? var.amg_saml_groups_assertion : null
+  saml_login_assertion         = var.amg_create_saml_configuration && contains(local.amg_authentication_providers, "SAML") ? var.amg_saml_login_assertion : null
+  saml_name_assertion          = var.amg_create_saml_configuration && contains(local.amg_authentication_providers, "SAML") ? var.amg_saml_name_assertion : null
+  saml_org_assertion           = var.amg_create_saml_configuration && contains(local.amg_authentication_providers, "SAML") ? var.amg_saml_org_assertion : null
+  saml_role_assertion          = var.amg_create_saml_configuration && contains(local.amg_authentication_providers, "SAML") ? var.amg_saml_role_assertion : null
+  saml_idp_metadata_url        = var.amg_create_saml_configuration && contains(local.amg_authentication_providers, "SAML") ? var.amg_saml_idp_metadata_url : null
+  saml_login_validity_duration = var.amg_create_saml_configuration && contains(local.amg_authentication_providers, "SAML") ? var.amg_saml_login_validity_duration : null
 
   # Amazon VPC that contains data sources for your Grafana workspace to connect to
   # will correspond to this format here: https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/grafana_workspace#vpc-configuration
-  create_security_group = var.amg_create_sg
-  vpc_configuration     = {
-    subnet_ids         = var.amg_subnets_ids
-    security_group_ids = var.amg_create_sg ? null : var.amg_sg_ids
-  }
+  vpc_configuration = local.vpc_configuration
+
   # In case a SG needs to be created
+  create_security_group = var.amg_create_sg
   security_group_name        = var.amg_create_sg ? var.amg_sg_name : null
-  security_group_rules       = var.amg_create_sg ? var.amg_sg_rules : null
+  security_group_rules       = var.amg_create_sg ? var.amg_sg_rules : {}
 
   # Workspace API keys -> Map of workspace API key definitions to create
   workspace_api_keys = {
@@ -110,7 +90,7 @@ module "managed_grafana" {
 
 
   # Role associations: associate user/group IDS to a role
-  role_associations = contains(var.amg_authentication_providers, "AWS_SSO") ? local.sso_role_associations : {}
+  role_associations = contains(local.amg_authentication_providers, "AWS_SSO") ? local.sso_role_associations : {}
 
   # grafana notification alerting
   notification_destinations = var.amg_allow_sns_notifications ? ["SNS"] : []

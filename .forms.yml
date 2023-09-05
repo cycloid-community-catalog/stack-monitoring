@@ -158,6 +158,9 @@ shared:
         description: "SSH key to use containing ssh_private_key and ssh_public_key."
         key: ssh_key
         widget: cy_cred
+        widget_config:
+          display_keys: false
+          cred_types: [custom]
         type: string
 version: "2"
 use_cases:
@@ -561,7 +564,7 @@ use_cases:
         - name: "Instance type"
           description: "Instance type for the worker."
           key: vm_size
-          widget: slider_list
+          widget: auto_complete
           type: string
           default: "Standard_DS1_v2"
           values:
@@ -598,7 +601,7 @@ use_cases:
       technologies: [terraform]
       vars:
         - name: "Subnet ID"
-          description: "Subnet ID where tp create VM."
+          description: "Subnet ID where to create VM."
           key: subnet_id
           widget: simple_text
           type: string

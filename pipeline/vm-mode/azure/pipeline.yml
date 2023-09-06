@@ -86,7 +86,7 @@ resources:
     private_key: ((stack_git_private_key))
     # Include only the Terraform files in the specified directory.
     paths:
-      - ((stack_path))/terraform/vm-mode/azure/*
+      - terraform/vm-mode/azure/*
 
 - name: git_config_terraform
   type: git

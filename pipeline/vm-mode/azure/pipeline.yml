@@ -22,7 +22,7 @@ definitions:
             path: "merged-stack"
       params:
         CONFIG_PATH: ((project))/terraform/azure-vm/((env))
-        STACK_PATH: ((stack_path))/terraform/vm-mode/azure
+        STACK_PATH: terraform/vm-mode/azure
 
 
 resource_types:
@@ -66,7 +66,7 @@ resources:
     branch: ($ scs_branch $)
     private_key: ((ssh_private_key))
     paths:
-      - ((stack_path))/ansible/*
+      - ansible/*
 
 - name: git_config_ansible
   type: git
@@ -86,7 +86,7 @@ resources:
     private_key: ((stack_git_private_key))
     # Include only the Terraform files in the specified directory.
     paths:
-      - ((stack_path))/terraform/vm-mode/azure/*
+      - terraform/vm-mode/azure/*
 
 - name: git_config_terraform
   type: git
@@ -178,7 +178,7 @@ jobs:
               path: "merged-stack"
         params:
           CONFIG_PATH: ((project))/terraform/((env))
-          STACK_PATH: ((stack_path))/terraform/vm-mode/azure
+          STACK_PATH: terraform/vm-mode/azure
 
       - task: run-ansible
         config:

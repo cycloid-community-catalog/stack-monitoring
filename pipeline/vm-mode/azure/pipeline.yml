@@ -56,7 +56,7 @@ resources:
       env: ((env))
       project: ((project))
       organization: ((org))
-      keypair_public: ((ssh_key.public_key))
+      keypair_public: ((ssh_public_key))
 
 - name: git_stack_ansible
   type: git
@@ -64,7 +64,7 @@ resources:
   source:
     uri: ($ scs_url $)
     branch: ($ scs_branch $)
-    private_key: ((ssh_key.private_key))
+    private_key: ((ssh_private_key))
     paths:
       - ((stack_path))/ansible/*
 
@@ -196,7 +196,7 @@ jobs:
           - name: merged-stack
             path: ansible-playbook
         params:
-          SSH_PRIVATE_KEY: ((keypair_private))
+          SSH_PRIVATE_KEY: ((ssh_private_key))
           ANSIBLE_PLAYBOOK_PATH: ansible-playbook
           ANSIBLE_PLAYBOOK_NAME: monitoring.yml
           EXTRA_ANSIBLE_ARGS: "-i inventory"

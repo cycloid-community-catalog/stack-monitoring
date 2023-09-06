@@ -14,6 +14,9 @@ variable "extra_tags" {
 variable "vm_size" {}
 variable "keypair_public" {}
 variable "os_disk_size" {}
+variable "os_admin_username" {
+  default = "admin"
+}
 variable "managed_disk_size" {}
 
 # vm network variables
@@ -31,8 +34,8 @@ locals {
   standard_tags = {
     "cycloid.io" = "true"
     env          = var.env
-    project      = var.project
-    customer     = var.customer
+    project       = var.project
+    organization     = var.organization
   }
   tags = merge(local.standard_tags, var.extra_tags)
 }

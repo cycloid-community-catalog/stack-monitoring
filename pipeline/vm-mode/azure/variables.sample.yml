@@ -5,7 +5,8 @@ azure_cred: "Filled by stackforms"
 terraform_version: "Filled by stackforms"
 
 # SSH key to acess instance
-ssh_key: "Filled by stackforms"
+ssh_private_key: "Filled by stackforms"
+ssh_public_key: "Filled by stackforms"
 
 # Repos
 config_git_private_key: "Filled by stackforms"

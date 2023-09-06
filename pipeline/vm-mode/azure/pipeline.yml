@@ -55,8 +55,9 @@ resources:
     vars:
       env: ((env))
       project: ((project))
-      organization: ((org))
+      customer: ((customer))
       keypair_public: ((ssh_public_key))
+      azure_cred: ((azure_cred))
 
 - name: git_stack_ansible
   type: git

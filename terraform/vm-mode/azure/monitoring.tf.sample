@@ -14,14 +14,12 @@ module "monitoring" {
 
   # vm configuration variables
   vm_size            = "Filled by stackforms"
-  os_source_image_id = "Filled by stackforms"
   keypair_public     = var.keypair_public
   os_disk_size       = "Filled by stackforms"
   managed_disk_size  = "Filled by stackforms"
 
   # vm network variables
   subnet_id           = "Filled by stackforms"
-  enable_ssh          = "Filled by stackforms"
   ssh_ips_to_allow    = "Filled by stackforms"
   # vm dns variables
   create_dns          = "Filled by stackforms"

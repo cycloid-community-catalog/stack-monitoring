@@ -82,7 +82,7 @@ shared:
         key: terraform_version
         widget: simple_text
         type: string
-        default: "1.3.4"
+        default: "1.3.9"
   - name: Stack repository (optional)
     condition: $advanced_opt == true
     technologies: [pipeline]
@@ -143,7 +143,7 @@ shared:
         key: terraform_version
         widget: simple_text
         type: string
-        default: "1.3.4"
+        default: "1.3.9"
       - name: "Ansible version"
         description: "Ansible version to use."
         key: ansible_version

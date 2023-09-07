@@ -34,8 +34,8 @@ locals {
   standard_tags = {
     "cycloid.io" = "true"
     env          = var.env
-    project       = var.project
-    organization     = var.organization
+    project      = var.project
+    customer     = var.customer
   }
   tags = merge(local.standard_tags, var.extra_tags)
 }

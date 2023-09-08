@@ -10,7 +10,7 @@ resource "azurerm_linux_virtual_machine" "vm" {
   size                  = var.vm_size
   admin_username 		= "admin"
 
-  storage_image_reference {
+  source_image_reference {
     publisher = "debian"
     offer     = "debian-11"
     sku       = "11-cloudinit-gen2"

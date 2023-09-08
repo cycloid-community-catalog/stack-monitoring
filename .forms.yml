@@ -127,7 +127,7 @@ shared:
     technologies: [pipeline]
     vars:
       - name: "Azure credential"
-        description: "The azure credential containing subscription_id, tenant_id, client_id, client_secret, resource_group_name,resource_group_location"
+        description: "The azure credential containing subscription_id, tenant_id, client_id, client_secret"
         key: azure_cred
         type: string
         widget: cy_cred
@@ -135,6 +135,19 @@ shared:
           display_keys: false
           cred_types: [azure]
         default: "((azure))"
+      - name: "Azure resource group name"
+        description: "The resource group where to create the different objects in azure"
+        key: resource_group_name
+        type: string
+        widget: simple_text
+        required: true
+      - name: "Azure location"
+        description: "The location where to create the different objects in azure"
+        key: resource_group_location
+        type: string
+        widget: simple_text
+        required: true
+
   - name: Tech versions
     technologies: [pipeline]
     vars:
@@ -159,11 +172,13 @@ shared:
         key: ssh_public_key
         widget: cy_cred
         type: string
+        required: true
       - name: "SSH public key"
         description: "SSH public key to use."
         key: ssh_private_key
         widget: cy_cred
         type: string
+        required: true
 version: "2"
 use_cases:
 - name: aws-managed
@@ -622,11 +637,13 @@ use_cases:
           key: nginx_certificate
           type: string
           widget: cy_cred
+          required: true
         - name: "Nginx certificate key"
           description: "Credential containing nginx certificate to be used by server"
           key: nginx_certificate_key
           type: string
           widget: cy_cred
+          required: true
 
     - name: DNS
       technologies: [terraform]

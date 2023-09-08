@@ -1,5 +1,7 @@
 # Azure access to use to run terraform
 azure_cred: "Filled by stackforms"
+resource_group_name: "Filled by stackforms"
+resource_group_location: "Filled by stackforms"
 
 # terraform version used to execute your code
 terraform_version: "Filled by stackforms"

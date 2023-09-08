@@ -58,6 +58,8 @@ resources:
       customer: ((customer))
       keypair_public: ((ssh_public_key))
       azure_cred: ((azure_cred))
+      resource_group_name: ((resource_group_name))
+      resource_group_location: ((resource_group_location))
 
 - name: git_stack_ansible
   type: git

@@ -82,7 +82,7 @@ resource "azurerm_network_security_rule" "allow-ssh" {
   source_port_range             = "*"
   destination_port_range        = "22"
   source_address_prefix         = "*"
-  destination_address_prefixes  = [var.ssh_ips_to_allow]
+  destination_address_prefixes  = var.ssh_ips_to_allow
   resource_group_name           = var.resource_group_name
   network_security_group_name   = azurerm_network_security_group.vm.name
 }

@@ -45,7 +45,7 @@ resource "azurerm_network_interface_security_group_association" "vm" {
 }
 
 resource "azurerm_network_security_rule" "allow-http-https" {
-  name                        = "allow http-https"
+  name                        = "allow-http-https"
   priority                    = 100
   direction                   = "Inbound"
   access                      = "Allow"
@@ -60,7 +60,7 @@ resource "azurerm_network_security_rule" "allow-http-https" {
 
 
 resource "azurerm_network_security_rule" "allow-self-scraping" {
-  name                                  = "allow self scraping"
+  name                                  = "allow-self-scraping"
   priority                              = 101
   direction                             = "Inbound"
   access                                = "Allow"
@@ -74,7 +74,7 @@ resource "azurerm_network_security_rule" "allow-self-scraping" {
 }
 
 resource "azurerm_network_security_rule" "allow-ssh" {
-  name                          = "allow ssh"
+  name                          = "allow-ssh"
   priority                      = 102
   direction                     = "Inbound"
   access                        = "Allow"

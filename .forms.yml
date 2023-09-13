@@ -169,13 +169,13 @@ shared:
     vars:
       - name: "SSH private Key"
         description: "SSH private key to use."
-        key: ssh_public_key
+        key: ssh_private_key
         widget: cy_cred
         type: string
         required: true
       - name: "SSH public key"
         description: "SSH public key to use."
-        key: ssh_private_key
+        key: ssh_public_key
         widget: cy_cred
         type: string
         required: true

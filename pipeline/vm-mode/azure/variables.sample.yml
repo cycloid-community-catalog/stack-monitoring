@@ -5,6 +5,7 @@ resource_group_location: "Filled by stackforms"
 
 # terraform version used to execute your code
 terraform_version: "Filled by stackforms"
+ansible_version: ""
 
 # SSH key to acess instance
 ssh_private_key: "Filled by stackforms"

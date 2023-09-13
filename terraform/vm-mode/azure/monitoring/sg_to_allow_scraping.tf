@@ -11,15 +11,15 @@ resource "azurerm_network_security_group" "scraping" {
 }
 
 resource "azurerm_network_security_rule" "scraping" {
-  name                        			= "allow metrics scraping"
-  priority                    			= 500
-  direction                   			= "Inbound"
-  access                      			= "Allow"
-  protocol                    			= "Tcp"
-  source_port_range           			= "*"
-  destination_port_ranges     			= ["9100"]
+  name                        			    = "allow-metrics-scraping"
+  priority                    			    = 500
+  direction                   			    = "Inbound"
+  access                      			    = "Allow"
+  protocol                    			    = "Tcp"
+  source_port_range           			    = "9100"
+  destination_port_ranges     			    = ["9100"]
   source_application_security_group_ids = [azurerm_network_security_group.vm.id]
-  destination_address_prefix  			= "*"
-  resource_group_name         			= var.resource_group_name
-  network_security_group_name 			= azurerm_network_security_group.vm.name
+  destination_address_prefix  			    = "*"
+  resource_group_name         			    = var.resource_group_name
+  network_security_group_name 			    = azurerm_network_security_group.scraping.name
 }

@@ -12,8 +12,8 @@ resource "azurerm_linux_virtual_machine" "vm" {
 
   source_image_reference {
     publisher = "debian"
-    offer     = "debian-11"
-    sku       = "11-cloudinit-gen2"
+    offer     = "debian-10"
+    sku       = "10-cloudinit-gen2"
     version   = "latest"
   }
 

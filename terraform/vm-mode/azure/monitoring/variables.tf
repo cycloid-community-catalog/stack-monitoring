@@ -31,7 +31,7 @@ variable "grafana_domain_name" {}
 variable "alertmanager_domain_name" {}
 
 locals {
-  admin_username = var.os_admin_username == "" ? var.os_admin_username : var.customer
+  admin_username = var.os_admin_username == "" ? var.customer : var.os_admin_username
   standard_tags  = {
     "cycloid.io" = "true"
     env          = var.env

@@ -14,9 +14,7 @@ variable "extra_tags" {
 variable "vm_size" {}
 variable "keypair_public" {}
 variable "os_disk_size" {}
-variable "os_admin_username" {
-  default = var.customer
-}
+variable "os_admin_username" {}
 variable "managed_disk_size" {}
 
 # vm network variables
@@ -31,7 +29,8 @@ variable "grafana_domain_name" {}
 variable "alertmanager_domain_name" {}
 
 locals {
-  standard_tags = {
+  admin_username = var.os_admin_username == "" ? var.os_admin_username : var.customer
+  standard_tags  = {
     "cycloid.io" = "true"
     env          = var.env
     project      = var.project

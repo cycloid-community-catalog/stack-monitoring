@@ -594,9 +594,9 @@ use_cases:
           key: os_disk_size
           widget: slider_range
           type: integer
-          default: 20
+          default: 30
           values:
-              - 20
+              - 30
               - 250
         - name: "Managed Disk size"
           unit: Go

@@ -14,7 +14,9 @@ variable "extra_tags" {
 variable "vm_size" {}
 variable "keypair_public" {}
 variable "os_disk_size" {}
-variable "os_admin_username" {}
+variable "os_admin_username" {
+  default = ""
+}
 variable "managed_disk_size" {}
 
 # vm network variables

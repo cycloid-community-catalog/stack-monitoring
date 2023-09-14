@@ -67,7 +67,7 @@ resource "azurerm_network_security_rule" "allow-self-scraping" {
   protocol                              = "Tcp"
   source_port_range                     = "*"
   destination_port_ranges               = ["9100"]
-  source_address_prefix                 = [azurerm_linux_virtual_machine.vm.private_ip_address]
+  source_address_prefix                 = azurerm_linux_virtual_machine.vm.private_ip_address
   destination_address_prefix            = "*"
   resource_group_name                   = var.resource_group_name
   network_security_group_name           = azurerm_network_security_group.vm.name

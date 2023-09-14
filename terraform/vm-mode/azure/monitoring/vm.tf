@@ -8,7 +8,7 @@ resource "azurerm_linux_virtual_machine" "vm" {
   resource_group_name   = var.resource_group_name
   network_interface_ids = [azurerm_network_interface.vm.id]
   size                  = var.vm_size
-  admin_username 		= "admin"
+  admin_username 		    = local.admin_username
 
   source_image_reference {
     publisher = "debian"

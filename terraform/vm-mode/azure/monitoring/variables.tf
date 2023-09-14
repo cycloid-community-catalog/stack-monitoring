@@ -15,7 +15,7 @@ variable "vm_size" {}
 variable "keypair_public" {}
 variable "os_disk_size" {}
 variable "os_admin_username" {
-  default = "admin"
+  default = var.customer
 }
 variable "managed_disk_size" {}
 

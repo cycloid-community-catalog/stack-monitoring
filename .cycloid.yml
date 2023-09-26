@@ -61,7 +61,7 @@ config:
     ansible:
       azure-vm:
         path: 'ansible/environments/env_azure_monitoring.yml'
-        destination: '($ project $)/ansible/environments/azure-vm/($ environment $)/($ environment $)-monitoring.yml'
+        destination: '($ project $)/ansible/environments/($ environment $)_azure_monitoring.yml'
 
 #  aws-vm:
 #  gcp-vm:

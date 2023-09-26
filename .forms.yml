@@ -130,10 +130,7 @@ shared:
         description: "The azure credential containing subscription_id, tenant_id, client_id, client_secret"
         key: azure_cred
         type: string
-        widget: cy_cred
-        widget_config:
-          display_keys: false
-          cred_types: [azure]
+        widget: text_area
         default: "((azure))"
       - name: "Azure resource group name"
         description: "The resource group where to create the different objects in azure"

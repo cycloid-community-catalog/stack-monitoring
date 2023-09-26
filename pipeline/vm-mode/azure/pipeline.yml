@@ -78,7 +78,7 @@ resources:
     branch: ($ cr_branch $)
     private_key: ((config_git_private_key))
     paths:
-      - ((project))/ansible/azure-vm/((env))/*
+      - ((project))/ansible/environments/azure-vm/((env))/*
 
 - name: git_stack_terraform
   type: git
@@ -180,8 +180,8 @@ jobs:
             - name: merged-stack
               path: "merged-stack"
         params:
-          CONFIG_PATH: ((project))/terraform/((env))
-          STACK_PATH: terraform/vm-mode/azure
+          CONFIG_PATH: ((project))/ansible/environments/azure-vm/($ environment $)
+          STACK_PATH: ansible
 
       - task: run-ansible
         config:

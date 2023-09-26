@@ -67,7 +67,7 @@ resources:
   source:
     uri: ($ scs_url $)
     branch: ($ scs_branch $)
-    private_key: ((ssh_private_key))
+    private_key: ((stack_git_private_key))
     paths:
       - ansible/*
 

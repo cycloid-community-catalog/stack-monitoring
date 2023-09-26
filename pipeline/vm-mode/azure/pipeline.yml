@@ -209,10 +209,10 @@ jobs:
             env: ((env))
             project: ((project))
             customer: ((customer))
-            azure_subscription_id: ((azure_cred.subscription_id))
-            azure_tenant_id: ((azure_cred.tenant_id))
-            azure_client_id: ((azure_cred.client_id))
-            azure_client_secret: ((azure_cred.client_secret))
+            azure_subscription_id: ((((azure_cred)).subscription_id))
+            azure_tenant_id: ((((azure_cred)).tenant_id))
+            azure_client_id: ((((azure_cred)).client_id))
+            azure_client_secret: ((((azure_cred)).client_secret))
             azure_resource_group: ((resource_group_name))
 
   - name: terraform-destroy

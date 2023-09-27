@@ -11,6 +11,10 @@ ansible_version: ""
 ssh_private_key: "Filled by stackforms"
 ssh_public_key: "Filled by stackforms"
 
+# nginx certificates
+nginx_certificate: "Filled by stackforms"
+nginx_certificate_key: "Filled by stackforms"
+
 # Repos
 config_git_private_key: "Filled by stackforms"
 stack_git_private_key: "Filled by stackforms"

@@ -3,7 +3,7 @@
 # to be used to deploy grafana, prometheus and alertmanager 9100 + others if needed
 ###
 resource "azurerm_network_security_group" "scraping" {
-  name                = "${var.customer}-vm-monitoring-scraping"
+  name                = "${var.customer}-${var.env}-vm-monitoring-scraping"
   location            = var.location
   resource_group_name = var.resource_group_name
 

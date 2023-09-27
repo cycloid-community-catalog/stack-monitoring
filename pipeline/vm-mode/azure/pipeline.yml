@@ -168,7 +168,20 @@ jobs:
               repository: cycloid/cycloid-toolkit
               tag: latest
           run:
-            path: /usr/bin/merge-stack-and-config
+            path: /bin/bash
+            args:
+              - '-exc'
+              - |
+                /usr/bin/merge-stack-and-config
+
+                # create inventory file
+                echo -e "[tag_vm_monitoring_azure]" >> merged-stack/inventory
+                jq -r '.machine_ip_private_address' terraform/metadata >> merged-stack/inventory
+                cat merged-stack/inventory
+
+                # copy nginx certificates
+                echo -e "${NGINX_SSL_KEY}" > merged-stack/certificate.key
+                echo -e "${NGINX_SSL_CERTIFICATE}" > merged-stack/certificate.crt
           inputs:
             - name: git_config_ansible
               path: "config"
@@ -180,8 +193,10 @@ jobs:
             - name: merged-stack
               path: "merged-stack"
         params:
-          CONFIG_PATH: ((project))/ansible/environments
+          CONFIG_PATH: ((project))/ansible
           STACK_PATH: ansible
+          NGINX_SSL_CERTIFICATE: ((nginx_certificate))
+          NGINX_SSL_KEY: ((nginx_certificate_key))
 
       - task: run-ansible
         config:
@@ -192,7 +207,13 @@ jobs:
               repository: cycloid/cycloid-toolkit
               tag: "v((ansible_version))"
           run:
-            path: /usr/bin/ansible-runner
+            path: /bin/bash
+            args:
+              - '-exc'
+              - |
+                # Static inventory
+                ansible-inventory -i merged-stack/inventory --graph
+                /usr/bin/ansible-runner
           caches:
             - path: ansible-playbook/roles
           inputs:
@@ -202,9 +223,11 @@ jobs:
           SSH_PRIVATE_KEY: ((ssh_private_key))
           ANSIBLE_PLAYBOOK_PATH: ansible-playbook
           ANSIBLE_PLAYBOOK_NAME: monitoring.yml
+          AZURE_USE_PRIVATE_IP: false
+          ANSIBLE_INVENTORY: merged-stack/inventory
           EXTRA_ANSIBLE_ARGS: "-i inventory"
           ANSIBLE_FORCE_GALAXY: false
-          EXTRA_ARGS: "--limit tag_role_azure"
+          EXTRA_ARGS: "--limit tag_vm_monitoring_azure"
           EXTRA_ANSIBLE_VARS:
             env: ((env))
             project: ((project))

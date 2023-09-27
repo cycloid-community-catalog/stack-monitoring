@@ -1,4 +1,8 @@
-output "machine_ip_address" {
+output "machine_ip_private_address" {
+  value = azurerm_linux_virtual_machine.vm.private_ip_address
+}
+
+output "machine_ip_public_address" {
   value = azurerm_public_ip.vm.ip_address
 }
 

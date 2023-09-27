@@ -4,7 +4,7 @@
 ###
 
 resource "azurerm_public_ip" "vm" {
-  name                = "${var.customer}-vm-monitoring-ip"
+  name                = "${var.customer}-${var.env}-vm-monitoring-ip"
   location            = var.location
   resource_group_name = var.resource_group_name
   allocation_method   = "Static"
@@ -12,12 +12,12 @@ resource "azurerm_public_ip" "vm" {
 }
 
 resource "azurerm_network_interface" "vm" {
-  name                = "${var.customer}-vm-monitoring-pub"
+  name                = "${var.customer}-${var.env}-vm-monitoring-pub"
   location            = var.location
   resource_group_name = var.resource_group_name
 
   ip_configuration {
-    name                          = "${var.customer}-vm-monitoring"
+    name                          = "${var.customer}-${var.env}-vm-monitoring"
     subnet_id                     = var.subnet_id
     private_ip_address_allocation = "Dynamic"
     public_ip_address_id          = azurerm_public_ip.vm.id
@@ -32,7 +32,7 @@ resource "azurerm_network_interface" "vm" {
 
 # Create Network Security Group and rule
 resource "azurerm_network_security_group" "vm" {
-  name                = "${var.customer}-vm-monitoring-ip"
+  name                = "${var.customer}-${var.env}-vm-monitoring-nsg"
   location            = var.location
   resource_group_name = var.resource_group_name
 
@@ -80,9 +80,9 @@ resource "azurerm_network_security_rule" "allow-ssh" {
   access                        = "Allow"
   protocol                      = "Tcp"
   source_port_range             = "*"
+  source_address_prefixes       = var.ssh_ips_to_allow to change
   destination_port_range        = "22"
-  source_address_prefix         = "*"
-  destination_address_prefixes  = var.ssh_ips_to_allow
+  destination_address_prefix    = "*"
   resource_group_name           = var.resource_group_name
   network_security_group_name   = azurerm_network_security_group.vm.name
 }

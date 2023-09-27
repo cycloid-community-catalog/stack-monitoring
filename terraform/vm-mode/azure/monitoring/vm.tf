@@ -3,7 +3,7 @@
 ###
 # VM
 resource "azurerm_linux_virtual_machine" "vm" {
-  name                  = "${var.customer}-vm-monitoring"
+  name                  = "${var.customer}-${var.env}-vm-monitoring"
   location              = var.location
   resource_group_name   = var.resource_group_name
   network_interface_ids = [azurerm_network_interface.vm.id]
@@ -23,7 +23,7 @@ resource "azurerm_linux_virtual_machine" "vm" {
   }
 
   os_disk {
-    name                 = "${var.customer}-vm-monitoring-os-disk"
+    name                 = "${var.customer}-${var.env}-vm-monitoring-os-disk"
     caching              = "ReadWrite"
     storage_account_type = "Standard_LRS"
     disk_size_gb         = var.os_disk_size
@@ -34,7 +34,7 @@ resource "azurerm_linux_virtual_machine" "vm" {
 
 # Managed Disk
 resource "azurerm_managed_disk" "vm" {
-  name                 = "${var.customer}-vm-monitoring-managed-disk"
+  name                 = "${var.customer}-${var.env}-vm-monitoring-managed-disk"
   location             = var.location
   resource_group_name  = var.resource_group_name
   storage_account_type = "Standard_LRS"

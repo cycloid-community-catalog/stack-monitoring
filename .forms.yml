@@ -627,7 +627,7 @@ use_cases:
           type: array
           required: true
     - name: Certificate SSL
-      technologies: [ansible]
+      technologies: [pipeline]
       vars:
         - name: "Nginx certificate"
           description: "Credential containing nginx certificate to be used by server"

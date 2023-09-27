@@ -3,7 +3,7 @@
 #
 # Prometheus
 #
-- hosts: tag_role_azure:&tag_project_{{project}}:&tag_cycloid_io_true:&tag_env_{{ env }}
+- hosts: tag_vm_monitoring_azure
   become: yes
   serial: 50%
 
@@ -12,21 +12,6 @@
     - "environments/{{env}}_azure_monitoring.yml"
 
   pre_tasks:
-    # Add SSL certificates
-    - name: "Create SSL directory"
-      file:
-        path: "{{ certificates_dest }}"
-        state: directory
-      when: use_ssl | bool
-
-    - name: copy certificate
-      copy:
-        dest: "{{ playbook_dir }}/files/nginx/ssl/{{ item.filename }}"
-        content: "{{ item.content }}"
-      with_items:
-         - {filename: "prometheus.crt", content: "{{ nginx_certificate }}" }
-         - {filename: "prometheus.key", content: "{{ nginx_certificate_key }}" }
-
     # Mount volume mysql in instance
     - name: Get device name to use
       set_fact:

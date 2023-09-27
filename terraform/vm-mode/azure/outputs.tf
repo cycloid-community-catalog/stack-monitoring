@@ -1,5 +1,9 @@
-output "machine_ip_address" {
-  value = module.monitoring.machine_ip_address
+output "machine_ip_private_address" {
+  value = module.monitoring.machine_ip_private_address
+}
+
+output "machine_ip_public_address" {
+  value = module.monitoring.machine_ip_public_address
 }
 
 output "nsg_monitoring_scraping_id" {

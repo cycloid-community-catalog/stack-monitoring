@@ -80,7 +80,7 @@ resource "azurerm_network_security_rule" "allow-ssh" {
   access                        = "Allow"
   protocol                      = "Tcp"
   source_port_range             = "*"
-  source_address_prefixes       = var.ssh_ips_to_allow to change
+  source_address_prefixes       = var.ssh_ips_to_allow
   destination_port_range        = "22"
   destination_address_prefix    = "*"
   resource_group_name           = var.resource_group_name

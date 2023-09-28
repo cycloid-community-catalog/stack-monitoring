@@ -12,7 +12,9 @@
     - "environments/{{env}}_azure_monitoring.yml"
 
   pre_tasks:
-    # Mount volume mysql in instance
+  # TODO only if create grafana creation enabled
+  # only execute one
+  # Mount volume mysql in instance
     - name: Get device name to use
       set_fact:
         device_name: "/dev/{{item}}"
@@ -21,74 +23,31 @@
 
     - name: Create partition on data disk
       parted:
-        device: "{{data_device}}"
+        device: "{{device_name}}"
         number: 1
         state: present
 
     - name: Create a ext4 fs on data disk
       filesystem:
         fstype: ext4
-        dev: "{{device_name}}-part1"
+        dev: "{{device_name}}1"
 
     - name: Get UUID for partition
-      command: blkid -s UUID -o value "{{device_name}}-part1"
+      command: blkid -s UUID -o value "{{device_name}}1"
       register: disk_blkid
-
-    - name: Mount data disk
-      mount:
-        path: "{{data_disk_mount}}"
-        src: "UUID={{disk_blkid.stdout}}"
-        fstype: ext4
-        state: mounted
 
     - name: Create disk mount point
       file:
         state: directory
-        path: /data-mysql
+        path: /mysql-grafana
         mode: 0777
 
-    - name: Format disk to ext4
-      filesystem:
-        dev: /dev/nvme1n1
-        fstype: ext4
-        opts: "-L data"
-
-    - name: Mount the EBS in data/
+    - name: Mount data disk
       mount:
-        name: /data-mysql
-        src: /dev/nvme1n1
+        path: "/mysql-grafana"
+        src: "UUID={{disk_blkid.stdout}}"
         fstype: ext4
         state: mounted
-
-    # Install local mysql database
-    - name: install mysql
-      apt:
-        name: mysql
-        state: present
-
-    - name: start and enable mysql service
-      service:
-        name: mysql
-        state: started
-        enabled: yes
-
-    - name: creating mysql admin user
-      mysql_user:
-        name: "{{grafana_admin_user}}"
-        password: "{{grafana_admin_password}}"
-        priv: '*.*:ALL'
-        host: '%'
-        state: present
-
-    - name: creating grafana db
-      mysql_db:
-        name: "{{grafana_database_name}}"
-        state: present
-
-    - name: Restart mysql
-      service:
-        name: mysql
-        state: restarted
 
   roles:
     # Install docker
@@ -99,6 +58,22 @@
         - "containerd.io"
       tags:
         - docker
+  # TODO only if create grafana creation enabled
+    # Install mysql - grafana database
+    - role: geerlingguy.mysql
+      mysql_datadir: "/mysql-grafana"
+      mysql_root_password: ""
+      mysql_databases:
+        - name: "{{grafana_database_name}}"
+          enconding:
+          collation:
+      mysql_users:
+        - name: "{{grafana_admin_user}}"
+          password: "{{grafana_admin_password}}"
+          priv: '*.*:ALL'
+          host: '%'
+      tags:
+        - mysql
 
     # Install prometheus, alertmanager and grafana
     - role: cycloid.prometheus

@@ -29,39 +29,39 @@
   # TODO only if create grafana creation enabled
   # only execute one
   # Mount volume mysql in instance
-    - name: Get device name to use
-      set_fact:
-        device_name: "/dev/{{item}}"
-      when: ansible_facts.devices.{{item}}.partitions == {}
-      with_items: "{{ ansible_facts.devices}}"
-
-    - name: Create partition on data disk
-      parted:
-        device: "{{device_name}}"
-        number: 1
-        state: present
-
-    - name: Create a ext4 fs on data disk
-      filesystem:
-        fstype: ext4
-        dev: "{{device_name}}1"
-
-    - name: Get UUID for partition
-      command: blkid -s UUID -o value "{{device_name}}1"
-      register: disk_blkid
-
-    - name: Create disk mount point
-      file:
-        state: directory
-        path: /mysql-grafana
-        mode: 0777
-
-    - name: Mount data disk
-      mount:
-        path: "/mysql-grafana"
-        src: "UUID={{disk_blkid.stdout}}"
-        fstype: ext4
-        state: mounted
+#    - name: Get device name to use
+#      set_fact:
+#        device_name: "/dev/{{item}}"
+#      when: ansible_facts.devices.{{item}}.partitions == {}
+#      with_items: "{{ ansible_facts.devices}}"
+#
+#    - name: Create partition on data disk
+#      parted:
+#        device: "{{device_name}}"
+#        number: 1
+#        state: present
+#
+#    - name: Create a ext4 fs on data disk
+#      filesystem:
+#        fstype: ext4
+#        dev: "{{device_name}}1"
+#
+#    - name: Get UUID for partition
+#      command: blkid -s UUID -o value "{{device_name}}1"
+#      register: disk_blkid
+#
+#    - name: Create disk mount point
+#      file:
+#        state: directory
+#        path: /mysql-grafana
+#        mode: 0777
+#
+#    - name: Mount data disk
+#      mount:
+#        path: "/mysql-grafana"
+#        src: "UUID={{disk_blkid.stdout}}"
+#        fstype: ext4
+#        state: mounted
 
   roles:
     # Install docker

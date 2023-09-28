@@ -12,6 +12,20 @@
     - "environments/{{env}}_azure_monitoring.yml"
 
   pre_tasks:
+    - name: Install gpg package
+      ansible.builtin.apt:
+        name: gpg
+        state: present
+        update_cache: false
+    - name: Fix native debian issue with signing key
+      ansible.builtin.apt_key:
+        id: "{{ item }}"
+        keyserver: keyserver.ubuntu.com
+        state: present
+      with_items:
+       - 0E98404D386FA1D9
+       - 6ED0E7B82643E131
+
   # TODO only if create grafana creation enabled
   # only execute one
   # Mount volume mysql in instance

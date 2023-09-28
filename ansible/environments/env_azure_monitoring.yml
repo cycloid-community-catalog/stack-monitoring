@@ -113,6 +113,9 @@ alertmanager_inhibit_rules:
 grafana_version: 10.0.1
 install_grafana: true
 grafana_domain_name: "grafana.localhost"
+grafana_admin_password: "PasswordToChange!"
+grafana_database_name: "grafana"
+grafana_admin_user: "admin"
 
 #
 # Telegraf

@@ -904,3 +904,13 @@ use_cases:
           key: grafana_web_login
           type: string
           widget: cy_cred
+        - name: "Grafana Admin Password"
+          description: "Grafana admin password to use for the local db and the service"
+          key: grafana_admin_password
+          type: string
+          widget: cy_cred
+        - name: "Grafana Admin User"
+          description: "Grafana admin user to use for the local db and the service"
+          key: grafana_admin_user
+          type: string
+          widget: cy_cred

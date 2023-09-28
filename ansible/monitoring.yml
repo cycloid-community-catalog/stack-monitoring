@@ -62,11 +62,11 @@
     # Install mysql - grafana database
     - role: geerlingguy.mysql
       mysql_datadir: "/mysql-grafana"
-      mysql_root_password: ""
+      mysql_root_password: "{{grafana_admin_password}}"
       mysql_databases:
         - name: "{{grafana_database_name}}"
-          enconding:
-          collation:
+          #enconding: HERE
+          #collation: HERE
       mysql_users:
         - name: "{{grafana_admin_user}}"
           password: "{{grafana_admin_password}}"

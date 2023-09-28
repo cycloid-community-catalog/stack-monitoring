@@ -22,3 +22,7 @@
 - src: https://github.com/jdauphant/ansible-role-nginx.git
   name: jdauphant.nginx
   scm: git
+
+- src: https://github.com/geerlingguy/ansible-role-mysql.git
+  name: geerlingguy.mysql
+  scm: git

@@ -212,7 +212,7 @@ jobs:
               - '-exc'
               - |
                 # Static inventory
-                ansible-inventory -i merged-stack/inventory --graph
+                ansible-inventory -i inventory --graph
                 /usr/bin/ansible-runner
           caches:
             - path: ansible-playbook/roles
@@ -224,7 +224,8 @@ jobs:
           ANSIBLE_PLAYBOOK_PATH: ansible-playbook
           ANSIBLE_PLAYBOOK_NAME: monitoring.yml
           AZURE_USE_PRIVATE_IP: false
-          ANSIBLE_INVENTORY: merged-stack/inventory
+          ANSIBLE_INVENTORY: inventory
+          ANSIBLE_REMOTE_USER:  ((customer))
           EXTRA_ANSIBLE_ARGS: "-i inventory"
           ANSIBLE_FORCE_GALAXY: false
           EXTRA_ARGS: "--limit tag_vm_monitoring_azure"

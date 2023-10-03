@@ -234,7 +234,6 @@ jobs:
             project: ((project))
             customer: ((customer))
             role: "monitoring"
-            prometheus_alerting: ((prometheus_alerting))
             grafana_web_login: ((grafana_web_login))
             grafana_admin_password: ((grafana_admin_password))
             grafana_admin_user: ((grafana_admin_user))

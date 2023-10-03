@@ -916,7 +916,7 @@ use_cases:
         - name: "Specify external alertmanager targets"
           description: "The targets to use to connect to external alertmanager. Examples [here](TODO)"
           key: external_alertmanager_targets
-          widget: cy_cred
+          widget: text_area
           type: raw
 
   - name: Grafana configuration

@@ -25,6 +25,9 @@ variable "ssh_ips_to_allow" {}
 
 # vm dns variables
 variable "create_dns" {}
+variable "install_grafana" {}
+variable "install_alertmanager" {}
+variable "install_prometheus" {}
 variable "azure_dns_zone_name" {}
 variable "prometheus_domain_name" {}
 variable "grafana_domain_name" {}

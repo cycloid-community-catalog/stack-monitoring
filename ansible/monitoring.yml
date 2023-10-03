@@ -12,6 +12,7 @@
     - "environments/{{env}}_azure_monitoring.yml"
 
   pre_tasks:
+    # Fix native debian 10 issue with signing key
     - name: Install gpg package
       ansible.builtin.apt:
         name: gpg
@@ -26,42 +27,42 @@
        - 0E98404D386FA1D9
        - 6ED0E7B82643E131
 
-  # TODO only if create grafana creation enabled
-  # only execute one
-  # Mount volume mysql in instance
-#    - name: Get device name to use
-#      set_fact:
-#        device_name: "/dev/{{item}}"
-#      when: ansible_facts.devices.{{item}}.partitions == {}
-#      with_items: "{{ ansible_facts.devices}}"
-#
-#    - name: Create partition on data disk
-#      parted:
-#        device: "{{device_name}}"
-#        number: 1
-#        state: present
-#
-#    - name: Create a ext4 fs on data disk
-#      filesystem:
-#        fstype: ext4
-#        dev: "{{device_name}}1"
-#
-#    - name: Get UUID for partition
-#      command: blkid -s UUID -o value "{{device_name}}1"
-#      register: disk_blkid
-#
-#    - name: Create disk mount point
-#      file:
-#        state: directory
-#        path: /mysql-grafana
-#        mode: 0777
-#
-#    - name: Mount data disk
-#      mount:
-#        path: "/mysql-grafana"
-#        src: "UUID={{disk_blkid.stdout}}"
-#        fstype: ext4
-#        state: mounted
+    - name: Mount grafana disk (when locally installing grafana)
+      block:
+        - name: Get device name to use
+          set_fact:
+            device_name: "/dev/{{item}}"
+          when: ansible_facts.devices.{{item}}.partitions == {}
+          with_items: "{{ ansible_facts.devices}}"
+
+        - name: Create partition on data disk
+          parted:
+            device: "{{device_name}}"
+            number: 1
+            state: present
+
+        - name: Create a ext4 fs on data disk
+          filesystem:
+            fstype: ext4
+            dev: "{{device_name}}1"
+
+        - name: Get UUID for partition
+          command: blkid -s UUID -o value "{{device_name}}1"
+          register: disk_blkid
+
+        - name: Create disk mount point
+          file:
+            state: directory
+            path: /mysql-grafana
+            mode: 0777
+
+        - name: Mount data disk
+          mount:
+            path: "/mysql-grafana"
+            src: "UUID={{disk_blkid.stdout}}"
+            fstype: ext4
+            state: mounted
+      when: install_grafana
 
   roles:
     # Install docker
@@ -72,20 +73,20 @@
         - "containerd.io"
       tags:
         - docker
-  # TODO only if create grafana creation enabled
-    # Install mysql - grafana database
+
+    # Install mysql - grafana database (if grafana creation enabled)
+    # TODO: execute only once
     - role: geerlingguy.mysql
       mysql_datadir: "/mysql-grafana"
       mysql_root_password: "{{grafana_admin_password}}"
       mysql_databases:
         - name: "{{grafana_database_name}}"
-          #enconding: HERE
-          #collation: HERE
       mysql_users:
         - name: "{{grafana_admin_user}}"
           password: "{{grafana_admin_password}}"
           priv: '*.*:ALL'
           host: '%'
+      when: install_grafana
       tags:
         - mysql
 

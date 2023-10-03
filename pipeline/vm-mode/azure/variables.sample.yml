@@ -20,6 +20,14 @@ config_git_private_key: "Filled by stackforms"
 stack_git_private_key: "Filled by stackforms"
 stack_path: stack-monitoring # The path of the stack in the service catalog, basically the path to the `.cycloid.yml` file
 
+# monitoring credentials
+prometheus_alerting: "Filled by stackforms"
+grafana_web_login: "Filled by stackforms"
+grafana_admin_password: "Filled by stackforms"
+grafana_admin_user: "Filled by stackforms"
+alertmanager_web_login: "Filled by stackforms"
+prometheus_web_login: "Filled by stackforms"
+
 ###
 # Cycloid variables
 ###

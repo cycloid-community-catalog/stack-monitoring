@@ -34,7 +34,8 @@ resource "azurerm_linux_virtual_machine" "vm" {
 
 # Managed Disk
 resource "azurerm_managed_disk" "vm" {
-  name                 = "${var.customer}-${var.env}-vm-monitoring-managed-disk"
+  count                = install_grafana ? 1 : 0
+  name                 = "${var.customer}-${var.env}-vm-monitoring-grafana-managed-disk"
   location             = var.location
   resource_group_name  = var.resource_group_name
   storage_account_type = "Standard_LRS"
@@ -45,6 +46,7 @@ resource "azurerm_managed_disk" "vm" {
 }
 
 resource "azurerm_virtual_machine_data_disk_attachment" "vm" {
+  count              = install_grafana ? 1 : 0
   managed_disk_id    = azurerm_managed_disk.vm.id
   virtual_machine_id = azurerm_linux_virtual_machine.vm.id
   lun                = "10"

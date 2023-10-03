@@ -73,12 +73,12 @@ grafana_database_name: "grafana"
 grafana_database_type: "sql"
 
 grafana_dashboards_files:
-  - '{{ playbook_dir }}/files/grafana/dashboards/*.json'
+  - "{{ playbook_dir }}/files/grafana/dashboards/*.json"
 
 grafana_provisioning_files:
-  - '{{ playbook_dir }}/files/grafana/provisioning/dashboards/*.yml'
-  - '{{ playbook_dir }}/files/grafana/provisioning/datasources/*.yml'
-  - '{{ playbook_dir }}/files/grafana/provisioning/notifiers/*.yml'
+  - "{{ playbook_dir }}/files/grafana/provisioning/dashboards/*.yml"
+  - "{{ playbook_dir }}/files/grafana/provisioning/datasources/*.yml"
+  - "{{ playbook_dir }}/files/grafana/provisioning/notifiers/*.yml"
 
 #
 # Nginx
@@ -110,7 +110,7 @@ nginx_configs:
 nginx_remove_sites:
   - default
 
-nginx_sites_default:
+nginx_status_http:
   00-status:
     - listen 80
     - server_name 127.0.0.1
@@ -124,6 +124,21 @@ nginx_sites_default:
         deny all;
       }
 
+nginx_status_https:
+  00-status:
+    - listen 80
+    - server_name 127.0.0.1
+    - location / {
+       deny all;
+      }
+    - location /nginx_status {
+        stub_status on;
+        access_log   off;
+        allow 127.0.0.1;
+        deny all;
+      }
+
+nginx_grafana_http:
   07-grafana-80:
     - listen 80
     - server_name {{ grafana_domain_name }}
@@ -134,43 +149,7 @@ nginx_sites_default:
         proxy_set_header   X-FORWARDED_PROTO http;
         proxy_set_header   X-FORWARDED_PORT 80;
       }
-
-  08-prometheus-80:
-    - listen 80
-    - server_name {{ prometheus_domain_name }}
-    - auth_basic            "Restricted"
-    - auth_basic_user_file  auth_basic/prometheus
-    - location / {
-        proxy_pass http://127.0.0.1:9090;
-        proxy_set_header   X-FORWARDED_PROTO http;
-        proxy_set_header   X-FORWARDED_PORT 80;
-      }
-
-  09-alertmanager-80:
-    - listen 80
-    - server_name {{ alertmanager_domain_name }}
-    - auth_basic            "Restricted"
-    - auth_basic_user_file  auth_basic/alertmanager
-    - location / {
-        proxy_pass http://127.0.0.1:9093;
-        proxy_set_header   X-FORWARDED_PROTO http;
-        proxy_set_header   X-FORWARDED_PORT 80;
-      }
-
-nginx_sites_default_https:
-  00-status:
-    - listen 80
-    - server_name 127.0.0.1
-    - location / {
-       deny all;
-      }
-    - location /nginx_status {
-        stub_status on;
-        access_log   off;
-        allow 127.0.0.1;
-        deny all;
-      }
-
+nginx_grafana_https:
   07-grafana-443:
     - listen 443 ssl
     - server_name {{ grafana_domain_name }}
@@ -185,10 +164,18 @@ nginx_sites_default_https:
         proxy_set_header   X-FORWARDED_PORT 80;
       }
 
-  10-force-https:
-     - listen 80 default_server
-     - return 301 https://$host$request_uri
-
+nginx_prometheus_http:
+  08-prometheus-80:
+    - listen 80
+    - server_name {{ prometheus_domain_name }}
+    - auth_basic            "Restricted"
+    - auth_basic_user_file  auth_basic/prometheus
+    - location / {
+        proxy_pass http://127.0.0.1:9090;
+        proxy_set_header   X-FORWARDED_PROTO http;
+        proxy_set_header   X-FORWARDED_PORT 80;
+      }
+nginx_prometheus_https:
   12-prometheus-443:
      - listen 443 ssl default_server
      - server_name {{ prometheus_domain_name }}
@@ -202,6 +189,18 @@ nginx_sites_default_https:
          proxy_set_header   X-FORWARDED_PORT 443;
        }
 
+nginx_alertmanager_http:
+  09-alertmanager-80:
+    - listen 80
+    - server_name {{ alertmanager_domain_name }}
+    - auth_basic            "Restricted"
+    - auth_basic_user_file  auth_basic/alertmanager
+    - location / {
+        proxy_pass http://127.0.0.1:9093;
+        proxy_set_header   X-FORWARDED_PROTO http;
+        proxy_set_header   X-FORWARDED_PORT 80;
+      }
+nginx_alertmanager_https:
   13-alertmanager-443:
      - listen 443 ssl
      - server_name {{ alertmanager_domain_name }}
@@ -214,5 +213,14 @@ nginx_sites_default_https:
          proxy_set_header   X-FORWARDED_PROTO https;
          proxy_set_header   X-FORWARDED_PORT 443;
        }
+
+nginx_force_https:
+  10-force-https:
+     - listen 80 default_server
+     - return 301 https://$host$request_uri
+
+nginx_sites_default: "{{ nginx_status_http + (nginx_grafana_http if install_grafana else '') + (nginx_prometheus_http if install_prometheus else '') + (nginx_alertmanager_http if install_alertmanager else '')}}"
+
+nginx_sites_default_https: "{{ nginx_status_https + nginx_force_https + (nginx_grafana_https if install_grafana else '') + (nginx_prometheus_https if install_prometheus else '') + (nginx_alertmanager_https if install_alertmanager else '')}}"
 
 nginx_sites: "{% if not use_ssl %}{{ nginx_sites_default }}{% else %}{{ nginx_sites_default_https }}{% endif %}"

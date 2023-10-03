@@ -106,6 +106,12 @@ alertmanager_inhibit_rules:
   - env
   - alertname
 
+prometheus_alerting:
+  alertmanagers:
+  - scheme: http
+    static_configs:
+    - targets:
+      - "{{ alertmanager_ip }}:9093"
 
 #
 # grafana

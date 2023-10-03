@@ -27,4 +27,9 @@ module "monitoring" {
   prometheus_domain_name = "Filled by stackforms"
   grafana_domain_name = "Filled by stackforms"
   alertmanager_domain_name = "Filled by stackforms"
+
+  # vm monitoring software
+  install_grafana = "Filled by stackforms"
+  install_alertmanager = "Filled by stackforms"
+  install_prometheus = "Filled by stackforms"
 }

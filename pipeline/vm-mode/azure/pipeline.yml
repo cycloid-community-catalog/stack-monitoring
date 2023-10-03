@@ -233,6 +233,13 @@ jobs:
             env: ((env))
             project: ((project))
             customer: ((customer))
+            role: "monitoring"
+            prometheus_alerting: ((prometheus_alerting))
+            grafana_web_login: ((grafana_web_login))
+            grafana_admin_password: ((grafana_admin_password))
+            grafana_admin_user: ((grafana_admin_user))
+            alertmanager_web_login: ((alertmanager_web_login))
+            prometheus_web_login: ((prometheus_web_login))
             azure_subscription_id: ((((azure_cred)).subscription_id))
             azure_tenant_id: ((((azure_cred)).tenant_id))
             azure_client_id: ((((azure_cred)).client_id))

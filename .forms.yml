@@ -680,11 +680,10 @@ use_cases:
           type: string
           default: ""
 
-
-  - name: VM Configuration
+  - name: Monitoring tools
     groups:
-    - name: General Monitoring configuration
-      technologies: [ansible]
+    - name: Select tools to install
+      technologies: [terraform, ansible]
       vars:
         - name: "Install Grafana"
           description: "Wheter to install Grafana on the machine."
@@ -698,7 +697,27 @@ use_cases:
           widget: switch
           type: boolean
           default: true
-    - name: Prometheus Configuration
+        - name: "Install Prometheus"
+          description: "Wheter to install Prometheus on the machine."
+          key: install_prometheus
+          widget: switch
+          type: boolean
+          default: true
+
+
+  - name: Prometheus configuration
+    groups:
+    - name: Prometheus credentials
+      condition: $install_prometheus == true
+      technologies: [pipeline]
+      vars:
+        - name: "Prometheus weblogin"
+          description: "Htpasswd can be generated using `htpasswd -nb user password`"
+          key: prometheus_web_login
+          type: string
+          widget: cy_cred
+    - name: General Configuration
+      condition: $install_prometheus == true
       technologies: [ansible]
       vars:
         - name: "Prometheus version"
@@ -707,11 +726,6 @@ use_cases:
           widget: simple_text
           type: string
           default: "v2.45.0"
-        - name: "Prometheus weblogin"
-          description: "Htpasswd can be generated using `htpasswd -nb user password`"
-          key: prometheus_web_login
-          type: string
-          widget: cy_cred
         - name: "Prometheus scraping config"
           description: "Prometheus scraping config to use. Note! prometheus and alertmanager are scraped. By default For more information check [prometheus wiki](https://prometheus.io/docs/prometheus/latest/configuration/configuration/)"
           key: prometheus_custom_configs
@@ -799,15 +813,22 @@ use_cases:
                 -  "[[inputs.azure_monitor.resource_group_target]]"
                 -   'resource_group = "{{ azure_resource_group }}"'
 
-    - name: Alertmanager Configuration
-      technologies: [ansible]
+
+  - name: Alertmanager configuration
+    groups:
+    - name: Alertmanager credentials
       condition: $install_alertmanager == true
+      technologies: [pipeline]
       vars:
         - name: "Alertmanager weblogin"
           description: "Htpasswd can be generated using `htpasswd -nb user password`"
           key: alertmanager_web_login
           type: string
           widget: cy_cred
+    - name: Alertmanager General Configuration
+      technologies: [ansible]
+      condition: $install_alertmanager == true
+      vars:
         - name: "Alertmanager global configuration"
           description: "The global configuration, as specified in the oficial documentation [here](TODO)."
           key: alertmanager_global
@@ -879,26 +900,13 @@ use_cases:
             - name: 'dev_null'
               # Deliberately left empty to not deliver anywhere.
 
-    - name: Alertmanager Configuration
-      technologies: [ansible]
-      condition: $install_alertmanager == false
-      vars:
-        - name: "Specify alertmanager to use"
-          description: "If you don't wish to create an alertmanager you can specify the alertmanagers config to use by prometheus. Examples [here](TODO)"
-          key: prometheus_alerting
-          widget: text_area
-          type: raw
 
-    - name: Grafana Configuration
-      technologies: [ansible]
+  - name: Grafana configuration
+    groups:
+    - name: Grafana credentials
       condition: $install_grafana == true
+      technologies: [pipeline]
       vars:
-        - name: "Grafana version"
-          description: "Grafana version to use."
-          key: grafana_version
-          widget: simple_text
-          type: string
-          default: "10.0.1"
         - name: "Grafana weblogin"
           description: "Htpasswd can be generated using `htpasswd -nb user password`"
           key: grafana_web_login
@@ -914,3 +922,14 @@ use_cases:
           key: grafana_admin_user
           type: string
           widget: cy_cred
+    - name: Grafana Configuration
+      technologies: [ansible]
+      condition: $install_grafana == true
+      vars:
+        - name: "Grafana version"
+          description: "Grafana version to use."
+          key: grafana_version
+          widget: simple_text
+          type: string
+          default: "10.0.1"
+# TODO recheck credentials exposed grafana

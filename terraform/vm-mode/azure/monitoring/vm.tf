@@ -47,7 +47,7 @@ resource "azurerm_managed_disk" "vm" {
 
 resource "azurerm_virtual_machine_data_disk_attachment" "vm" {
   count              = var.install_grafana ? 1 : 0
-  managed_disk_id    = azurerm_managed_disk.vm.id
+  managed_disk_id    = azurerm_managed_disk[count.index].vm.id
   virtual_machine_id = azurerm_linux_virtual_machine.vm.id
   lun                = "10"
   caching            = "ReadWrite"

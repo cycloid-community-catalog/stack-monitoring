@@ -92,7 +92,7 @@ grafana_certificate_name: "{{ prometheus_certificate_name }}"
 grafana_certificate_key_name: "{{ prometheus_certificate_key_name }}"
 
 certificates_src: "{{ playbook_dir }}/files/nginx/ssl/*"
-certificates_dest: "/etc/nginx/ssl/"
+certificates_dest: "/etc/nginx/ssl"
 
 nginx_configs:
   proxy:
@@ -219,8 +219,18 @@ nginx_force_https:
      - listen 80 default_server
      - return 301 https://$host$request_uri
 
-nginx_sites_default: "{{ nginx_status_http + (nginx_grafana_http if install_grafana else '') + (nginx_prometheus_http if install_prometheus else '') + (nginx_alertmanager_http if install_alertmanager else '')}}"
-
-nginx_sites_default_https: "{{ nginx_status_https + nginx_force_https + (nginx_grafana_https if install_grafana else '') + (nginx_prometheus_https if install_prometheus else '') + (nginx_alertmanager_https if install_alertmanager else '')}}"
+nginx_sites_default: "{{
+          nginx_status_http
+          | combine(nginx_grafana_http if install_grafana else {})
+          | combine(nginx_prometheus_http if install_prometheus else {})
+          | combine(nginx_alertmanager_http if install_alertmanager else {})
+        }}"
+nginx_sites_default_https: "{{
+          nginx_status_https
+          | combine(nginx_force_https)
+          | combine(nginx_grafana_https if install_grafana else {})
+          | combine(nginx_prometheus_https if install_prometheus else {})
+          | combine(nginx_alertmanager_https if install_alertmanager else {})
+        }}"
 
 nginx_sites: "{% if not use_ssl %}{{ nginx_sites_default }}{% else %}{{ nginx_sites_default_https }}{% endif %}"

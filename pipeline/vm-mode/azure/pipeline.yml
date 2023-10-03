@@ -180,8 +180,8 @@ jobs:
                 cat merged-stack/inventory
 
                 # copy nginx certificates
-                echo -e "${NGINX_SSL_KEY}" > merged-stack/certificate.key
-                echo -e "${NGINX_SSL_CERTIFICATE}" > merged-stack/certificate.crt
+                echo -e "${NGINX_SSL_KEY}" > merged-stack/files/nginx/ssl/prometheus.key
+                echo -e "${NGINX_SSL_CERTIFICATE}" > merged-stack/files/nginx/ssl/prometheus.crt
           inputs:
             - name: git_config_ansible
               path: "config"

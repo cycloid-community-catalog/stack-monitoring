@@ -7,6 +7,9 @@
   become: yes
   serial: 50%
 
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+
   vars_files:
     - "environments/default_azure_monitoring.yml"
     - "environments/{{env}}_azure_monitoring.yml"
@@ -63,6 +66,22 @@
             fstype: ext4
             state: mounted
       when: install_grafana
+
+    # install ssl certificates for nginx
+    - name: "Create SSL directory"
+      file:
+        path: "{{ certificates_dest }}"
+        state: directory
+      when: use_ssl | bool
+
+    - name: "Install SSL certificates"
+      copy:
+        src: "{{ item }}"
+        dest: "{{ certificates_dest }}"
+        mode: 0600
+      with_fileglob:
+        - "{{ certificates_src }}"
+      when: use_ssl | bool
 
   roles:
     # Install docker

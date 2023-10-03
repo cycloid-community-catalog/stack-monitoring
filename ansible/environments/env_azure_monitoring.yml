@@ -106,8 +106,6 @@ alertmanager_inhibit_rules:
   - env
   - alertname
 
-prometheus_alerting: "{{ prometheus_alerting_local if install_alertmanager else prometheus_alerting_external }}"
-
 prometheus_alerting_local:
   alertmanagers:
   - scheme: http
@@ -123,6 +121,9 @@ prometheus_alerting_external:
       scheme: https
       static_configs:
       -  "{{external_alertmanager_targets}}"
+
+prometheus_alerting: "{{ prometheus_alerting_local if install_alertmanager else prometheus_alerting_external }}"
+
 
 #
 # grafana

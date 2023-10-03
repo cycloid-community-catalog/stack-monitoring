@@ -903,10 +903,10 @@ use_cases:
       technologies: [pipeline]
       condition: $install_alertmanager == false && $install_prometheus == true
       vars:
-        - name: "Specify alertmanager to use"
+        - name: "Specify external alertmanager to use"
           description: "If you don't wish to create an alertmanager you can specify the alertmanagers config to use by prometheus. Examples [here](TODO)"
           key: prometheus_alerting
-          widget: text_area
+          widget: cy_cred
           type: raw
 
 

@@ -814,7 +814,7 @@ use_cases:
                 -   'resource_group = "{{ azure_resource_group }}"'
 
 
-  - name: Alertmanager configuration
+  - name: Alertmanager Configuration
     groups:
     - name: Alertmanager credentials
       condition: $install_alertmanager == true
@@ -899,6 +899,15 @@ use_cases:
 
             - name: 'dev_null'
               # Deliberately left empty to not deliver anywhere.
+    - name: Alertmanager External access
+      technologies: [pipeline]
+      condition: $install_alertmanager == false && $install_prometheus == true
+      vars:
+        - name: "Specify alertmanager to use"
+          description: "If you don't wish to create an alertmanager you can specify the alertmanagers config to use by prometheus. Examples [here](TODO)"
+          key: prometheus_alerting
+          widget: text_area
+          type: raw
 
 
   - name: Grafana configuration

@@ -903,12 +903,21 @@ use_cases:
       technologies: [pipeline]
       condition: $install_alertmanager == false && $install_prometheus == true
       vars:
-        - name: "Specify external alertmanager to use"
-          description: "If you don't wish to create an alertmanager you can specify the alertmanagers config to use by prometheus. Examples [here](TODO)"
-          key: prometheus_alerting
+        - name: "Specify external alertmanager username"
+          description: "Basic authentification username to use to connect to external alertmanager"
+          key: external_alertmanager_username
+          widget: cy_cred
+          type: string
+        - name: "Specify external alertmanager password"
+          description: "Basic authentification passowrd to use to connect to external alertmanager"
+          key: external_alertmanager_password
+          widget: cy_cred
+          type: string
+        - name: "Specify external alertmanager targets"
+          description: "The targets to use to connect to external alertmanager. Examples [here](TODO)"
+          key: external_alertmanager_targets
           widget: cy_cred
           type: raw
-
 
   - name: Grafana configuration
     groups:

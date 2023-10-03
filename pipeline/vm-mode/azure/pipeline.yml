@@ -245,6 +245,9 @@ jobs:
             azure_client_id: ((((azure_cred)).client_id))
             azure_client_secret: ((((azure_cred)).client_secret))
             azure_resource_group: ((resource_group_name))
+            external_alertmanager_password: ((external_alertmanager_password))
+            external_alertmanager_username: ((external_alertmanager_username))
+            external_alertmanager_targets: ((external_alertmanager_targets))
 
   - name: terraform-destroy
     serial: true

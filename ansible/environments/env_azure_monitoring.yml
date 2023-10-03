@@ -106,12 +106,23 @@ alertmanager_inhibit_rules:
   - env
   - alertname
 
-prometheus_alerting:
+prometheus_alerting: "{{ prometheus_alerting_local if install_alertmanager else prometheus_alerting_external }}"
+
+prometheus_alerting_local:
   alertmanagers:
   - scheme: http
     static_configs:
     - targets:
       - "{{ alertmanager_ip }}:9093"
+
+prometheus_alerting_external:
+  alertmanagers:
+  -   basic_auth:
+          password: "{{external_alertmanager_password}}"
+          username: "{{external_alertmanager_username}}"
+      scheme: https
+      static_configs:
+      -  "{{external_alertmanager_targets}}"
 
 #
 # grafana

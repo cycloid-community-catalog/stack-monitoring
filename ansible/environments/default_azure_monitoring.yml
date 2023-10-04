@@ -1,6 +1,5 @@
 # General variables that usually dont change per environment/scenario
 install_prometheus: true
-use_ssl: true
 external_url_schema: "{% if use_ssl %}https{% else %}http{% endif %}"
 
 #

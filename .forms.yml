@@ -626,59 +626,32 @@ use_cases:
           widget: text_area
           type: array
           required: true
-    - name: Certificate SSL
-      technologies: [pipeline]
+
+  - name: SSL configuration
+    groups:
+    - name: Enable SSL
+      technologies: [ansible]
+      vars:
+        - name: "Enable Nginx HTTPs"
+          description: "Select wheter to enable HTTPs traffic and using SSL certificates. Recommended expect for test purposes"
+          key: use_ssl
+          type: boolean
+          widget: switch
+          default: true
+    - name: SSL configuration
+      condition: $use_ssl == true
+      technologies: [ansible]
       vars:
         - name: "Nginx certificate"
           description: "Credential containing nginx certificate to be used by server"
           key: nginx_certificate
           type: string
           widget: cy_cred
-          required: true
         - name: "Nginx certificate key"
           description: "Credential containing nginx certificate to be used by server"
           key: nginx_certificate_key
           type: string
           widget: cy_cred
-          required: true
-
-    - name: DNS
-      technologies: [terraform]
-      vars:
-      - name: Create DNS
-        description: Wheter to create DNS records for prometheus, alertmanager and grafana using Azure DNS. Note! Requires a DNS Zone
-        key: create_dns
-        widget: switch
-        type: boolean
-        default: false
-      - name: "Prometheus DNS"
-        description: "DNS to use for Prometheus."
-        key: prometheus_domain_name
-        widget: simple_text
-        type: string
-        required: true
-      - name: "Grafana DNS"
-        description: "DNS to use for Grafana."
-        key: grafana_domain_name
-        widget: simple_text
-        type: string
-        required: true
-      - name: "Alertmanager DNS"
-        description: "DNS to use for Alertmanager."
-        key: alertmanager_domain_name
-        widget: simple_text
-        type: string
-        required: true
-    - name: DNS Zone
-      technologies: [terraform]
-      condition: $create_dns == true
-      vars:
-        - name: "Azure DNS Zone"
-          description: "Azure DNS Zone name to use for creating the different monitoring records."
-          key: azure_dns_zone_name
-          widget: simple_text
-          type: string
-          default: ""
 
   - name: Monitoring tools
     groups:
@@ -704,6 +677,59 @@ use_cases:
           type: boolean
           default: true
 
+  - name: DNS
+    groups:
+    - name: DNS Creation
+      technologies: [terraform]
+      vars:
+      - name: Create DNS
+        description: Wheter to create DNS records for prometheus, alertmanager and grafana using Azure DNS. Note! Requires a DNS Zone
+        key: create_dns
+        widget: switch
+        type: boolean
+        default: false
+    - name: DNS Zone
+      technologies: [terraform]
+      condition: $create_dns == true
+      vars:
+        - name: "Azure DNS Zone"
+          description: "Azure DNS Zone name to use for creating the different monitoring records."
+          key: azure_dns_zone_name
+          widget: simple_text
+          type: string
+          default: ""
+    - name: DNS Prometheus
+      condition: $install_prometheus == true
+      technologies: [terraform]
+      vars:
+      - name: "Prometheus DNS"
+        description: "DNS to use for Prometheus."
+        key: prometheus_domain_name
+        widget: simple_text
+        type: string
+        default: prometheus.local
+
+    - name: DNS Grafana
+      condition: $install_grafana == true
+      technologies: [terraform]
+      vars:
+      - name: "Grafana DNS"
+        description: "DNS to use for Grafana."
+        key: grafana_domain_name
+        widget: simple_text
+        type: string
+        default: grafana.local
+
+    - name: DNS Alertmanager
+      condition: $install_alertmanager == true
+      technologies: [terraform]
+      vars:
+      - name: "Alertmanager DNS"
+        description: "DNS to use for Alertmanager."
+        key: alertmanager_domain_name
+        widget: simple_text
+        type: string
+        default: alertmanager.local
 
   - name: Prometheus configuration
     groups:

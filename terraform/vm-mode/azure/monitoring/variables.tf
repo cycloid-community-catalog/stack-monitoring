@@ -29,9 +29,15 @@ variable "install_grafana" {}
 variable "install_alertmanager" {}
 variable "install_prometheus" {}
 variable "azure_dns_zone_name" {}
-variable "prometheus_domain_name" {}
-variable "grafana_domain_name" {}
-variable "alertmanager_domain_name" {}
+variable "prometheus_domain_name" {
+  default = ""
+}
+variable "grafana_domain_name" {
+  default = ""
+}
+variable "alertmanager_domain_name" {
+  default = ""
+}
 
 locals {
   admin_username = var.os_admin_username == "" ? var.customer : var.os_admin_username

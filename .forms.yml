@@ -816,7 +816,7 @@ use_cases:
           key: prometheus_custom_rules
           widget: text_area
           type: raw
-          default: []
+          default: |+
         - name: "Telegraf plugins"
           description: "Telegraf input plugins to be used to collect metrics. Check more plugins [here](See telegraf inputs for more plugings https://github.com/influxdata/telegraf/tree/master/plugins/inputs)"
           key: telegraf_plugins_extra

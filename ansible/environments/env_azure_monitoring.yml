@@ -1,10 +1,13 @@
 # Prometheus
 use_ssl: true
-prometheus_domain_name: "prometheus.localhost"
+prometheus_domain_name: "prometheus.local"
 prometheus_version: v2.45.0
 prometheus_rule_files:
   - templates/rules/telegraf.rules
   - templates/rules/opsgenie.rules
+  - templates/rules/{{customer}}.rules
+prometheus_custom_rules: []
+
 prometheus_custom_configs:
   ## telegraf / node_exporter
   - job_name: 'telegraf / node_exporter'
@@ -50,12 +53,51 @@ prometheus_custom_configs:
     - source_labels: [__name__]
       action: drop
       regex: go_(.*)
+
+
+# Blackbox exporter
+# check if returns 200 and ssl valid
+install_blackbox_exporter: false
+blackbox_exporter_version: latest
+blackbox_exporter_modules:
+  http_2xx:
+    prober: http
+    timeout: 15s
+    http:
+      fail_if_not_ssl: true
+      method: GET
+      no_follow_redirects: false
+      preferred_ip_protocol: ip4
+      valid_http_versions:
+        - HTTP/1.1
+        - HTTP/2.0
+
+prometheus_blackbox_config:
+  - job_name: 'blackbox-external-targets'
+    params:
+      module: [http_2xx]
+    metrics_path: /probe
+    relabel_configs:
+      - source_labels: [ "__address__" ]
+        target_label: "__param_target"
+      - target_label: "__address__"
+        replacement: "172.17.0.2:9115"
+    static_configs:
+      - targets: ["https://cycloid.io"]
+        labels:
+          Name: "Name"
+          connection_ip: "IP"
+          customer: "{{customer}}"
+          project: "project"
+          env: "prod"
+          role: "role"
+
 #
 # Alertmanager
 #
 # Alertmanager
 install_alertmanager: true
-alertmanager_domain_name: "alertmanager.localhost"
+alertmanager_domain_name: "alertmanager.local"
 alertmanager_version: v0.25.0
 alertmanager_global:
   # ResolveTimeout is the time after which an alert is declared resolved
@@ -123,6 +165,8 @@ prometheus_alerting_external:
       static_configs:
       -  "{{external_alertmanager_targets}}"
 
+prometheus_scrape_configs: "{% if install_alertmanager %}{{ prometheus_scrape_configs_global + prometheus_custom_configs +prometheus_scrape_configs_alertmanager }}{% else %}{{ prometheus_scrape_configs_global + prometheus_custom_configs }}{% endif %}"
+
 prometheus_alerting: "{{ prometheus_alerting_local if install_alertmanager else prometheus_alerting_external }}"
 
 
@@ -131,7 +175,7 @@ prometheus_alerting: "{{ prometheus_alerting_local if install_alertmanager else 
 #
 grafana_version: 10.0.1
 install_grafana: true
-grafana_domain_name: "grafana.localhost"
+grafana_domain_name: "grafana.local"
 grafana_admin_password: "PasswordToChange!"
 grafana_database_name: "grafana"
 grafana_admin_user: "admin"
@@ -159,8 +203,6 @@ telegraf_plugins_extra:
       - 'client_id = "{{ azure_client_id }}"'
       - 'client_secret = "{{ azure_client_secret }}"'
       - 'tenant_id = "{{ azure_tenant_id }}"'
-      - "[[inputs.cloudwatch.metrics]]"
-      -   names = ["CPUCreditBalance"]
       - ## Dimension filters for Metric (optional)
       -  "[[inputs.azure_monitor.resource_group_target]]"
       -   'resource_group = "{{ azure_resource_group }}"'

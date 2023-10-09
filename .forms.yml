@@ -846,7 +846,14 @@ use_cases:
                 - ## Dimension filters for Metric (optional)
                 -  "[[inputs.azure_monitor.resource_group_target]]"
                 -   'resource_group = "{{ azure_resource_group }}"'
-        - name: Install Blackbox exporter
+
+  - name: Blackbox exporter configuration
+    groups:
+    - name: Install blackbox exporter
+      condition: $install_prometheus == true
+      technologies: [ansible]
+      vars:
+        - name: Enable Blackbox exporter
           description: Wheter to install blackbox exporter
           key: install_blackbox_exporter
           widget: switch
@@ -874,6 +881,7 @@ use_cases:
                 valid_http_versions:
                   - HTTP/1.1
                   - HTTP/2.0
+
         - name: "Prometheus blackbox scraping"
           description: "Blackbox scraping configuration to be added to prometheus, for more information please check the [official documentation](https://github.com/prometheus/blackbox_exporter/tree/master)"
           key: prometheus_blackbox_config

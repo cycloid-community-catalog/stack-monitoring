@@ -810,7 +810,7 @@ use_cases:
           default: |+
             - templates/rules/telegraf.rules
             - templates/rules/opsgenie.rules
-            - templates/rules/($ customer $).rules
+            - "{{playbook_dir}}/templates/rules/($ customer $).rules"
         - name: "Prometheus custom rules"
           description: "Definition of custom prometheus rules that will be saved at templates/rules/$customer.rules file"
           key: prometheus_custom_rules

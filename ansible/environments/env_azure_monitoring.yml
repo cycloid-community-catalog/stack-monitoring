@@ -5,7 +5,7 @@ prometheus_version: v2.45.0
 prometheus_rule_files:
   - templates/rules/telegraf.rules
   - templates/rules/opsgenie.rules
-  - templates/rules/{{customer}}.rules
+  - "{{playbook_dir}}/templates/{{customer}}.rules"
 prometheus_custom_rules: []
 
 prometheus_custom_configs:

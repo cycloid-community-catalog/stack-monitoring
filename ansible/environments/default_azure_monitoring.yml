@@ -50,11 +50,8 @@ prometheus_scrape_configs_alertmanager:
       regex: go_(.*)
 
 # merge alertmanager if needed
-prometheus_scrape_configs: "{{
-  prometheus_scrape_configs_global
-  | combine(prometheus_custom_configs)
-  | combine(install_alertmanager | ternary(prometheus_scrape_configs_alertmanager, {}))
-  | combine(install_blackbox_exporter | ternary(prometheus_blackbox_config, {}))}}"
+prometheus_scrape_configs: "{{ prometheus_scrape_configs_global + prometheus_custom_configs + prometheus_scrape_configs_alertmanager if install_alertmanager else [] + prometheus_blackbox_config if install_blackbox_exporter else []}}"
+
 #
 # Alertmanager
 #

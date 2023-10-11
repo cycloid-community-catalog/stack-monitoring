@@ -808,7 +808,6 @@ use_cases:
           widget: text_area
           type: raw
           default: |+
-            - templates/rules/telegraf.rules
             - templates/rules/opsgenie.rules
             - "{{playbook_dir}}/templates/rules/($ customer $).rules"
         - name: "Prometheus custom rules"

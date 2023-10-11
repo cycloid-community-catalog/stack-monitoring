@@ -3,7 +3,7 @@ use_ssl: true
 prometheus_domain_name: "prometheus.local"
 prometheus_version: v2.45.0
 prometheus_rule_files:
-  - templates/rules/telegraf.rules
+  #- templates/rules/telegraf.rules
   - templates/rules/opsgenie.rules
   - "{{playbook_dir}}/templates/{{customer}}.rules"
 prometheus_custom_rules: []
@@ -164,8 +164,6 @@ prometheus_alerting_external:
       scheme: https
       static_configs:
       -  "{{external_alertmanager_targets}}"
-
-prometheus_scrape_configs: "{% if install_alertmanager %}{{ prometheus_scrape_configs_global + prometheus_custom_configs +prometheus_scrape_configs_alertmanager }}{% else %}{{ prometheus_scrape_configs_global + prometheus_custom_configs }}{% endif %}"
 
 prometheus_alerting: "{{ prometheus_alerting_local if install_alertmanager else prometheus_alerting_external }}"
 

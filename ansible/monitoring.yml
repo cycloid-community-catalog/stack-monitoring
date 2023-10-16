@@ -86,7 +86,7 @@
     # create alertmanager custom rule files
     - name: "Create custom alert rule file"
       file:
-        content: "{{ prometheus_custom_rules} }"
+        content: "{{ prometheus_custom_rules }}"
         path: "templates/rules/{{customer}}.rules" # Specify the desired file path
       ignore_errors: yes  # Ignore errors if the file already exists
       when: install_prometheus | bool

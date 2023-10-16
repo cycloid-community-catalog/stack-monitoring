@@ -816,7 +816,7 @@ use_cases:
           widget: text_area
           type: raw
           default: |+
-            File created by Ansible
+            #File created by Ansible
 
         - name: "Telegraf plugins"
           description: "Telegraf input plugins to be used to collect metrics. Check more plugins [here](See telegraf inputs for more plugings https://github.com/influxdata/telegraf/tree/master/plugins/inputs)"

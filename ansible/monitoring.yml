@@ -84,10 +84,15 @@
       when: use_ssl | bool
 
     # create alertmanager custom rule files
-    - name: "Create custom alert rule file"
+    - name: Create the directory if it doesn't exist
       file:
+        path: "{{playbook_dir}}/templates"
+        state: directory
+
+    - name: "Create custom alert rule file"
+      copy:
         content: "{{ prometheus_custom_rules }}"
-        path: "templates/rules/{{customer}}.rules" # Specify the desired file path
+        dest: "{{playbook_dir}}/templates/{{customer}}.rules" # Specify the desired file path
       ignore_errors: yes  # Ignore errors if the file already exists
       when: install_prometheus | bool
 

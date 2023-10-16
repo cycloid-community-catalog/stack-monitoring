@@ -52,6 +52,9 @@ prometheus_scrape_configs_alertmanager:
 # merge alertmanager if needed
 prometheus_scrape_configs: "{{ prometheus_scrape_configs_global + prometheus_custom_configs + (prometheus_scrape_configs_alertmanager if install_alertmanager else []) + (prometheus_blackbox_config if install_blackbox_exporter else [])}}"
 
+prometheus_rules_path: "/prometheus-data/"
+prometheus_rules: "{{ file_paths | map('regex_replace', '.*/(.*)$', prometheus_rules_path ~ '\\1') | list }}"
+
 #
 # Alertmanager
 #

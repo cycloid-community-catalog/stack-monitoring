@@ -54,10 +54,9 @@ prometheus_scrape_configs: "{{ prometheus_scrape_configs_global + prometheus_cus
 
 prometheus_rules_path: "/prometheus-data/"
 prometheus_customer_file:
-- "{{customer}}.rules"
-prometheus_rule_files: "{{ prometheus_rule_files + prometheus_customer_file }}"
-prometheus_rules: "{{ prometheus_rule_files | map('regex_replace', '.*/(.*)$', prometheus_rules_path ~ '\\1') | list }}"
-
+- "/prometheus-data/{{customer}}.rules"
+prometheus_rule_all_files: "{{ prometheus_rule_files + prometheus_customer_file }}"
+prometheus_rules: "{{ prometheus_rule_all_files | map('regex_replace', '.*/(.*)$', prometheus_rules_path ~ '\\1') | list }}"
 #
 # Alertmanager
 #

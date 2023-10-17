@@ -1,0 +1,3 @@
+# Managed by Ansible
+groups:
+{{prometheus_custom_rules}}

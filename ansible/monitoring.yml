@@ -91,14 +91,11 @@
       when: install_prometheus | bool
 
     - name: "Create custom alert rule file"
-      copy:
-        content: |
-          # Managed by Ansible
-          groups
-          "{{ prometheus_custom_rules }}"
-        dest: "/opt/prometheus/prometheus-data/{{customer}}.rules" # Specify the desired file path
-      ignore_errors: yes  # Ignore errors if the file already exists
+      template:
+        src: /templates/customer.rules
+        dest: "/opt/prometheus/prometheus-data/{{customer}}.rules"
       when: install_prometheus | bool
+
 
   roles:
     # Install docker

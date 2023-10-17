@@ -1,3 +1,3 @@
 # Managed by Ansible
 groups:
-{{prometheus_custom_rules}}
+{{prometheus_custom_rules | to_json | from_json | to_nice_yaml}}

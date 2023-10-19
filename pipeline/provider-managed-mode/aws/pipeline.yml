@@ -33,17 +33,13 @@ resource_types:
 resources:
   - name: tfstate
     type: terraform
+    icon: terraform
     source:
-      env_name: ((env))
-      backend_type: s3
+      backend_type: http
       backend_config:
-        bucket: ((terraform_storage_bucket_name))
-        key: ((project))-((env)).tfstate
-        workspace_key_prefix: ((project))
-        region: ((terraform_storage_bucket_name_region))
-        access_key: ((aws_access_key))
-        secret_key: ((aws_secret_key))
-        role_arn: ((aws_role_arn))
+        address: '((cycloid_api_url))/inventory?jwt=($ inventory_jwt $)'
+        skip_cert_verification: true
+      env_name: ((env))
       vars:
         aws_access_key: ((aws_access_key))
         aws_secret_key: ((aws_secret_key))
@@ -54,13 +50,6 @@ resources:
         env: ((env))
         customer: ((customer))
         project: ((project))
-      env:
-        AWS_ACCESS_KEY_ID: ((aws_access_key))
-        AWS_DEFAULT_REGION: ((aws_default_region))
-        AWS_SECRET_ACCESS_KEY: ((aws_secret_key))
-        AWS_ROLE_ARN: ((aws_role_arn))
-
-
 
   # The Terraform stack (will be merged with the config)
   - name: git_stack-terraform

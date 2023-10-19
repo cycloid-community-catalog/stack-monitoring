@@ -1,0 +1,265 @@
+definitions:
+  tasks:
+    # The task producing a configured stack, merging stack and config.
+    - &task-merge-stack-and-config
+      task: merge-stack-and-config
+      config:
+        platform: linux
+        image_resource:
+          type: docker-image
+          source:
+            repository: cycloid/cycloid-toolkit
+            tag: latest
+        run:
+          path: /usr/bin/merge-stack-and-config
+        inputs:
+          - name: git_config_terraform
+            path: "config"
+          - name: git_stack_terraform
+            path: "stack"
+        outputs:
+          - name: merged-stack
+            path: "merged-stack"
+      params:
+        CONFIG_PATH: ((project))/terraform/aws-vm/((env))
+        STACK_PATH: terraform/vm-mode/aws
+
+
+resource_types:
+- name: terraform
+  type: docker-image
+  source:
+    repository: cycloid/terraform-resource
+    tag: ((terraform_version))
+
+groups:
+- name: ((project))-((env))
+  jobs:
+  - terraform-plan
+  - terraform-apply
+  - deploy
+- name: destroy
+  jobs:
+  - terraform-destroy
+
+resources:
+- name: tfstate
+  type: terraform
+  icon: terraform
+  source:
+    backend_type: http
+    backend_config:
+      address: '((cycloid_api_url))/inventory?jwt=($ inventory_jwt $)'
+      skip_cert_verification: true
+    env_name: ((env))
+    vars:
+      env: ((env))
+      project: ((project))
+      customer: ((customer))
+      keypair_public: ((ssh_public_key))
+      aws_access_key: ((aws_access_key))
+      aws_secret_key: ((aws_secret_key))
+      aws_region: ((aws_default_region))
+      aws_role_arn: ((aws_role_arn))
+      resource_group_name: ((resource_group_name))
+      resource_group_location: ((resource_group_location))
+
+- name: git_stack_ansible
+  type: git
+  icon: github-circle
+  source:
+    uri: ($ scs_url $)
+    branch: ($ scs_branch $)
+    private_key: ((stack_git_private_key))
+    paths:
+      - ansible/*
+
+- name: git_config_ansible
+  type: git
+  source:
+    uri: ($ cr_url $)
+    branch: ($ cr_branch $)
+    private_key: ((config_git_private_key))
+    paths:
+      - ((project))/ansible/environments/((env))_aws_monitoring.yml
+
+- name: git_stack_terraform
+  type: git
+  icon: github-circle
+  source:
+    uri: ($ scs_url $)
+    branch: ($ scs_branch $)
+    private_key: ((stack_git_private_key))
+    # Include only the Terraform files in the specified directory.
+    paths:
+      - terraform/vm-mode/aws/*
+
+- name: git_config_terraform
+  type: git
+  icon: github-circle
+  source:
+    uri: ($ cr_url $)
+    branch: ($ cr_branch $)
+    private_key: ((config_git_private_key))
+    # Include only the Terraform files in the specified directory.
+    paths:
+      - ((project))/terraform/aws-vm/((env))/*
+
+jobs:
+  - name: terraform-plan
+    serial: true
+    serial_groups: [terraform]
+    max_in_flight: 1
+    build_logs_to_retain: 10
+    plan:
+      - do:
+        - get: git_stack_terraform
+          trigger: true
+        - get: git_config_terraform
+          trigger: true
+        - *task-merge-stack-and-config
+        - put: tfstate
+          params:
+            plan_only: true
+            terraform_source: merged-stack/
+
+  - name: terraform-apply
+    serial: true
+    serial_groups: [terraform]
+    build_logs_to_retain: 10
+    plan:
+      - do:
+        - get: git_stack_terraform
+          trigger: false
+          passed:
+            - terraform-plan
+        - get: git_config_terraform
+          trigger: false
+          passed:
+            - terraform-plan
+        - get: tfstate
+          trigger: false
+          passed:
+            - terraform-plan
+        - *task-merge-stack-and-config
+        - put: tfstate
+          params:
+            plan_run: true
+            terraform_source: merged-stack/
+
+  - name: deploy
+    build_logs_to_retain: 10
+    plan:
+    - do:
+      - get: tfstate
+        trigger: true
+        passed:
+          - terraform-apply
+
+      - get: git_stack_ansible
+        trigger: true
+
+      - get: git_config_ansible
+        trigger: true
+
+      - task: merge-stack-and-config
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: cycloid/cycloid-toolkit
+              tag: latest
+          run:
+            path: /bin/bash
+            args:
+              - '-exc'
+              - |
+                /usr/bin/merge-stack-and-config
+
+                # create inventory file
+                echo -e "[tag_vm_monitoring_aws]" >> merged-stack/inventory
+                jq -r '.machine_ip_private_address' terraform/metadata >> merged-stack/inventory
+                cat merged-stack/inventory
+
+                # copy nginx certificates
+                echo -e "${NGINX_SSL_KEY}" > merged-stack/files/nginx/ssl/prometheus.key
+                echo -e "${NGINX_SSL_CERTIFICATE}" > merged-stack/files/nginx/ssl/prometheus.crt
+          inputs:
+            - name: git_config_ansible
+              path: "config"
+            - name: git_stack_ansible
+              path: "stack"
+            - name: tfstate
+              path: "terraform"
+          outputs:
+            - name: merged-stack
+              path: "merged-stack"
+        params:
+          CONFIG_PATH: ((project))/ansible
+          STACK_PATH: ansible
+          NGINX_SSL_CERTIFICATE: ((nginx_certificate))
+          NGINX_SSL_KEY: ((nginx_certificate_key))
+
+      - task: run-ansible
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: cycloid/cycloid-toolkit
+              tag: "v((ansible_version))"
+          run:
+            path: /bin/bash
+            args:
+              - '-exc'
+              - |
+                # Static inventory
+                ansible-inventory -i inventory --graph
+                /usr/bin/ansible-runner
+          caches:
+            - path: ansible-playbook/roles
+          inputs:
+          - name: merged-stack
+            path: ansible-playbook
+        params:
+          SSH_PRIVATE_KEY: ((ssh_private_key))
+          ANSIBLE_PLAYBOOK_PATH: ansible-playbook
+          ANSIBLE_PLAYBOOK_NAME: monitoring.yml
+          AWS_USE_PRIVATE_IP: false
+          ANSIBLE_INVENTORY: inventory
+          ANSIBLE_REMOTE_USER:  ((customer))
+          EXTRA_ANSIBLE_ARGS: "-i inventory"
+          ANSIBLE_FORCE_GALAXY: false
+          EXTRA_ARGS: "--limit tag_vm_monitoring_aws"
+          EXTRA_ANSIBLE_VARS:
+            env: ((env))
+            project: ((project))
+            customer: ((customer))
+            role: "monitoring"
+            grafana_web_login: ((grafana_web_login))
+            grafana_admin_password: ((grafana_admin_password))
+            grafana_admin_user: ((grafana_admin_user))
+            alertmanager_web_login: ((alertmanager_web_login))
+            prometheus_web_login: ((prometheus_web_login))
+            external_alertmanager_password: ((external_alertmanager_password))
+            external_alertmanager_username: ((external_alertmanager_username))
+            external_alertmanager_targets: ((external_alertmanager_targets))
+
+  - name: terraform-destroy
+    serial: true
+    serial_groups: [terraform]
+    build_logs_to_retain: 10
+    plan:
+      - do:
+          - get: git_stack_terraform
+            trigger: false
+          - get: git_config_terraform
+            trigger: false
+          - *task-merge-stack-and-config
+          - put: tfstate
+            params:
+              action: destroy
+              terraform_source: merged-stack/
+            get_params:
+              action: destroy

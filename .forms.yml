@@ -56,7 +56,7 @@ shared:
         key: aws_role_arn
         widget: simple_text
         type: string
-        required: true
+        default: ""
       - name: "Amazon AWS region"
         description: "Amazon AWS region to use for Terraform."
         key: aws_default_region
@@ -64,12 +64,6 @@ shared:
         type: string
         values: ["eu-north-1","ap-south-1","eu-west-3","eu-west-2","eu-west-1","ap-northeast-2","ap-northeast-1","sa-east-1","ca-central-1","ap-southeast-1","ap-southeast-2","eu-central-1","us-east-1","us-east-2","us-west-1","us-west-2"]
         default: eu-west-1
-      - name: "Terraform storage bucket"
-        description: "AWS S3 bucket name to store terraform remote state file."
-        key: terraform_storage_bucket_name
-        widget: simple_text
-        type: string
-        default: ($ organization_canonical $)-terraform-remote-state
       - name: "Amazon AWS region"
         description: "Amazon AWS region where the tfstate bucket is."
         key: terraform_storage_bucket_name_region
@@ -161,21 +155,6 @@ shared:
         type: string
         default: "2.9"
 
-  - name: SSH Key
-    technologies: [pipeline]
-    vars:
-      - name: "SSH private Key"
-        description: "SSH private key to use."
-        key: ssh_private_key
-        widget: cy_cred
-        type: string
-        required: true
-      - name: "SSH public key"
-        description: "SSH public key to use."
-        key: ssh_public_key
-        widget: cy_cred
-        type: string
-        required: true
 version: "2"
 use_cases:
 - name: aws-managed
@@ -627,6 +606,22 @@ use_cases:
           type: array
           required: true
 
+    - name: SSH Key
+      technologies: [pipeline]
+      vars:
+        - name: "SSH private Key"
+          description: "SSH private key to use."
+          key: ssh_private_key
+          widget: cy_cred
+          type: string
+          required: true
+        - name: "SSH public key"
+          description: "SSH public key to use."
+          key: ssh_public_key
+          widget: cy_cred
+          type: string
+          required: true
+
   - name: SSL configuration
     groups:
     - name: Enable SSL
@@ -809,7 +804,6 @@ use_cases:
           type: raw
           default: |+
             - templates/rules/opsgenie.rules
-            - "{{playbook_dir}}/templates/rules/($ customer $).rules"
         - name: "Prometheus custom rules"
           description: "Definition of custom prometheus rules that will be saved at templates/rules/$customer.rules file"
           key: prometheus_custom_rules
@@ -818,7 +812,7 @@ use_cases:
           default: |+
             - #File created by Ansible
         - name: "Telegraf plugins"
-          description: "Telegraf input plugins to be used to collect metrics. Check more plugins [here](See telegraf inputs for more plugings https://github.com/influxdata/telegraf/tree/master/plugins/inputs)"
+          description: "Telegraf input plugins to be used to collect metrics. Check more plugins [here](https://github.com/influxdata/telegraf/tree/master/plugins/inputs)"
           key: telegraf_plugins_extra
           widget: text_area
           type: raw
@@ -845,6 +839,529 @@ use_cases:
                 - ## Dimension filters for Metric (optional)
                 -  "[[inputs.azure_monitor.resource_group_target]]"
                 -   'resource_group = "{{ azure_resource_group }}"'
+        - name: Install Blackbox exporter
+          description: Wheter to install blackbox exporter
+          key: install_blackbox_exporter
+          widget: switch
+          type: boolean
+          default: false
+
+    - name: Blackbox exporter configuration
+      condition: $install_blackbox_exporter == true
+      technologies: [ansible]
+      vars:
+        - name: "Blackbox exporter modules"
+          description: "Blackbox exporter modules to be used, for more information please check the [official documentation](https://github.com/prometheus/blackbox_exporter/blob/master/CONFIGURATION.md)"
+          key: blackbox_exporter_modules
+          widget: text_area
+          type: raw
+          default: |+
+            http_2xx:
+              prober: http
+              timeout: 15s
+              http:
+                fail_if_not_ssl: true
+                method: GET
+                no_follow_redirects: false
+                preferred_ip_protocol: ip4
+                valid_http_versions:
+                  - HTTP/1.1
+                  - HTTP/2.0
+        - name: "Prometheus blackbox scraping"
+          description: "Blackbox scraping configuration to be added to prometheus, for more information please check the [official documentation](https://github.com/prometheus/blackbox_exporter/tree/master)"
+          key: prometheus_blackbox_config
+          widget: text_area
+          type: raw
+          default: |+
+            - job_name: 'blackbox-targets'
+              params:
+                module: [http_2xx]
+              metrics_path: /probe
+              relabel_configs:
+                - source_labels: [ "__address__" ]
+                  target_label: "__param_target"
+                - target_label: "__address__"
+                  replacement: "172.17.0.2:9115"
+              static_configs:
+                - targets: ["https://cycloid.io"]
+                  labels:
+                    Name: "Name"
+                    connection_ip: "IP"
+                    customer: "{{customer}}"
+                    project: "project"
+                    env: "prod"
+                    role: "role"
+
+  - name: Alertmanager Configuration
+    groups:
+    - name: Alertmanager credentials
+      condition: $install_alertmanager == true
+      technologies: [pipeline]
+      vars:
+        - name: "Alertmanager weblogin"
+          description: "Htpasswd can be generated using `htpasswd -nb user password`"
+          key: alertmanager_web_login
+          type: string
+          widget: cy_cred
+    - name: Alertmanager General Configuration
+      technologies: [ansible]
+      condition: $install_alertmanager == true
+      vars:
+        - name: "Alertmanager global configuration"
+          description: "The global configuration, as specified in the oficial documentation [here](TODO)."
+          key: alertmanager_global
+          widget: text_area
+          type: raw
+          default: |+
+            # ResolveTimeout is the time after which an alert is declared resolved
+            # if it has not been updated.
+            resolve_timeout: 15m
+            # The smarthost and SMTP sender used for mail notifications.
+            smtp_smarthost: "smtp.gmail.com:587"
+            smtp_from: "foo@bar.com"
+            smtp_auth_username: "foo@bar.com"
+            smtp_auth_password: "barfoo"
+
+        - name: "Alertmanager route"
+          description: "The root node of the routing tree, as specified in the oficial documentation [here](TODO)."
+          key: alertmanager_route
+          widget: text_area
+          type: raw
+          default: |+
+            receiver: default
+            group_by:
+              - customer
+              - project
+              - env
+              - alertname
+            group_wait: 30s
+            group_interval: 5m
+            repeat_interval: 15m
+            routes:
+            - match:
+                receiver: 'null'
+              receiver: dev_null
+
+            - match:
+                receiver: email
+                severity: critical
+              receiver: default
+
+        - name: "Alertmanager inhibition rules"
+          description: "A list of inhibition rules, as specified in the oficial documentation [here](TODO)."
+          key: alertmanager_inhibit_rules
+          widget: text_area
+          type: raw
+          default: |+
+            - source_match:
+              severity: critical
+            target_match:
+              severity: warning
+            equal:
+            - instance
+            - customer
+            - project
+            - env
+            - alertname
+        - name: "Alertmanager receivers"
+          description: "A list of notification receivers., as specified in the oficial documentation [here](TODO)."
+          key: alertmanager_receivers
+          widget: text_area
+          type: raw
+          default: |+
+            - name: 'default'
+              email_configs:
+              - to: "foo@bar.com"
+                # Whether or not to notify about resolved alerts.
+                send_resolved: true
+
+            - name: 'dev_null'
+              # Deliberately left empty to not deliver anywhere.
+    - name: Alertmanager External access
+      technologies: [pipeline]
+      condition: $install_alertmanager == false && $install_prometheus == true
+      vars:
+        - name: "Specify external alertmanager username"
+          description: "Basic authentification username to use to connect to external alertmanager"
+          key: external_alertmanager_username
+          widget: cy_cred
+          type: string
+        - name: "Specify external alertmanager password"
+          description: "Basic authentification passowrd to use to connect to external alertmanager"
+          key: external_alertmanager_password
+          widget: cy_cred
+          type: string
+        - name: "Specify external alertmanager targets"
+          description: "The targets to use to connect to external alertmanager. Examples [here](TODO)"
+          key: external_alertmanager_targets
+          widget: text_area
+          type: raw
+
+  - name: Grafana configuration
+    groups:
+    - name: Grafana credentials
+      condition: $install_grafana == true
+      technologies: [pipeline]
+      vars:
+        - name: "Grafana weblogin"
+          description: "Htpasswd can be generated using `htpasswd -nb user password`"
+          key: grafana_web_login
+          type: string
+          widget: cy_cred
+        - name: "Grafana Admin Password"
+          description: "Grafana admin password to use for the local db and the service"
+          key: grafana_admin_password
+          type: string
+          widget: cy_cred
+        - name: "Grafana Admin User"
+          description: "Grafana admin user to use for the local db and the service"
+          key: grafana_admin_user
+          type: string
+          widget: cy_cred
+    - name: Grafana Configuration
+      technologies: [ansible]
+      condition: $install_grafana == true
+      vars:
+        - name: "Grafana version"
+          description: "Grafana version to use."
+          key: grafana_version
+          widget: simple_text
+          type: string
+          default: "10.0.1"
+# TODO recheck credentials exposed grafana
+
+- name: aws-vm
+  sections:
+  - *aws-global
+  - name: VM Definition
+    groups:
+    - name: General
+      technologies: [terraform]
+      vars:
+        - name: "Instance type"
+          description: "Instance type for the worker."
+          key: vm_size
+          widget: auto_complete
+          type: string
+          default: "Standard_DS1_v2" TODO
+          values:
+              - "Standard_DS1_v2"
+              - "Standard_DS2_v2"
+              - "Standard_DS3_v2"
+        - name: "Disk size"
+          unit: Go
+          description: "Root Disk size for the instance."
+          key: os_disk_size
+          widget: slider_range
+          type: integer
+          default: 30
+          values:
+              - 30
+              - 250
+
+        todo: optional_iam_policies +os_disk_type
+        - name: "Extra tags"
+          description: "Dict of extra tags to add to resources."
+          key: extra_tags
+          widget: text_area
+          type: raw
+          default: "{}"
+    - name: General Network
+      technologies: [terraform]
+      vars:
+        - name: "Subnet ID"
+          description: "Subnet ID where to create VM."
+          key: subnet_id
+          widget: simple_text
+          type: string
+          required: true
+        - name: "VPC ID"
+          description: "VPC ID where to create VM."
+          key: vpc_id
+          widget: simple_text
+          type: string
+          required: true
+        - name: "Bastion Security Group"
+          description: "Security group ID of the bastion to allow SSH access."
+          key: bastion_sg_allow
+          widget: simple_text
+          type: string
+        - name: "SSH IPs to allow"
+          description: "List of SSH IPs to allow. Note! Can only be used if bastion not mentioned."
+          key: ssh_ips_to_allow
+          widget: text_area
+          type: array
+        - name: "SSH IPs to allow"
+          description: "Map of VPCs to enable scraping. To allow the creation of the corresponding security groups to be used."
+          key: vpcs_to_scrape
+          widget: text_area
+          type: array
+# TODO default
+
+    - name: SSH Key creation
+      technologies: [pipeline]
+      vars:
+        - name: "Create ssh keypair"
+          description: "Wheter to create an aws keypair."
+          key: create_keypair
+          widget: switch
+          type: boolean
+          default: false
+        - name: "SSH Keypair name"
+          description: "Name of the SSH pairkey to create or use in AWS"
+          key: keypair_name
+          type: string
+          widget: simple_text
+          required: true
+        - name: "SSH private Key"
+          description: "SSH private key to use."
+          key: ssh_private_key
+          widget: cy_cred
+          type: string
+          required: true
+        - name: "SSH public key"
+          description: "SSH public key to use."
+          key: ssh_public_key
+          widget: cy_cred
+          type: string
+
+
+  - name: SSL configuration
+    groups:
+    - name: Enable SSL
+      technologies: [ansible]
+      vars:
+        - name: "Enable Nginx HTTPs"
+          description: "Select wheter to enable HTTPs traffic and using SSL certificates. Recommended expect for test purposes"
+          key: use_ssl
+          type: boolean
+          widget: switch
+          default: true
+    - name: SSL configuration
+      condition: $use_ssl == true
+      technologies: [ansible]
+      vars:
+        - name: "Nginx certificate"
+          description: "Credential containing nginx certificate to be used by server"
+          key: nginx_certificate
+          type: string
+          widget: cy_cred
+        - name: "Nginx certificate key"
+          description: "Credential containing nginx certificate to be used by server"
+          key: nginx_certificate_key
+          type: string
+          widget: cy_cred
+
+  - name: Monitoring tools
+    groups:
+    - name: Select tools to install
+      technologies: [terraform, ansible]
+      vars:
+        - name: "Install Grafana"
+          description: "Wheter to install Grafana on the machine."
+          key: install_grafana
+          widget: switch
+          type: boolean
+          default: true
+        - name: "Install Alertmanager"
+          description: "Wheter to install Grafana on the machine."
+          key: install_alertmanager
+          widget: switch
+          type: boolean
+          default: true
+        - name: "Install Prometheus"
+          description: "Wheter to install Prometheus on the machine."
+          key: install_prometheus
+          widget: switch
+          type: boolean
+          default: true
+
+  - name: DNS
+    groups:
+    - name: DNS Creation
+      technologies: [terraform]
+      vars:
+      - name: Create DNS
+        description: Wheter to create DNS records for prometheus, alertmanager and grafana using Azure DNS. Note! Requires a DNS Zone
+        key: create_dns
+        widget: switch
+        type: boolean
+        default: false
+    - name: DNS Zone
+      technologies: [terraform]
+      condition: $create_dns == true
+      vars:
+        - name: "Azure DNS Zone"
+          description: "Azure DNS Zone name to use for creating the different monitoring records."
+          key: azure_dns_zone_name
+          widget: simple_text
+          type: string
+          default: ""
+    - name: DNS Prometheus
+      condition: $install_prometheus == true
+      technologies: [terraform]
+      vars:
+      - name: "Prometheus DNS"
+        description: "DNS to use for Prometheus."
+        key: prometheus_domain_name
+        widget: simple_text
+        type: string
+        default: prometheus.local
+
+    - name: DNS Grafana
+      condition: $install_grafana == true
+      technologies: [terraform]
+      vars:
+      - name: "Grafana DNS"
+        description: "DNS to use for Grafana."
+        key: grafana_domain_name
+        widget: simple_text
+        type: string
+        default: grafana.local
+
+    - name: DNS Alertmanager
+      condition: $install_alertmanager == true
+      technologies: [terraform]
+      vars:
+      - name: "Alertmanager DNS"
+        description: "DNS to use for Alertmanager."
+        key: alertmanager_domain_name
+        widget: simple_text
+        type: string
+        default: alertmanager.local
+
+  - name: Prometheus configuration
+    groups:
+    - name: Prometheus credentials
+      condition: $install_prometheus == true
+      technologies: [pipeline]
+      vars:
+        - name: "Prometheus weblogin"
+          description: "Htpasswd can be generated using `htpasswd -nb user password`"
+          key: prometheus_web_login
+          type: string
+          widget: cy_cred
+    - name: General Configuration
+      condition: $install_prometheus == true
+      technologies: [ansible]
+      vars:
+        - name: "Prometheus version"
+          description: "Prometheus version to use."
+          key: prometheus_version
+          widget: simple_text
+          type: string
+          default: "v2.45.0"
+        - name: "Prometheus scraping config"
+          description: "Prometheus scraping config to use. Note! prometheus and alertmanager are scraped. By default For more information check [prometheus wiki](https://prometheus.io/docs/prometheus/latest/configuration/configuration/)"
+          key: prometheus_custom_configs
+          widget: text_area
+          type: raw
+          default: |+
+            ## telegraf / node_exporter
+            - job_name: 'telegraf / node_exporter'
+              scheme: http
+              ec2_sd_configs:
+              - region: "{{ aws_default_region }}"
+                port: 9100
+
+              relabel_configs:
+              - source_labels: [__meta_ec2_tag_monitoring_discovery]
+                action: drop
+                regex: false
+
+              - source_labels: [__meta_ec2_private_ip]
+                regex: '^(.+)$'
+                replacement: '${1}:9100'
+                target_label: __address__
+
+              # Force labels on metrics
+              # Instance label : Public IP, if not, default private IP
+              - source_labels: [__meta_ec2_private_ip]
+                action: replace
+                target_label: instance
+              - source_labels: [__meta_ec2_public_ip]
+                regex: '^(.+)$'
+                replacement: '${1}'
+                target_label: instance
+
+              # Get some ec2 labels
+              - source_labels: [__meta_ec2_tag_Name]
+                target_label: Name
+              - source_labels: [__meta_ec2_tag_project]
+                target_label: project
+              - source_labels: [__meta_ec2_tag_env]
+                target_label: env
+              - source_labels: [__meta_ec2_tag_role]
+                target_label: role
+              - source_labels: [__meta_ec2_tag_customer]
+                target_label: customer
+              - source_labels: [__meta_ec2_availability_zone]
+                target_label: availability_zone
+              - source_labels: [__meta_ec2_instance_id]
+                target_label: instance_id
+
+              metric_relabel_configs:
+              # Don't store unwanted metrics
+              - source_labels: [__name__]
+                action: drop
+                regex: go_(.*)
+
+              # Overrides mechanism of ec2 labels on the metric scope
+              - source_labels: [cycloid_tag_Name]
+                regex: '(.+)'
+                target_label: Name
+              - source_labels: [cycloid_tag_project]
+                regex: '(.+)'
+                target_label: project
+              - source_labels: [cycloid_tag_env]
+                regex: '(.+)'
+                target_label: env
+              - source_labels: [cycloid_tag_role]
+                regex: '(.+)'
+                target_label: role
+              - source_labels: [cycloid_tag_customer]
+                regex: '(.+)'
+                target_label: customer
+              - source_labels: [cycloid_tag_availability_zone]
+                regex: '(.+)'
+                target_label: availability_zone
+              - source_labels: [cycloid_tag_instance_id]
+                regex: '(.+)'
+                target_label: instance_id
+
+              # Remove cycloid_tag_* labels
+              - regex: 'cycloid_tag_.*'
+                action: labeldrop
+
+        - name: "Prometheus rules"
+          description: "Definition of prometheus rules. Other default available in the role ansible-prometheus/templates/rules, you can also create news and add to the config repository."
+          key: prometheus_rule_files
+          widget: text_area
+          type: raw
+          default: |+
+            - templates/rules/opsgenie.rules
+        - name: "Prometheus custom rules"
+          description: "Definition of custom prometheus rules that will be saved at templates/rules/$customer.rules file"
+          key: prometheus_custom_rules
+          widget: text_area
+          type: raw
+          default: |+
+            - #File created by Ansible
+        - name: "Telegraf plugins"
+          description: "Telegraf input plugins to be used to collect metrics. Check more plugins [here](https://github.com/influxdata/telegraf/tree/master/plugins/inputs)"
+          key: telegraf_plugins_extra
+          widget: text_area
+          type: raw
+          default: |+
+            processes:
+            kernel:
+            linux_sysctl_fs:
+            conntrack:
+
+            nginx:
+              config:
+                - urls = ["http://127.0.0.1/nginx_status"]
+
         - name: Install Blackbox exporter
           description: Wheter to install blackbox exporter
           key: install_blackbox_exporter

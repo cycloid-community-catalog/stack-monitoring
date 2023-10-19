@@ -63,7 +63,24 @@ config:
         path: 'ansible/environments/env_azure_monitoring.yml'
         destination: '($ project $)/ansible/environments/($ environment $)_azure_monitoring.yml'
 
-#  aws-vm:
+  aws-vm:
+    name: 'AWS VM solution'
+    description: 'Deploys monitoring solutions as local containers in EC2'
+    pipeline:
+      pipeline:
+        path: 'pipeline/vm-mode/aws/pipeline.yml'
+      variables:
+        path: 'pipeline/vm-mode/aws/variables.sample.yml'
+        destination: '($ project $)/pipeline/aws-vm/variables-($ environment $).yml'
+    terraform:
+      aws-vm:
+        path: 'terraform/vm-mode/aws/monitoring.tf.sample'
+        destination: '($ project $)/terraform/aws-vm/($ environment $)/monitoring.tf'
+    ansible:
+      aws-vm:
+        path: 'ansible/environments/env_aws_monitoring.yml'
+        destination: '($ project $)/ansible/environments/($ environment $)_aws_monitoring.yml'
+
 #  gcp-vm:
 
 # K8S PROMETHEUS STACK MODE

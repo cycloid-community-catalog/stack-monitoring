@@ -1,7 +1,7 @@
 ---
 
 #
-# Prometheus
+# Install in Azure VM
 #
 - hosts: tag_vm_monitoring_azure
   become: yes
@@ -92,7 +92,7 @@
 
     - name: "Create custom alert rule file"
       template:
-        src: /templates/customer.rules
+        src: templates/customer.rules
         dest: "/opt/prometheus/prometheus-data/{{customer}}.rules"
       when: install_prometheus | bool
 
@@ -122,6 +122,79 @@
       when: install_grafana
       tags:
         - mysql
+
+    # Install prometheus, alertmanager and grafana
+    - role: cycloid.prometheus
+      path: /opt/prometheus
+      tags:
+        - prometheus
+
+    # Monitoring client part
+    - role: cycloid.telegraf
+      tags:
+        - telegraf
+
+    # Install nginx
+    - role: jdauphant.nginx
+      tags:
+        - nginx
+
+
+
+#
+# Install in AWS VM
+#
+- hosts: tag_vm_monitoring_aws
+  become: yes
+  serial: 50%
+
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+
+  vars_files:
+    - "environments/default_aws_monitoring.yml"
+    - "environments/{{env}}_aws_monitoring.yml"
+
+  pre_tasks:
+    # install ssl certificates for nginx
+    - name: "Create SSL directory"
+      file:
+        path: "{{ certificates_dest }}"
+        state: directory
+      when: use_ssl | bool
+
+    - name: "Install SSL certificates"
+      copy:
+        src: "{{ item }}"
+        dest: "{{ certificates_dest }}"
+        mode: 0600
+      with_fileglob:
+        - "{{ certificates_src }}"
+      when: use_ssl | bool
+
+    # create alertmanager custom rule files
+    - name: Create the directory if it doesn't exist
+      file:
+        path: "/opt/prometheus/prometheus-data/"
+        state: directory
+      when: install_prometheus | bool
+
+    - name: "Create custom alert rule file"
+      template:
+        src: templates/customer.rules
+        dest: "/opt/prometheus/prometheus-data/{{customer}}.rules"
+      when: install_prometheus | bool
+
+
+  roles:
+    # Install docker
+    - role: geerlingguy.docker
+      docker_packages:
+        - "docker-{{ docker_edition }}"
+        - "docker-{{ docker_edition }}-cli"
+        - "containerd.io"
+      tags:
+        - docker
 
     # Install prometheus, alertmanager and grafana
     - role: cycloid.prometheus

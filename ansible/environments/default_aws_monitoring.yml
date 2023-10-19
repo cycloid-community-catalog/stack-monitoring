@@ -1,0 +1,239 @@
+# General variables that usually dont change per environment/scenario
+install_prometheus: true
+external_url_schema: "{% if use_ssl %}https{% else %}http{% endif %}"
+
+#
+# Prometheus
+#
+
+prometheus_data_retention: 60d
+
+# Override to keep less longer datas default 15d
+prometheus_commandline_args:
+  config.file: "/prometheus-data/prometheus.yml"
+  storage.tsdb.path: "/prometheus-data/data"
+  storage.tsdb.retention.time: "{{ prometheus_data_retention }}"
+  web.external-url: "{{ external_url_schema }}://{{ prometheus_hostname }}"
+
+prometheus_scrape_interval: 1m
+prometheus_evaluation_interval: 1m
+
+default_alert_rules: false
+
+prometheus_scrape_configs_global:
+  ## Prometheus
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+        labels:
+          Name: "prometheus"
+          project: "{{ project }}"
+          env: "{{ env }}"
+          role: "{{ role }}"
+          customer: "{{ customer }}"
+
+    metric_relabel_configs:
+    # Not store unwanted metrics
+    - source_labels: [__name__]
+      action: drop
+      regex: go_(.*)
+
+prometheus_scrape_configs_alertmanager:
+  - job_name: 'alertmanager'
+    static_configs:
+      - targets: ['localhost:9093']
+
+    metric_relabel_configs:
+    # Don't store unwanted metrics
+    - source_labels: [__name__]
+      action: drop
+      regex: go_(.*)
+
+# merge alertmanager if needed
+prometheus_scrape_configs: "{{ prometheus_scrape_configs_global + prometheus_custom_configs + (prometheus_scrape_configs_alertmanager if install_alertmanager else []) + (prometheus_blackbox_config if install_blackbox_exporter else [])}}"
+
+prometheus_rules_path: "/prometheus-data/"
+prometheus_customer_file:
+- "/prometheus-data/{{customer}}.rules"
+prometheus_rule_all_files: "{{ prometheus_rule_files + prometheus_customer_file }}"
+prometheus_rules: "{{ prometheus_rule_all_files | map('regex_replace', '.*/(.*)$', prometheus_rules_path ~ '\\1') | list }}"
+#
+# Alertmanager
+#
+alertmanager_ip: "localhost"
+alertmanager_templates: "/alertmanager/template/*.tmpl"
+alertmanager_commandline_args:
+  config.file: "/alertmanager/alertmanager.yml"
+  web.external-url: "{{ external_url_schema }}://{{ alertmanager_hostname }}"
+
+#
+# grafana
+#
+
+# Note : Grafana service is installed with the Docker image grafana/grafana.
+# To provision grafana datasources admin account is used by ansible.
+grafana_database_name: "grafana"
+grafana_database_type: "sql"
+
+grafana_dashboards_files:
+  - "{{ playbook_dir }}/files/grafana/dashboards/*.json"
+
+grafana_provisioning_files:
+  - "{{ playbook_dir }}/files/grafana/provisioning/dashboards/*.yml"
+  - "{{ playbook_dir }}/files/grafana/provisioning/datasources/*.yml"
+  - "{{ playbook_dir }}/files/grafana/provisioning/notifiers/*.yml"
+
+#
+# Nginx
+#
+
+prometheus_certificate_name: prometheus.crt
+prometheus_certificate_key_name: prometheus.key
+alertmanager_certificate_name: "{{ prometheus_certificate_name }}"
+alertmanager_certificate_key_name: "{{ prometheus_certificate_key_name }}"
+grafana_certificate_name: "{{ prometheus_certificate_name }}"
+grafana_certificate_key_name: "{{ prometheus_certificate_key_name }}"
+
+certificates_src: "{{ playbook_dir }}/files/nginx/ssl/*"
+certificates_dest: "/etc/nginx/ssl"
+
+nginx_configs:
+  proxy:
+    - proxy_set_header X-Real-IP  $remote_addr
+    - proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for
+  gzip:
+    - gzip on
+    - gzip_disable msie6
+  global:
+    - client_max_body_size 5m
+  misc:
+    - server_names_hash_max_size 512
+    - server_names_hash_bucket_size 128
+
+nginx_remove_sites:
+  - default
+
+nginx_status_http:
+  00-status:
+    - listen 80
+    - server_name 127.0.0.1
+    - location / {
+       deny all;
+      }
+    - location /nginx_status {
+        stub_status on;
+        access_log   off;
+        allow 127.0.0.1;
+        deny all;
+      }
+
+nginx_status_https:
+  00-status:
+    - listen 80
+    - server_name 127.0.0.1
+    - location / {
+       deny all;
+      }
+    - location /nginx_status {
+        stub_status on;
+        access_log   off;
+        allow 127.0.0.1;
+        deny all;
+      }
+
+nginx_grafana_http:
+  07-grafana-80:
+    - listen 80
+    - server_name {{ grafana_domain_name }}
+    # - auth_basic            "Restricted"
+    # - auth_basic_user_file  auth_basic/grafana
+    - location / {
+        proxy_pass http://127.0.0.1:3000;
+        proxy_set_header   X-FORWARDED_PROTO http;
+        proxy_set_header   X-FORWARDED_PORT 80;
+      }
+nginx_grafana_https:
+  07-grafana-443:
+    - listen 443 ssl
+    - server_name {{ grafana_domain_name }}
+    - ssl_certificate  {{ certificates_dest }}/{{ grafana_certificate_name }}
+    - ssl_certificate_key {{ certificates_dest }}/{{ grafana_certificate_key_name }}
+
+    # - auth_basic            "Restricted"
+    # - auth_basic_user_file  auth_basic/grafana
+    - location / {
+        proxy_pass http://127.0.0.1:3000;
+        proxy_set_header   X-FORWARDED_PROTO http;
+        proxy_set_header   X-FORWARDED_PORT 80;
+      }
+
+nginx_prometheus_http:
+  08-prometheus-80:
+    - listen 80
+    - server_name {{ prometheus_domain_name }}
+    - auth_basic            "Restricted"
+    - auth_basic_user_file  auth_basic/prometheus
+    - location / {
+        proxy_pass http://127.0.0.1:9090;
+        proxy_set_header   X-FORWARDED_PROTO http;
+        proxy_set_header   X-FORWARDED_PORT 80;
+      }
+nginx_prometheus_https:
+  12-prometheus-443:
+     - listen 443 ssl default_server
+     - server_name {{ prometheus_domain_name }}
+     - ssl_certificate  {{ certificates_dest }}/{{ prometheus_certificate_name }}
+     - ssl_certificate_key {{ certificates_dest }}/{{ prometheus_certificate_key_name }}
+     - auth_basic            "Restricted"
+     - auth_basic_user_file  auth_basic/prometheus
+     - location / {
+         proxy_pass http://127.0.0.1:9090;
+         proxy_set_header   X-FORWARDED_PROTO https;
+         proxy_set_header   X-FORWARDED_PORT 443;
+       }
+
+nginx_alertmanager_http:
+  09-alertmanager-80:
+    - listen 80
+    - server_name {{ alertmanager_domain_name }}
+    - auth_basic            "Restricted"
+    - auth_basic_user_file  auth_basic/alertmanager
+    - location / {
+        proxy_pass http://127.0.0.1:9093;
+        proxy_set_header   X-FORWARDED_PROTO http;
+        proxy_set_header   X-FORWARDED_PORT 80;
+      }
+nginx_alertmanager_https:
+  13-alertmanager-443:
+     - listen 443 ssl
+     - server_name {{ alertmanager_domain_name }}
+     - ssl_certificate  {{ certificates_dest }}/{{ alertmanager_certificate_name }}
+     - ssl_certificate_key {{ certificates_dest }}/{{ alertmanager_certificate_key_name }}
+     - auth_basic            "Restricted"
+     - auth_basic_user_file  auth_basic/alertmanager
+     - location / {
+         proxy_pass http://127.0.0.1:9093;
+         proxy_set_header   X-FORWARDED_PROTO https;
+         proxy_set_header   X-FORWARDED_PORT 443;
+       }
+
+nginx_force_https:
+  10-force-https:
+     - listen 80 default_server
+     - return 301 https://$host$request_uri
+
+nginx_sites_default: "{{
+          nginx_status_http
+          | combine(nginx_grafana_http if install_grafana else {})
+          | combine(nginx_prometheus_http if install_prometheus else {})
+          | combine(nginx_alertmanager_http if install_alertmanager else {})
+        }}"
+nginx_sites_default_https: "{{
+          nginx_status_https
+          | combine(nginx_force_https)
+          | combine(nginx_grafana_https if install_grafana else {})
+          | combine(nginx_prometheus_https if install_prometheus else {})
+          | combine(nginx_alertmanager_https if install_alertmanager else {})
+        }}"
+
+nginx_sites: "{% if not use_ssl %}{{ nginx_sites_default }}{% else %}{{ nginx_sites_default_https }}{% endif %}"

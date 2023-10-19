@@ -1,0 +1,40 @@
+module "monitoring" {
+  #####################################
+  # Do not modify the following lines #
+  source   = "./monitoring"
+  project  = var.project
+  env      = var.env
+  customer = var.customer
+  #####################################
+
+  # general azure variables
+  extra_tags = "Filled by stackforms"
+  aws_region = var.aws_region
+  # vm configuration variables
+  vm_size               = "Filled by stackforms"
+  create_keypair        = "Filled by stackforms"
+  keypair_public        = var.keypair_public
+  keypair_name          = "Filled by stackforms"
+  os_disk_size          = "Filled by stackforms"
+  os_disk_type          = "Filled by stackforms"
+  optional_iam_policies = "Filled by stackforms"
+
+  # vm network variables
+  subnet_id        = "Filled by stackforms"
+  vpc_id           = "Filled by stackforms"
+  bastion_sg_allow = "Filled by stackforms"
+  ssh_ips_to_allow = "Filled by stackforms"
+  vpcs_to_scrape   = "Filled by stackforms"
+
+  # vm dns variables
+  create_dns               = "Filled by stackforms"
+  aws_dns_zone_id          = "Filled by stackforms"
+  prometheus_domain_name   = "Filled by stackforms"
+  grafana_domain_name      = "Filled by stackforms"
+  alertmanager_domain_name = "Filled by stackforms"
+
+  # vm monitoring software
+  install_grafana      = "Filled by stackforms"
+  install_alertmanager = "Filled by stackforms"
+  install_prometheus   = "Filled by stackforms"
+}

@@ -1043,11 +1043,13 @@ use_cases:
           key: vm_size
           widget: auto_complete
           type: string
-          default: "Standard_DS1_v2" TODO
+          default: "t3.small"
           values:
-              - "Standard_DS1_v2"
-              - "Standard_DS2_v2"
-              - "Standard_DS3_v2"
+            - "t3.small"
+            - "t3.medium"
+            - "t3.large"
+            - "t3.xlarge"
+            - "t3.2xlarge"
         - name: "Disk size"
           unit: Go
           description: "Root Disk size for the instance."
@@ -1058,8 +1060,26 @@ use_cases:
           values:
               - 30
               - 250
-
-        todo: optional_iam_policies +os_disk_type
+        - name: "Type of Disk"
+          description: "The volume type to use."
+          key: os_disk_type
+          widget: radios
+          type: string
+          default: "gp3"
+          values:
+            - "gp2"
+            - "gp3"
+            - "io1"
+            - "io2"
+            - "sc1"
+            - "st1"
+        - name: "Extra IAM policies"
+          description: "List of extra IAM policies to be used to scrape AWS resources."
+          key: optional_iam_policies
+          widget: text_area
+          type: raw
+          default: |+
+            ""
         - name: "Extra tags"
           description: "Dict of extra tags to add to resources."
           key: extra_tags

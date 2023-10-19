@@ -17,7 +17,8 @@ prometheus_commandline_args:
 
 prometheus_scrape_interval: 1m
 prometheus_evaluation_interval: 1m
-
+# scraping needs to be lower for telegraf otherwise we reach API limits of Azure
+telegraf_agent_interval: 300
 default_alert_rules: false
 
 prometheus_scrape_configs_global:

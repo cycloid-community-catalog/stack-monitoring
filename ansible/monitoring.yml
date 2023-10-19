@@ -12,7 +12,7 @@
 
   vars_files:
     - "environments/default_azure_monitoring.yml"
-    - ["environments/{{env}}_azure_monitoring.yml","empty.yml"]
+    - ["environments/{{env}}_azure_monitoring.yml","environments/empty.yml"]
 
   pre_tasks:
     # Fix native debian 10 issue with signing key
@@ -153,7 +153,7 @@
 
   vars_files:
     - "environments/default_aws_monitoring.yml"
-    - ["environments/{{env}}_aws_monitoring.yml","empty.yml"]
+    - ["environments/{{env}}_aws_monitoring.yml","environments/empty.yml"]
 
   pre_tasks:
     # install ssl certificates for nginx

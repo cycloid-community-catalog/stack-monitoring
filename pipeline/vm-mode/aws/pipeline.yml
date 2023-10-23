@@ -64,18 +64,6 @@ resources:
       resource_group_name: ((resource_group_name))
       resource_group_location: ((resource_group_location))
 
-  - name: git_config-terraform
-    type: git
-    source:
-      uri: ((config_git_repository))
-      branch: ((config_git_branch))
-      username: ((config_git_username))
-      password: ((config_git_password))
-      paths:
-        - ((project))/terraform/provider-managed-mode/aws/((env))/*
-
-
-
 - name: git_stack_ansible
   type: git
   icon: github-circle

@@ -64,13 +64,24 @@ resources:
       resource_group_name: ((resource_group_name))
       resource_group_location: ((resource_group_location))
 
+  - name: git_config-terraform
+    type: git
+    source:
+      uri: ((config_git_repository))
+      branch: ((config_git_branch))
+      username: ((config_git_username))
+      password: ((config_git_password))
+      paths:
+        - ((project))/terraform/provider-managed-mode/aws/((env))/*
+
+
+
 - name: git_stack_ansible
   type: git
   icon: github-circle
   source:
     uri: ($ scs_url $)
     branch: ($ scs_branch $)
-    private_key: ((stack_git_private_key))
     paths:
       - ansible/*
 
@@ -79,7 +90,8 @@ resources:
   source:
     uri: ($ cr_url $)
     branch: ($ cr_branch $)
-    private_key: ((config_git_private_key))
+    username: ((config_git_username))
+    password: ((config_git_password))
     paths:
       - ((project))/ansible/environments/((env))_aws_monitoring.yml
 
@@ -89,7 +101,6 @@ resources:
   source:
     uri: ($ scs_url $)
     branch: ($ scs_branch $)
-    private_key: ((stack_git_private_key))
     # Include only the Terraform files in the specified directory.
     paths:
       - terraform/vm-mode/aws/*
@@ -100,7 +111,8 @@ resources:
   source:
     uri: ($ cr_url $)
     branch: ($ cr_branch $)
-    private_key: ((config_git_private_key))
+    username: ((config_git_username))
+    password: ((config_git_password))
     # Include only the Terraform files in the specified directory.
     paths:
       - ((project))/terraform/aws-vm/((env))/*

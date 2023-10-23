@@ -17,8 +17,10 @@ nginx_certificate: "Filled by stackforms"
 nginx_certificate_key: "Filled by stackforms"
 
 # Repos
-config_git_private_key: "Filled by stackforms"
-stack_git_private_key: "Filled by stackforms"
+config_git_repository: "Filled by stackforms"
+config_git_branch: "Filled by stackforms"
+config_git_username: "Filled by stackforms"
+config_git_password: "Filled by stackforms"
 stack_path: stack-monitoring # The path of the stack in the service catalog, basically the path to the `.cycloid.yml` file
 
 # monitoring credentials

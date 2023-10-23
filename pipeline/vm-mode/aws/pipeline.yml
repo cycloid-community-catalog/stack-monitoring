@@ -61,8 +61,6 @@ resources:
       aws_secret_key: ((aws_secret_key))
       aws_region: ((aws_default_region))
       aws_role_arn: ((aws_role_arn))
-      resource_group_name: ((resource_group_name))
-      resource_group_location: ((resource_group_location))
 
 - name: git_stack_ansible
   type: git

@@ -11,8 +11,8 @@
     ansible_python_interpreter: /usr/bin/python3
 
   vars_files:
-    - "environments/default_azure_monitoring.yml"
     - ["environments/{{env}}_azure_monitoring.yml","environments/empty.yml"]
+    - "environments/default_azure_monitoring.yml"
 
   pre_tasks:
     # Fix native debian 10 issue with signing key
@@ -152,8 +152,8 @@
     ansible_python_interpreter: /usr/bin/python3
 
   vars_files:
-    - "environments/default_aws_monitoring.yml"
     - ["environments/{{env}}_aws_monitoring.yml","environments/empty.yml"]
+    - "environments/default_aws_monitoring.yml"
 
   pre_tasks:
     # install ssl certificates for nginx

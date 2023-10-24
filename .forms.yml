@@ -1111,7 +1111,7 @@ use_cases:
           key: ssh_ips_to_allow
           widget: text_area
           type: array
-        - name: "SSH IPs to allow"
+        - name: "VPCs to scrape"
           description: "Map of VPCs to enable scraping. To allow the creation of the corresponding security groups to be used."
           key: vpcs_to_scrape
           widget: text_area

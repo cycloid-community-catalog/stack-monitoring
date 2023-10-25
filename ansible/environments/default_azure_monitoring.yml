@@ -49,15 +49,11 @@ prometheus_scrape_configs_alertmanager:
       action: drop
       regex: go_(.*)
 
-# merge alertmanager if needed
-prometheus_scrape_configs: "{{ prometheus_scrape_configs_global + prometheus_custom_configs + (prometheus_scrape_configs_alertmanager if install_alertmanager else []) + (prometheus_blackbox_config if install_blackbox_exporter else [])}}"
-
 prometheus_rules_path: "/prometheus-data/"
 prometheus_customer_file:
 - "/prometheus-data/{{customer}}.rules"
 prometheus_rule_all_files: "{{ prometheus_rule_files + prometheus_customer_file }}"
 prometheus_rules: "{{ prometheus_rule_all_files | map('regex_replace', '.*/(.*)$', prometheus_rules_path ~ '\\1') | list }}"
-prometheus_alerting: "{{ prometheus_alerting_local if install_alertmanager else prometheus_alerting_external }}"
 
 #
 # Alertmanager
@@ -67,6 +63,26 @@ alertmanager_templates: "/alertmanager/template/*.tmpl"
 alertmanager_commandline_args:
   config.file: "/alertmanager/alertmanager.yml"
   web.external-url: "{{ external_url_schema }}://{{ alertmanager_hostname }}"
+
+
+prometheus_alerting_local:
+  alertmanagers:
+  - scheme: http
+    static_configs:
+    - targets:
+      - "{{ alertmanager_ip }}:9093"
+
+prometheus_alerting_external:
+  alertmanagers:
+  -   basic_auth:
+          password: "{{external_alertmanager_password}}"
+          username: "{{external_alertmanager_username}}"
+      scheme: https
+      static_configs:
+      -  "{{external_alertmanager_targets}}"
+
+prometheus_alerting: "{{ prometheus_alerting_local if install_alertmanager else prometheus_alerting_external }}"
+
 
 #
 # grafana

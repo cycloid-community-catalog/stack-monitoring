@@ -245,8 +245,8 @@ nginx_sites: "{% if not use_ssl %}{{ nginx_sites_default }}{% else %}{{ nginx_si
 #
 nginx_auth_basic_files:
   prometheus:
-    - "{{ prometheus_web_login }}"
+    - "{{ prometheus_web_login | default('') }}"
   alertmanager:
-    - "{{ alertmanager_web_login }}"
+    - "{{ alertmanager_web_login | default('') }}"
   grafana:
-    - "{{ grafana_web_login }}"
+    - "{{ grafana_web_login | default('') }}"

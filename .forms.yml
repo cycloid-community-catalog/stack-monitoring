@@ -635,7 +635,7 @@ use_cases:
           default: true
     - name: SSL configuration
       condition: $use_ssl == true
-      technologies: [ansible]
+      technologies: [pipeline]
       vars:
         - name: "Nginx certificate"
           description: "Credential containing nginx certificate to be used by server"
@@ -809,8 +809,6 @@ use_cases:
           key: prometheus_custom_rules
           widget: text_area
           type: raw
-          default: |+
-            - #File created by Ansible
         - name: "Telegraf plugins"
           description: "Telegraf input plugins to be used to collect metrics. Check more plugins [here](https://github.com/influxdata/telegraf/tree/master/plugins/inputs)"
           key: telegraf_plugins_extra
@@ -1365,8 +1363,6 @@ use_cases:
           key: prometheus_custom_rules
           widget: text_area
           type: raw
-          default: |+
-            - #File created by Ansible
         - name: "Telegraf plugins"
           description: "Telegraf input plugins to be used to collect metrics. Check more plugins [here](https://github.com/influxdata/telegraf/tree/master/plugins/inputs)"
           key: telegraf_plugins_extra

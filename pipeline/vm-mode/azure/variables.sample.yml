@@ -38,8 +38,8 @@
 ####
 ## Cycloid variables
 ####
-#env: ($ environment $)
-#project: ($ project $)
-#org: ($ organization_canonical $)
-#customer: ($ organization_canonical $)
+env: ($ environment $)
+project: ($ project $)
+org: ($ organization_canonical $)
+customer: ($ organization_canonical $)
 cycloid_api_url: https://http-api.cycloid.io # The URL of the Cycloid API

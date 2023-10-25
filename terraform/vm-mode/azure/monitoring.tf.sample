@@ -7,29 +7,30 @@ module "monitoring" {
   customer = var.customer
   #####################################
 
-  # general azure variables
+  ## general azure variables
   resource_group_name = var.resource_group_name
   location            = var.resource_group_location
-  extra_tags          = "Filled by stackforms"
+  # extra_tags          = ""
 
-  # vm configuration variables
-  vm_size            = "Filled by stackforms"
+  ## vm configuration variables
+  # vm_size            = ""
   keypair_public     = var.keypair_public
-  os_disk_size       = "Filled by stackforms"
-  managed_disk_size  = "Filled by stackforms"
+  # os_disk_size       = ""
+  # managed_disk_size  = ""
 
   # vm network variables
-  subnet_id           = "Filled by stackforms"
-  ssh_ips_to_allow    = "Filled by stackforms"
-  # vm dns variables
-  create_dns          = "Filled by stackforms"
-  azure_dns_zone_name = "Filled by stackforms"
-  prometheus_domain_name = "Filled by stackforms"
-  grafana_domain_name = "Filled by stackforms"
-  alertmanager_domain_name = "Filled by stackforms"
+  # subnet_id           = ""
+  # ssh_ips_to_allow    = ""
 
-  # vm monitoring software
-  install_grafana = "Filled by stackforms"
-  install_alertmanager = "Filled by stackforms"
-  install_prometheus = "Filled by stackforms"
+  ## vm dns variables
+  # create_dns          = ""
+  # azure_dns_zone_name = ""
+  # prometheus_domain_name = ""
+  # grafana_domain_name = ""
+  # alertmanager_domain_name = ""
+
+  ## vm monitoring software
+  # install_grafana = ""
+  # install_alertmanager = ""
+  # install_prometheus = ""
 }

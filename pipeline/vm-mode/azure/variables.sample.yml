@@ -1,40 +1,45 @@
-# Azure access to use to run terraform
-azure_cred: "Filled by stackforms"
-resource_group_name: "Filled by stackforms"
-resource_group_location: "Filled by stackforms"
-
-# terraform version used to execute your code
-terraform_version: "Filled by stackforms"
-ansible_version: ""
-
-# SSH key to acess instance
-ssh_private_key: "Filled by stackforms"
-ssh_public_key: "Filled by stackforms"
-
-# nginx certificates
-nginx_certificate: "Filled by stackforms"
-nginx_certificate_key: "Filled by stackforms"
-
-# Repos
-config_git_private_key: "Filled by stackforms"
-stack_git_private_key: "Filled by stackforms"
-stack_path: stack-monitoring # The path of the stack in the service catalog, basically the path to the `.cycloid.yml` file
-
-# monitoring credentials
-grafana_web_login: "Filled by stackforms"
-grafana_admin_password: "Filled by stackforms"
-grafana_admin_user: "Filled by stackforms"
-alertmanager_web_login: "Filled by stackforms"
-external_alertmanager_password: "Filled by stackforms"
-external_alertmanager_username: "Filled by stackforms"
-external_alertmanager_targets: "Filled by stackforms"
-prometheus_web_login: "Filled by stackforms"
-
 ###
-# Cycloid variables
+## To be  - in config repository
+## Example configuration
 ###
-env: ($ environment $)
-project: ($ project $)
-org: ($ organization_canonical $)
-customer: ($ organization_canonical $)
+
+## Azure access to use to run terraform
+#azure_cred: ""
+#resource_group_name: ""
+#resource_group_location: ""
+#
+## terraform version used to execute your code
+#terraform_version: ""
+#ansible_version: ""
+#
+## SSH key to acess instance
+#ssh_private_key: ""
+#ssh_public_key: ""
+#
+## nginx certificates
+#nginx_certificate: ""
+#nginx_certificate_key: ""
+#
+## Repos
+#config_git_private_key: ""
+#stack_git_private_key: ""
+#stack_path: stack-monitoring # The path of the stack in the service catalog, basically the path to the `.cycloid.yml` file
+#
+## monitoring credentials
+#grafana_web_login: ""
+#grafana_admin_password: ""
+#grafana_admin_user: ""
+#alertmanager_web_login: ""
+#external_alertmanager_password: ""
+#external_alertmanager_username: ""
+#external_alertmanager_targets: ""
+#prometheus_web_login: ""
+#
+####
+## Cycloid variables
+####
+#env: ($ environment $)
+#project: ($ project $)
+#org: ($ organization_canonical $)
+#customer: ($ organization_canonical $)
 cycloid_api_url: https://http-api.cycloid.io # The URL of the Cycloid API

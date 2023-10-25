@@ -28,7 +28,9 @@ variable "create_dns" {}
 variable "install_grafana" {}
 variable "install_alertmanager" {}
 variable "install_prometheus" {}
-variable "azure_dns_zone_name" {}
+variable "azure_dns_zone_name" {
+    default = ""
+}
 variable "prometheus_domain_name" {
   default = ""
 }

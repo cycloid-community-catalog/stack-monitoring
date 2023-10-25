@@ -17,8 +17,8 @@
 #ssh_public_key: ""
 #
 ## nginx certificates
-#nginx_certificate: ""
-#nginx_certificate_key: ""
+nginx_certificate: ""
+nginx_certificate_key: ""
 #
 ## Repos
 #config_git_private_key: ""

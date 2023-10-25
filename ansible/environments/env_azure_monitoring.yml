@@ -1,3 +1,14 @@
+# Required variables
+grafana_web_login: ""
+grafana_admin_password: ""
+grafana_admin_user: ""
+alertmanager_web_login: ""
+prometheus_web_login: ""
+external_alertmanager_password: ""
+external_alertmanager_username: ""
+external_alertmanager_targets: ""
+
+
 ###
 ## To be filled by stackforms - in config repository
 ## Example configuration
@@ -152,25 +163,6 @@
 #  - project
 #  - env
 #  - alertname
-#
-#prometheus_alerting_local:
-#  alertmanagers:
-#  - scheme: http
-#    static_configs:
-#    - targets:
-#      - "{{ alertmanager_ip }}:9093"
-#
-#prometheus_alerting_external:
-#  alertmanagers:
-#  -   basic_auth:
-#          password: "{{external_alertmanager_password}}"
-#          username: "{{external_alertmanager_username}}"
-#      scheme: https
-#      static_configs:
-#      -  "{{external_alertmanager_targets}}"
-#
-#prometheus_alerting: "{{ prometheus_alerting_local if install_alertmanager else prometheus_alerting_external }}"
-#
 #
 ##
 ## grafana

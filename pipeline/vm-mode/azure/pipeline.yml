@@ -195,8 +195,8 @@ jobs:
         params:
           CONFIG_PATH: ((project))/ansible
           STACK_PATH: ansible
-          NGINX_SSL_CERTIFICATE: ((nginx_certificate| default('')))
-          NGINX_SSL_KEY: ((nginx_certificate_key| default('')))
+          NGINX_SSL_CERTIFICATE: ((nginx_certificate))
+          NGINX_SSL_KEY: ((nginx_certificate_key))
 
       - task: run-ansible
         config:
@@ -234,19 +234,19 @@ jobs:
             project: ((project))
             customer: ((customer))
             role: "monitoring"
-            grafana_web_login: ((grafana_web_login| default('')))
-            grafana_admin_password: ((grafana_admin_password| default('')))
-            grafana_admin_user: ((grafana_admin_user| default('')))
-            alertmanager_web_login: ((alertmanager_web_login| default('')))
-            prometheus_web_login: ((prometheus_web_login| default('')))
+            grafana_web_login: ((grafana_web_login))
+            grafana_admin_password: ((grafana_admin_password))
+            grafana_admin_user: ((grafana_admin_user))
+            alertmanager_web_login: ((alertmanager_web_login))
+            prometheus_web_login: ((prometheus_web_login))
             azure_subscription_id: ((((azure_cred)).subscription_id))
             azure_tenant_id: ((((azure_cred)).tenant_id))
             azure_client_id: ((((azure_cred)).client_id))
             azure_client_secret: ((((azure_cred)).client_secret))
             azure_resource_group: ((resource_group_name))
-            external_alertmanager_password: ((external_alertmanager_password| default('')))
-            external_alertmanager_username: ((external_alertmanager_username| default('')))
-            external_alertmanager_targets: ((external_alertmanager_targets| default('')))
+            external_alertmanager_password: ((external_alertmanager_password))
+            external_alertmanager_username: ((external_alertmanager_username))
+            external_alertmanager_targets: ((external_alertmanager_targets))
 
   - name: terraform-destroy
     serial: true

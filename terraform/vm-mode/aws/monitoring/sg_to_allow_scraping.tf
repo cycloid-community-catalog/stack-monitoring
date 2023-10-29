@@ -4,7 +4,7 @@
 ###
 
 resource "aws_security_group" "scraping" {
-  for_each = var.vpcs_to_scrape
+  for_each = var.vpcs_to_scrape != {} ? var.vpcs_to_scrape : {}
   name        = "${var.customer}-${var.env}-vm-monitoring-scraping"
   description = "Allow metrics server to collect metrics"
   vpc_id      = each.key

@@ -61,7 +61,7 @@ resource "aws_security_group_rule" "allow-ssh" {
   from_port                = "22"
   to_port                  = "22"
   protocol                 = "tcp"
-  cidr_blocks              = [var.ssh_ips_to_allow]
+  cidr_blocks              = var.ssh_ips_to_allow
   security_group_id        = aws_security_group.vm.id
 }
 

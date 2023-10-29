@@ -44,7 +44,7 @@ resource "aws_instance" "vm" {
   instance_type        = var.vm_size
   key_name             = var.keypair_name
 
-  vpc_security_group_ids = aws_security_group.vm.id
+  vpc_security_group_ids = [aws_security_group.vm.id]
   subnet_id              = var.subnet_id
 
   root_block_device {

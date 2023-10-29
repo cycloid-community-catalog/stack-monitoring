@@ -11,4 +11,7 @@ variable "aws_role_arn" {
 	default = ""
 }
 # cycloid credentials - passed via pipeline
+variable "create_keypair" {}
+variable "keypair_name" {}
 variable "keypair_public" {}
+variable "keypair_private" {}

@@ -56,15 +56,14 @@ resources:
       env: ((env))
       project: ((project))
       customer: ((customer))
-      keypair_public: ((ssh_public_key))
       aws_access_key: ((aws_access_key))
       aws_secret_key: ((aws_secret_key))
       aws_region: ((aws_default_region))
       aws_role_arn: ((aws_role_arn))
       create_keypair: ((create_keypair))
       keypair_name: ((keypair_name))
-      ssh_private_key: ((ssh_private_key))
-      ssh_public_key: ((ssh_public_key))
+      keypair_public: ((ssh_private_key))
+      keypair_private: ((ssh_public_key))
 
 - name: git_stack_ansible
   type: git

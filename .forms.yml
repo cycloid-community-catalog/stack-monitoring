@@ -1113,7 +1113,7 @@ use_cases:
           description: "Map of VPCs to enable scraping. To allow the creation of the corresponding security groups to be used."
           key: vpcs_to_scrape
           widget: text_area
-          type: array
+          type: raw
 # TODO default
 
     - name: SSH Key creation

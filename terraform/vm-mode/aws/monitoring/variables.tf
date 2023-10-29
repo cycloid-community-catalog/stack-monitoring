@@ -31,6 +31,7 @@ variable "ssh_ips_to_allow" {
   default = null
 }
 variable "vpcs_to_scrape" {
+  type = map(string)
   default = {}
 }
 

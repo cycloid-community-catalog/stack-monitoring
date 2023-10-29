@@ -4,10 +4,10 @@
 ###
 
 resource "aws_security_group" "scraping" {
-  for_each = length(var.vpcs_to_scrape) > 0 ? var.vpcs_to_scrape : []
-  name        = "${var.customer}-${var.env}-vm-monitoring-scraping"
+  for_each = length(var.vpcs_to_scrape) > 0 ? var.vpcs_to_scrape : {}
+  name        = "${var.customer}-${var.env}-vm-monitoring-scraping-vpc-${each.key}"
   description = "Allow metrics server to collect metrics"
-  vpc_id      = each.key
+  vpc_id      = each.value
 
   ingress {
     from_port       = 9100

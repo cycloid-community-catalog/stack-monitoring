@@ -1,235 +1,212 @@
-# Prometheus
-use_ssl: true
-prometheus_domain_name: "prometheus.local"
-prometheus_version: v2.45.0
-prometheus_rule_files:
-  #- templates/rules/telegraf.rules
-  - templates/rules/opsgenie.rules
-prometheus_custom_rules: []
+###
+## To be filled by stackforms - in config repository
+## Example configuration
+###
 
-prometheus_custom_configs:
-  ## telegraf / node_exporter
-  - job_name: 'telegraf / node_exporter'
-    scheme: http
-    ec2_sd_configs:
-    - region: "{{ aws_default_region }}"
-      port: 9100
-
-    relabel_configs:
-    - source_labels: [__meta_ec2_tag_monitoring_discovery]
-      action: drop
-      regex: false
-
-    - source_labels: [__meta_ec2_private_ip]
-      regex: '^(.+)$'
-      replacement: '${1}:9100'
-      target_label: __address__
-
-    # Force labels on metrics
-    # Instance label : Public IP, if not, default private IP
-    - source_labels: [__meta_ec2_private_ip]
-      action: replace
-      target_label: instance
-    - source_labels: [__meta_ec2_public_ip]
-      regex: '^(.+)$'
-      replacement: '${1}'
-      target_label: instance
-
-    # Get some ec2 labels
-    - source_labels: [__meta_ec2_tag_Name]
-      target_label: Name
-    - source_labels: [__meta_ec2_tag_project]
-      target_label: project
-    - source_labels: [__meta_ec2_tag_env]
-      target_label: env
-    - source_labels: [__meta_ec2_tag_role]
-      target_label: role
-    - source_labels: [__meta_ec2_tag_customer]
-      target_label: customer
-    - source_labels: [__meta_ec2_availability_zone]
-      target_label: availability_zone
-    - source_labels: [__meta_ec2_instance_id]
-      target_label: instance_id
-
-    metric_relabel_configs:
-    # Don't store unwanted metrics
-    - source_labels: [__name__]
-      action: drop
-      regex: go_(.*)
-
-    # Overrides mechanism of ec2 labels on the metric scope
-    - source_labels: [cycloid_tag_Name]
-      regex: '(.+)'
-      target_label: Name
-    - source_labels: [cycloid_tag_project]
-      regex: '(.+)'
-      target_label: project
-    - source_labels: [cycloid_tag_env]
-      regex: '(.+)'
-      target_label: env
-    - source_labels: [cycloid_tag_role]
-      regex: '(.+)'
-      target_label: role
-    - source_labels: [cycloid_tag_customer]
-      regex: '(.+)'
-      target_label: customer
-    - source_labels: [cycloid_tag_availability_zone]
-      regex: '(.+)'
-      target_label: availability_zone
-    - source_labels: [cycloid_tag_instance_id]
-      regex: '(.+)'
-      target_label: instance_id
-
-    # Remove cycloid_tag_* labels
-    - regex: 'cycloid_tag_.*'
-      action: labeldrop
-
-
-# Blackbox exporter
-# check if returns 200 and ssl valid
-install_blackbox_exporter: false
-blackbox_exporter_version: latest
-blackbox_exporter_modules:
-  http_2xx:
-    prober: http
-    timeout: 15s
-    http:
-      fail_if_not_ssl: true
-      method: GET
-      no_follow_redirects: false
-      preferred_ip_protocol: ip4
-      valid_http_versions:
-        - HTTP/1.1
-        - HTTP/2.0
-
-prometheus_blackbox_config:
-  - job_name: 'blackbox-external-targets'
-    params:
-      module: [http_2xx]
-    metrics_path: /probe
-    relabel_configs:
-      - source_labels: [ "__address__" ]
-        target_label: "__param_target"
-      - target_label: "__address__"
-        replacement: "172.17.0.2:9115"
-    static_configs:
-      - targets: ["https://cycloid.io"]
-        labels:
-          Name: "Name"
-          connection_ip: "IP"
-          customer: "{{customer}}"
-          project: "project"
-          env: "prod"
-          role: "role"
-
+## Prometheus
+#use_ssl: true
+#prometheus_version: v2.45.0
+#prometheus_rule_files:
+#  #- templates/rules/telegraf.rules
+#  - templates/rules/opsgenie.rules
+#prometheus_custom_rules: []
 #
-# Alertmanager
+#prometheus_custom_configs:
+#  ## telegraf / node_exporter
+#  - job_name: 'telegraf / node_exporter'
+#    scheme: http
+#    ec2_sd_configs:
+#    - region: "{{ aws_default_region }}"
+#      port: 9100
 #
-# Alertmanager
-install_alertmanager: true
-alertmanager_domain_name: "alertmanager.local"
-alertmanager_version: v0.25.0
-alertmanager_global:
-  # ResolveTimeout is the time after which an alert is declared resolved
-  # if it has not been updated.
-  resolve_timeout: 15m
-  # The smarthost and SMTP sender used for mail notifications.
-  smtp_smarthost: "smtp.gmail.com:587"
-  smtp_from: "foo@bar.com"
-  smtp_auth_username: "foo@bar.com"
-  smtp_auth_password: "barfoo"
-alertmanager_route:
-  receiver: default
-  group_by:
-    - customer
-    - project
-    - env
-    - alertname
-  group_wait: 30s
-  group_interval: 5m
-  repeat_interval: 15m
-  routes:
-  - match:
-      receiver: 'null'
-    receiver: dev_null
-  - match:
-      receiver: email
-      severity: critical
-    receiver: default
-
-alertmanager_receivers:
-  - name: 'default'
-    email_configs:
-    - to: "foo@bar.com"
-      # Whether or not to notify about resolved alerts.
-      send_resolved: true
-
-  - name: 'dev_null'
-    # Deliberately left empty to not deliver anywhere.
-
-alertmanager_inhibit_rules:
-- source_match:
-    severity: critical
-  target_match:
-    severity: warning
-  equal:
-  - instance
-  - customer
-  - project
-  - env
-  - alertname
-
-prometheus_alerting_local:
-  alertmanagers:
-  - scheme: http
-    static_configs:
-    - targets:
-      - "{{ alertmanager_ip }}:9093"
-
-prometheus_alerting_external:
-  alertmanagers:
-  -   basic_auth:
-          password: "{{external_alertmanager_password}}"
-          username: "{{external_alertmanager_username}}"
-      scheme: https
-      static_configs:
-      -  "{{external_alertmanager_targets}}"
-
-prometheus_alerting: "{{ prometheus_alerting_local if install_alertmanager else prometheus_alerting_external }}"
-
-
+#    relabel_configs:
+#    - source_labels: [__meta_ec2_tag_monitoring_discovery]
+#      action: drop
+#      regex: false
 #
-# grafana
+#    - source_labels: [__meta_ec2_private_ip]
+#      regex: '^(.+)$'
+#      replacement: '${1}:9100'
+#      target_label: __address__
 #
-grafana_version: 10.0.1
-install_grafana: true
-grafana_domain_name: "grafana.local"
-grafana_admin_password: "PasswordToChange!"
-grafana_database_name: "grafana"
-grafana_admin_user: "admin"
-
+#    # Force labels on metrics
+#    # Instance label : Public IP, if not, default private IP
+#    - source_labels: [__meta_ec2_private_ip]
+#      action: replace
+#      target_label: instance
+#    - source_labels: [__meta_ec2_public_ip]
+#      regex: '^(.+)$'
+#      replacement: '${1}'
+#      target_label: instance
 #
-# Telegraf
+#    # Get some ec2 labels
+#    - source_labels: [__meta_ec2_tag_Name]
+#      target_label: Name
+#    - source_labels: [__meta_ec2_tag_project]
+#      target_label: project
+#    - source_labels: [__meta_ec2_tag_env]
+#      target_label: env
+#    - source_labels: [__meta_ec2_tag_role]
+#      target_label: role
+#    - source_labels: [__meta_ec2_tag_customer]
+#      target_label: customer
+#    - source_labels: [__meta_ec2_availability_zone]
+#      target_label: availability_zone
+#    - source_labels: [__meta_ec2_instance_id]
+#      target_label: instance_id
 #
-
-# See telegraf inputs for more plugings https://github.com/influxdata/telegraf/tree/master/plugins/inputs
-telegraf_plugins_extra:
-  processes:
-  kernel:
-  linux_sysctl_fs:
-  conntrack:
-
-  nginx:
-    config:
-      - urls = ["http://127.0.0.1/nginx_status"]
-
+#    metric_relabel_configs:
+#    # Don't store unwanted metrics
+#    - source_labels: [__name__]
+#      action: drop
+#      regex: go_(.*)
 #
-# Nginx
+#    # Overrides mechanism of ec2 labels on the metric scope
+#    - source_labels: [cycloid_tag_Name]
+#      regex: '(.+)'
+#      target_label: Name
+#    - source_labels: [cycloid_tag_project]
+#      regex: '(.+)'
+#      target_label: project
+#    - source_labels: [cycloid_tag_env]
+#      regex: '(.+)'
+#      target_label: env
+#    - source_labels: [cycloid_tag_role]
+#      regex: '(.+)'
+#      target_label: role
+#    - source_labels: [cycloid_tag_customer]
+#      regex: '(.+)'
+#      target_label: customer
+#    - source_labels: [cycloid_tag_availability_zone]
+#      regex: '(.+)'
+#      target_label: availability_zone
+#    - source_labels: [cycloid_tag_instance_id]
+#      regex: '(.+)'
+#      target_label: instance_id
 #
-nginx_auth_basic_files:
-  prometheus:
-    - "{{ prometheus_web_login }}"
-  alertmanager:
-    - "{{ alertmanager_web_login }}"
-  grafana:
-    - "{{ grafana_web_login }}"
+#    # Remove cycloid_tag_* labels
+#    - regex: 'cycloid_tag_.*'
+#      action: labeldrop
+#
+#
+## Blackbox exporter
+## check if returns 200 and ssl valid
+#install_blackbox_exporter: false
+#blackbox_exporter_version: latest
+#blackbox_exporter_modules:
+#  http_2xx:
+#    prober: http
+#    timeout: 15s
+#    http:
+#      fail_if_not_ssl: true
+#      method: GET
+#      no_follow_redirects: false
+#      preferred_ip_protocol: ip4
+#      valid_http_versions:
+#        - HTTP/1.1
+#        - HTTP/2.0
+#
+#prometheus_blackbox_config:
+#  - job_name: 'blackbox-external-targets'
+#    params:
+#      module: [http_2xx]
+#    metrics_path: /probe
+#    relabel_configs:
+#      - source_labels: [ "__address__" ]
+#        target_label: "__param_target"
+#      - target_label: "__address__"
+#        replacement: "172.17.0.2:9115"
+#    static_configs:
+#      - targets: ["https://cycloid.io"]
+#        labels:
+#          Name: "Name"
+#          connection_ip: "IP"
+#          customer: "{{customer}}"
+#          project: "project"
+#          env: "prod"
+#          role: "role"
+#
+##
+## Alertmanager
+##
+## Alertmanager
+#install_alertmanager: true
+#alertmanager_domain_name: "alertmanager.local"
+#alertmanager_version: v0.25.0
+#alertmanager_global:
+#  # ResolveTimeout is the time after which an alert is declared resolved
+#  # if it has not been updated.
+#  resolve_timeout: 15m
+#  # The smarthost and SMTP sender used for mail notifications.
+#  smtp_smarthost: "smtp.gmail.com:587"
+#  smtp_from: "foo@bar.com"
+#  smtp_auth_username: "foo@bar.com"
+#  smtp_auth_password: "barfoo"
+#alertmanager_route:
+#  receiver: default
+#  group_by:
+#    - customer
+#    - project
+#    - env
+#    - alertname
+#  group_wait: 30s
+#  group_interval: 5m
+#  repeat_interval: 15m
+#  routes:
+#  - match:
+#      receiver: 'null'
+#    receiver: dev_null
+#  - match:
+#      receiver: email
+#      severity: critical
+#    receiver: default
+#
+#alertmanager_receivers:
+#  - name: 'default'
+#    email_configs:
+#    - to: "foo@bar.com"
+#      # Whether or not to notify about resolved alerts.
+#      send_resolved: true
+#
+#  - name: 'dev_null'
+#    # Deliberately left empty to not deliver anywhere.
+#
+#alertmanager_inhibit_rules:
+#- source_match:
+#    severity: critical
+#  target_match:
+#    severity: warning
+#  equal:
+#  - instance
+#  - customer
+#  - project
+#  - env
+#  - alertname
+#
+#
+##
+## grafana
+##
+#grafana_version: 10.0.1
+#install_grafana: true
+#grafana_domain_name: "grafana.local"
+#grafana_admin_password: "PasswordToChange!"
+#grafana_database_name: "grafana"
+#grafana_admin_user: "admin"
+#
+##
+## Telegraf
+##
+#
+## See telegraf inputs for more plugings https://github.com/influxdata/telegraf/tree/master/plugins/inputs
+#telegraf_plugins_extra:
+#  processes:
+#  kernel:
+#  linux_sysctl_fs:
+#  conntrack:
+#
+#  nginx:
+#    config:
+#      - urls = ["http://127.0.0.1/nginx_status"]
+#
+#

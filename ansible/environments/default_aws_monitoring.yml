@@ -17,7 +17,7 @@ prometheus_commandline_args:
 
 prometheus_scrape_interval: 1m
 prometheus_evaluation_interval: 1m
-
+# scraping needs to be lower for telegraf otherwise we reach API limits of Azure
 default_alert_rules: false
 
 prometheus_scrape_configs_global:
@@ -57,6 +57,7 @@ prometheus_customer_file:
 - "/prometheus-data/{{customer}}.rules"
 prometheus_rule_all_files: "{{ prometheus_rule_files + prometheus_customer_file }}"
 prometheus_rules: "{{ prometheus_rule_all_files | map('regex_replace', '.*/(.*)$', prometheus_rules_path ~ '\\1') | list }}"
+
 #
 # Alertmanager
 #
@@ -65,6 +66,26 @@ alertmanager_templates: "/alertmanager/template/*.tmpl"
 alertmanager_commandline_args:
   config.file: "/alertmanager/alertmanager.yml"
   web.external-url: "{{ external_url_schema }}://{{ alertmanager_hostname }}"
+
+
+prometheus_alerting_local:
+  alertmanagers:
+  - scheme: http
+    static_configs:
+    - targets:
+      - "{{ alertmanager_ip }}:9093"
+
+prometheus_alerting_external:
+  alertmanagers:
+  -   basic_auth:
+          password: "{{external_alertmanager_password}}"
+          username: "{{external_alertmanager_username}}"
+      scheme: https
+      static_configs:
+      -  "{{external_alertmanager_targets}}"
+
+prometheus_alerting: "{{ prometheus_alerting_local if install_alertmanager else prometheus_alerting_external }}"
+
 
 #
 # grafana
@@ -237,3 +258,14 @@ nginx_sites_default_https: "{{
         }}"
 
 nginx_sites: "{% if not use_ssl %}{{ nginx_sites_default }}{% else %}{{ nginx_sites_default_https }}{% endif %}"
+
+#
+# Nginx
+#
+nginx_auth_basic_files:
+  prometheus:
+    - "{{ prometheus_web_login | default('') }}"
+  alertmanager:
+    - "{{ alertmanager_web_login | default('') }}"
+  grafana:
+    - "{{ grafana_web_login | default('') }}"

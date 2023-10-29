@@ -1104,8 +1104,8 @@ use_cases:
           key: bastion_sg_allow
           widget: simple_text
           type: string
-        - name: "SSH IPs to allow"
-          description: "List of SSH IPs to allow. Note! Can only be used if bastion not mentioned."
+        - name: "SSH CIDRs to allow"
+          description: "List of CIDRs to allow. Note! Can only be used if bastion not mentioned."
           key: ssh_ips_to_allow
           widget: text_area
           type: array
@@ -1114,6 +1114,8 @@ use_cases:
           key: vpcs_to_scrape
           widget: text_area
           type: raw
+          default: +|
+           {}
 # TODO default
 
     - name: SSH Key creation

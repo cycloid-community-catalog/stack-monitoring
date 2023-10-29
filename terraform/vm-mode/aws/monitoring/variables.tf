@@ -10,8 +10,12 @@ variable "extra_tags" {
 variable "aws_region" {}
 # vm configuration variables
 variable "vm_size" {}
-variable "keypair_public" {}
-variable "create_keypair" {}
+variable "keypair_public" {
+  default = ""
+}
+variable "create_keypair" {
+  default = false
+}
 variable "keypair_name" {}
 variable "os_disk_size" {}
 variable "os_disk_type" {}
@@ -31,7 +35,9 @@ variable "create_dns" {}
 variable "install_grafana" {}
 variable "install_alertmanager" {}
 variable "install_prometheus" {}
-variable "aws_dns_zone_id" {}
+variable "aws_dns_zone_id" {
+  default = ""
+}
 variable "prometheus_domain_name" {
   default = ""
 }

@@ -27,8 +27,12 @@ variable "vpc_id" {}
 variable "bastion_sg_allow" {
   default = ""
 }
-variable "ssh_ips_to_allow" {}
-variable "vpcs_to_scrape" {}
+variable "ssh_ips_to_allow" {
+  default = null
+}
+variable "vpcs_to_scrape" {
+  default = {}
+}
 
 # vm dns variables
 variable "create_dns" {}

@@ -14,4 +14,3 @@ variable "aws_role_arn" {
 variable "create_keypair" {}
 variable "keypair_name" {}
 variable "keypair_public" {}
-variable "keypair_private" {}

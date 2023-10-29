@@ -16,7 +16,6 @@ module "monitoring" {
   create_keypair          = var.create_keypair
   keypair_name            = var.keypair_name
   keypair_public          = var.keypair_public
-  keypair_private         = var.keypair_private
   # os_disk_size          = ""
   # os_disk_type          = ""
   # optional_iam_policies = ""

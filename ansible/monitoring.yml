@@ -188,7 +188,7 @@
       template:
         src: templates/customer.rules
         dest: "/opt/prometheus/prometheus-data/{{customer}}.rules"
-      when: install_prometheus | bool
+      when: install_prometheus | bool and prometheus_custom_rules == ""
 
 
   roles:

@@ -19,8 +19,8 @@
 #ssh_public_key: ""
 #
 ## nginx certificates
-#nginx_certificate: ""
-#nginx_certificate_key: ""
+nginx_certificate: ""
+nginx_certificate_key: ""
 #
 ## Repos
 #config_git_repository: ""
@@ -30,14 +30,14 @@
 #stack_path: stack-monitoring # The path of the stack in the service catalog, basically the path to the `.cycloid.yml` file
 #
 ## monitoring credentials
-#grafana_web_login: ""
-#grafana_admin_password: ""
-#grafana_admin_user: ""
-#alertmanager_web_login: ""
-#external_alertmanager_password: ""
-#external_alertmanager_username: ""
-#external_alertmanager_targets: ""
-#prometheus_web_login: ""
+grafana_web_login: ""
+grafana_admin_password: ""
+grafana_admin_user: ""
+alertmanager_web_login: ""
+external_alertmanager_password: ""
+external_alertmanager_username: ""
+external_alertmanager_targets: ""
+prometheus_web_login: ""
 #
 ####
 ## Cycloid variables

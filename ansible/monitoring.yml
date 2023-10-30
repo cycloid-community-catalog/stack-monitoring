@@ -156,6 +156,11 @@
     - "environments/default_aws_monitoring.yml"
 
   pre_tasks:
+    # required for docker role
+    - name: Update package cache
+      apt:
+        update_cache: true
+
     # install ssl certificates for nginx
     - name: "Create SSL directory"
       file:

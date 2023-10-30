@@ -179,7 +179,7 @@ jobs:
 
                 # create inventory file
                 echo -e "[tag_vm_monitoring_aws]" >> merged-stack/inventory
-                jq -r '.machine_ip_private_address' terraform/metadata >> merged-stack/inventory
+                jq -r '.machine_ip_public_address' terraform/metadata >> merged-stack/inventory
                 cat merged-stack/inventory
 
                 # copy nginx certificates
@@ -215,7 +215,7 @@ jobs:
               - '-exc'
               - |
                 # Static inventory
-                ansible-inventory -i inventory --graph
+                ansible-inventory -i ansible-playbook/inventory --graph
                 /usr/bin/ansible-runner
           caches:
             - path: ansible-playbook/roles
@@ -228,7 +228,7 @@ jobs:
           ANSIBLE_PLAYBOOK_NAME: monitoring.yml
           AWS_USE_PRIVATE_IP: false
           ANSIBLE_INVENTORY: inventory
-          ANSIBLE_REMOTE_USER:  ((customer))
+          ANSIBLE_REMOTE_USER:  admin
           EXTRA_ANSIBLE_ARGS: "-i inventory"
           ANSIBLE_FORCE_GALAXY: false
           EXTRA_ARGS: "--limit tag_vm_monitoring_aws"
@@ -237,6 +237,7 @@ jobs:
             project: ((project))
             customer: ((customer))
             role: "monitoring"
+            aws_default_region: ((aws_default_region))
             grafana_web_login: ((grafana_web_login))
             grafana_admin_password: ((grafana_admin_password))
             grafana_admin_user: ((grafana_admin_user))

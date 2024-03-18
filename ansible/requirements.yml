@@ -14,9 +14,8 @@
   name: cycloid.telegraf
   scm: git
 
-# Temporary check ansible upgrade
 - src: https://github.com/dj-wasabi/ansible-telegraf
-  version: master
+  version: 0.14.1
   name: dj-wasabi.telegraf
   scm: git
 

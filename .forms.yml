@@ -587,7 +587,6 @@ use_cases:
           key: extra_tags
           widget: text_area
           type: map
-          default: "{}"
     - name: General Network
       technologies: [terraform]
       vars:
@@ -749,7 +748,7 @@ use_cases:
           description: "Prometheus scraping config to use. Note! prometheus and alertmanager are scraped. By default For more information check [prometheus wiki](https://prometheus.io/docs/prometheus/latest/configuration/configuration/)"
           key: prometheus_custom_configs
           widget: text_area
-          type: map
+          type: array
           default:
             ## telegraf / node_exporter
             - job_name: 'telegraf / node_exporter'
@@ -799,7 +798,7 @@ use_cases:
           description: "Definition of prometheus rules. Other default available in the role ansible-prometheus/templates/rules, you can also create news and add to the config repository."
           key: prometheus_rule_files
           widget: text_area
-          type: map
+          type: array
           default:
             - templates/rules/opsgenie.rules
         - name: "Prometheus custom rules"
@@ -867,7 +866,7 @@ use_cases:
           description: "Blackbox scraping configuration to be added to prometheus, for more information please check the [official documentation](https://github.com/prometheus/blackbox_exporter/tree/master)"
           key: prometheus_blackbox_config
           widget: text_area
-          type: map
+          type: array
           default:
             - job_name: 'blackbox-targets'
               params:
@@ -947,23 +946,23 @@ use_cases:
           description: "A list of inhibition rules, as specified in the oficial documentation [here](TODO)."
           key: alertmanager_inhibit_rules
           widget: text_area
-          type: map
+          type: array
           default:
             - source_match:
-              severity: critical
-            target_match:
-              severity: warning
-            equal:
-            - instance
-            - customer
-            - project
-            - env
-            - alertname
+                severity: critical
+              target_match:
+                severity: warning
+              equal:
+                - instance
+                - customer
+                - project
+                - env
+                - alertname
         - name: "Alertmanager receivers"
           description: "A list of notification receivers., as specified in the oficial documentation [here](TODO)."
           key: alertmanager_receivers
           widget: text_area
-          type: map
+          type: array
           default:
             - name: 'default'
               email_configs:
@@ -1073,14 +1072,12 @@ use_cases:
           description: "List of extra IAM policies to be used to scrape AWS resources."
           key: optional_iam_policies
           widget: text_area
-          type: map
-          default: ""
+          type: array
         - name: "Extra tags"
           description: "Dict of extra tags to add to resources."
           key: extra_tags
           widget: text_area
           type: map
-          default: "{}"
     - name: General Network
       technologies: [terraform]
       vars:
@@ -1271,7 +1268,7 @@ use_cases:
           description: "Prometheus scraping config to use. Note! prometheus and alertmanager are scraped. By default For more information check [prometheus wiki](https://prometheus.io/docs/prometheus/latest/configuration/configuration/)"
           key: prometheus_custom_configs
           widget: text_area
-          type: map
+          type: array
           default:
             ## telegraf / node_exporter
             - job_name: 'telegraf / node_exporter'
@@ -1353,7 +1350,7 @@ use_cases:
           description: "Definition of prometheus rules. Other default available in the role ansible-prometheus/templates/rules, you can also create news and add to the config repository."
           key: prometheus_rule_files
           widget: text_area
-          type: map
+          type: array
           default:
             - templates/rules/opsgenie.rules
         - name: "Prometheus custom rules"
@@ -1408,7 +1405,7 @@ use_cases:
           description: "Blackbox scraping configuration to be added to prometheus, for more information please check the [official documentation](https://github.com/prometheus/blackbox_exporter/tree/master)"
           key: prometheus_blackbox_config
           widget: text_area
-          type: map
+          type: array
           default:
             - job_name: 'blackbox-targets'
               params:
@@ -1488,23 +1485,23 @@ use_cases:
           description: "A list of inhibition rules, as specified in the oficial documentation [here](TODO)."
           key: alertmanager_inhibit_rules
           widget: text_area
-          type: map
+          type: array
           default:
             - source_match:
-              severity: critical
-            target_match:
-              severity: warning
-            equal:
-            - instance
-            - customer
-            - project
-            - env
-            - alertname
+                severity: critical
+              target_match:
+                severity: warning
+              equal:
+                - instance
+                - customer
+                - project
+                - env
+                - alertname
         - name: "Alertmanager receivers"
           description: "A list of notification receivers., as specified in the oficial documentation [here](TODO)."
           key: alertmanager_receivers
           widget: text_area
-          type: map
+          type: array
           default:
             - name: 'default'
               email_configs:

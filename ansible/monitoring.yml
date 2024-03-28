@@ -209,6 +209,7 @@
 
     # Monitoring client part
     - role: cycloid.telegraf
+      telegraf_agent_version: 1.10.0
       tags:
         - telegraf
 

@@ -1,5 +1,6 @@
 # stack-monitoring
 
+This stack provides a way to deploy a monitoring server based on either a specific cloud provider solution or Prometheus.
 
 There's 3 possible ways to deploy the monitoring solution:
 

@@ -149,12 +149,15 @@ jobs:
     plan:
     - do:
       - get: tfstate
+        trigger: false
         passed:
           - terraform-apply
 
       - get: git_stack_ansible
+        trigger: false
 
       - get: git_config_ansible
+        trigger: true
 
       - task: merge-stack-and-config
         config:

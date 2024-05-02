@@ -843,7 +843,7 @@ use_cases:
           description: "Definition of custom prometheus rules that will be saved at templates/rules/$customer.rules file"
           key: prometheus_custom_rules
           widget: text_area
-          type: map
+          type: array
         - name: "Telegraf plugins"
           description: "Telegraf input plugins to be used to collect metrics. Check more plugins [here](https://github.com/influxdata/telegraf/tree/master/plugins/inputs)"
           key: telegraf_plugins_extra
@@ -1395,7 +1395,7 @@ use_cases:
           description: "Definition of custom prometheus rules that will be saved at templates/rules/$customer.rules file"
           key: prometheus_custom_rules
           widget: text_area
-          type: map
+          type: array
         - name: "Telegraf plugins"
           description: "Telegraf input plugins to be used to collect metrics. Check more plugins [here](https://github.com/influxdata/telegraf/tree/master/plugins/inputs)"
           key: telegraf_plugins_extra

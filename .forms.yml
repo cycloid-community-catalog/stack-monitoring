@@ -213,8 +213,8 @@ use_cases:
           description: The alertmanager definition to apply. You should example definition here https://github.com/terraform-aws-modules/terraform-aws-managed-service-prometheus "
           key: amp_alertmanager_definition
           widget: text_area
-          type: raw
-          default: |+
+          type: map
+          default:
             alertmanager_config:
               route:
                 receiver: "default"
@@ -351,9 +351,8 @@ use_cases:
           description: The list of security_group rules to apply
           key: amg_sg_rules
           widget: text_area
-          type: raw
-          default: |+
-            {}
+          type: map
+          default: {}
     - name: AMG Security Group (SG) configuration
       condition: $create_amg == true && $create_amg_workspace == true && $amg_create_sg == false
       technologies: [terraform]
@@ -787,8 +786,8 @@ use_cases:
           description: "Prometheus scraping config to use. Note! prometheus and alertmanager are scraped. By default For more information check [prometheus wiki](https://prometheus.io/docs/prometheus/latest/configuration/configuration/)"
           key: prometheus_custom_configs
           widget: text_area
-          type: raw
-          default: |+
+          type: array
+          default:
             ## telegraf / node_exporter
             - job_name: 'telegraf / node_exporter'
               scheme: http
@@ -837,20 +836,20 @@ use_cases:
           description: "Definition of prometheus rules. Other default available in the role ansible-prometheus/templates/rules, you can also create news and add to the config repository."
           key: prometheus_rule_files
           widget: text_area
-          type: raw
-          default: |+
+          type: array
+          default:
             - templates/rules/opsgenie.rules
         - name: "Prometheus custom rules"
           description: "Definition of custom prometheus rules that will be saved at templates/rules/$customer.rules file"
           key: prometheus_custom_rules
           widget: text_area
-          type: raw
+          type: map
         - name: "Telegraf plugins"
           description: "Telegraf input plugins to be used to collect metrics. Check more plugins [here](https://github.com/influxdata/telegraf/tree/master/plugins/inputs)"
           key: telegraf_plugins_extra
           widget: text_area
-          type: raw
-          default: |+
+          type: map
+          default:
             processes:
             kernel:
             linux_sysctl_fs:
@@ -888,8 +887,8 @@ use_cases:
           description: "Blackbox exporter modules to be used, for more information please check the [official documentation](https://github.com/prometheus/blackbox_exporter/blob/master/CONFIGURATION.md)"
           key: blackbox_exporter_modules
           widget: text_area
-          type: raw
-          default: |+
+          type: map
+          default:
             http_2xx:
               prober: http
               timeout: 15s
@@ -905,8 +904,8 @@ use_cases:
           description: "Blackbox scraping configuration to be added to prometheus, for more information please check the [official documentation](https://github.com/prometheus/blackbox_exporter/tree/master)"
           key: prometheus_blackbox_config
           widget: text_area
-          type: raw
-          default: |+
+          type: array
+          default:
             - job_name: 'blackbox-targets'
               params:
                 module: [http_2xx]
@@ -945,8 +944,8 @@ use_cases:
           description: "The global configuration, as specified in the oficial documentation [here](TODO)."
           key: alertmanager_global
           widget: text_area
-          type: raw
-          default: |+
+          type: map
+          default:
             # ResolveTimeout is the time after which an alert is declared resolved
             # if it has not been updated.
             resolve_timeout: 15m
@@ -960,8 +959,8 @@ use_cases:
           description: "The root node of the routing tree, as specified in the oficial documentation [here](TODO)."
           key: alertmanager_route
           widget: text_area
-          type: raw
-          default: |+
+          type: map
+          default:
             receiver: default
             group_by:
               - customer
@@ -985,24 +984,24 @@ use_cases:
           description: "A list of inhibition rules, as specified in the oficial documentation [here](TODO)."
           key: alertmanager_inhibit_rules
           widget: text_area
-          type: raw
-          default: |+
+          type: array
+          default:
             - source_match:
-              severity: critical
-            target_match:
-              severity: warning
-            equal:
-            - instance
-            - customer
-            - project
-            - env
-            - alertname
+                severity: critical
+              target_match:
+                severity: warning
+              equal:
+                - instance
+                - customer
+                - project
+                - env
+                - alertname
         - name: "Alertmanager receivers"
           description: "A list of notification receivers., as specified in the oficial documentation [here](TODO)."
           key: alertmanager_receivers
           widget: text_area
-          type: raw
-          default: |+
+          type: array
+          default:
             - name: 'default'
               email_configs:
               - to: "foo@bar.com"
@@ -1029,7 +1028,7 @@ use_cases:
           description: "The targets to use to connect to external alertmanager. Examples [here](TODO)"
           key: external_alertmanager_targets
           widget: text_area
-          type: raw
+          type: map
 
   - name: Grafana configuration
     groups:
@@ -1111,15 +1110,12 @@ use_cases:
           description: "List of extra IAM policies to be used to scrape AWS resources."
           key: optional_iam_policies
           widget: text_area
-          type: raw
-          default: |+
-            ""
+          type: array
         - name: "Extra tags"
           description: "Dict of extra tags to add to resources."
           key: extra_tags
           widget: text_area
-          type: raw
-          default: "{}"
+          type: map
     - name: General Network
       technologies: [terraform]
       vars:
@@ -1149,9 +1145,8 @@ use_cases:
           description: "Map of VPCs to enable scraping. To allow the creation of the corresponding security groups to be used."
           key: vpcs_to_scrape
           widget: text_area
-          type: raw
-          default: +|
-           {}
+          type: map
+          default: {}
 # TODO default
 
     - name: SSH Key creation
@@ -1311,8 +1306,8 @@ use_cases:
           description: "Prometheus scraping config to use. Note! prometheus and alertmanager are scraped. By default For more information check [prometheus wiki](https://prometheus.io/docs/prometheus/latest/configuration/configuration/)"
           key: prometheus_custom_configs
           widget: text_area
-          type: raw
-          default: |+
+          type: array
+          default:
             ## telegraf / node_exporter
             - job_name: 'telegraf / node_exporter'
               scheme: http
@@ -1393,20 +1388,20 @@ use_cases:
           description: "Definition of prometheus rules. Other default available in the role ansible-prometheus/templates/rules, you can also create news and add to the config repository."
           key: prometheus_rule_files
           widget: text_area
-          type: raw
-          default: |+
+          type: array
+          default:
             - templates/rules/opsgenie.rules
         - name: "Prometheus custom rules"
           description: "Definition of custom prometheus rules that will be saved at templates/rules/$customer.rules file"
           key: prometheus_custom_rules
           widget: text_area
-          type: raw
+          type: map
         - name: "Telegraf plugins"
           description: "Telegraf input plugins to be used to collect metrics. Check more plugins [here](https://github.com/influxdata/telegraf/tree/master/plugins/inputs)"
           key: telegraf_plugins_extra
           widget: text_area
-          type: raw
-          default: |+
+          type: map
+          default:
             processes:
             kernel:
             linux_sysctl_fs:
@@ -1431,8 +1426,8 @@ use_cases:
           description: "Blackbox exporter modules to be used, for more information please check the [official documentation](https://github.com/prometheus/blackbox_exporter/blob/master/CONFIGURATION.md)"
           key: blackbox_exporter_modules
           widget: text_area
-          type: raw
-          default: |+
+          type: map
+          default:
             http_2xx:
               prober: http
               timeout: 15s
@@ -1448,8 +1443,8 @@ use_cases:
           description: "Blackbox scraping configuration to be added to prometheus, for more information please check the [official documentation](https://github.com/prometheus/blackbox_exporter/tree/master)"
           key: prometheus_blackbox_config
           widget: text_area
-          type: raw
-          default: |+
+          type: array
+          default:
             - job_name: 'blackbox-targets'
               params:
                 module: [http_2xx]
@@ -1488,8 +1483,8 @@ use_cases:
           description: "The global configuration, as specified in the oficial documentation [here](TODO)."
           key: alertmanager_global
           widget: text_area
-          type: raw
-          default: |+
+          type: map
+          default:
             # ResolveTimeout is the time after which an alert is declared resolved
             # if it has not been updated.
             resolve_timeout: 15m
@@ -1503,8 +1498,8 @@ use_cases:
           description: "The root node of the routing tree, as specified in the oficial documentation [here](TODO)."
           key: alertmanager_route
           widget: text_area
-          type: raw
-          default: |+
+          type: map
+          default:
             receiver: default
             group_by:
               - customer
@@ -1528,24 +1523,24 @@ use_cases:
           description: "A list of inhibition rules, as specified in the oficial documentation [here](TODO)."
           key: alertmanager_inhibit_rules
           widget: text_area
-          type: raw
-          default: |+
+          type: array
+          default:
             - source_match:
-              severity: critical
-            target_match:
-              severity: warning
-            equal:
-            - instance
-            - customer
-            - project
-            - env
-            - alertname
+                severity: critical
+              target_match:
+                severity: warning
+              equal:
+                - instance
+                - customer
+                - project
+                - env
+                - alertname
         - name: "Alertmanager receivers"
           description: "A list of notification receivers., as specified in the oficial documentation [here](TODO)."
           key: alertmanager_receivers
           widget: text_area
-          type: raw
-          default: |+
+          type: array
+          default:
             - name: 'default'
               email_configs:
               - to: "foo@bar.com"
@@ -1572,7 +1567,7 @@ use_cases:
           description: "The targets to use to connect to external alertmanager. Examples [here](TODO)"
           key: external_alertmanager_targets
           widget: text_area
-          type: raw
+          type: map
 
   - name: Grafana configuration
     groups:

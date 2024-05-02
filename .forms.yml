@@ -621,7 +621,7 @@ use_cases:
               - "10-gen2"
         - name: "Version"
           description: "Version of the image to use. Note! Debian 12 is recommended, change this at your own risk."
-          key: os_image_sku
+          key: os_image_version
           widget: simple_text
           type: string
           default: "latest"

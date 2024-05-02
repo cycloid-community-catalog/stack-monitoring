@@ -330,6 +330,7 @@ use_cases:
           key: amg_subnets_ids
           widget: text_area
           type: array
+          default: []
         - name: AMG Create Security Group
           description: Determines if a security group is created for your Grafana workspace to connect or if you should use an existing one.
           key: amg_create_sg
@@ -1111,6 +1112,7 @@ use_cases:
           key: optional_iam_policies
           widget: text_area
           type: array
+          default: []
         - name: "Extra tags"
           description: "Dict of extra tags to add to resources."
           key: extra_tags
@@ -1141,6 +1143,7 @@ use_cases:
           key: ssh_ips_to_allow
           widget: text_area
           type: array
+          default: []
         - name: "VPCs to scrape"
           description: "Map of VPCs to enable scraping. To allow the creation of the corresponding security groups to be used."
           key: vpcs_to_scrape
@@ -1396,6 +1399,7 @@ use_cases:
           key: prometheus_custom_rules
           widget: text_area
           type: array
+          default: []
         - name: "Telegraf plugins"
           description: "Telegraf input plugins to be used to collect metrics. Check more plugins [here](https://github.com/influxdata/telegraf/tree/master/plugins/inputs)"
           key: telegraf_plugins_extra

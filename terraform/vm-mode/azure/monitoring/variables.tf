@@ -19,6 +19,22 @@ variable "os_admin_username" {
 }
 variable "managed_disk_size" {}
 
+variable "os_image_publisher" {
+  default = "debian"
+}
+
+variable "os_image_offer" {
+  default = "debian-12"
+}
+
+variable "os_image_sku" {
+  default = "12-gen2"
+}
+
+variable "os_image_version" {
+  default = "latest"
+}
+
 # vm network variables
 variable "subnet_id" {}
 variable "ssh_ips_to_allow" {}

@@ -589,6 +589,43 @@ use_cases:
           widget: text_area
           type: raw
           default: "{}"
+    - name: OS Image
+      technologies: [terraform]
+      vars:
+        - name: "Publisher"
+          description: "Publisher of the image to use. Note! Debian is recommended, change this at your own risk."
+          key: os_image_publisher
+          widget: auto_complete
+          type: string
+          default: "debian"
+          values:
+              - "debian"
+        - name: "Offer"
+          description: "Offer of the image to use. Note! Debian 12 is recommended, change this at your own risk."
+          key: os_image_offer
+          widget: auto_complete
+          type: string
+          default: "debian-12"
+          values:
+              - "debian-12"
+              - "debian-11"
+              - "debian-10"
+        - name: "SKUE"
+          description: "SKU of the image to use. Note! Debian 12 is recommended, change this at your own risk."
+          key: os_image_sku
+          widget: auto_complete
+          type: string
+          default: "debian-12"
+          values:
+              - "12-gen2"
+              - "11-gen2"
+              - "10-gen2"
+        - name: "Version"
+          description: "Version of the image to use. Note! Debian 12 is recommended, change this at your own risk."
+          key: os_image_sku
+          widget: simple_text
+          type: string
+          default: "latest"
     - name: General Network
       technologies: [terraform]
       vars:

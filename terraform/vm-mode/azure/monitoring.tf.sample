@@ -17,6 +17,10 @@ module "monitoring" {
   keypair_public     = var.keypair_public
   # os_disk_size       = ""
   # managed_disk_size  = ""
+  # os_image_publisher = ""
+  # os_image_offer = ""
+  # os_image_sku = ""
+  # os_image_version = ""
 
   # vm network variables
   # subnet_id           = ""

@@ -11,10 +11,10 @@ resource "azurerm_linux_virtual_machine" "vm" {
   admin_username 		    = local.admin_username
 
   source_image_reference {
-    publisher = "debian"
-    offer     = "debian-10"
-    sku       = "10-cloudinit-gen2"
-    version   = "latest"
+    publisher = var.os_image_publisher
+    offer     = var.os_image_offer
+    sku       = var.os_image_sku
+    version   = var.os_image_version
   }
 
   admin_ssh_key	{

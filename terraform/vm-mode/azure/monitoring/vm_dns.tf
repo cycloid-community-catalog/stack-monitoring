@@ -7,7 +7,7 @@ resource "azurerm_dns_a_record" "prometheus" {
   resource_group_name = var.resource_group_name
   zone_name           = var.azure_dns_zone_name
   ttl                 = 300
-  records             = [azurerm_network_interface.vm.private_ip_address]
+  records             = [azurerm_network_interface.vm.public_ip_address]
 }
 
 resource "azurerm_dns_a_record" "alertmanager" {
@@ -16,7 +16,7 @@ resource "azurerm_dns_a_record" "alertmanager" {
   resource_group_name = var.resource_group_name
   zone_name           = var.azure_dns_zone_name
   ttl                 = 300
-  records             = [azurerm_network_interface.vm.private_ip_address]
+  records             = [azurerm_network_interface.vm.public_ip_address]
 }
 
 resource "azurerm_dns_a_record" "grafana" {
@@ -25,5 +25,5 @@ resource "azurerm_dns_a_record" "grafana" {
   resource_group_name = var.resource_group_name
   zone_name           = var.azure_dns_zone_name
   ttl                 = 300
-  records             = [azurerm_network_interface.vm.private_ip_address]
+  records             = [azurerm_network_interface.vm.public_ip_address]
 }

@@ -30,7 +30,7 @@ resource "aws_iam_policy" "required_access" {
 
 # optional policies to check
 data "aws_iam_policy_document" "optional_access" {
-  count = var.optional_iam_policies != "" ? 1 : 0
+  count = var.optional_iam_policies != [] ? 1 : 0
   statement {
     actions = var.optional_iam_policies
     effect    = "Allow"
@@ -39,7 +39,7 @@ data "aws_iam_policy_document" "optional_access" {
 }
 
 resource "aws_iam_policy" "optional_access" {
-  count = var.optional_iam_policies != "" ? 1 : 0
+  count = var.optional_iam_policies != [] ? 1 : 0
   name        = "${var.env}-${var.project}-vm-monitoring-optional-iam"
   path        = "/"
   description = "EC2 Prometheus optional policies"
@@ -85,7 +85,7 @@ resource "aws_iam_policy_attachment" "required_access" {
 }
 
 resource "aws_iam_policy_attachment" "optional_access" {
-  count = var.optional_iam_policies != "" ? 1 : 0
+  count = var.optional_iam_policies != [] ? 1 : 0
   name       = "${var.env}-${var.project}-vm-monitoring-optional-iam"
   roles      = [aws_iam_role.vm.name]
   policy_arn = aws_iam_policy.optional_access[count.index].arn

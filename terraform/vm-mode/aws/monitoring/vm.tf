@@ -10,36 +10,10 @@ resource "aws_key_pair" "vm" {
   public_key = var.keypair_public
 }
 
-# ami to use -> debian 10
-data "aws_ami" "debian" {
-  most_recent = true
-
-  filter {
-    name   = "name"
-    values = ["debian-10-*"]
-  }
-
-  filter {
-    name   = "virtualization-type"
-    values = ["hvm"]
-  }
-
-  filter {
-    name   = "architecture"
-    values = ["x86_64"]
-  }
-
-  filter {
-    name   = "root-device-type"
-    values = ["ebs"]
-  }
-
-  owners = ["136693071363"] # Debian
-}
 
 # vm instance
 resource "aws_instance" "vm" {
-  ami = data.aws_ami.debian.id
+  ami = var.ami
   iam_instance_profile = aws_iam_instance_profile.vm.name
   instance_type        = var.vm_size
   key_name             = var.keypair_name
@@ -56,9 +30,5 @@ resource "aws_instance" "vm" {
   tags = merge(local.tags, {
     Name = "${var.customer}-${var.env}-vm-monitoring"
   })
-
-  lifecycle {
-    ignore_changes = [ami]
-  }
 
 }

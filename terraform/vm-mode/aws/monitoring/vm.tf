@@ -56,4 +56,9 @@ resource "aws_instance" "vm" {
   tags = merge(local.tags, {
     Name = "${var.customer}-${var.env}-vm-monitoring"
   })
+
+  lifecycle {
+    ignore_changes = [ami]
+  }
+
 }

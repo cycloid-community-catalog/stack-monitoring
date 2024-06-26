@@ -13,9 +13,6 @@ variable "vm_size" {}
 variable "keypair_public" {
   default = ""
 }
-variable "ami"{
-  default = "ami-0eb11ab33f229b26c"  # debian 12
-}
 
 variable "create_keypair" {
   default = false

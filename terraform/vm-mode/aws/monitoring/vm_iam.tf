@@ -32,7 +32,7 @@ resource "aws_iam_policy" "required_access" {
 data "aws_iam_policy_document" "optional_access" {
   count = var.optional_iam_policies != "" ? 1 : 0
   statement {
-    actions = [var.optional_iam_policies]
+    actions = var.optional_iam_policies
     effect    = "Allow"
     resources = ["*"]
   }

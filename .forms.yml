@@ -1193,7 +1193,7 @@ use_cases:
           default: true
     - name: SSL configuration
       condition: $use_ssl == true
-      technologies: [ansible]
+      technologies: [pipeline]
       vars:
         - name: "Nginx certificate"
           description: "Credential containing nginx certificate to be used by server"

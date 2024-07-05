@@ -16,7 +16,7 @@
 #
 ## SSH key to acess instance
 #ssh_private_key: ""
-#ssh_public_key: ""
+ssh_public_key: ""
 #
 ## nginx certificates
 nginx_certificate: ""

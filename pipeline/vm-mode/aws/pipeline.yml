@@ -54,6 +54,7 @@ resources:
       secret_key: ((aws_secret_key))
       workspace_key_prefix: stack-monitoring
     env_name: ((env))
+    backend_type: s3
     vars:
       env: ((env))
       project: ((project))

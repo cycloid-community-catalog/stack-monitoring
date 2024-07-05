@@ -45,12 +45,14 @@ groups:
 resources:
 - name: tfstate
   type: terraform
-  icon: terraform
   source:
-    backend_type: http
     backend_config:
-      address: '((cycloid_api_url))/inventory?jwt=($ inventory_jwt $)'
-      skip_cert_verification: true
+      access_key: ((aws_access_key))
+      bucket: ((aws_bucket))
+      key: stack-monitoring-((env)).tfstate
+      region: eu-west-3
+      secret_key: ((aws_secret_key))
+      workspace_key_prefix: stack-monitoring
     env_name: ((env))
     vars:
       env: ((env))

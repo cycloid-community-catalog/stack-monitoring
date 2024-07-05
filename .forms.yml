@@ -56,7 +56,6 @@ shared:
         key: aws_role_arn
         widget: simple_text
         type: string
-        default: ""
       - name: "Amazon AWS region"
         description: "Amazon AWS region to use for Terraform."
         key: aws_default_region
@@ -713,12 +712,12 @@ use_cases:
     - name: DNS Creation
       technologies: [terraform]
       vars:
-      - name: Create DNS
-        description: Wheter to create DNS records for prometheus, alertmanager and grafana using Azure DNS. Note! Requires a DNS Zone
-        key: create_dns
-        widget: switch
-        type: boolean
-        default: false
+        - name: Create DNS
+          description: Wheter to create DNS records for prometheus, alertmanager and grafana using Azure DNS. Note! Requires a DNS Zone
+          key: create_dns
+          widget: switch
+          type: boolean
+          default: false
     - name: DNS Zone
       technologies: [terraform]
       condition: $create_dns == true
@@ -733,34 +732,34 @@ use_cases:
       condition: $install_prometheus == true
       technologies: [terraform]
       vars:
-      - name: "Prometheus DNS"
-        description: "DNS to use for Prometheus."
-        key: prometheus_domain_name
-        widget: simple_text
-        type: string
-        default: prometheus.local
+        - name: "Prometheus DNS"
+          description: "DNS to use for Prometheus."
+          key: prometheus_domain_name
+          widget: simple_text
+          type: string
+          default: prometheus.local
 
     - name: DNS Grafana
       condition: $install_grafana == true
       technologies: [terraform]
       vars:
-      - name: "Grafana DNS"
-        description: "DNS to use for Grafana."
-        key: grafana_domain_name
-        widget: simple_text
-        type: string
-        default: grafana.local
+        - name: "Grafana DNS"
+          description: "DNS to use for Grafana."
+          key: grafana_domain_name
+          widget: simple_text
+          type: string
+          default: grafana.local
 
     - name: DNS Alertmanager
       condition: $install_alertmanager == true
       technologies: [terraform]
       vars:
-      - name: "Alertmanager DNS"
-        description: "DNS to use for Alertmanager."
-        key: alertmanager_domain_name
-        widget: simple_text
-        type: string
-        default: alertmanager.local
+        - name: "Alertmanager DNS"
+          description: "DNS to use for Alertmanager."
+          key: alertmanager_domain_name
+          widget: simple_text
+          type: string
+          default: alertmanager.local
 
   - name: Prometheus configuration
     groups:
@@ -1161,12 +1160,20 @@ use_cases:
           widget: switch
           type: boolean
           default: false
+    - name: SSH Key info
+      condition: $create_keypair == false
+      technologies: [pipeline]
+      vars:
         - name: "SSH Keypair name"
           description: "Name of the SSH pairkey to create or use in AWS"
           key: keypair_name
           type: string
           widget: simple_text
           required: true
+    - name: SSH Key info
+      condition: $create_keypair == true
+      technologies: [pipeline]
+      vars:
         - name: "SSH private Key"
           description: "SSH private key to use."
           key: ssh_private_key
@@ -1178,7 +1185,6 @@ use_cases:
           key: ssh_public_key
           widget: cy_cred
           type: string
-
 
   - name: SSL configuration
     groups:
@@ -1193,7 +1199,7 @@ use_cases:
           default: true
     - name: SSL configuration
       condition: $use_ssl == true
-      technologies: [ansible]
+      technologies: [pipeline]
       vars:
         - name: "Nginx certificate"
           description: "Credential containing nginx certificate to be used by server"
@@ -1245,9 +1251,9 @@ use_cases:
       technologies: [terraform]
       condition: $create_dns == true
       vars:
-        - name: "Azure DNS Zone"
-          description: "Azure DNS Zone name to use for creating the different monitoring records."
-          key: azure_dns_zone_name
+        - name: "AWS DNS ID"
+          description: "Azure DNS ID name to use for creating the different monitoring records."
+          key: aws_dns_zone_id
           widget: simple_text
           type: string
           default: ""

@@ -1174,7 +1174,6 @@ use_cases:
           key: keypair_name
           type: string
           widget: simple_text
-          required: true
     - name: SSH Key info
       condition: $create_keypair == true
       technologies: [pipeline]
@@ -1184,12 +1183,12 @@ use_cases:
           key: ssh_private_key
           widget: cy_cred
           type: string
-          required: true
         - name: "SSH public key"
           description: "SSH public key to use."
           key: ssh_public_key
           widget: cy_cred
           type: string
+          default: ""
 
   - name: SSL configuration
     groups:

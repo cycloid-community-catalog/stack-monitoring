@@ -66,6 +66,7 @@ resources:
       create_keypair: ((create_keypair))
       keypair_name: ((keypair_name))
       keypair_public: ((ssh_public_key))
+      keypair_private: ((ssh_private_key))
 
 - name: git_stack_ansible
   type: git

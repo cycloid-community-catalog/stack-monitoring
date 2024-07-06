@@ -15,8 +15,9 @@
 #ansible_version: ""
 #
 ## SSH key to acess instance
-#ssh_private_key: ""
+ssh_private_key: ""
 ssh_public_key: ""
+keypair_name: ""
 #
 ## nginx certificates
 nginx_certificate: ""

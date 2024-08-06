@@ -1170,14 +1170,24 @@ use_cases:
       technologies: [pipeline]
       vars:
         - name: "SSH Keypair name"
-          description: "Name of the SSH pairkey to create or use in AWS"
+          description: "Name of the SSH pairkey to use in AWS"
           key: keypair_name
           type: string
           widget: simple_text
+        - name: "SSH private Key"
+          description: "SSH private key to use to connect to the machine."
+          key: ssh_private_key
+          widget: cy_cred
+          type: string
     - name: SSH Key info
       condition: $create_keypair == true
       technologies: [pipeline]
       vars:
+        - name: "SSH Keypair name"
+          description: "Name of the SSH pairkey to create  in AWS"
+          key: keypair_name
+          type: string
+          widget: simple_text
         - name: "SSH private Key"
           description: "SSH private key to use."
           key: ssh_private_key

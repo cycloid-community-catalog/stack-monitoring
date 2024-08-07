@@ -1,3 +1,4 @@
 # Managed by Ansible
-groups:
+groups: {% if prometheus_custom_rules == [] %} [] {% else %}
 {{prometheus_custom_rules | to_json | from_json | to_nice_yaml}}
+{% endif %}

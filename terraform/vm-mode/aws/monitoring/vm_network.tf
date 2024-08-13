@@ -56,7 +56,7 @@ resource "aws_security_group_rule" "allow-ssh-bastion" {
 }
 
 resource "aws_security_group_rule" "allow-ssh" {
-  count                    = var.bastion_sg_allow == "" ? 1 : 0
+  count                    = var.ssh_ips_to_allow != [] ? 1 : 0
   type                     = "ingress"
   from_port                = "22"
   to_port                  = "22"

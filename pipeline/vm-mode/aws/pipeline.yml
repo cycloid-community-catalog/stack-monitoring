@@ -183,9 +183,12 @@ jobs:
 
                 # create inventory file
                 echo -e "[tag_vm_monitoring_aws]" >> merged-stack/inventory
-                jq -r '.machine_ip_public_address' terraform/metadata >> merged-stack/inventory
+                if [ "$USE_BASTION" = true ]; then
+                   jq -r '.machine_ip_private_address' terraform/metadata >> merged-stack/inventory
+                else
+                    jq -r '.machine_ip_public_address' terraform/metadata >> merged-stack/inventory
+                fi
                 cat merged-stack/inventory
-
                 # copy nginx certificates
                 echo -e "${NGINX_SSL_KEY}" > merged-stack/files/nginx/ssl/prometheus.key
                 echo -e "${NGINX_SSL_CERTIFICATE}" > merged-stack/files/nginx/ssl/prometheus.crt
@@ -204,6 +207,7 @@ jobs:
           STACK_PATH: ansible
           NGINX_SSL_CERTIFICATE: ((nginx_certificate))
           NGINX_SSL_KEY: ((nginx_certificate_key))
+          USE_BASTION: ((use_bastion))
 
       - task: run-ansible
         config:

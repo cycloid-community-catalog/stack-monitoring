@@ -1122,9 +1122,6 @@ use_cases:
           key: extra_tags
           widget: text_area
           type: map
-    - name: General Network
-      technologies: [terraform]
-      vars:
         - name: "Subnet ID"
           description: "Subnet ID where to create VM."
           key: subnet_id
@@ -1137,24 +1134,42 @@ use_cases:
           widget: simple_text
           type: string
           required: true
-        - name: "Bastion Security Group"
-          description: "Security group ID of the bastion to allow SSH access."
-          key: bastion_sg_allow
-          widget: simple_text
-          type: string
-        - name: "SSH CIDRs to allow"
-          description: "List of CIDRs to allow. Note! Can only be used if bastion not mentioned."
-          key: ssh_ips_to_allow
-          widget: text_area
-          type: array
-          default: []
         - name: "VPCs to scrape"
           description: "Map of VPCs to enable scraping. To allow the creation of the corresponding security groups to be used."
           key: vpcs_to_scrape
           widget: text_area
           type: map
           default: {}
-# TODO default
+    - name: Network
+      technologies: [pipeline]
+      vars:
+        - name: "Use Bastion"
+          description: "Select wheter to use a Bastion to SSH instance"
+          key: use_bastion
+          type: boolean
+          widget: switch
+          default: true
+    - name: Bastion connection
+      condition: $use_bastion == true
+      technologies: [terraform]
+      vars:
+        - name: "Bastion Security Group"
+          description: "Security group ID of the bastion to allow SSH access."
+          key: bastion_sg_allow
+          widget: simple_text
+          type: string
+    - name: Bastion connection
+      condition: $use_bastion == false
+      technologies: [terraform]
+      vars:
+        - name: "SSH CIDRs to allow"
+          description: "List of CIDRs to allow."
+          key: ssh_ips_to_allow
+          widget: text_area
+          type: array
+          default: []
+
+# TODO same for
 
     - name: SSH Key creation
       technologies: [pipeline]

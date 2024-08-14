@@ -26,7 +26,7 @@ resource "aws_security_group" "scraping" {
   }
 
   dynamic "ingress" {
-    for_each = var.prometheus_ports
+    for_each = var.scraping_ports
 
     content {
       from_port   = ingress.value

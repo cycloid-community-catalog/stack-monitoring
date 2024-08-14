@@ -12,7 +12,7 @@ data "aws_vpc" "scraping" {
 
 
 resource "aws_security_group" "scraping" {
-  for_each = length(var.vpcs_to_scrape) > 0 ? data.aws_vpc.scraping : []
+  for_each = data.aws_vpc.scraping
   name        = "${var.customer}-${var.env}-vm-monitoring-scraping-vpc-${each.value.tags.Name}"
   description = "Allow metrics server to collect metrics"
   vpc_id      = each.value.id

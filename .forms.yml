@@ -1142,8 +1142,8 @@ use_cases:
           description: "Map of VPCs to enable scraping. To allow the creation of the corresponding security groups to be used."
           key: vpcs_to_scrape
           widget: text_area
-          type: map
-          default: {}
+          type: array
+          default: []
         - name: "Extra ports to scrape"
           description: "Array of other ports to scrape in the machine. To allow th creation of the corresponding security groups to be used in the prometheus machine."
           key: scraping_ports

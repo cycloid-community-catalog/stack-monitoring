@@ -29,12 +29,13 @@ variable "bastion_sg_allow" {
   default = ""
 }
 variable "ssh_ips_to_allow" {
+  type = list(string)
   default = []
 }
 
 variable "vpcs_to_scrape" {
-  type = map(string)
-  default = {}
+  type = list(string)
+  default = []
 }
 
 variable "scraping_ports" {

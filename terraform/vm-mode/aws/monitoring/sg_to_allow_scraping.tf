@@ -5,14 +5,14 @@
 
 # to get the vpc_name
 data "aws_vpc" "scraping" {
-  for_each = length(var.vpcs_to_scrape) > 0 ? toset(var.vpcs_to_scrape) : {}
+  for_each = length(var.vpcs_to_scrape) > 0 ? toset(var.vpcs_to_scrape) : []
 
   id = each.key
 }
 
 
 resource "aws_security_group" "scraping" {
-  for_each = length(var.vpcs_to_scrape) > 0 ? data.aws_vpc.selected : {}
+  for_each = length(var.vpcs_to_scrape) > 0 ? data.aws_vpc.selected : []
   name        = "${var.customer}-${var.env}-vm-monitoring-scraping-vpc-${each.value.tags.Name}"
   description = "Allow metrics server to collect metrics"
   vpc_id      = each.value.id

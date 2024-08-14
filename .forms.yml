@@ -591,8 +591,8 @@ use_cases:
           description: "Dict of extra tags to add to resources."
           key: extra_tags
           widget: text_area
-          type: raw
-          default: "{}"
+          type: map
+          default: {}
     - name: OS Image
       technologies: [terraform]
       vars:
@@ -1122,6 +1122,7 @@ use_cases:
           key: extra_tags
           widget: text_area
           type: map
+          default: {}
     - name: Network
       technologies: [terraform]
       vars:

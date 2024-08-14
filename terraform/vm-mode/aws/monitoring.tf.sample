@@ -24,8 +24,8 @@ module "monitoring" {
   # subnet_id        = ""
   # vpc_id           = ""
   # bastion_sg_allow = ""
-  # ssh_ips_to_allow = ""
-  # vpcs_to_scrape   = ""
+  # ssh_ips_to_allow = []
+  # vpcs_to_scrape   = []
   # scraping_ports = []
 
   ## vm dns variables

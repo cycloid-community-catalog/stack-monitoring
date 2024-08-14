@@ -17,6 +17,18 @@ resource "aws_security_group" "scraping" {
     self            = false
   }
 
+  dynamic "ingress" {
+    for_each = var.prometheus_ports
+
+    content {
+      from_port   = ingress.value
+      to_port     = ingress.value
+      protocol        = "tcp"
+      security_groups = [aws_security_group.vm.id]
+      self            = false
+    }
+  }
+
   egress {
     from_port   = 0
     to_port     = 0

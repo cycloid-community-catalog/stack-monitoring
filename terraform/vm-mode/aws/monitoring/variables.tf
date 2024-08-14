@@ -31,9 +31,15 @@ variable "bastion_sg_allow" {
 variable "ssh_ips_to_allow" {
   default = []
 }
+
 variable "vpcs_to_scrape" {
   type = map(string)
   default = {}
+}
+
+variable "scraping_ports" {
+  type    = list(number)
+  default = [] # Extra prometheus ports besides the default one TODO
 }
 
 # vm dns variables

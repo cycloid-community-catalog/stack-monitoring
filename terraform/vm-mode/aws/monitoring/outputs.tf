@@ -7,7 +7,7 @@ output "machine_ip_public_address" {
 }
 
 output "sgs_monitoring_scraping_id" {
-  value = length(var.vpcs_to_scrape) > 0 ? { for vpc_name, _ in var.vpcs_to_scrape : vpc_name => aws_security_group.scraping[vpc_name].id } : {}
+  value = length(var.vpcs_to_scrape) > 0 ? { for vpc_name, vpc_data in data.aws_vpc.scraping : vpc_name => aws_security_group.scraping[vpc_name].id } : {}
 }
 
 output "prometheus_domain_name" {

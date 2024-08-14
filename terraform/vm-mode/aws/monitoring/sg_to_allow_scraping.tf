@@ -3,11 +3,19 @@
 # to be used to deploy grafana, prometheus and alertmanager 9100 + others if needed
 ###
 
+# to get the vpc_name
+data "aws_vpc" "scraping" {
+  for_each = length(var.vpcs_to_scrape) > 0 ? toset(var.vpcs_to_scrape) : {}
+
+  id = each.key
+}
+
+
 resource "aws_security_group" "scraping" {
-  for_each = length(var.vpcs_to_scrape) > 0 ? var.vpcs_to_scrape : {}
-  name        = "${var.customer}-${var.env}-vm-monitoring-scraping-vpc-${each.key}"
+  for_each = length(var.vpcs_to_scrape) > 0 ? data.aws_vpc.selected : {}
+  name        = "${var.customer}-${var.env}-vm-monitoring-scraping-vpc-${each.value.tags.Name}"
   description = "Allow metrics server to collect metrics"
-  vpc_id      = each.value
+  vpc_id      = each.value.id
 
   ingress {
     from_port       = 9100

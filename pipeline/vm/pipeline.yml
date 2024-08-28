@@ -1,3 +1,4 @@
+
 definitions:
   tasks:
     # The task producing a configured stack, merging stack and config.
@@ -90,12 +91,12 @@ resources:
   source:
     uri: ($ .cr_url $)
     branch: ($ .cr_branch $)
-($- if eq .cr_cred_type "basic_auth" $)
-    username: ((($ .cr_cred_path $).username))
-    password: ((($ .cr_cred_path $).password))
-($- else $)
+#($- if eq .cr_cred_type "basic_auth" $)
+#    username: ((($ .cr_cred_path $).username))
+#    password: ((($ .cr_cred_path $).password))
+#($- else $)
     private_key: ((($ .cr_cred_path $).ssh_key))
-($- end $)
+#($- end $)
     paths:
 #($- if eq .use_case "aws-vm" $)
       - ($ .project $)/ansible/environments/($ .environment $)_aws_vm_monitoring.yml
@@ -123,12 +124,12 @@ resources:
   source:
     uri: ($ .cr_url $)
     branch: ($ .cr_branch $)
-($- if eq .cr_cred_type "basic_auth" $)
-    username: ((($ .cr_cred_path $).username))
-    password: ((($ .cr_cred_path $).password))
-($- else $)
+#($- if eq .cr_cred_type "basic_auth" $)
+#    username: ((($ .cr_cred_path $).username))
+#    password: ((($ .cr_cred_path $).password))
+#($- else $)
     private_key: ((($ .cr_cred_path $).ssh_key))
-($- end $)
+#($- end $)
     # Include only the Terraform files in the specified directory.
     paths:
       - ($ .project $)/terraform/($ .environment $)/*
@@ -206,11 +207,11 @@ jobs:
                 /usr/bin/merge-stack-and-config
 
                 # create inventory file
-#($- if eq .use_case "aws-vm" $)
+                #($- if eq .use_case "aws-vm" $)
                 echo -e "[tag_vm_aws]" >> merged-stack/inventory
-#($- else if eq .use_case "azure-vm" $)
-#                echo -e "[tag_vm_azure]" >> merged-stack/inventory
-#($- end $)
+                #($- else if eq .use_case "azure-vm" $)
+                # echo -e "[tag_vm_azure]" >> merged-stack/inventory
+                #($- end $)
 
                 if [ "$USE_BASTION" = true ]; then
                    jq -r '.machine_ip_private_address' terraform/metadata >> merged-stack/inventory

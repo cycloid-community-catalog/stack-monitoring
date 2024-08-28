@@ -46,36 +46,36 @@ config:
         path: 'ansible/environments/env_aws_vm_monitoring.yml'
         destination: '($ .project $)/ansible/environments/($ .environment $)_aws_vm_monitoring.yml'
 
-  azure-vm:
-    name: 'Azure VM'
-    description: 'Creates a VM in Azure with the different monitoring services'
-    cloud_provider: azurerm
-    pipeline:
-      pipeline:
-        path: pipeline/vm/pipeline.yml
-      variables:
-        path: pipeline/vm/variables.sample.yml
-        destination: '($ .project $)/pipeline/($ .environment $)/variables.yml'
-    terraform:
-      azure-vm:
-        path: 'terraform/azure-vm/monitoring.tf.sample'
-        destination: '($ .project $)/terraform/($ .environment $)/monitoring.tf'
-    ansible:
-      azure-vm:
-        path: 'ansible/environments/env_azure_vm_monitoring.yml'
-        destination: '($ .project $)/ansible/environments/($ .environment $)_azure_vm_monitoring.yml'
-
-  # 2-K8S mode
-  k8s:
-    name: 'Kubernetes'
-    description: 'Deploys the monitoring solutions in a k8s cluster'
-    pipeline:
-      pipeline:
-        path: 'pipeline/k8s/pipeline.yml'
-      variables:
-        path: 'pipeline/k8s/variables.sample.yml'
-        destination: '($ .project $)/pipeline/($ .environment $)/variables.yml'
-    terraform:
-      k8s:
-        path: 'terraform/k8s/monitoring.tf.sample'
-        destination: '($ .project $)/terraform/($ .environment $)/monitoring.tf'
+#  azure-vm:
+#    name: 'Azure VM'
+#    description: 'Creates a VM in Azure with the different monitoring services'
+#    cloud_provider: azurerm
+#    pipeline:
+#      pipeline:
+#        path: pipeline/vm/pipeline.yml
+#      variables:
+#        path: pipeline/vm/variables.sample.yml
+#        destination: '($ .project $)/pipeline/($ .environment $)/variables.yml'
+#    terraform:
+#      azure-vm:
+#        path: 'terraform/azure-vm/monitoring.tf.sample'
+#        destination: '($ .project $)/terraform/($ .environment $)/monitoring.tf'
+#    ansible:
+#      azure-vm:
+#        path: 'ansible/environments/env_azure_vm_monitoring.yml'
+#        destination: '($ .project $)/ansible/environments/($ .environment $)_azure_vm_monitoring.yml'
+#
+#  # 2-K8S mode
+#  k8s:
+#    name: 'Kubernetes'
+#    description: 'Deploys the monitoring solutions in a k8s cluster'
+#    pipeline:
+#      pipeline:
+#        path: 'pipeline/k8s/pipeline.yml'
+#      variables:
+#        path: 'pipeline/k8s/variables.sample.yml'
+#        destination: '($ .project $)/pipeline/($ .environment $)/variables.yml'
+#    terraform:
+#      k8s:
+#        path: 'terraform/k8s/monitoring.tf.sample'
+#        destination: '($ .project $)/terraform/($ .environment $)/monitoring.tf'

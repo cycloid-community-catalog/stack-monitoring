@@ -1,24 +1,19 @@
-# General variables that usually dont change per environment/scenario
-install_prometheus: true
+# General variables
 external_url_schema: "{% if use_ssl %}https{% else %}http{% endif %}"
 
-#
-# Prometheus
-#
+# Prometheus role
+# all defaults here: https://github.com/prometheus-community/ansible/blob/main/roles/prometheus/defaults/main.yml
 
-prometheus_data_retention: 60d
-
-# Override to keep less longer datas default 15d
-prometheus_commandline_args:
-  config.file: "/prometheus-data/prometheus.yml"
-  storage.tsdb.path: "/prometheus-data/data"
-  storage.tsdb.retention.time: "{{ prometheus_data_retention }}"
-  web.external-url: "{{ external_url_schema }}://{{ prometheus_hostname }}"
-
-prometheus_scrape_interval: 1m
-prometheus_evaluation_interval: 1m
-# scraping needs to be lower for telegraf otherwise we reach API limits of Azure
-default_alert_rules: false
+prometheus_storage_retention: "60d"
+prometheus_config_dir: /etc/prometheus
+prometheus_db_dir: /var/lib/prometheus
+prometheus_web_listen_address: "0.0.0.0:9090"
+prometheus_web_external_url: "{{ external_url_schema }}://{{ prometheus_hostname }}"
+prometheus_external_labels: {}
+prometheus_global:
+  scrape_interval: 15s
+  scrape_timeout: 10s
+  evaluation_interval: 15s
 
 prometheus_scrape_configs_global:
   ## Prometheus
@@ -49,25 +44,8 @@ prometheus_scrape_configs_alertmanager:
       action: drop
       regex: go_(.*)
 
-# merge alertmanager if needed
+# merge default scrapings with custom ones
 prometheus_scrape_configs: "{{ prometheus_scrape_configs_global + prometheus_custom_configs + (prometheus_scrape_configs_alertmanager if install_alertmanager else []) + (prometheus_blackbox_config if install_blackbox_exporter else [])}}"
-
-#prometheus_rules_path: "./prometheus-data/"
-prometheus_customer_file:
-- "{{customer}}.rules"
-#prometheus_rule_all_files: "{{ prometheus_rule_files + prometheus_customer_file }}"
-prometheus_rules: "{{ prometheus_rule_files + prometheus_customer_file }}"
-#prometheus_rules: "{{ prometheus_rule_all_files | map('regex_replace', '.*/(.*)$', prometheus_rules_path ~ '\\1') | list }}"
-
-#
-# Alertmanager
-#
-alertmanager_ip: "localhost"
-alertmanager_templates: "/alertmanager/template/*.tmpl"
-alertmanager_commandline_args:
-  config.file: "/alertmanager/alertmanager.yml"
-  web.external-url: "{{ external_url_schema }}://{{ alertmanager_hostname }}"
-
 
 prometheus_alerting_local:
   alertmanagers:
@@ -83,31 +61,70 @@ prometheus_alerting_external:
           username: "{{external_alertmanager_username}}"
       scheme: https
       static_configs:
-      -  "{{external_alertmanager_targets}}"
+      - targets:"{{external_alertmanager_targets}}"
 
-prometheus_alerting: "{{ prometheus_alerting_local if install_alertmanager else prometheus_alerting_external }}"
+prometheus_alertmanager_config: "{{ prometheus_alerting_local if install_alertmanager else prometheus_alerting_external }}"
+
+# TODO replace default alert rules prometheus_alert_rules with ours https://github.com/prometheus-community/ansible/blob/main/roles/prometheus/defaults/main.yml#L105
+# TODO add default_alert_rules true/false
 
 
-#
-# grafana
-#
+# Alertmanager role
+# default values: https://github.com/prometheus-community/ansible/blob/main/roles/alertmanager/defaults/main.yml
 
-# Note : Grafana service is installed with the Docker image grafana/grafana.
-# To provision grafana datasources admin account is used by ansible.
-grafana_database_name: "grafana"
-grafana_database_type: "sql"
+alertmanager_web_external_url: "{{ external_url_schema }}://{{ alertmanager_hostname }}"
+alertmanager_web_listen_address: '0.0.0.0:9093'
+# TODO copy default templates to folder
+# TODO if required global config https://github.com/prometheus-community/ansible/blob/main/roles/alertmanager/templates/alertmanager.yml.j2#L3
+# TODO if required time intervals -> alertmanager_time_intervals: []
 
-grafana_dashboards_files:
-  - "{{ playbook_dir }}/files/grafana/dashboards/*.json"
 
-grafana_provisioning_files:
-  - "{{ playbook_dir }}/files/grafana/provisioning/dashboards/*.yml"
-  - "{{ playbook_dir }}/files/grafana/provisioning/datasources/*.yml"
-  - "{{ playbook_dir }}/files/grafana/provisioning/notifiers/*.yml"
+# Blackbox exporter role
+# all defaults here: https://github.com/prometheus-community/ansible/blob/main/roles/blackbox_exporter/defaults/main.yml
 
-#
-# Nginx
-#
+blackbox_exporter_web_listen_address: "0.0.0.0:9115"
+blackbox_exporter_config_dir: /etc/blackbox_exporter
+
+
+# Mysql exporter role
+# # defaults at https://github.com/prometheus-community/ansible/blob/main/roles/mysqld_exporter/defaults/main.yml
+
+mysqld_exporter_web_listen_address: "0.0.0.0:9104"
+mysqld_exporter_config_dir: "/etc/mysqld_exporter"
+# TODO test parameters
+
+
+# Postgresql exporter role
+# defaults at https://github.com/prometheus-community/ansible/blob/main/roles/postgres_exporter/defaults/main.yml
+
+postgres_exporter_web_listen_address: "0.0.0.0:9187"
+postgres_exporter_config_dir: "/etc/postgres_exporter"
+# TODO test parameters
+
+
+# Systemd exporter role
+# defaults at  https://github.com/prometheus-community/ansible/blob/main/roles/systemd_exporter/defaults/main.yml
+
+systemd_exporter_web_listen_address: "0.0.0.0:9558"
+systemd_exporter_log_level: info
+# TODO test parameters
+
+
+# Process exporter role
+# defaults at https://github.com/prometheus-community/ansible/blob/main/roles/process_exporter/defaults/main.yml
+
+process_exporter_web_listen_address: "0.0.0.0:9256"
+# TODO test parameters
+
+
+# Node-exporter role
+# defaults at https://github.com/prometheus-community/ansible/blob/main/roles/node_exporter/defaults/main.yml
+
+node_exporter_web_listen_address: "0.0.0.0:9100"
+# TODO test parameters
+
+
+# NGINX
 
 prometheus_certificate_name: prometheus.crt
 prometheus_certificate_key_name: prometheus.key
@@ -260,9 +277,6 @@ nginx_sites_default_https: "{{
 
 nginx_sites: "{% if not use_ssl %}{{ nginx_sites_default }}{% else %}{{ nginx_sites_default_https }}{% endif %}"
 
-#
-# Nginx
-#
 nginx_auth_basic_files:
   prometheus:
     - "{{ prometheus_web_login | default('') }}"
@@ -270,3 +284,20 @@ nginx_auth_basic_files:
     - "{{ alertmanager_web_login | default('') }}"
   grafana:
     - "{{ grafana_web_login | default('') }}"
+
+
+# Grafana
+
+# TODO
+## Note : Grafana service is installed with the Docker image grafana/grafana.
+## To provision grafana datasources admin account is used by ansible.
+#grafana_database_name: "grafana"
+#grafana_database_type: "sql"
+#
+#grafana_dashboards_files:
+#  - "{{ playbook_dir }}/files/grafana/dashboards/*.json"
+#
+#grafana_provisioning_files:
+#  - "{{ playbook_dir }}/files/grafana/provisioning/dashboards/*.yml"
+#  - "{{ playbook_dir }}/files/grafana/provisioning/datasources/*.yml"
+#  - "{{ playbook_dir }}/files/grafana/provisioning/notifiers/*.yml"

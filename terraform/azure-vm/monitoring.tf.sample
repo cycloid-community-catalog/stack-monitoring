@@ -1,7 +1,7 @@
-module "monitoring" {
+module "azure" {
   #####################################
   # Do not modify the following lines #
-  source   = "./monitoring"
+  source   = "./azure-vm"
   project  = var.project
   env      = var.env
   customer = var.customer

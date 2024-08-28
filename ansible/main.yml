@@ -1,0 +1,38 @@
+---
+#
+# Install in AWS VM
+#
+- hosts: tag_vm_aws
+  become: yes
+  serial: 50%
+
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+
+  vars_files:
+    - ["environments/{{env}}_aws_vm_monitoring.yml","environments/empty.yml"]
+    - "environments/default_vm_monitoring.yml"
+
+  tasks:
+    - name: Setup AWS VM
+      ansible.builtin.include_tasks:
+        file: vm-setup.yml
+
+#
+# Install in Azure VM
+#
+- hosts: tag_vm_azure
+  become: yes
+  serial: 50%
+
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+
+  vars_files:
+    - ["environments/{{env}}_azure_vm_monitoring.yml","environments/empty.yml"]
+    - "environments/default_vm_monitoring.yml"
+
+  tasks:
+    - name: Setup Azure VM
+      ansible.builtin.include_tasks:
+        file: vm-setup.yml

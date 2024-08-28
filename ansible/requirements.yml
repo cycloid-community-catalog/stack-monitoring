@@ -1,28 +1,18 @@
 ---
+roles:
 - src: https://github.com/geerlingguy/ansible-role-docker
   version: master
   name: geerlingguy.docker
-  scm: git
-
-- src: https://github.com/cycloidio/ansible-prometheus.git
-  version: stack_monitoring
-  name: cycloid.prometheus
-  scm: git
-
-- src: https://github.com/cycloidio/ansible-telegraf.git
-  version: master
-  name: cycloid.telegraf
-  scm: git
-
-- src: https://github.com/dj-wasabi/ansible-telegraf
-  version: 0.14.0
-  name: dj-wasabi.telegraf
   scm: git
 
 - src: https://github.com/jdauphant/ansible-role-nginx.git
   name: jdauphant.nginx
   scm: git
 
-- src: https://github.com/geerlingguy/ansible-role-mysql.git
-  name: geerlingguy.mysql
-  scm: git
+collections:
+  # Install a collection from Ansible Galaxy.
+  - name: prometheus.prometheus
+    version: 0.17.1
+    source: https://galaxy.ansible.com
+
+  #TODO same for grafana

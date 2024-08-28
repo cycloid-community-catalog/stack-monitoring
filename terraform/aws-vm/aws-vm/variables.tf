@@ -45,9 +45,9 @@ variable "scraping_ports" {
 
 # vm dns variables
 variable "create_dns" {}
-variable "install_grafana" {}
-variable "install_alertmanager" {}
-variable "install_prometheus" {}
+#variable "install_grafana" {}
+variable "alertmanager_skip_install" {}
+variable "prometheus_skip_install" {}
 variable "aws_dns_zone_id" {
   default = ""
 }

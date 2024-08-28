@@ -1,5 +1,5 @@
 ---
-version: '2'
+version: '3'
 # Configuration of the Cycloid stack
 name: 'Monitoring'
 canonical: 'stack-monitoring'
@@ -25,66 +25,57 @@ technologies:
     version: n/a
   - technology: prometheus
     version: n/a
-
 config:
-  # PROVIDER MANAGED MODE
-  aws-managed:
-    name: 'AWS Managed solution'
-    description: 'Managed solution for monitoring using AWS Managed Services'
-    pipeline:
-      pipeline:
-        path: 'pipeline/provider-managed-mode/aws/pipeline.yml'
-      variables:
-        path: 'pipeline/provider-managed-mode/aws/variables.sample.yml'
-        destination: '($ project $)/pipeline/aws-managed/variables-($ environment $).yml'
-    terraform:
-      prometheus:
-        path: 'terraform/provider-managed-mode/aws/monitoring.tf.sample'
-        destination: '($ project $)/terraform/aws-managed/($ environment $)/monitoring.tf'
-#  azure-managed:
-#  gcp-managed:
-
-  # VM MODE
-  azure-vm:
-    name: 'Azure VM solution'
-    description: 'Deploys monitoring solutions as local containers in VM'
-    pipeline:
-      pipeline:
-        path: 'pipeline/vm-mode/azure/pipeline.yml'
-      variables:
-        path: 'pipeline/vm-mode/azure/variables.sample.yml'
-        destination: '($ project $)/pipeline/azure-vm/variables-($ environment $).yml'
-    terraform:
-      azure-vm:
-        path: 'terraform/vm-mode/azure/monitoring.tf.sample'
-        destination: '($ project $)/terraform/azure-vm/($ environment $)/monitoring.tf'
-    ansible:
-      azure-vm:
-        path: 'ansible/environments/env_azure_monitoring.yml'
-        destination: '($ project $)/ansible/environments/($ environment $)_azure_monitoring.yml'
-
+  # 1-VM MODE
   aws-vm:
-    name: 'AWS VM solution'
-    description: 'Deploys monitoring solutions as local containers in EC2'
+    name: 'AWS VM'
+    description: 'Deploys a VM in AWS with the different monitoring services'
+    cloud_provider: aws
     pipeline:
       pipeline:
-        path: 'pipeline/vm-mode/aws/pipeline.yml'
+        path: 'pipeline/vm/pipeline.yml'
       variables:
-        path: 'pipeline/vm-mode/aws/variables.sample.yml'
-        destination: '($ project $)/pipeline/aws-vm/variables-($ environment $).yml'
+        path: 'pipeline/vm/variables.sample.yml'
+        destination: '($ .project $)/pipeline/($ .environment $)/variables.yml'
     terraform:
       aws-vm:
-        path: 'terraform/vm-mode/aws/monitoring.tf.sample'
-        destination: '($ project $)/terraform/aws-vm/($ environment $)/monitoring.tf'
+        path: 'terraform/aws-vm/monitoring.tf.sample'
+        destination: '($ .project $)/terraform/($ .environment $)/monitoring.tf'
     ansible:
       aws-vm:
-        path: 'ansible/environments/env_aws_monitoring.yml'
-        destination: '($ project $)/ansible/environments/($ environment $)_aws_monitoring.yml'
+        path: 'ansible/environments/env_aws_vm_monitoring.yml'
+        destination: '($ .project $)/ansible/environments/($ .environment $)_aws_vm_monitoring.yml'
 
-#  gcp-vm:
+  azure-vm:
+    name: 'Azure VM'
+    description: 'Creates a VM in Azure with the different monitoring services'
+    cloud_provider: azurerm
+    pipeline:
+      pipeline:
+        path: pipeline/vm/pipeline.yml
+      variables:
+        path: pipeline/vm/variables.sample.yml
+        destination: '($ .project $)/pipeline/($ .environment $)/variables.yml'
+    terraform:
+      azure-vm:
+        path: 'terraform/azure-vm/monitoring.tf.sample'
+        destination: '($ .project $)/terraform/($ .environment $)/monitoring.tf'
+    ansible:
+      azure-vm:
+        path: 'ansible/environments/env_azure_vm_monitoring.yml'
+        destination: '($ .project $)/ansible/environments/($ .environment $)_azure_vm_monitoring.yml'
 
-# K8S PROMETHEUS STACK MODE
-#  aws-k8s-stack:
-#  azure-k8s-stack:
-#  gcp-k8s-stack:
-
+  # 2-K8S mode
+  k8s:
+    name: 'Kubernetes'
+    description: 'Deploys the monitoring solutions in a k8s cluster'
+    pipeline:
+      pipeline:
+        path: 'pipeline/k8s/pipeline.yml'
+      variables:
+        path: 'pipeline/k8s/variables.sample.yml'
+        destination: '($ .project $)/pipeline/($ .environment $)/variables.yml'
+    terraform:
+      k8s:
+        path: 'terraform/k8s/monitoring.tf.sample'
+        destination: '($ .project $)/terraform/($ .environment $)/monitoring.tf'

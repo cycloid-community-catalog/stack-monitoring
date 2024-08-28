@@ -13,8 +13,6 @@ data "aws_iam_policy_document" "required_access" {
       "ec2:DescribeInstanceStatus",
       "cloudwatch:ListMetrics",
       "cloudwatch:GetMetricData",
-      "elasticloadbalancing:DescribeLoadBalancers",
-      "elasticloadbalancing:DescribeListeners",
     ]
     effect    = "Allow"
     resources = ["*"]

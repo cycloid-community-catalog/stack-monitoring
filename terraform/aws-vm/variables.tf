@@ -14,3 +14,7 @@ variable "aws_role_arn" {
 variable "create_keypair" {}
 variable "keypair_name" {}
 variable "keypair_public" {}
+
+# cycloid credentials - passed via pipeline
+variable "prometheus_domain_name" {}
+variable "alertmanager_domain_name" {}

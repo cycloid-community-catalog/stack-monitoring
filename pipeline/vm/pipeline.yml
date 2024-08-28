@@ -21,19 +21,23 @@ definitions:
           - name: merged-stack
             path: "merged-stack"
       params:
-        CONFIG_PATH: ((project))/terraform/aws-vm/((env))
-        STACK_PATH: terraform/vm-mode/aws
-
+        ($- if eq .use_case "aws-vm" $)
+        CONFIG_PATH: ($ .project $)/terraform/($ .environment $)
+        STACK_PATH: terraform/aws-vm
+        ($- else if eq .use_case "azure-vm" $)
+        CONFIG_PATH: ((project))/terraform/((env))
+        STACK_PATH: terraform/azure-vm
+        ($- end $)
 
 resource_types:
 - name: terraform
   type: docker-image
   source:
     repository: cycloid/terraform-resource
-    tag: ((terraform_version))
+    tag: ($ .terraform_version $)
 
 groups:
-- name: ((project))-((env))
+- name: ($ .project $)-($ .environment $)
   jobs:
   - terraform-plan
   - terraform-apply
@@ -47,67 +51,87 @@ resources:
   type: terraform
   source:
     backend_config:
-      access_key: ((aws_access_key))
-      bucket: ((aws_bucket))
-      key: stack-monitoring-((env)).tfstate
-      region: eu-west-3
-      secret_key: ((aws_secret_key))
-      workspace_key_prefix: stack-monitoring
-    env_name: ((env))
-    backend_type: s3
+      address: '($ .api_url $)/inventory?jwt=($ .inventory_jwt $)'
+      ## skip_cert_verification needs to be enabled when using self signed certificates.
+      # skip_cert_verification: true
+    backend_type: http
+    env_name: ($ .environment $)
     vars:
-      env: ((env))
-      project: ((project))
-      customer: ((customer))
-      aws_access_key: ((aws_access_key))
-      aws_secret_key: ((aws_secret_key))
-      aws_region: ((aws_default_region))
-      aws_role_arn: ((aws_role_arn))
-      create_keypair: ((create_keypair))
-      keypair_name: ((keypair_name))
-      keypair_public: ((ssh_public_key))
-      keypair_private: ((ssh_private_key))
+      env: ($ .environment $)
+      project: ($ .project $)
+      customer: ($ .customer $)
+      ($- if eq .use_case "aws-vm" $)
+      aws_access_key: ($ .aws_access_key $)
+      aws_secret_key: ($ .aws_secret_key $)
+      aws_region: ($ .aws_default_region $)
+      aws_role_arn: ($ .aws_role_arn $)
+      ($- else if eq .use_case "azure-vm" $)
+      azure_cred: ((($ .azure_cred $))
+      resource_group_name: ($ .resource_group_name$)
+      resource_group_location: ($ .resource_group_location$)
+      ($- end $)
+      create_keypair: ($ .create_keypair $)
+      keypair_name: ($ .keypair_name $)
+      keypair_public: ($ .ssh_public_key $)
+      prometheus_domain_name: ($ .prometheus_domain_name $)
+      alertmanager_domain_name: ($ .alertmanager_domain_name $)
 
 - name: git_stack_ansible
   type: git
   icon: github-circle
   source:
-    uri: ($ scs_url $)
-    branch: ($ scs_branch $)
+    uri: https://github.com/cycloid-community-catalog/stack-monitoring.git
+    branch: ($ .scs_branch $)
     paths:
       - ansible/*
 
 - name: git_config_ansible
   type: git
   source:
-    uri: ($ cr_url $)
-    branch: ($ cr_branch $)
-    username: ((config_git_username))
-    password: ((config_git_password))
+    uri: ($ .cr_url $)
+    branch: ($ .cr_branch $)
+    ($- if eq .cr_cred_type "basic_auth" $)
+    username: ((($ .cr_cred_path $).username))
+    password: ((($ .cr_cred_path $).password))
+    ($- else $)
+    private_key: ((($ .cr_cred_path $).ssh_key))
+    ($- end $)
     paths:
-      - ((project))/ansible/environments/((env))_aws_monitoring.yml
+      ($- if eq .use_case "aws-vm" $)
+      - ($ .project $)/ansible/environments/($ .environment $)_aws_vm_monitoring.yml
+      ($- else if eq .use_case "azure-vm" $)
+      - ($ .project $)/ansible/environments/($ .environment $)_azure_vm_monitoring.yml
+      ($- end $)
 
 - name: git_stack_terraform
   type: git
   icon: github-circle
   source:
-    uri: ($ scs_url $)
-    branch: ($ scs_branch $)
+    uri: https://github.com/cycloid-community-catalog/stack-monitoring.git
+    branch: ($ .scs_branch $)
     # Include only the Terraform files in the specified directory.
     paths:
-      - terraform/vm-mode/aws/*
+      ($- if eq .use_case "aws-vm" $)
+      - terraform/aws-vm/*
+      ($- else if eq .use_case "azure-vm" $)
+      - terraform/azure-vm/*
+      ($- end $)
 
 - name: git_config_terraform
   type: git
   icon: github-circle
   source:
-    uri: ($ cr_url $)
-    branch: ($ cr_branch $)
-    username: ((config_git_username))
-    password: ((config_git_password))
+    uri: ($ .cr_url $)
+    branch: ($ .cr_branch $)
+    ($- if eq .cr_cred_type "basic_auth" $)
+    username: ((($ .cr_cred_path $).username))
+    password: ((($ .cr_cred_path $).password))
+    ($- else $)
+    private_key: ((($ .cr_cred_path $).ssh_key))
+    ($- end $)
     # Include only the Terraform files in the specified directory.
     paths:
-      - ((project))/terraform/aws-vm/((env))/*
+      - ($ .project $)/terraform/($ .environment $)/*
 
 jobs:
   - name: terraform-plan
@@ -182,16 +206,25 @@ jobs:
                 /usr/bin/merge-stack-and-config
 
                 # create inventory file
-                echo -e "[tag_vm_monitoring_aws]" >> merged-stack/inventory
+            ($- if eq .use_case "aws-vm" $)
+                echo -e "[tag_vm_aws]" >> merged-stack/inventory
+            ($- else if eq .use_case "azure-vm" $)
+                echo -e "[tag_vm_azure]" >> merged-stack/inventory
+            ($- end $)
+
                 if [ "$USE_BASTION" = true ]; then
                    jq -r '.machine_ip_private_address' terraform/metadata >> merged-stack/inventory
                 else
                     jq -r '.machine_ip_public_address' terraform/metadata >> merged-stack/inventory
                 fi
                 cat merged-stack/inventory
-                # copy nginx certificates
+
+                # import nginx certificates
+                if [ "$CREATE_SELF_SIGNED_CERTIFICATE" = false ]; then
                 echo -e "${NGINX_SSL_KEY}" > merged-stack/files/nginx/ssl/prometheus.key
                 echo -e "${NGINX_SSL_CERTIFICATE}" > merged-stack/files/nginx/ssl/prometheus.crt
+                 fi
+
           inputs:
             - name: git_config_ansible
               path: "config"
@@ -203,11 +236,12 @@ jobs:
             - name: merged-stack
               path: "merged-stack"
         params:
-          CONFIG_PATH: ((project))/ansible
+          CONFIG_PATH: ($ .project $)/ansible
           STACK_PATH: ansible
-          NGINX_SSL_CERTIFICATE: ((nginx_certificate))
-          NGINX_SSL_KEY: ((nginx_certificate_key))
-          USE_BASTION: ((use_bastion))
+          CREATE_SELF_SIGNED_CERTIFICATE: ($ .create_self_signed_certificate $)
+          NGINX_SSL_CERTIFICATE: ($ .nginx_certificate $)
+          NGINX_SSL_KEY: ($ .nginx_certificate_key $)
+          USE_BASTION: ($ .use_bastion $)
 
       - task: run-ansible
         config:
@@ -216,7 +250,7 @@ jobs:
             type: docker-image
             source:
               repository: cycloid/cycloid-toolkit
-              tag: "v((ansible_version))"
+              tag: "v($ .ansible_version $)"
           run:
             path: /bin/bash
             args:
@@ -231,29 +265,44 @@ jobs:
           - name: merged-stack
             path: ansible-playbook
         params:
-          SSH_PRIVATE_KEY: ((ssh_private_key))
+          SSH_PRIVATE_KEY: ($ .ssh_private_key $)
           ANSIBLE_PLAYBOOK_PATH: ansible-playbook
-          ANSIBLE_PLAYBOOK_NAME: monitoring.yml
-          AWS_USE_PRIVATE_IP: false
+          ANSIBLE_PLAYBOOK_NAME: main.yml
           ANSIBLE_INVENTORY: inventory
-          ANSIBLE_REMOTE_USER:  admin
           EXTRA_ANSIBLE_ARGS: "-i inventory"
           ANSIBLE_FORCE_GALAXY: false
-          EXTRA_ARGS: "--limit tag_vm_monitoring_aws"
+          ANSIBLE_REMOTE_USER:  admin
+    ($- if eq .use_case "aws-vm" $)
+          AWS_USE_PRIVATE_IP: false
+          EXTRA_ARGS: "--limit tag_vm_aws"
+    ($- else if eq .use_case "azure-vm" $)
+          AZURE_USE_PRIVATE_IP: false
+          EXTRA_ARGS: "--limit tag_vm_azure"
+    ($- end $)
           EXTRA_ANSIBLE_VARS:
-            env: ((env))
-            project: ((project))
-            customer: ((customer))
+            env: ($ .environment $)
+            project: ($ .project $)
+            customer: ($ .customer $)
             role: "monitoring"
-            aws_default_region: ((aws_default_region))
-            grafana_web_login: ((grafana_web_login))
-            grafana_admin_password: ((grafana_admin_password))
-            grafana_admin_user: ((grafana_admin_user))
-            alertmanager_web_login: ((alertmanager_web_login))
-            prometheus_web_login: ((prometheus_web_login))
-            external_alertmanager_password: ((external_alertmanager_password))
-            external_alertmanager_username: ((external_alertmanager_username))
-            external_alertmanager_targets: ((external_alertmanager_targets))
+            grafana_web_login: ($ .grafana_web_login $)
+            grafana_admin_password: ($ .grafana_admin_password $)
+            grafana_admin_user: ($ .grafana_admin_user $)
+            alertmanager_web_login: ($ .alertmanager_web_login $)
+            prometheus_web_login: ($ .prometheus_web_login $)
+            external_alertmanager_password: ($ .external_alertmanager_password $)
+            external_alertmanager_username: ($ .external_alertmanager_username $)
+            external_alertmanager_targets: ($ .external_alertmanager_targets $)
+            prometheus_domain_name: ($ .prometheus_domain_name $)
+            alertmanager_domain_name: ($ .alertmanager_domain_name $)
+    ($- if eq .use_case "aws-vm" $)
+            aws_default_region: ($ .aws_default_region $)
+    ($- else if eq .use_case "azure-vm" $)
+            azure_subscription_id: ((($ .azure_cred $).subscription_id))
+            azure_tenant_id: ((($ .azure_cred $).tenant_id))
+            azure_client_id: ((($ .azure_cred $).client_id))
+            azure_client_secret: ((($ .azure_cred $).client_secret))
+            azure_resource_group: ($ .resource_group_name $)
+    ($- end $)
 
   - name: terraform-destroy
     serial: true

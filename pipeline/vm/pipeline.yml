@@ -21,13 +21,13 @@ definitions:
           - name: merged-stack
             path: "merged-stack"
       params:
-($- if eq .use_case "aws-vm" $)
+#($- if eq .use_case "aws-vm" $)
         CONFIG_PATH: ($ .project $)/terraform/($ .environment $)
         STACK_PATH: terraform/aws-vm
-($- else if eq .use_case "azure-vm" $)
-        CONFIG_PATH: ((project))/terraform/((env))
-        STACK_PATH: terraform/azure-vm
-($- end $)
+#($- else if eq .use_case "azure-vm" $)
+#        CONFIG_PATH: ((project))/terraform/((env))
+#        STACK_PATH: terraform/azure-vm
+#($- end $)
 
 resource_types:
 - name: terraform
@@ -60,16 +60,16 @@ resources:
       env: ($ .environment $)
       project: ($ .project $)
       customer: ($ .customer $)
-($- if eq .use_case "aws-vm" $)
+#($- if eq .use_case "aws-vm" $)
       aws_access_key: ($ .aws_access_key $)
       aws_secret_key: ($ .aws_secret_key $)
       aws_region: ($ .aws_default_region $)
       aws_role_arn: ($ .aws_role_arn $)
-($- else if eq .use_case "azure-vm" $)
-      azure_cred: ((($ .azure_cred $))
-      resource_group_name: ($ .resource_group_name$)
-      resource_group_location: ($ .resource_group_location$)
-($- end $)
+#($- else if eq .use_case "azure-vm" $)
+      #azure_cred: ((($ .azure_cred $))
+      #resource_group_name: ($ .resource_group_name$)
+      #resource_group_location: ($ .resource_group_location$)
+#($- end $)
       create_keypair: ($ .create_keypair $)
       keypair_name: ($ .keypair_name $)
       keypair_public: ($ .ssh_public_key $)
@@ -97,11 +97,11 @@ resources:
     private_key: ((($ .cr_cred_path $).ssh_key))
 ($- end $)
     paths:
-($- if eq .use_case "aws-vm" $)
+#($- if eq .use_case "aws-vm" $)
       - ($ .project $)/ansible/environments/($ .environment $)_aws_vm_monitoring.yml
-($- else if eq .use_case "azure-vm" $)
-      - ($ .project $)/ansible/environments/($ .environment $)_azure_vm_monitoring.yml
-($- end $)
+#($- else if eq .use_case "azure-vm" $)
+#      - ($ .project $)/ansible/environments/($ .environment $)_azure_vm_monitoring.yml
+#($- end $)
 
 - name: git_stack_terraform
   type: git
@@ -111,11 +111,11 @@ resources:
     branch: ($ .scs_branch $)
     # Include only the Terraform files in the specified directory.
     paths:
-($- if eq .use_case "aws-vm" $)
+#($- if eq .use_case "aws-vm" $)
       - terraform/aws-vm/*
-($- else if eq .use_case "azure-vm" $)
-      - terraform/azure-vm/*
-($- end $)
+#($- else if eq .use_case "azure-vm" $)
+#      - terraform/azure-vm/*
+#($- end $)
 
 - name: git_config_terraform
   type: git
@@ -206,11 +206,11 @@ jobs:
                 /usr/bin/merge-stack-and-config
 
                 # create inventory file
-($- if eq .use_case "aws-vm" $)
+#($- if eq .use_case "aws-vm" $)
                 echo -e "[tag_vm_aws]" >> merged-stack/inventory
-($- else if eq .use_case "azure-vm" $)
-                echo -e "[tag_vm_azure]" >> merged-stack/inventory
-($- end $)
+#($- else if eq .use_case "azure-vm" $)
+#                echo -e "[tag_vm_azure]" >> merged-stack/inventory
+#($- end $)
 
                 if [ "$USE_BASTION" = true ]; then
                    jq -r '.machine_ip_private_address' terraform/metadata >> merged-stack/inventory
@@ -272,13 +272,13 @@ jobs:
           EXTRA_ANSIBLE_ARGS: "-i inventory"
           ANSIBLE_FORCE_GALAXY: false
           ANSIBLE_REMOTE_USER:  admin
-($- if eq .use_case "aws-vm" $)
+#($- if eq .use_case "aws-vm" $)
           AWS_USE_PRIVATE_IP: false
           EXTRA_ARGS: "--limit tag_vm_aws"
-($- else if eq .use_case "azure-vm" $)
-          AZURE_USE_PRIVATE_IP: false
-          EXTRA_ARGS: "--limit tag_vm_azure"
-($- end $)
+#($- else if eq .use_case "azure-vm" $)
+#          AZURE_USE_PRIVATE_IP: false
+#          EXTRA_ARGS: "--limit tag_vm_azure"
+#($- end $)
           EXTRA_ANSIBLE_VARS:
             env: ($ .environment $)
             project: ($ .project $)
@@ -294,15 +294,15 @@ jobs:
             external_alertmanager_targets: ($ .external_alertmanager_targets $)
             prometheus_domain_name: ($ .prometheus_domain_name $)
             alertmanager_domain_name: ($ .alertmanager_domain_name $)
-($- if eq .use_case "aws-vm" $)
+#($- if eq .use_case "aws-vm" $)
             aws_default_region: ($ .aws_default_region $)
-($- else if eq .use_case "azure-vm" $)
-            azure_subscription_id: ((($ .azure_cred $).subscription_id))
-            azure_tenant_id: ((($ .azure_cred $).tenant_id))
-            azure_client_id: ((($ .azure_cred $).client_id))
-            azure_client_secret: ((($ .azure_cred $).client_secret))
-            azure_resource_group: ($ .resource_group_name $)
-($- end $)
+#($- else if eq .use_case "azure-vm" $)
+#            azure_subscription_id: ((($ .azure_cred $).subscription_id))
+#            azure_tenant_id: ((($ .azure_cred $).tenant_id))
+#            azure_client_id: ((($ .azure_cred $).client_id))
+#            azure_client_secret: ((($ .azure_cred $).client_secret))
+#            azure_resource_group: ($ .resource_group_name $)
+#($- end $)
 
   - name: terraform-destroy
     serial: true

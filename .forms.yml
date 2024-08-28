@@ -20,7 +20,7 @@ shared:
         key: terraform_version
         widget: simple_text
         type: string
-        default: "1.8"
+        default: "1.6.3"
       - name: "Ansible version"
         description: "Ansible version to use."
         key: ansible_version
@@ -84,6 +84,7 @@ shared:
         widget: cy_cred
 
   - name: DNS Creation
+    condition: $advanced_opt == true
     technologies: [terraform]
     vars:
       - name: Create DNS
@@ -94,7 +95,7 @@ shared:
         default: false
   - name: DNS Zone
     technologies: [terraform]
-    condition: $create_dns == true
+    condition: $advanced_opt == true && $create_dns == true
     vars:
       - name: " AWS Route53 Zone"
         description: "AWS Route53 Zone name to use for creating the different monitoring records."

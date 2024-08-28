@@ -19,7 +19,9 @@ variable "create_keypair" {
 }
 variable "keypair_name" {}
 variable "os_disk_size" {}
-variable "os_disk_type" {}
+variable "os_disk_type" {
+  default = "gp3"
+}
 variable "optional_iam_policies" {}
 
 # vm network variables

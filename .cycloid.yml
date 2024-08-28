@@ -33,18 +33,18 @@ config:
     cloud_provider: aws
     pipeline:
       pipeline:
-        path: 'pipeline/vm/pipeline.yml'
+        path: pipeline/vm/pipeline.yml
       variables:
-        path: 'pipeline/vm/variables.sample.yml'
-        destination: '($ .project $)/pipeline/($ .environment $)/variables.yml'
+        path: pipeline/vm/variables.sample.yml
+        destination: ($ .project $)/pipeline/($ .environment $)/variables.yml
     terraform:
       aws-vm:
-        path: 'terraform/aws-vm/monitoring.tf.sample'
-        destination: '($ .project $)/terraform/($ .environment $)/monitoring.tf'
+        path: terraform/aws-vm/monitoring.tf.sample'
+        destination: ($ .project $)/terraform/($ .environment $)/monitoring.tf
     ansible:
       aws-vm:
-        path: 'ansible/environments/env_aws_vm_monitoring.yml'
-        destination: '($ .project $)/ansible/environments/($ .environment $)_aws_vm_monitoring.yml'
+        path: ansible/environments/env_aws_vm_monitoring.yml
+        destination: ($ .project $)/ansible/environments/($ .environment $)_aws_vm_monitoring.yml
 
 #  azure-vm:
 #    name: 'Azure VM'

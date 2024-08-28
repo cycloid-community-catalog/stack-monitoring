@@ -39,7 +39,7 @@ config:
         destination: ($ .project $)/pipeline/($ .environment $)/variables.yml
     terraform:
       aws-vm:
-        path: terraform/aws-vm/monitoring.tf.sample'
+        path: terraform/aws-vm/monitoring.tf.sample
         destination: ($ .project $)/terraform/($ .environment $)/monitoring.tf
     ansible:
       aws-vm:

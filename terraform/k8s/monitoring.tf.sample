@@ -1,0 +1,106 @@
+module "kube-prometheus" {
+  #####################################
+  # Do not modify the following lines #
+  source       = "./module-kube-prometheus-stack"
+  project      = var.project
+  env          = var.env
+  organization = var.organization
+  #####################################
+
+  kube_prometheus_helm_version   = "59.0.0"
+  namespace                      = local.namespace
+  extra_labels                   = {}
+  disable_component_scraping     = [] #kubeApiServer kubelet kubeControllerManager coreDns kubeDns kubeEtcd kubeScheduler kubeProxy kubeStateMetrics
+  enable_tls                     = var.enable_tls
+  tls_crt                        = var.tls_crt
+  tls_key                        = var.tls_key
+  stack_monitoring_node_selector = {}
+
+  enable_prometheus              = true
+  prometheus_dns                 = "prometheus.local"
+  prometheus_basic_auth_username = var.prometheus_basic_auth_username
+  prometheus_basic_auth_password = var.prometheus_basic_auth_password
+  prometheus_additional_scrape   = {}
+
+  enable_grafana                    = false
+  enable_default_grafana_dashboards = true
+  grafana_default_timezone          = "Europe/Paris"
+  grafana_admin_password            = var.grafana_admin_password
+  grafana_dns                       = "grafana.local"
+  grafana_basic_auth_username       = var.grafana_basic_auth_username
+  grafana_basic_auth_password       = var.grafana_basic_auth_password
+
+  enable_alertmanager              = false
+  alertmanager_use_external        = var.alertmanager_use_external
+  alertmanager_dns                 = "alertmanager.local"
+  alertmanager_basic_auth_username = var.alertmanager_basic_auth_username
+  alertmanager_basic_auth_password = var.alertmanager_basic_auth_password
+  alertmanager_customRules         = {}
+  alertmanager_additional_rules    = {}
+  alertmanager_config              = {}
+
+  enable_thanos = false
+
+}
+
+module "prometheus-blackbox-exporter" {
+  #####################################
+  # Do not modify the following lines #
+  source       = "./module-prometheus-blackbox-exporter"
+  project      = var.project
+  env          = var.env
+  organization = var.organization
+  #####################################
+
+  namespace                      = local.namespace
+  stack_monitoring_node_selector = module.kube-prometheus.stack_monitoring_node_selector
+
+  install_blackbox_exporter = "false"
+  blackbox_helm_version     = "8.17.0"
+  blackbox_exporter_modules = []
+
+}
+
+module "opsgenie-heartbeat" {
+  #####################################
+  # Do not modify the following lines #
+  source       = "./module-opsgenie-heartbeat"
+  project      = var.project
+  env          = var.env
+  organization = var.organization
+  #####################################
+  namespace                      = local.namespace
+  extra_labels                   = module.kube-prometheus.extra_labels
+  stack_monitoring_node_selector = module.kube-prometheus.stack_monitoring_node_selector
+
+  create_opsgenie_heartbeat = true
+  opsgenie_token            = var.opsgenie_token
+
+}
+
+module "thanos" {
+  #####################################
+  # Do not modify the following lines #
+  source       = "./module-thanos"
+  project      = var.project
+  env          = var.env
+  organization = var.organization
+  #####################################
+
+  thanos_helm_version             = "15.7.7"
+  namespace                       = local.namespace
+  extra_labels                    = module.kube-prometheus.extra_labels
+  enable_tls                      = var.enable_tls
+  tls_crt                         = var.tls_crt
+  tls_key                         = var.tls_key
+  stack_monitoring_node_selector  = module.kube-prometheus.stack_monitoring_node_selector
+  thanos_object_store_secret_name = module.kube-prometheus.thanos_object_store_secret_name
+
+  enable_thanos              = module.kube-prometheus.enable_thanos
+  thanos_basic_auth_username = var.thanos_basic_auth_username
+  thanos_basic_auth_password = var.thanos_basic_auth_password
+  thanos_dns                 = "thanos.local"
+  thanos_retention_raw       = "30d"
+  thanos_retention_5m        = "120d"
+  thanos_retention_1h        = "1y"
+}

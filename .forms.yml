@@ -2,7 +2,7 @@ shared:
 - &advanced
   name: Advanced
   groups:
-  - name: Advanced
+  - name: Enable Advanced
     technologies: [pipeline]
     vars:
       - name: Display stack advanced options
@@ -68,7 +68,6 @@ shared:
         widget: switch
         default: true
 
-
   - name: SSL configuration
     condition: $advanced_opt == true && create_self_signed_certificate == false
     technologies: [pipeline]
@@ -83,6 +82,26 @@ shared:
         key: nginx_certificate_key
         type: string
         widget: cy_cred
+
+  - name: DNS Creation
+    technologies: [terraform]
+    vars:
+      - name: Create DNS
+        description: Wheter to create DNS records for prometheus, alertmanager and grafana using AWS DNS. Note! Requires a DNS Zone
+        key: create_dns
+        widget: switch
+        type: boolean
+        default: false
+  - name: DNS Zone
+    technologies: [terraform]
+    condition: $create_dns == true
+    vars:
+      - name: " AWS Route53 Zone"
+        description: "AWS Route53 Zone name to use for creating the different monitoring records."
+        key: aws_dns_zone_name
+        widget: simple_text
+        type: string
+        default: ""
 
 - &aws-creds
   name: AWS Credentials

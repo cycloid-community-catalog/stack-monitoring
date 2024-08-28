@@ -59,7 +59,7 @@ shared:
 
   - name: SSL configuration
     condition: $advanced_opt == true && $use_ssl == true
-    technologies: [pipeline]
+    technologies: [ansible]
     vars:
       - name: "Create self signed certificate"
         description: "Wheter to create a self signed certificate automatically in the VM. Otherwise a certificate needs to be imported"
@@ -68,8 +68,9 @@ shared:
         widget: switch
         default: true
 
+
   - name: SSL configuration
-    condition: $advanced_opt == true && $create_self_signed_certificate == false
+    condition: $advanced_opt == true && create_self_signed_certificate == false
     technologies: [pipeline]
     vars:
       - name: "Nginx certificate"
@@ -84,9 +85,9 @@ shared:
         widget: cy_cred
 
 - &aws-creds
-  name: AWS
+  name: AWS Credentials
   groups:
-  - name: AWS credentials
+  - name: Setup
     technologies: [pipeline]
     vars:
       - name: "AWS access key"
@@ -114,12 +115,12 @@ shared:
         type: string
         values: ["eu-north-1","ap-south-1","eu-west-3","eu-west-2","eu-west-1","ap-northeast-2","ap-northeast-1","sa-east-1","ca-central-1","ap-southeast-1","ap-southeast-2","eu-central-1","us-east-1","us-east-2","us-west-1","us-west-2"]
         default: eu-west-1
-
+version: "2"
+use_cases:
 - name: aws-vm
   sections:
-  - *advanced
   - *aws-creds
-  - name: VM Definition
+  - name: VM Configuration
     groups:
     - name: General
       technologies: [terraform]
@@ -164,20 +165,8 @@ shared:
           type: boolean
           widget: switch
           default: true
-        - name: "VPCs to scrape"
-          description: "Map of VPCs to enable scraping. To allow the creation of the corresponding security groups to be used. TODO default"
-          key: vpcs_to_scrape
-          widget: text_area
-          type: array
-          default: []
-        - name: "Extra ports to scrape"
-          description: "Array of other ports to scrape in the machine. To allow th creation of the corresponding security groups to be used in the prometheus machine."
-          key: scraping_ports
-          widget: text_area
-          type: array
-          default: []
 
-    - name: Bastion connection
+    - name: Bastion SSH connection
       condition: $use_bastion == true
       technologies: [terraform]
       vars:
@@ -187,7 +176,7 @@ shared:
           widget: simple_text
           type: string
 
-    - name: No Bastion configured
+    - name: No Bastion - SSH access
       condition: $use_bastion == false
       technologies: [terraform]
       vars:
@@ -198,7 +187,7 @@ shared:
           type: array
           default: []
 
-    - name: SSH connection
+    - name: SSH keypair
       technologies: [pipeline]
       vars:
         - name: "Create ssh keypair"
@@ -218,7 +207,7 @@ shared:
           widget: cy_cred
           type: string
 
-    - name: SSH keypair creation
+    - name: SSH public key to create keypair
       condition: $create_keypair == true
       technologies: [pipeline]
       vars:
@@ -229,12 +218,33 @@ shared:
           type: string
           default: ""
 
+
+
+    - name: Scraping
+      technologies: [terraform]
+      vars:
+        - name: "VPCs to scrape"
+          description: "Map of VPCs to enable scraping. To allow the creation of the corresponding security groups to be used. TODO default"
+          key: vpcs_to_scrape
+          widget: text_area
+          type: array
+          default: []
+        - name: "Extra ports to scrape"
+          description: "Array of other ports to scrape in the machine. To allow th creation of the corresponding security groups to be used in the prometheus machine."
+          key: scraping_ports
+          widget: text_area
+          type: array
+          default: []
+
+
+
+
     - name: Advanced VM parameters
       condition: $advanced_opt == true
       technologies: [terraform]
       vars:
         - name: "Extra IAM policies"
-          description: "List of extra IAM policies to associate to the VM, By default ec2:DescribeTags, ec2:DescribeInstances, ec2:DescribeInstanceStatus, cloudwatch:ListMetrics, cloudwatch:GetMetricData"
+          description: "List of extra IAM policies to associate to the VM. Defaults here TODO"
           key: optional_iam_policies
           widget: text_area
           type: array
@@ -257,15 +267,57 @@ shared:
         #  widget: switch
         #  type: boolean
         #  default: true
-        - name: "Install Alertmanager"
+        - name: "Skip Alertmanager install"
           description: "Wheter to skip install Prometheus on the machine. To install select false"
           key: alertmanager_skip_install
           widget: switch
           type: boolean
           default: false
-        - name: "Install Prometheus"
+        - name: "Skip Prometheus install"
           description: "Wheter to skip install Prometheus on the machine. To install select false"
           key: prometheus_skip_install
+          widget: switch
+          type: boolean
+          default: false
+
+  - name: Exporters
+    groups:
+    - name: Select exporters to install
+      technologies: [ansible]
+      vars:
+        - name: "Skip Blackbox exporter install"
+          description: "Wheter to skip install blackbox exporter on the machine. To install select false"
+          key: blackbox_exporter_skip_install
+          widget: switch
+          type: boolean
+          default: false
+        - name: "Skip MYSQL exporter install"
+          description: "Wheter to skip install mysql exporter TODO link on the machine. To install select false"
+          key: mysqld_exporter_skip_install
+          widget: switch
+          type: boolean
+          default: true
+        - name: "Skip Postgres exporter install"
+          description: "Wheter to skip install postgres exporter TODO link  on the machine. To install select false"
+          key: postgres_exporter_skip_install
+          widget: switch
+          type: boolean
+          default: true
+        - name: "Skip Process exporter install"
+          description: "Wheter to skip install postgres exporter TODO link  on the machine. To install select false"
+          key: process_exporter_skip_install
+          widget: switch
+          type: boolean
+          default: false
+        - name: "Skip Systemd exporter install"
+          description: "Wheter to skip install systemd exporter TODO link  on the machine. To install select false"
+          key: systemd_exporter_skip_install
+          widget: switch
+          type: boolean
+          default: false
+        - name: "Skip Node exporter install"
+          description: "Wheter to skip install node exporter TODO link  on the machine. To install select false"
+          key: node_exporter_skip_install
           widget: switch
           type: boolean
           default: false
@@ -482,49 +534,6 @@ shared:
           widget: text_area
           type: map
 
-
-  - name: Exporters
-    groups:
-    - name: Select exporters to install
-      technologies: [ansible]
-      vars:
-        - name: "Install Blackbox exporter"
-          description: "Wheter to skip install blackbox exporter on the machine. To install select false"
-          key: blackbox_exporter_skip_install
-          widget: switch
-          type: boolean
-          default: false
-        - name: "Install MYSQL exporter"
-          description: "Wheter to skip install mysql exporter TODO link on the machine. To install select false"
-          key: mysqld_exporter_skip_install
-          widget: switch
-          type: boolean
-          default: true
-        - name: "Install Postgres exporter"
-          description: "Wheter to skip install postgres exporter TODO link  on the machine. To install select false"
-          key: postgres_exporter_skip_install
-          widget: switch
-          type: boolean
-          default: true
-        - name: "Install Process exporter"
-          description: "Wheter to skip install postgres exporter TODO link  on the machine. To install select false"
-          key: process_exporter_skip_install
-          widget: switch
-          type: boolean
-          default: false
-        - name: "Install Systemd exporter"
-          description: "Wheter to skip install systemd exporter TODO link  on the machine. To install select false"
-          key: systemd_exporter_skip_install
-          widget: switch
-          type: boolean
-          default: false
-        - name: "Install Node exporter"
-          description: "Wheter to skip install node exporter TODO link  on the machine. To install select false"
-          key: node_exporter_skip_install
-          widget: switch
-          type: boolean
-          default: false
-
   - name: Blackbox Exporter
     groups:
     - name: Configuration
@@ -572,6 +581,7 @@ shared:
                     project: "project"
                     env: "prod"
                     role: "role"
+  - *advanced
 
   #- name: DNS Grafana
   #  condition: $install_grafana == true

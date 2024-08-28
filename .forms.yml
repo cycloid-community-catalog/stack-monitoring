@@ -220,11 +220,13 @@ use_cases:
           key: keypair_name
           type: string
           widget: simple_text
+          required: true
         - name: "SSH private Key"
           description: "SSH private key to use to connect to the machine."
           key: ssh_private_key
           widget: cy_cred
           type: string
+          required: true
 
     - name: SSH public key to create keypair
       condition: $create_keypair == true
@@ -243,7 +245,7 @@ use_cases:
       technologies: [terraform]
       vars:
         - name: "VPCs to scrape"
-          description: "Map of VPCs to enable scraping. To allow the creation of the corresponding security groups to be used. TODO default"
+          description: "Array of VPCs to enable scraping. To allow the creation of the corresponding security groups to be used. TODO default"
           key: vpcs_to_scrape
           widget: text_area
           type: array

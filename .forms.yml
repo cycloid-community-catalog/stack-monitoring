@@ -231,7 +231,7 @@ use_cases:
 
     - name: SSH public key to create keypair
       condition: $create_keypair == true
-      technologies: [pipeline]
+      technologies: [terraform]
       vars:
         - name: "SSH public key"
           description: "SSH public key to use to create the key in AWS."
@@ -240,9 +240,8 @@ use_cases:
           type: string
           default: ""
 
-
-
-    - name: Scraping
+    - name: Advanced Scraping
+      condition: $advanced_opt == true
       technologies: [terraform]
       vars:
         - name: "VPCs to scrape"
@@ -258,10 +257,7 @@ use_cases:
           type: array
           default: []
 
-
-
-
-    - name: Advanced VM parameters
+    - name: Optional VM parameters
       condition: $advanced_opt == true
       technologies: [terraform]
       vars:

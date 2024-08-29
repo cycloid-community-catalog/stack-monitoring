@@ -15,8 +15,8 @@
 #resource_group_location: ""
 
 ## terraform version used to execute your code
-#terraform_version: ""
-#ansible_version: ""
+terraform_version: "1.6.3"
+ansible_version: "2.9"
 
 ## SSH key to acess instance
 #use_bastion: true

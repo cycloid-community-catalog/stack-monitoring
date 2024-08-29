@@ -22,7 +22,9 @@ variable "os_disk_size" {}
 variable "os_disk_type" {
   default = "gp3"
 }
-variable "optional_iam_policies" {}
+variable "optional_iam_policies" {
+  default = []
+}
 
 # vm network variables
 variable "subnet_id" {}
@@ -46,7 +48,9 @@ variable "scraping_ports" {
 }
 
 # vm dns variables
-variable "create_dns" {}
+variable "create_dns" {
+  default = false
+}
 #variable "install_grafana" {}
 variable "alertmanager_skip_install" {}
 variable "prometheus_skip_install" {}
@@ -54,13 +58,13 @@ variable "aws_dns_zone_id" {
   default = ""
 }
 variable "prometheus_domain_name" {
-  default = ""
+  default = "prometheus.local"
 }
 variable "grafana_domain_name" {
-  default = ""
+  default = "grafana.local"
 }
 variable "alertmanager_domain_name" {
-  default = ""
+  default = "alertmanager.local"
 }
 
 locals {

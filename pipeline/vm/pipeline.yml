@@ -60,7 +60,7 @@ resources:
     vars:
       env: ($ .environment $)
       project: ($ .project $)
-      customer: ((customer))
+      customer: ($ .organization_canonical $)
 #($- if eq .use_case "aws-vm" $)
       aws_access_key: ((aws_access_key))
       aws_secret_key: ((aws_secret_key))
@@ -283,7 +283,7 @@ jobs:
           EXTRA_ANSIBLE_VARS:
             env: ($ .environment $)
             project: ($ .project $)
-            customer: ((customer))
+            customer: ($ .organization_canonical $)
             role: "monitoring"
             grafana_web_login: ((grafana_web_login))
             grafana_admin_password: ((grafana_admin_password))

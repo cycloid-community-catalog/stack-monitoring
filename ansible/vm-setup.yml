@@ -15,7 +15,7 @@
       mode: 0600
     with_fileglob:
       - "{{ certificates_src }}"
-    when: use_ssl | bool  and not create_self_signed_certificate | bool
+    when: use_ssl | bool and not create_self_signed_certificate | bool
     tags: nginx
 
   - name: Create cert and key
@@ -24,7 +24,7 @@
       csr_path: "{{ certificates_dest }}/tls.csr"
       privatekey_path: "{{ certificates_dest }}/tls.key"
       provider: selfsigned
-    when: use_ssl | bool  and create_self_signed_certificate | bool
+    when: use_ssl | bool and create_self_signed_certificate | bool
     tags: nginx
 
   - name: Install NGINX

@@ -1,5 +1,7 @@
 # General variables
 external_url_schema: "{% if use_ssl %}https{% else %}http{% endif %}"
+use_ssl: true
+create_self_signed_certificate: true
 
 # Prometheus role
 # all defaults here: https://github.com/prometheus-community/ansible/blob/main/roles/prometheus/defaults/main.yml

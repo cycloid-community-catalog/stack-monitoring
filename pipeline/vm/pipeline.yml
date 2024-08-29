@@ -73,7 +73,6 @@ resources:
 #($- end $)
       create_keypair: ((create_keypair))
       keypair_name: ((keypair_name))
-      keypair_public: ((ssh_public_key))
       prometheus_domain_name: ((prometheus_domain_name))
       alertmanager_domain_name: ((alertmanager_domain_name))
 

@@ -15,7 +15,7 @@ module "aws-vm" {
   # vm_size               = ""
   create_keypair          = var.create_keypair
   keypair_name            = var.keypair_name
-  keypair_public          = var.keypair_public
+  keypair_public          = ""
   # os_disk_size          = ""
   # os_disk_type          = ""
   # optional_iam_policies = ""

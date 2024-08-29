@@ -25,9 +25,9 @@ ansible_version: "2.9"
 #keypair_name: ""
 
 ## nginx certificates
-#create_self_signed_certificate: true
-#nginx_certificate: ""
-#nginx_certificate_key: ""
+create_self_signed_certificate: true
+nginx_certificate: ""
+nginx_certificate_key: ""
 
 ## monitoring credentials
 #grafana_web_login: ""

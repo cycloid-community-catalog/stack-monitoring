@@ -534,7 +534,7 @@ use_cases:
               # Deliberately left empty to not deliver anywhere.
     - name: External Alertmanager
       technologies: [pipeline]
-      condition: $alertmanager_skip_install == false && $prometheus_skip_install == false
+      condition: $alertmanager_skip_install == true && $prometheus_skip_install == false
       vars:
         - name: "Username"
           description: "Basic authentification username to use to connect to external alertmanager"

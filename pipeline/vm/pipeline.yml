@@ -35,7 +35,7 @@ resource_types:
   type: docker-image
   source:
     repository: cycloid/terraform-resource
-    tag: ($ .terraform_version $)
+    tag: ((terraform_version))
 
 groups:
 - name: ($ .project $)-($ .environment $)
@@ -60,22 +60,22 @@ resources:
     vars:
       env: ($ .environment $)
       project: ($ .project $)
-      customer: ($ .customer $)
+      customer: ((customer))
 #($- if eq .use_case "aws-vm" $)
-      aws_access_key: ($ .aws_access_key $)
-      aws_secret_key: ($ .aws_secret_key $)
-      aws_region: ($ .aws_default_region $)
-      aws_role_arn: ($ .aws_role_arn $)
+      aws_access_key: ((aws_access_key))
+      aws_secret_key: ((aws_secret_key))
+      aws_region: ((aws_default_region))
+      aws_role_arn: ((aws_role_arn))
 #($- else if eq .use_case "azure-vm" $)
       #azure_cred: ((($ .azure_cred $))
       #resource_group_name: ($ .resource_group_name$)
       #resource_group_location: ($ .resource_group_location$)
 #($- end $)
-      create_keypair: ($ .create_keypair $)
-      keypair_name: ($ .keypair_name $)
-      keypair_public: ($ .ssh_public_key $)
-      prometheus_domain_name: ($ .prometheus_domain_name $)
-      alertmanager_domain_name: ($ .alertmanager_domain_name $)
+      create_keypair: ((create_keypair))
+      keypair_name: ((keypair_name))
+      keypair_public: ((ssh_public_key))
+      prometheus_domain_name: ((prometheus_domain_name))
+      alertmanager_domain_name: ((alertmanager_domain_name))
 
 - name: git_stack_ansible
   type: git
@@ -239,10 +239,10 @@ jobs:
         params:
           CONFIG_PATH: ($ .project $)/ansible
           STACK_PATH: ansible
-          CREATE_SELF_SIGNED_CERTIFICATE: ($ .create_self_signed_certificate $)
-          NGINX_SSL_CERTIFICATE: ($ .nginx_certificate $)
-          NGINX_SSL_KEY: ($ .nginx_certificate_key $)
-          USE_BASTION: ($ .use_bastion $)
+          CREATE_SELF_SIGNED_CERTIFICATE: ((create_self_signed_certificate))
+          NGINX_SSL_CERTIFICATE: ((nginx_certificate))
+          NGINX_SSL_KEY: ((nginx_certificate_key))
+          USE_BASTION: ((use_bastion))
 
       - task: run-ansible
         config:
@@ -251,7 +251,7 @@ jobs:
             type: docker-image
             source:
               repository: cycloid/cycloid-toolkit
-              tag: "v($ .ansible_version $)"
+              tag: "v((ansible_version))"
           run:
             path: /bin/bash
             args:
@@ -266,7 +266,7 @@ jobs:
           - name: merged-stack
             path: ansible-playbook
         params:
-          SSH_PRIVATE_KEY: ($ .ssh_private_key $)
+          SSH_PRIVATE_KEY: ((ssh_private_key))
           ANSIBLE_PLAYBOOK_PATH: ansible-playbook
           ANSIBLE_PLAYBOOK_NAME: main.yml
           ANSIBLE_INVENTORY: inventory
@@ -283,20 +283,20 @@ jobs:
           EXTRA_ANSIBLE_VARS:
             env: ($ .environment $)
             project: ($ .project $)
-            customer: ($ .customer $)
+            customer: ((customer))
             role: "monitoring"
-            grafana_web_login: ($ .grafana_web_login $)
-            grafana_admin_password: ($ .grafana_admin_password $)
-            grafana_admin_user: ($ .grafana_admin_user $)
-            alertmanager_web_login: ($ .alertmanager_web_login $)
-            prometheus_web_login: ($ .prometheus_web_login $)
-            external_alertmanager_password: ($ .external_alertmanager_password $)
-            external_alertmanager_username: ($ .external_alertmanager_username $)
-            external_alertmanager_targets: ($ .external_alertmanager_targets $)
-            prometheus_domain_name: ($ .prometheus_domain_name $)
-            alertmanager_domain_name: ($ .alertmanager_domain_name $)
+            grafana_web_login: ((grafana_web_login))
+            grafana_admin_password: ((grafana_admin_password))
+            grafana_admin_user: ((grafana_admin_user))
+            alertmanager_web_login: ((alertmanager_web_login))
+            prometheus_web_login: ((prometheus_web_login))
+            external_alertmanager_password: ((external_alertmanager_password))
+            external_alertmanager_username: ((external_alertmanager_username))
+            external_alertmanager_targets: ((external_alertmanager_targets))
+            prometheus_domain_name: ((prometheus_domain_name))
+            alertmanager_domain_name: ((alertmanager_domain_name))
 #($- if eq .use_case "aws-vm" $)
-            aws_default_region: ($ .aws_default_region $)
+            aws_default_region: ((aws_default_region))
 #($- else if eq .use_case "azure-vm" $)
 #            azure_subscription_id: ((($ .azure_cred $).subscription_id))
 #            azure_tenant_id: ((($ .azure_cred $).tenant_id))

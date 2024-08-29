@@ -179,6 +179,10 @@ use_cases:
           widget: simple_text
           type: string
           required: true
+
+    - name: Bastion connection
+      technologies: [pipeline]
+      vars:
         - name: "Use Bastion"
           description: "Select wheter to use a Bastion to SSH instance"
           key: use_bastion

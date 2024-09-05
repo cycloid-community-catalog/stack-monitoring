@@ -54,7 +54,7 @@ prometheus_alerting_local:
   - scheme: http
     static_configs:
     - targets:
-      - "{{ alertmanager_ip }}:9093"
+      - "{{ localhost }}:9093"
 
 prometheus_alerting_external:
   alertmanagers:

@@ -45,16 +45,7 @@
     tags: nginx
 
   # Install Prometheus
-  - name: Update apt cache
-    apt:
-      update_cache: yes
-    tags: prometheus
 
-  - name: Install GNU tar
-    apt:
-      name: tar
-      state: present
-    tags: prometheus
 
   - name: Install Prometheus
     include_role:

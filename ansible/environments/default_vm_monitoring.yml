@@ -126,8 +126,8 @@ node_exporter_web_listen_address: "0.0.0.0:9100"
 
 # NGINX
 
-prometheus_certificate_name: prometheus.crt
-prometheus_certificate_key_name: prometheus.key
+prometheus_certificate_name: tls.crt
+prometheus_certificate_key_name: tls.key
 alertmanager_certificate_name: "{{ prometheus_certificate_name }}"
 alertmanager_certificate_key_name: "{{ prometheus_certificate_key_name }}"
 grafana_certificate_name: "{{ prometheus_certificate_name }}"

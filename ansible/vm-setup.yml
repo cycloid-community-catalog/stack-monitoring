@@ -45,15 +45,15 @@
     tags: nginx
 
   # Install Prometheus
-  - name: Install GNU tar on Debian-based systems
-    tasks:
-      - name: Update apt cache
-        apt:
-          update_cache: yes
-      - name: Install GNU tar
-        apt:
-          name: tar
-          state: present
+  - name: Update apt cache
+    apt:
+      update_cache: yes
+    tags: prometheus
+
+  - name: Install GNU tar
+    apt:
+      name: tar
+      state: present
     tags: prometheus
 
   - name: Install Prometheus

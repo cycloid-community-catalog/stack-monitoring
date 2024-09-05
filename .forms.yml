@@ -481,7 +481,7 @@ use_cases:
       #TODO change to password
         - name: "Alertmanager SMTP"
           description: "The SMTP to be used by alertmanager, as specified in the oficial documentation [here](TODO)."
-          key: alertmanager_route
+          key: alertmanager_smtp
           widget: text_area
           type: map
           default:

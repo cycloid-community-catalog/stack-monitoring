@@ -89,7 +89,7 @@
 
   - name: Install Process exporter
     include_role:
-      name: prometheus.prometheus.proccess_exporter
+      name: prometheus.prometheus.process_exporter
     tags: process_exporter
 
   - name: Install Systemd exporter

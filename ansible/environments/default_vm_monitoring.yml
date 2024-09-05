@@ -10,7 +10,7 @@ prometheus_storage_retention: "60d"
 prometheus_config_dir: /etc/prometheus
 prometheus_db_dir: /var/lib/prometheus
 prometheus_web_listen_address: "0.0.0.0:9090"
-prometheus_web_external_url: "{{ external_url_schema }}://{{ prometheus_hostname }}"
+prometheus_web_external_url: "{{ external_url_schema }}://{{ prometheus_domain_name }}"
 prometheus_external_labels: {}
 prometheus_global:
   scrape_interval: 15s
@@ -74,7 +74,7 @@ prometheus_alertmanager_config: "{{ prometheus_alerting_local if install_alertma
 # Alertmanager role
 # default values: https://github.com/prometheus-community/ansible/blob/main/roles/alertmanager/defaults/main.yml
 
-alertmanager_web_external_url: "{{ external_url_schema }}://{{ alertmanager_hostname }}"
+alertmanager_web_external_url: "{{ external_url_schema }}://{{ alertmanager_domain_name }}"
 alertmanager_web_listen_address: '0.0.0.0:9093'
 # TODO copy default templates to folder
 # TODO if required global config https://github.com/prometheus-community/ansible/blob/main/roles/alertmanager/templates/alertmanager.yml.j2#L3

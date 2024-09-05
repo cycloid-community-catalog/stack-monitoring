@@ -265,16 +265,16 @@ nginx_force_https:
 
 nginx_sites_default: "{{
           nginx_status_http
-          | combine(nginx_grafana_http if not prometheus_skip_install else {})
-          | combine(nginx_prometheus_http if not prometheus_skip_install else {})
-          | combine(nginx_alertmanager_http if not alertmanager_skip_install else {})
+          | combine(nginx_grafana_http if not (grafana_skip_install| default(true)) else {})
+          | combine(nginx_prometheus_http if not (prometheus_skip_install| default(false)) else {})
+          | combine(nginx_alertmanager_http if not (alertmanager_skip_install| default(true)) else {})
         }}"
 nginx_sites_default_https: "{{
           nginx_status_https
           | combine(nginx_force_https)
-          | combine(nginx_grafana_https if not grafana_skip_install else {})
-          | combine(nginx_prometheus_https if not prometheus_skip_install else {})
-          | combine(nginx_alertmanager_https if not alertmanager_skip_install else {})
+          | combine(nginx_grafana_https if not (grafana_skip_install| default(true)) else {})
+          | combine(nginx_prometheus_https if not (prometheus_skip_install| default(false)) else {})
+          | combine(nginx_alertmanager_https if not (alertmanager_skip_install| default(true)) else {})
         }}"
 
 nginx_sites: "{% if not use_ssl %}{{ nginx_sites_default }}{% else %}{{ nginx_sites_default_https }}{% endif %}"

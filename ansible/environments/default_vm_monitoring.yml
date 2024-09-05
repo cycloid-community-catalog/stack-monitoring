@@ -50,14 +50,12 @@ prometheus_scrape_configs_alertmanager:
 prometheus_scrape_configs: "{{ prometheus_scrape_configs_global + prometheus_custom_configs + (prometheus_scrape_configs_alertmanager if not alertmanager_skip_install else []) + (prometheus_blackbox_config if not blackbox_exporter_skip_install else [])}}"
 
 prometheus_alerting_local:
-  alertmanagers:
   - scheme: http
     static_configs:
     - targets:
       - "localhost:9093"
 
 prometheus_alerting_external:
-  alertmanagers:
   -   basic_auth:
           password: "{{external_alertmanager_password}}"
           username: "{{external_alertmanager_username}}"

@@ -478,6 +478,25 @@ use_cases:
       technologies: [ansible]
       condition: $alertmanager_skip_install == false
       vars:
+      #TODO change to password
+        - name: "Alertmanager SMTP"
+          description: "The SMTP to be used by alertmanager, as specified in the oficial documentation [here](TODO)."
+          key: alertmanager_route
+          widget: text_area
+          type: map
+          default:
+            smarthost: 'smtp.gmail.com:587'
+            from: 'foo@bar.com'
+            auth_username: 'foo@bar.com'
+            auth_password: 'barfoo'
+# alertmanager_smtp:
+#   from: ''
+#   smarthost: ''
+#   auth_username: ''
+#   auth_password: ''
+#   auth_secret: ''
+#   auth_identity: ''
+#   require_tls: "True"
         - name: "Alertmanager route"
           description: "The root node of the routing tree, as specified in the oficial documentation [here](TODO)."
           key: alertmanager_route

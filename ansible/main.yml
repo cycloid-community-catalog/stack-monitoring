@@ -5,6 +5,7 @@
 - hosts: tag_vm_aws
   become: yes
   serial: 50%
+  ignore_unreachable: true
 
   vars:
     ansible_python_interpreter: /usr/bin/python3
@@ -24,6 +25,7 @@
 - hosts: tag_vm_azure
   become: yes
   serial: 50%
+  ignore_unreachable: true
 
   vars:
     ansible_python_interpreter: /usr/bin/python3

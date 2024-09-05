@@ -32,7 +32,7 @@
 
       - name: "Create signing request"
         openssl_certificate:
-          path: "{{ certificates_dest }}/tls.cert"
+          path: "{{ certificates_dest }}/tls.crt"
           csr_path: "{{ certificates_dest }}/tls.csr"
           privatekey_path: "{{ certificates_dest }}/tls.key"
           provider: selfsigned

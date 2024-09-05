@@ -47,7 +47,7 @@ prometheus_scrape_configs_alertmanager:
       regex: go_(.*)
 
 # merge default scrapings with custom ones
-prometheus_scrape_configs: "{{ prometheus_scrape_configs_global + prometheus_custom_configs + (prometheus_scrape_configs_alertmanager if install_alertmanager else []) + (prometheus_blackbox_config if install_blackbox_exporter else [])}}"
+prometheus_scrape_configs: "{{ prometheus_scrape_configs_global + prometheus_custom_configs + (prometheus_scrape_configs_alertmanager if not alertmanager_skip_install else []) + (prometheus_blackbox_config if not blackbox_exporter_skip_install else [])}}"
 
 prometheus_alerting_local:
   alertmanagers:
@@ -65,7 +65,7 @@ prometheus_alerting_external:
       static_configs:
       - targets:"{{external_alertmanager_targets}}"
 
-prometheus_alertmanager_config: "{{ prometheus_alerting_local if install_alertmanager else prometheus_alerting_external }}"
+prometheus_alertmanager_config: "{{ prometheus_alerting_local if not alertmanager_skip_install else prometheus_alerting_external }}"
 
 # TODO replace default alert rules prometheus_alert_rules with ours https://github.com/prometheus-community/ansible/blob/main/roles/prometheus/defaults/main.yml#L105
 # TODO add default_alert_rules true/false

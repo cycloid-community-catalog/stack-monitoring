@@ -18,12 +18,24 @@
     when: use_ssl | bool and not create_self_signed_certificate | bool
     tags: nginx
 
-  - name: Create cert and key
-    openssl_certificate:
-      path: "{{ certificates_dest }}/tls.cert"
-      csr_path: "{{ certificates_dest }}/tls.csr"
-      privatekey_path: "{{ certificates_dest }}/tls.key"
-      provider: selfsigned
+  - name: "Install self signed certificate"
+    block:
+      - name: "Create private key"
+        openssl_privatekey:
+          path: "{{ certificates_dest }}/tls.key"
+          size: 2048
+
+      - name: "Create signing request"
+        openssl_csr:
+          path: "{{ certificates_dest }}/tls.csr"
+          privatekey_path: "{{ certificates_dest }}/tls.key"
+
+      - name: "Create signing request"
+        openssl_certificate:
+          path: "{{ certificates_dest }}/tls.cert"
+          csr_path: "{{ certificates_dest }}/tls.csr"
+          privatekey_path: "{{ certificates_dest }}/tls.key"
+          provider: selfsigned
     when: use_ssl | bool and create_self_signed_certificate | bool
     tags: nginx
 

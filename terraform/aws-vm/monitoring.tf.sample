@@ -33,8 +33,10 @@ module "aws-vm" {
   # aws_dns_zone_id        = ""
   prometheus_domain_name   = var.prometheus_domain_name
   alertmanager_domain_name = var.alertmanager_domain_name
+  grafana_domain_name      = var.grafana_domain_name
 
   ## vm monitoring software
   # prometheus_skip_install   = false
   # alertmanager_skip_install = true
+  # grafana_skip_install = true
 }

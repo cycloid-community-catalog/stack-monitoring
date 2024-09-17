@@ -17,3 +17,4 @@ variable "keypair_name" {}
 # cycloid credentials - passed via pipeline
 variable "prometheus_domain_name" {}
 variable "alertmanager_domain_name" {}
+variable "grafana_domain_name" {}

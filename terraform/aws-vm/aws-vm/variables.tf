@@ -54,6 +54,7 @@ variable "create_dns" {
 #variable "install_grafana" {}
 variable "alertmanager_skip_install" {}
 variable "prometheus_skip_install" {}
+variable "grafana_skip_install" {}
 variable "aws_dns_zone_id" {
   default = ""
 }

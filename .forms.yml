@@ -286,9 +286,9 @@ use_cases:
     - name: Tools to skip install
       technologies: [terraform, ansible]
       vars:
-        - name: "Install Grafana"
-          description: "Wheter to install Grafana on the machine."
-          key: install_grafana
+        - name: "Skip Grafana install"
+          description: "Wheter to skip install Prometheus on the machine. To install select false"
+          key: grafana_skip_install
           widget: switch
           type: boolean
           default: true

@@ -658,7 +658,7 @@ use_cases:
         - name: "Grafana Dashboards"
           description: "List of dashboards which should be imported by ID, available publicly atnod [grafana](https://grafana.com/grafana/dashboards/)"
           key: grafana_dashboards
-          type: map
+          type: array
           widget: text_area
           default:
             - dashboard_id: 1860

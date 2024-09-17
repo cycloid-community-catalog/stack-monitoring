@@ -45,8 +45,6 @@
     tags: nginx
 
   # Install Prometheus
-
-
   - name: Install Prometheus
     include_role:
       name: prometheus.prometheus.prometheus
@@ -98,6 +96,18 @@
     tags: systemd_exporter
 
   # Install Grafana
-  #- role: grafana TODO
-  #  tags:
-  #    - grafana
+  - name: Install Grafana
+    include_role:
+      name: grafana.grafana.grafana
+    when: not grafana_skip_install
+    tags: grafana
+
+  - name: Copy stack grafana dashboards JSON files to the target directory
+    ansible.builtin.copy:
+      src: "{{ item }}"
+      dest: "{{ grafana_data_dir }}/{{ grafana_dashboards_dir }}"
+    with_fileglob:
+      - "{{ grafana_dashboards_files}}"
+    mode: '0644'
+    when: not grafana_skip_install
+    tags: grafana

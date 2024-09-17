@@ -4,8 +4,8 @@
 ###
 
 ## NGINX
-# use_ssl: true
-# create_self_signed_certificate: true TODO
+#use_ssl: true
+#create_self_signed_certificate: true
 
 
 ## Prometheus
@@ -26,6 +26,7 @@
 # alertmanager_route: {}
 # alertmanager_receivers: []
 # alertmanager_inhibit_rules: []
+# alertmanager_smtp: {}
 
 ## Blackbox exporter
 # blackbox_exporter_skip_install: true
@@ -48,10 +49,10 @@
 ## Node exporter
 #node_exporter_skip_install: false
 
-## Grafana TODO
-# grafana_version: 10.0.1
-# install_grafana: true
-# grafana_domain_name: "grafana.local"
-# grafana_admin_password: "PasswordToChange!"
-# grafana_database_name: "grafana"
-# grafana_admin_user: "admin"
+## Grafana
+# grafana_version: latest
+# grafana_skip_install: true
+# grafana_admin_user: admin
+# grafana_admin_pwd: ""
+# grafana_dashboards: []
+# grafana_extra_datasources: []

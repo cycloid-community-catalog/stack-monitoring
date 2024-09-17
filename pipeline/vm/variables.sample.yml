@@ -31,8 +31,9 @@ nginx_certificate_key: ""
 
 ## monitoring credentials
 grafana_web_login: ""
-grafana_admin_password: ""
+grafana_admin_pwd: ""
 grafana_admin_user: ""
+grafana_extra_datasources: ""
 
 alertmanager_domain_name: ""
 alertmanager_web_login: ""

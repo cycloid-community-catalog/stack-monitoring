@@ -213,17 +213,17 @@ jobs:
                 #($- end $)
 
                 if [ "$USE_BASTION" = true ]; then
-                   jq -r '.machine_ip_private_address' terraform/metadata >> merged-stack/inventory
+                  jq -r '.machine_ip_private_address' terraform/metadata >> merged-stack/inventory
                 else
-                    jq -r '.machine_ip_public_address' terraform/metadata >> merged-stack/inventory
+                  jq -r '.machine_ip_public_address' terraform/metadata >> merged-stack/inventory
                 fi
                 cat merged-stack/inventory
 
                 # import nginx certificates
                 if [ "$CREATE_SELF_SIGNED_CERTIFICATE" = false ]; then
-                echo -e "${NGINX_SSL_KEY}" > merged-stack/files/nginx/ssl/prometheus.key
-                echo -e "${NGINX_SSL_CERTIFICATE}" > merged-stack/files/nginx/ssl/prometheus.crt
-                 fi
+                echo -e "${NGINX_SSL_KEY}" > merged-stack/files/nginx/ssl/tls.key
+                echo -e "${NGINX_SSL_CERTIFICATE}" > merged-stack/files/nginx/ssl/tls.crt
+                fi
 
           inputs:
             - name: git_config_ansible
@@ -256,6 +256,9 @@ jobs:
             args:
               - '-exc'
               - |
+                #issue with gnu run locally
+                #https://stackoverflow.com/questions/54377305/tar-not-found-in-archive-error-when-using-docker-alpine
+                apk add --no-cache tar
                 # Static inventory
                 ansible-inventory -i ansible-playbook/inventory --graph
                 /usr/bin/ansible-runner
@@ -268,6 +271,10 @@ jobs:
           SSH_PRIVATE_KEY: ((ssh_private_key))
           ANSIBLE_PLAYBOOK_PATH: ansible-playbook
           ANSIBLE_PLAYBOOK_NAME: main.yml
+#($- if eq .use_bastion true $)
+          BASTION_URL: ((bastion_url))
+          BASTION_PRIVATE_KEY: ((bastion_keypair))
+#($- end $)
           ANSIBLE_INVENTORY: inventory
           EXTRA_ANSIBLE_ARGS: "-i inventory"
           ANSIBLE_FORCE_GALAXY: false
@@ -285,8 +292,9 @@ jobs:
             customer: ($ .organization_canonical $)
             role: "monitoring"
             grafana_web_login: ((grafana_web_login))
-            grafana_admin_password: ((grafana_admin_password))
+            grafana_admin_pwd: ((grafana_admin_pwd))
             grafana_admin_user: ((grafana_admin_user))
+            grafana_extra_datasources: ((grafana_extra_datasources))
             alertmanager_web_login: ((alertmanager_web_login))
             prometheus_web_login: ((prometheus_web_login))
             external_alertmanager_password: ((external_alertmanager_password))

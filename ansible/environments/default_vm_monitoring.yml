@@ -107,21 +107,18 @@ postgres_exporter_config_dir: "/etc/postgres_exporter"
 
 systemd_exporter_web_listen_address: "0.0.0.0:9558"
 systemd_exporter_log_level: info
-# TODO test parameters
 
 
 # Process exporter role
 # defaults at https://github.com/prometheus-community/ansible/blob/main/roles/process_exporter/defaults/main.yml
 
 process_exporter_web_listen_address: "0.0.0.0:9256"
-# TODO test parameters
 
 
 # Node-exporter role
 # defaults at https://github.com/prometheus-community/ansible/blob/main/roles/node_exporter/defaults/main.yml
 
 node_exporter_web_listen_address: "0.0.0.0:9100"
-# TODO test parameters
 
 
 # NGINX
@@ -287,17 +284,26 @@ nginx_auth_basic_files:
 
 
 # Grafana
-
-# TODO
-## Note : Grafana service is installed with the Docker image grafana/grafana.
-## To provision grafana datasources admin account is used by ansible.
-#grafana_database_name: "grafana"
-#grafana_database_type: "sql"
-#
-#grafana_dashboards_files:
-#  - "{{ playbook_dir }}/files/grafana/dashboards/*.json"
-#
-#grafana_provisioning_files:
-#  - "{{ playbook_dir }}/files/grafana/provisioning/dashboards/*.yml"
-#  - "{{ playbook_dir }}/files/grafana/provisioning/datasources/*.yml"
-#  - "{{ playbook_dir }}/files/grafana/provisioning/notifiers/*.yml"
+grafana_logs_dir: "/var/log/grafana"
+grafana_data_dir: "/var/lib/grafana"
+grafana_database:
+  type: sqlite3
+grafana_address: "0.0.0.0"
+grafana_port: 3000
+grafana_security:
+  admin_user: "{{grafana_admin_user}}"
+  admin_password: "{{grafana_admin_pwd}}"
+grafana_default_prometheus_datasource:
+  - name: prometheus
+    type: prometheus
+    access: proxy
+    url: 'http://127.0.0.1:9090'
+    basicAuth: false
+    isDefault: true
+    version: 1
+grafana_datasources: "{{
+          grafana_extra_datasources
+          | combine(grafana_default_prometheus_datasource if not (prometheus_skip_install| default(true)) else {})
+        }}"
+grafana_dashboards_dir: "dashboards"
+grafana_dashboards_files: "{{ playbook_dir }}/files/grafana/dashboards/*.json"

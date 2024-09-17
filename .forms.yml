@@ -26,25 +26,32 @@ shared:
         key: ansible_version
         widget: simple_text
         type: string
-        default: "2.9"
+        default: "10.1"
       - name: "Prometheus version"
         description: "Prometheus version to use."
         key: prometheus_version
         widget: simple_text
         type: string
-        default: "2.54.0"
+        default: "latest"
       - name: "Alertmananager version"
         description: "Alertmanager version to use."
         key: alertmanager_version
         widget: simple_text
         type: string
-        default: "0.27.0"
+        default: "latest"
+      - name: "Grafana version"
+        description: "Grafana version to use."
+        key: grafana_version
+        widget: simple_text
+        type: string
+        default: "latest"
       - name: "Blaxkbox exporter version"
         description: "Blackbox exporter version to use."
         key: blackbox_exporter_version
         widget: simple_text
         type: string
         default: "0.25.0"
+        #TODO others
 
   - name: NGINX configuration
     condition: $advanced_opt == true
@@ -276,15 +283,15 @@ use_cases:
 
   - name: Monitoring tools
     groups:
-    - name: Select tools to install
+    - name: Tools to skip install
       technologies: [terraform, ansible]
       vars:
-        #- name: "Install Grafana"
-        #  description: "Wheter to install Grafana on the machine."
-        #  key: install_grafana
-        #  widget: switch
-        #  type: boolean
-        #  default: true
+        - name: "Install Grafana"
+          description: "Wheter to install Grafana on the machine."
+          key: install_grafana
+          widget: switch
+          type: boolean
+          default: true
         - name: "Skip Alertmanager install"
           description: "Wheter to skip install Prometheus on the machine. To install select false"
           key: alertmanager_skip_install
@@ -489,14 +496,6 @@ use_cases:
             from: 'foo@bar.com'
             auth_username: 'foo@bar.com'
             auth_password: 'barfoo'
-# alertmanager_smtp:
-#   from: ''
-#   smarthost: ''
-#   auth_username: ''
-#   auth_password: ''
-#   auth_secret: ''
-#   auth_identity: ''
-#   require_tls: "True"
         - name: "Alertmanager route"
           description: "The root node of the routing tree, as specified in the oficial documentation [here](TODO)."
           key: alertmanager_route
@@ -613,51 +612,63 @@ use_cases:
                 - targets: ["https://cycloid.io"]
                   labels:
                     Name: "Name"
-                    connection_ip: "IP"
                     customer: "{{customer}}"
-                    project: "project"
+                    project: "website"
                     env: "prod"
-                    role: "role"
   - *advanced
 
-  #- name: DNS Grafana
-  #  condition: $install_grafana == true
-  #  technologies: [terraform]
-  #  vars:
-  #  - name: "Grafana DNS"
-  #    description: "DNS to use for Grafana."
-  #    key: grafana_domain_name
-  #    widget: simple_text
-  #    type: string
-  #    default: grafana.local
-  #- name: Grafana configuration
-  #  groups:
-  #  - name: Grafana credentials
-  #    condition: $install_grafana == true
-  #    technologies: [pipeline]
-  #    vars:
-  #      - name: "Grafana weblogin"
-  #        description: "Htpasswd can be generated using `htpasswd -nb user password`"
-  #        key: grafana_web_login
-  #        type: string
-  #        widget: cy_cred
-  #      - name: "Grafana Admin Password"
-  #        description: "Grafana admin password to use for the local db and the service"
-  #        key: grafana_admin_password
-  #        type: string
-  #        widget: cy_cred
-  #      - name: "Grafana Admin User"
-  #        description: "Grafana admin user to use for the local db and the service"
-  #        key: grafana_admin_user
-  #        type: string
-  #        widget: cy_cred
-  #  - name: Grafana Configuration
-  #    technologies: [ansible]
-  #    condition: $install_grafana == true
-  #    vars:
-  #      - name: "Grafana version"
-  #        description: "Grafana version to use."
-  #        key: grafana_version
-  #        widget: simple_text
-  #        type: string
-  #        default: "10.0.1"
+
+  - name: Grafana
+    groups:
+    - name: Grafana login
+      condition: $grafana_skip_install == false
+      technologies: [pipeline]
+      vars:
+        - name: "Grafana DNS"
+          description: "DNS to use for Grafana."
+          key: grafana_domain_name
+          widget: simple_text
+          type: string
+          default: grafana.local
+        - name: "Grafana weblogin"
+          description: "Htpasswd can be generated using `htpasswd -nb user password`"
+          key: grafana_web_login
+          type: string
+          widget: cy_cred
+        - name: "Grafana Admin Password"
+          description: "Grafana admin password to use for the local db and the service"
+          key: grafana_admin_pwd
+          type: string
+          widget: cy_cred
+        - name: "Grafana Admin User"
+          description: "Grafana admin user to use for the local db and the service"
+          key: grafana_admin_user
+          type: string
+          widget: cy_cred
+        - name: "Grafana Datasources"
+          description: "Grafana "
+          key: grafana_extra_datasources
+          type: map
+          widget: cy_cred
+    - name: Grafana Configuration
+      technologies: [ansible]
+      condition: $grafana_skip_install == false
+      vars:
+        - name: "Grafana Dashboards"
+          description: "List of dashboards which should be imported by ID, available publicly atnod [grafana](https://grafana.com/grafana/dashboards/)"
+          key: grafana_dashboards
+          type: map
+          widget: text_area
+          default:
+            - dashboard_id: 1860
+              revision_id: 37
+              datasource: prometheus
+            - dashboard_id: 13882
+              revision_id: 10
+              datasource: prometheus
+            - dashboard_id: 1617
+              revision_id: 1
+              datasource: prometheus
+            - dashboard_id: 13659
+              revision_id: 1
+              datasource: prometheus

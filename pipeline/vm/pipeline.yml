@@ -75,6 +75,7 @@ resources:
       keypair_name: ((keypair_name))
       prometheus_domain_name: ((prometheus_domain_name))
       alertmanager_domain_name: ((alertmanager_domain_name))
+      grafana_domain_name: ((grafana_domain_name))
 
 - name: git_stack_ansible
   type: git

@@ -645,11 +645,12 @@ use_cases:
           key: grafana_admin_user
           type: string
           widget: cy_cred
-        - name: "Grafana Datasources"
-          description: "Grafana "
-          key: grafana_extra_datasources
-          type: map
-          widget: cy_cred
+        # cannot have map cy_creds
+        #- name: "Grafana Datasources"
+        #  description: "Grafana "
+        #  key: grafana_extra_datasources
+        #  type: map
+        #  widget: cy_cred
     - name: Grafana Configuration
       technologies: [ansible]
       condition: $grafana_skip_install == false

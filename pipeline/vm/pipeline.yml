@@ -294,7 +294,6 @@ jobs:
             grafana_web_login: ((grafana_web_login))
             grafana_admin_pwd: ((grafana_admin_pwd))
             grafana_admin_user: ((grafana_admin_user))
-            grafana_extra_datasources: ((grafana_extra_datasources))
             alertmanager_web_login: ((alertmanager_web_login))
             prometheus_web_login: ((prometheus_web_login))
             external_alertmanager_password: ((external_alertmanager_password))

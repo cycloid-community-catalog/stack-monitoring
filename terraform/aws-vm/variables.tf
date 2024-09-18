@@ -13,7 +13,7 @@ variable "aws_role_arn" {
 # cycloid credentials - passed via pipeline
 variable "create_keypair" {}
 variable "keypair_name" {}
-varibale "ssh_public_key" {}
+variable "ssh_public_key" {}
 
 # cycloid credentials - passed via pipeline
 variable "prometheus_domain_name" {}

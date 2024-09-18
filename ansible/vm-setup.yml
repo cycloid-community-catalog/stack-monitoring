@@ -1,4 +1,8 @@
 ---
+  - name: Update apt cache (equivalent to apt-get update)
+    apt:
+      update_cache: yes
+
   # Install NGINX
   # Install SSL certificates for nginx
   - name: "Create SSL directory"

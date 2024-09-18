@@ -3,51 +3,6 @@
     apt:
       update_cache: yes
 
-  # Install NGINX
-  # Install SSL certificates for nginx
-  - name: "Create SSL directory"
-    file:
-      path: "{{ certificates_dest }}"
-      state: directory
-    when: use_ssl | bool
-    tags: nginx
-
-  - name: "Install SSL certificates"
-    copy:
-      src: "{{ item }}"
-      dest: "{{ certificates_dest }}"
-      mode: 0600
-    with_fileglob:
-      - "{{ certificates_src }}"
-    when: use_ssl | bool and not create_self_signed_certificate | bool
-    tags: nginx
-
-  - name: "Install self signed certificate"
-    block:
-      - name: "Create private key"
-        openssl_privatekey:
-          path: "{{ certificates_dest }}/tls.key"
-          size: 2048
-
-      - name: "Create signing request"
-        openssl_csr:
-          path: "{{ certificates_dest }}/tls.csr"
-          privatekey_path: "{{ certificates_dest }}/tls.key"
-
-      - name: "Create signing request"
-        openssl_certificate:
-          path: "{{ certificates_dest }}/tls.crt"
-          csr_path: "{{ certificates_dest }}/tls.csr"
-          privatekey_path: "{{ certificates_dest }}/tls.key"
-          provider: selfsigned
-    when: use_ssl | bool and create_self_signed_certificate | bool
-    tags: nginx
-
-  - name: Install NGINX
-    include_role:
-      name: jdauphant.nginx
-    tags: nginx
-
   # Install Prometheus
   - name: Install Prometheus
     include_role:
@@ -116,3 +71,48 @@
 
     when: not grafana_skip_install
     tags: grafana
+
+  # Install NGINX
+  # Install SSL certificates for nginx
+  - name: "Create SSL directory"
+    file:
+      path: "{{ certificates_dest }}"
+      state: directory
+    when: use_ssl | bool
+    tags: nginx
+
+  - name: "Install SSL certificates"
+    copy:
+      src: "{{ item }}"
+      dest: "{{ certificates_dest }}"
+      mode: 0600
+    with_fileglob:
+      - "{{ certificates_src }}"
+    when: use_ssl | bool and not create_self_signed_certificate | bool
+    tags: nginx
+
+  - name: "Install self signed certificate"
+    block:
+      - name: "Create private key"
+        openssl_privatekey:
+          path: "{{ certificates_dest }}/tls.key"
+          size: 2048
+
+      - name: "Create signing request"
+        openssl_csr:
+          path: "{{ certificates_dest }}/tls.csr"
+          privatekey_path: "{{ certificates_dest }}/tls.key"
+
+      - name: "Create signing request"
+        openssl_certificate:
+          path: "{{ certificates_dest }}/tls.crt"
+          csr_path: "{{ certificates_dest }}/tls.csr"
+          privatekey_path: "{{ certificates_dest }}/tls.key"
+          provider: selfsigned
+    when: use_ssl | bool and create_self_signed_certificate | bool
+    tags: nginx
+
+  - name: Install NGINX
+    include_role:
+      name: jdauphant.nginx
+    tags: nginx

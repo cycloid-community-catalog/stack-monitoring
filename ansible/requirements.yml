@@ -12,10 +12,10 @@ roles:
 collections:
   # Install a collection from Ansible Galaxy.
   - name: prometheus.prometheus
-    version: latest
+    version: ">=0.17.0"
     source: https://galaxy.ansible.com
 
   # Install a collection of grafana
   - name: grafana.grafana
-    version: latest
+    version: ">=5.5.0"
     source: https://galaxy.ansible.com

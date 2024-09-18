@@ -50,7 +50,7 @@ shared:
         key: blackbox_exporter_version
         widget: simple_text
         type: string
-        default: "0.25.0"
+        default: "latest"
         #TODO others
 
   - name: NGINX configuration

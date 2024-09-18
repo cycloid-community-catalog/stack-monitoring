@@ -302,8 +302,8 @@ grafana_default_prometheus_datasource:
     isDefault: true
     version: 1
 grafana_datasources: "{{
-          (grafana_extra_datasources| default([]))
-          | combine(grafana_default_prometheus_datasource if not (prometheus_skip_install| default(true)) else {})
-        }}"
+    (grafana_extra_datasources | default([]))
+    + (grafana_default_prometheus_datasource if not (prometheus_skip_install | default(true)) else [])
+  }}"
 grafana_dashboards_dir: "dashboards"
 grafana_dashboards_files: "{{ playbook_dir }}/files/grafana/dashboards/*.json"

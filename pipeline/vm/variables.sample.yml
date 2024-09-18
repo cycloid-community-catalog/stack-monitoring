@@ -21,6 +21,7 @@ ansible_version: "2.9"
 ## SSH key to acess instance
 #use_bastion: true
 #ssh_private_key: ""
+#ssh_public_key: ""
 #keypair_name: ""
 
 ## nginx certificates

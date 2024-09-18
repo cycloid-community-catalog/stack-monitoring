@@ -7,7 +7,7 @@
 resource "aws_key_pair" "vm" {
   count = var.create_keypair ? 1 : 0
   key_name   = var.keypair_name
-  public_key = var.keypair_public
+  public_key = var.ssh_public_key
 }
 
 # ami to use -> debian 10

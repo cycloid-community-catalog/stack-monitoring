@@ -10,18 +10,18 @@ variable "extra_tags" {
 variable "aws_region" {}
 # vm configuration variables
 variable "vm_size" {}
-variable "keypair_public" {
-  default = ""
-}
-
-variable "create_keypair" {
-  default = false
-}
-variable "keypair_name" {}
 variable "os_disk_size" {}
 variable "os_disk_type" {
   default = "gp3"
 }
+variable "create_keypair" {
+  default = false
+}
+variable "keypair_name" {}
+variable "ssh_public_key" {
+  default = ""
+}
+
 variable "optional_iam_policies" {
   default = []
 }

@@ -217,11 +217,11 @@ use_cases:
 
     - name: SSH public key to create keypair
       condition: $create_keypair == true
-      technologies: [terraform]
+      technologies: [pipeline]
       vars:
         - name: "SSH public key"
           description: "SSH public key to use to create the key in AWS."
-          key: keypair_public
+          key: ssh_public_key
           widget: cy_cred
           type: string
           default: ""

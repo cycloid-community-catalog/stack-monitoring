@@ -221,7 +221,7 @@ use_cases:
       vars:
         - name: "SSH public key"
           description: "SSH public key to use to create the key in AWS."
-          key: ssh_public_key
+          key: keypair_public
           widget: cy_cred
           type: string
           default: ""

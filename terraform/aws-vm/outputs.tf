@@ -20,6 +20,7 @@ output "alertmanager_domain_name" {
 
 output "ssh_private_key" {
   value = module.aws-vm.ssh_private_key
+  sensitive = true
 }
 
 output "ssh_public_key" {

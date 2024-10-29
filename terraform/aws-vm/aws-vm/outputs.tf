@@ -11,12 +11,12 @@ output "machine_ip_public_address" {
 # machine keypair
 output "ssh_private_key" {
   value     = tls_private_key.vm.private_key_pem
-  sensitive = true  # Mark as sensitive to avoid showing in plaintext in logs
+  sensitive = true
 }
 
 output "ssh_public_key" {
   value     = tls_private_key.vm.private_key_pem
-  sensitive = true  # Mark as sensitive to avoid showing in plaintext in logs
+  sensitive = true
 }
 
 # dns

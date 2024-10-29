@@ -25,4 +25,5 @@ output "ssh_private_key" {
 
 output "ssh_public_key" {
   value = module.aws-vm.ssh_public_key
+  sensitive = true
 }

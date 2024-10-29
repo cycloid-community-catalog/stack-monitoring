@@ -38,15 +38,16 @@ resource_types:
     tag: ((terraform_version))
 
 groups:
-- name: ($ .project $)-($ .environment $)
+- name: setup
   jobs:
   - terraform-plan
   - terraform-apply
   - deploy
-  - connection-credentials
+
 - name: destroy
   jobs:
   - terraform-destroy
+  - clean-vm-credential
 
 resources:
 - name: tfstate

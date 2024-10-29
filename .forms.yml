@@ -75,7 +75,7 @@ shared:
         widget: switch
         default: true
 
-  - name: SSL configuration
+  - name: SSL certificate import
     condition: $advanced_opt == true && create_self_signed_certificate == false
     technologies: [pipeline]
     vars:

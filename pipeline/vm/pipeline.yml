@@ -43,6 +43,7 @@ groups:
   - terraform-plan
   - terraform-apply
   - deploy
+  - connection-credentials
 - name: destroy
   jobs:
   - terraform-destroy
@@ -60,10 +61,9 @@ resources:
     vars:
       env: ($ .environment $)
       project: ($ .project $)
-      customer: ($ .organization_canonical $)
+      organization: ($ .organization_canonical $)
 #($- if eq .use_case "aws-vm" $)
-      aws_access_key: ((aws_access_key))
-      aws_secret_key: ((aws_secret_key))
+      aws_access_cred: ((aws_access_cred))
       aws_region: ((aws_default_region))
       aws_role_arn: ((aws_role_arn))
 #($- else if eq .use_case "azure-vm" $)
@@ -71,9 +71,6 @@ resources:
       #resource_group_name: ($ .resource_group_name$)
       #resource_group_location: ($ .resource_group_location$)
 #($- end $)
-      create_keypair: ((create_keypair))
-      keypair_name: ((keypair_name))
-      ssh_public_key: ((ssh_public_key))
       prometheus_domain_name: ((prometheus_domain_name))
       alertmanager_domain_name: ((alertmanager_domain_name))
       grafana_domain_name: ((grafana_domain_name))
@@ -258,6 +255,155 @@ jobs:
             args:
               - '-exc'
               - |
+                # Function to check if a credential exists in Cycloid
+                credential_exists() {
+                    local org=$1
+                    local cred_name=$2
+
+                    # Query Cycloid for credentials and filter by canonical name
+                    local cred=$(cy --org "$org" credential list -o json | jq -r ".[] | select( .canonical == \"$cred_name\") | .canonical")
+
+                    # Check if the credential exists
+                    if [[ -z "$cred" ]]; then
+                        # Credential does not exist
+                        echo "false"
+                    else
+                        # Credential exists
+                        echo "true"
+                    fi
+                }
+
+                # ENV VARS
+                ORG=$(echo "$EXTRA_ANSIBLE_VARS" | jq -r '.organization')
+                PROJECT=$(echo "$EXTRA_ANSIBLE_VARS" | jq -r '.project')
+                ENV=$(echo "$EXTRA_ANSIBLE_VARS" | jq -r '.env')
+
+                # login to cli
+                cy login --org $ORG --api-key $API_KEY
+
+                # check for prometheus
+                if [ "$PROMETHEUS_INSTALL" = "true" ]; then
+
+                  echo "Checking credentials for prometheus..."
+
+                  PROMETHEUS_CREDENTIAL="${PROJECT}-prometheus-${ENV}"
+
+                  # check if credential exists
+                  if [[ $(credential_exists "$ORG" "$PROMETHEUS_CREDENTIAL") == "true" ]]; then
+                      echo "Credential '$PROMETHEUS_CREDENTIAL' exists. Recovering existing data..."
+                      prometheus_user=$(cy --org $ORG credential get --canonical $PROMETHEUS_CREDENTIAL -o json | jq -r '.raw.prometheus_user')
+                      prometheus_password=$(cy --org $ORG credential get --canonical $PROMETHEUS_CREDENTIAL -o json | jq -r '.raw.prometheus_password')
+                      echo "Credential data successflly retrieved."
+
+                  else
+                      echo "Credential '$PROMETHEUS_CREDENTIAL' does not exist. Creating..."
+                      prometheus_user=$ORG
+                      prometheus_password=$(pwgen -scny 16 1)
+                      cli --org "$ORG" credential create custom \
+                          --canonical "$PROMETHEUS_CREDENTIAL" \
+                          --name "$PROMETHEUS_CREDENTIAL" \
+                          --field "prometheus_user=$prometheus_user" \
+                          --field "prometheus_password=$prometheus_password"
+                      echo "Credential created."
+                  fi
+
+                  # generate the htpasswd to be used by nginx and add variables to EXTRA_VARS to be passed to ansible
+                  prometheus_web_login=$(htpasswd -nb "$prometheus_user" "$prometheus_password")
+                  export EXTRA_VARS=$(echo "$EXTRA_VARS" "$prometheus_web_login" "$prometheus_user" "$prometheus_password" | jq -c -s 'add')
+
+                fi
+
+                # check for alertmanager
+                if [ "$ALERTMANAGER_INSTALL" = "true" ]; then
+
+                  echo "Checking credentials for alertmanager..."
+
+                  ALERTMANAGER_CREDENTIAL="${PROJECT}-alertmanager-${ENV}"
+
+                  # check if credential exists
+                  if [[ $(credential_exists "$ORG" "$ALERTMANAGER_CREDENTIAL") == "true" ]]; then
+                      echo "Credential '$ALERTMANAGER_CREDENTIAL' exists. Recovering existing data..."
+                      alertmanager_user=$(cy --org $ORG credential get --canonical $ALERTMANAGER_CREDENTIAL -o json | jq -r '.raw.alertmanager_user')
+                      alertmanager_password=$(cy --org $ORG credential get --canonical $ALERTMANAGER_CREDENTIAL -o json | jq -r '.raw.alertmanager_password')
+                      echo "Credential data successflly retrieved."
+
+                  else
+                      echo "Credential '$ALERTMANAGER_CREDENTIAL' does not exist. Creating..."
+                      alertmanager_user=$ORG
+                      alertmanager_password=$(pwgen -scny 16 1)
+                      cli --org "$ORG" credential create custom \
+                          --canonical "$ALERTMANAGER_CREDENTIAL" \
+                          --name "$ALERTMANAGER_CREDENTIAL" \
+                          --field "alertmanager_user=$alertmanager_user" \
+                          --field "alertmanager_password=$alertmanager_password"
+                      echo "Credential created."
+                  fi
+
+                  # generate the htpasswd to be used by nginx and add variables to EXTRA_VARS to be passed to ansible
+                  alertmanager_web_login=$(htpasswd -nb "$alertmanager_user" "$alertmanager_password")
+                  export EXTRA_VARS=$(echo "$EXTRA_VARS" "$alertmanager_web_login" "$alertmanager_user" "$alertmanager_password" | jq -c -s 'add')
+
+                fi
+
+
+                # check for grafana
+                if [ "$GRAFANA_INSTALL" = "true" ]; then
+
+                  echo "Checking credentials for grafana..."
+
+                  GRAFANA_CREDENTIAL="${PROJECT}-grafana-${ENV}"
+
+                  # check if credential exists
+                  if [[ $(credential_exists "$ORG" "$GRAFANA_CREDENTIAL") == "true" ]]; then
+                      echo "Credential '$GRAFANA_CREDENTIAL' exists. Recovering existing data..."
+                      grafana_user=$(cy --org $ORG credential get --canonical $GRAFANA_CREDENTIAL -o json | jq -r '.raw.grafana_user')
+                      grafana_password=$(cy --org $ORG credential get --canonical $GRAFANA_CREDENTIAL -o json | jq -r '.raw.grafana_password')
+                      grafana_admin_user=$(cy --org $ORG credential get --canonical $GRAFANA_CREDENTIAL -o json | jq -r '.raw.grafana_admin_user')
+                      grafana_admin_pwd=$(cy --org $ORG credential get --canonical $GRAFANA_CREDENTIAL -o json | jq -r '.raw.grafana_admin_pwd')
+                      echo "Credential data successflly retrieved."
+
+                  else
+                      echo "Credential '$GRAFANA_CREDENTIAL' does not exist. Creating..."
+                      grafana_user=$ORG
+                      grafana_password=$(pwgen -scny 16 1)
+                      grafana_admin_user="admin"
+                      grafana_admin_pwd=$(pwgen -scny 16 1)
+                      cli --org "$ORG" credential create custom \
+                          --canonical "$GRAFANA_CREDENTIAL" \
+                          --name "$GRAFANA_CREDENTIAL" \
+                          --field "grafana_user=$grafana_user" \
+                          --field "grafana_password=$grafana_password"\
+                          --field "grafana_admin_user=$grafana_admin_user" \
+                          --field "grafana_admin_pwd=$grafana_admin_pwd"\
+                      echo "Credential created."
+                  fi
+
+                  # generate the htpasswd to be used by nginx and add variables to EXTRA_VARS to be passed to ansible
+                  grafana_web_login=$(htpasswd -nb "$grafana_user" "$grafana_password")
+                  export EXTRA_VARS=$(echo "$EXTRA_VARS" "$grafana_web_login" "$grafana_user" "$grafana_password" "$grafana_admin_user" "$grafana_admin_pwd"| jq -c -s 'add')
+
+                fi
+
+                # check if credential exists to store SSH private key
+                SSH_CREDENTIAL="${PROJECT}-ssh-${ENV}"
+                if [[ $(credential_exists "$ORG" "$SSH_CREDENTIAL") == "false" ]]; then
+
+                    echo "Credential '$SSH_CREDENTIAL' does not exist. Creating...
+
+                    # Creates file to hold key
+                    echo "$ssh_private_key" > .ssh_key
+                    chmod 600 .ssh_key
+                    cy --org $ORG credential create ssh \
+                       --canonical "$SSH_CREDENTIAL" \
+                       --name "$SSH_CREDENTIAL" \
+                       --ssh-key .ssh_key
+
+                    echo "Credential created."
+                fi
+
+                # To be used by ansible script
+                export SSH_PRIVATE_KEY ="$ssh_private_key"
+
                 #issue with gnu run locally
                 #https://stackoverflow.com/questions/54377305/tar-not-found-in-archive-error-when-using-docker-alpine
                 apk add --no-cache tar
@@ -270,34 +416,28 @@ jobs:
           - name: merged-stack
             path: ansible-playbook
         params:
-          SSH_PRIVATE_KEY: ((ssh_private_key))
+          PROMETHEUS_INSTALL: ((prometheus_install))
+          ALERTMANAGER_INSTALL: ((alertmanager_install))
+          GRAFANA_INSTALL: ((grafana_install))
           ANSIBLE_PLAYBOOK_PATH: ansible-playbook
           ANSIBLE_PLAYBOOK_NAME: main.yml
 #($- if eq .use_bastion true $)
           BASTION_URL: ((bastion_url))
-          BASTION_PRIVATE_KEY: ((bastion_keypair))
 #($- end $)
           ANSIBLE_INVENTORY: inventory
           EXTRA_ANSIBLE_ARGS: "-i inventory"
           ANSIBLE_FORCE_GALAXY: false
           ANSIBLE_REMOTE_USER:  admin
 #($- if eq .use_case "aws-vm" $)
-          AWS_USE_PRIVATE_IP: false
           EXTRA_ARGS: "--limit tag_vm_aws"
 #($- else if eq .use_case "azure-vm" $)
-#          AZURE_USE_PRIVATE_IP: false
 #          EXTRA_ARGS: "--limit tag_vm_azure"
 #($- end $)
           EXTRA_ANSIBLE_VARS:
             env: ($ .environment $)
             project: ($ .project $)
-            customer: ($ .organization_canonical $)
+            organization: ($ .organization_canonical $)
             role: "monitoring"
-            grafana_web_login: ((grafana_web_login))
-            grafana_admin_pwd: ((grafana_admin_pwd))
-            grafana_admin_user: ((grafana_admin_user))
-            alertmanager_web_login: ((alertmanager_web_login))
-            prometheus_web_login: ((prometheus_web_login))
             external_alertmanager_password: ((external_alertmanager_password))
             external_alertmanager_username: ((external_alertmanager_username))
             external_alertmanager_targets: ((external_alertmanager_targets))
@@ -312,6 +452,55 @@ jobs:
 #            azure_client_secret: ((($ .azure_cred $).client_secret))
 #            azure_resource_group: ($ .resource_group_name $)
 #($- end $)
+
+#  - name: access-mgmt
+#    build_logs_to_retain: 10
+#    plan:
+#    - do:
+#      - get: tfstate
+#        trigger: false
+#        passed:
+#          - deploy
+#
+#      - task: show-creds
+#        config:
+#          platform: linux
+#          image_resource:
+#            type: docker-image
+#            source:
+#              repository: cycloid/cycloid-toolkit
+#              tag: latest
+#          run:
+#            path: /bin/bash
+#            args:
+#              - '-exc'
+#              - |
+#                # Define color codes
+#                GREEN='\033[0;32m'
+#                BLUE='\033[0;34m'
+#                YELLOW='\033[0;33m'
+#                RED='\033[0;31m'
+#                NC='\033[0m' # No Color
+#
+#                # Display connection credentials
+#                echo "${GREEN}Here are your connection credentials:${NC}"
+#
+#                echo "${BLUE}External Alertmanager Username:${NC} $external_alertmanager_username"
+#                echo "${BLUE}External Alertmanager Password:${NC} $external_alertmanager_password"
+#                echo "${BLUE}External Alertmanager Targets:${NC} $external_alertmanager_targets"
+#                echo ""
+#                echo "${YELLOW}Remember to keep these credentials safe!${NC}"
+#                echo ""
+#                echo "${RED}Command Tips for Troubleshooting:${NC}"
+#                echo "  1. If you encounter issues, check your connection using the following command:"
+#                echo "     - curl -u \"$external_alertmanager_username:$external_alertmanager_password\" $external_alertmanager_targets"
+#                echo "  2. Verify the AWS region and ensure your permissions are correctly set."
+#                echo "  3. Use 'echo' to debug your variables:"
+#                echo "     - echo \"Environment: \$env\""
+#                echo "  4. If using Ansible, run the playbook with increased verbosity:"
+#                echo "     - ansible-playbook playbook.yml -vvvv"
+#                echo ""
+#                echo "${GREEN}Happy connecting!${NC}"
 
   - name: terraform-destroy
     serial: true
@@ -330,3 +519,45 @@ jobs:
               terraform_source: merged-stack/
             get_params:
               action: destroy
+
+  - name: clean-vm-credential
+    serial_groups: [terraform]
+    build_logs_to_retain: 3
+    plan:
+    - do:
+      - get: git_config-terraform
+        trigger: true
+        passed:
+          - terraform-destroy
+
+      - task: clean-cred
+        config:
+          platform: linux
+          image_resource:
+            type: registry-image
+            source:
+              repository: cycloid/cycloid-toolkit
+              tag: latest
+          run:
+            path: /bin/bash
+            args:
+            - -ec
+            - |
+              DIR=${PWD}
+              # conects to cli using  api_key and checks if credential exists
+              cy --insecure login --org vianeo --api-key $API_KEY
+              CRED=$(cy --insecure  --org vianeo  credential list -o json | jq -r ".[] | select( .canonical == \"$CRED_CANONICAL_SECRETS\") | .canonical")
+
+              if [ ! -z "$CRED" ]; then
+                cy --insecure  --org vianeo  credential delete --canonical $CRED_CANONICAL_SECRETS
+                echo "Credential [$CRED_CANONICAL_SECRETS]: removed"
+              else
+                echo "Credential [$CRED_CANONICAL_SECRETS]: already removed"
+              fi
+
+              CRED=$(cy --insecure  --org vianeo  credential list -o json | jq -r ".[] | select( .canonical == \"$CRED_CANONICAL_TAG\") | .canonical")
+
+          params:
+            API_KEY: ((cycloid_api_key))
+            CRED_CANONICAL_SECRETS: ((project))-((env))
+            CRED_CANONICAL_TAG: ((project))-((env))-docker-tag

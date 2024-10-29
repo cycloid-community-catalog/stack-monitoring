@@ -4,10 +4,10 @@
 ###
 
 ## AWS access to use to run terraform
-#aws_access_key: ""
-#aws_secret_key: ""
+#aws_access_cred: ""
 #aws_role_arn: ""
 #aws_region: ""
+#aws_extra_tags: []
 
 ## Azure access to use to run terraform
 #azure_cred: ""
@@ -20,9 +20,6 @@ ansible_version: "2.9"
 
 ## SSH key to acess instance
 #use_bastion: true
-#ssh_private_key: ""
-#ssh_public_key: ""
-#keypair_name: ""
 
 ## nginx certificates
 create_self_signed_certificate: true
@@ -30,15 +27,23 @@ nginx_certificate: ""
 nginx_certificate_key: ""
 
 ## monitoring credentials
+# grafana
+grafana_install: false
 grafana_web_login: ""
 grafana_admin_pwd: ""
 grafana_admin_user: ""
 
+# alertmanager - created
+alertmanager_install: false
 alertmanager_domain_name: ""
 alertmanager_web_login: ""
+
+# alertmanager - external (not created with the stack)
 external_alertmanager_password: ""
 external_alertmanager_username: ""
 external_alertmanager_targets: ""
 
+#prometheus
+prometheus_install: true
 prometheus_domain_name: ""
 prometheus_web_login: ""

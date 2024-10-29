@@ -49,8 +49,8 @@
 #      target_label: env
 #    - source_labels: [__meta_azure_machine_tag_role]
 #      target_label: role
-#    - source_labels: [__meta_azure_machine_tag_customer]
-#      target_label: customer
+#    - source_labels: [__meta_azure_machine_tag_organization]
+#      target_label: organization
 #
 #    metric_relabel_configs:
 #    # Don't store unwanted metrics
@@ -91,7 +91,7 @@
 #        labels:
 #          Name: "Name"
 #          connection_ip: "IP"
-#          customer: "{{customer}}"
+#          organization: "{{organization}}"
 #          project: "project"
 #          env: "prod"
 #          role: "role"
@@ -115,7 +115,7 @@
 #alertmanager_route:
 #  receiver: default
 #  group_by:
-#    - customer
+#    - organization
 #    - project
 #    - env
 #    - alertname
@@ -148,7 +148,7 @@
 #    severity: warning
 #  equal:
 #  - instance
-#  - customer
+#  - organization
 #  - project
 #  - env
 #  - alertname

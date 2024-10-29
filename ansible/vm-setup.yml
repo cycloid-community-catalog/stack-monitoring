@@ -11,8 +11,8 @@
 
   - name: "Create custom alert rule file"
     template:
-      src: templates/customer.rules
-      dest: "{{ prometheus_config_dir }}/rules/{{customer}}.rules"
+      src: templates/organization.rules
+      dest: "{{ prometheus_config_dir }}/rules/{{organization}}.rules"
     when: prometheus_skip_install | bool and prometheus_custom_rules != ""
     tags: prometheus
 
@@ -27,7 +27,6 @@
     include_role:
       name: prometheus.prometheus.blackbox_exporter
     tags: blackbox_exporter
-
 
   - name: Install MYSQL exporter
     include_role:
@@ -44,21 +43,11 @@
       name: prometheus.prometheus.node_exporter
     tags: node_exporter
 
-  - name: Install Process exporter
-    include_role:
-      name: prometheus.prometheus.process_exporter
-    tags: process_exporter
-
-  - name: Install Systemd exporter
-    include_role:
-      name: prometheus.prometheus.systemd_exporter
-    tags: systemd_exporter
-
   # Install Grafana
   - name: Install Grafana
     include_role:
       name: grafana.grafana.grafana
-    when: not grafana_skip_install
+    when: grafana_install
     tags: grafana
 
   - name: Copy stack grafana dashboards JSON files to the target directory
@@ -68,8 +57,7 @@
       mode: '0644'
     with_fileglob:
       - "{{ grafana_dashboards_files}}"
-
-    when: not grafana_skip_install
+    when: grafana_install
     tags: grafana
 
   # Install NGINX

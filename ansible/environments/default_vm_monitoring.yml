@@ -5,11 +5,12 @@ create_self_signed_certificate: true
 
 # Prometheus role
 # all defaults here: https://github.com/prometheus-community/ansible/blob/main/roles/prometheus/defaults/main.yml
-
+prometheus_skip_install: "{{ not prometheus_install }}"
 prometheus_storage_retention: "60d"
 prometheus_config_dir: /etc/prometheus
 prometheus_db_dir: /var/lib/prometheus
 prometheus_web_listen_address: "0.0.0.0:9090"
+prometheus_user: "{{organization}}"
 prometheus_web_external_url: "{{ external_url_schema }}://{{ prometheus_domain_name }}"
 prometheus_external_labels: {}
 prometheus_global:
@@ -27,7 +28,7 @@ prometheus_scrape_configs_global:
           project: "{{ project }}"
           env: "{{ env }}"
           role: "{{ role }}"
-          customer: "{{ customer }}"
+          organization: "{{ organization }}"
 
     metric_relabel_configs:
     # Not store unwanted metrics
@@ -71,9 +72,11 @@ prometheus_alertmanager_config: "{{ prometheus_alerting_local if not alertmanage
 
 # Alertmanager role
 # default values: https://github.com/prometheus-community/ansible/blob/main/roles/alertmanager/defaults/main.yml
-
+alertmanager_skip_install: "{{ not alertmanager_install }}"
 alertmanager_web_external_url: "{{ external_url_schema }}://{{ alertmanager_domain_name }}"
 alertmanager_web_listen_address: '0.0.0.0:9093'
+alertmanager_user: "{{organization}}"
+
 # TODO copy default templates to folder
 # TODO if required global config https://github.com/prometheus-community/ansible/blob/main/roles/alertmanager/templates/alertmanager.yml.j2#L3
 # TODO if required time intervals -> alertmanager_time_intervals: []
@@ -91,28 +94,21 @@ blackbox_exporter_config_dir: /etc/blackbox_exporter
 
 mysqld_exporter_web_listen_address: "0.0.0.0:9104"
 mysqld_exporter_config_dir: "/etc/mysqld_exporter"
-# TODO test parameters
-
+mysqld_exporter_version: "0.15.0"
+mysqld_exporter_user: "{{mysql_db_user}}"
+mysqld_exporter_password: "{{mysql_db_password}}"
+mysqld_exporter_host: "{{mysql_db_host}}"
+mysqld_exporter_port: "{{mysql_db_port}}"
 
 # Postgresql exporter role
 # defaults at https://github.com/prometheus-community/ansible/blob/main/roles/postgres_exporter/defaults/main.yml
 
 postgres_exporter_web_listen_address: "0.0.0.0:9187"
 postgres_exporter_config_dir: "/etc/postgres_exporter"
-# TODO test parameters
-
-
-# Systemd exporter role
-# defaults at  https://github.com/prometheus-community/ansible/blob/main/roles/systemd_exporter/defaults/main.yml
-
-systemd_exporter_web_listen_address: "0.0.0.0:9558"
-systemd_exporter_log_level: info
-
-
-# Process exporter role
-# defaults at https://github.com/prometheus-community/ansible/blob/main/roles/process_exporter/defaults/main.yml
-
-process_exporter_web_listen_address: "0.0.0.0:9256"
+postgres_exporter_user: "{{postgres_db_user}}"
+postgres_exporter_password: "{{postgres_db_password}}"
+postgres_exporter_host: "{{postgres_db_host}}"
+postgres_exporter_port: "{{postgres_db_port}}"
 
 
 # Node-exporter role
@@ -284,15 +280,17 @@ nginx_auth_basic_files:
 
 
 # Grafana
+grafana_skip_install: "{{ not grafana_install }}"
 grafana_logs_dir: "/var/log/grafana"
 grafana_data_dir: "/var/lib/grafana"
 grafana_database:
   type: sqlite3
 grafana_address: "0.0.0.0"
 grafana_port: 3000
+grafana_user: "{{organization}}"
 grafana_security:
-  admin_user: "{{grafana_admin_user}}"
-  admin_password: "{{grafana_admin_pwd}}"
+  admin_user: "admin"
+  admin_password: "{{grafana_admin_password}}"
 grafana_default_prometheus_datasource:
   - name: prometheus
     type: prometheus

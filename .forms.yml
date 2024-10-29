@@ -222,11 +222,11 @@ use_cases:
 
     - name: Optional VM parameters
       condition: $advanced_opt == true
-      technologies: [terraform]
+      technologies: [pipeline]
       vars:
         - name: "Extra tags"
           description: "Dict of extra tags to add to resources."
-          key: extra_tags
+          key: aws_extra_tags
           widget: text_area
           type: map
           default: {}

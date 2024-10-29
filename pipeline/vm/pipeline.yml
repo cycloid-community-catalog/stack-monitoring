@@ -67,6 +67,7 @@ resources:
       aws_access_cred: ((aws_access_cred))
       aws_region: ((aws_default_region))
       aws_role_arn: ((aws_role_arn))
+      aws_extra_tags: ((aws_extra_tags))
 #($- else if eq .use_case "azure-vm" $)
       #azure_cred: ((($ .azure_cred $))
       #resource_group_name: ($ .resource_group_name$)

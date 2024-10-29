@@ -526,7 +526,7 @@ jobs:
     build_logs_to_retain: 3
     plan:
     - do:
-      - get: git_config-terraform
+      - get: git_config_terraform
         trigger: true
         passed:
           - terraform-destroy

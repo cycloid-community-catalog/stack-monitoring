@@ -6,7 +6,6 @@
 resource "aws_eip" "vm" {
   instance = aws_instance.vm.id
   domain    = "vpc"
-  tags = local.tags
 }
 
 ###
@@ -14,62 +13,67 @@ resource "aws_eip" "vm" {
 ###
 
 resource "aws_security_group" "vm" {
-  name        = "${var.customer}-${var.env}-vm-monitoring-sg"
-  description = "monitoring ${var.env} for ${var.project}"
+  name        = "${var.organization}-vm-monitoring-sg-${var.env}"
+  description = "monitoring ${var.env} for ${var.organization}"
   vpc_id      = var.vpc_id
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-  tags = local.tags
 }
 
-resource "aws_security_group_rule" "allow_http" {
-  type              = "ingress"
-  from_port         = "80"
-  to_port           = "80"
-  protocol          = "tcp"
-  cidr_blocks       = ["0.0.0.0/0"]
+# allow ALL egress
+resource "aws_vpc_security_group_egress_rule" "allow_all_traffic_ipv4" {
   security_group_id = aws_security_group.vm.id
+  cidr_ipv4         = "0.0.0.0/0"
+  ip_protocol       = "-1" # semantically equivalent to all ports
 }
-
-resource "aws_security_group_rule" "allow_https" {
-  type              = "ingress"
-  from_port         = "443"
-  to_port           = "443"
-  protocol          = "tcp"
-  cidr_blocks       = ["0.0.0.0/0"]
+resource "aws_vpc_security_group_egress_rule" "allow_all_traffic_ipv6" {
   security_group_id = aws_security_group.vm.id
+  cidr_ipv6         = "::/0"
+  ip_protocol       = "-1" # semantically equivalent to all ports
 }
 
-resource "aws_security_group_rule" "allow-ssh-bastion" {
-  count                    = var.bastion_sg_allow != "" ? 1 : 0
-  type                     = "ingress"
-  from_port                = "22"
-  to_port                  = "22"
-  protocol                 = "tcp"
-  source_security_group_id = var.bastion_sg_allow
-  security_group_id        = aws_security_group.vm.id
+# allow HTTP
+resource "aws_vpc_security_group_ingress_rule" "allow_http" {
+  security_group_id = aws_security_group.vm.id
+  cidr_ipv4   = "0.0.0.0/0"
+  from_port   = 80
+  ip_protocol = "tcp"
+  to_port     = 80
 }
 
-resource "aws_security_group_rule" "allow-ssh" {
-  count                    = var.ssh_ips_to_allow != [] ? 1 : 0
-  type                     = "ingress"
-  from_port                = "22"
-  to_port                  = "22"
-  protocol                 = "tcp"
-  cidr_blocks              = var.ssh_ips_to_allow
-  security_group_id        = aws_security_group.vm.id
+# allow HTTPs
+resource "aws_vpc_security_group_ingress_rule" "allow_https" {
+  security_group_id = aws_security_group.vm.id
+  cidr_ipv4   = "0.0.0.0/0"
+  from_port   = 443
+  ip_protocol = "tcp"
+  to_port     = 443
 }
 
-resource "aws_security_group_rule" "allow-self-scraping" {
-  type              = "ingress"
+# allow SSH - to a list of CIDR and SGs
+resource "aws_vpc_security_group_ingress_rule" "allow_ssh_cidr" {
+  count = length(var.ssh_to_allow.cidr) > 0 ? length(var.ssh_to_allow.cidr) : 0
+
+  security_group_id = aws_security_group.vm.id
+  from_port         = 22
+  ip_protocol       = "tcp"
+  to_port           = 22
+  cidr_ipv4         = var.ssh_to_allow.cidr[count.index]
+}
+
+resource "aws_vpc_security_group_ingress_rule" "allow_ssh_sgs" {
+  count = length(var.ssh_to_allow.cidr) > 0 ? length(var.ssh_to_allow.sgs) : 0
+
+  security_group_id = aws_security_group.vm.id
+  from_port         = 22
+  ip_protocol       = "tcp"
+  to_port           = 22
+  referenced_security_group_id         = var.ssh_to_allow.sgs[count.index]
+}
+
+# allow node exporter self scraping
+resource "aws_vpc_security_group_ingress_rule" "allow-scraping-node-exporter" {
+  security_group_id = aws_security_group.vm.id
   from_port         = "9100"
+  ip_protocol          = "tcp"
   to_port           = "9100"
-  protocol          = "tcp"
-  self              = true
-  security_group_id = aws_security_group.vm.id
+  referenced_security_group_id = aws_security_group.vm.id
 }

@@ -4,7 +4,7 @@ module "azure" {
   source   = "./azure-vm"
   project  = var.project
   env      = var.env
-  customer = var.customer
+  organization = var.organization
   #####################################
 
   ## general azure variables

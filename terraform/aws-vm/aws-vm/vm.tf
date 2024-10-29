@@ -4,10 +4,14 @@
 ###
 
 ## create keypair
+resource "tls_private_key" "vm" {
+  algorithm = "RSA"
+  rsa_bits  = 4096
+}
+
 resource "aws_key_pair" "vm" {
-  count = var.create_keypair ? 1 : 0
-  key_name   = var.keypair_name
-  public_key = var.ssh_public_key
+  key_name   = "${var.organization}-vm-monitoring-${var.env}"
+  public_key = tls_private_key.vm.public_key_openssh
 }
 
 # ami to use -> debian 10
@@ -42,7 +46,7 @@ resource "aws_instance" "vm" {
   ami = data.aws_ami.debian.id
   iam_instance_profile = aws_iam_instance_profile.vm.name
   instance_type        = var.vm_size
-  key_name             = var.keypair_name
+  key_name             = "${var.organization}-vm-monitoring-${var.env}"
 
   vpc_security_group_ids = [aws_security_group.vm.id]
   subnet_id              = var.subnet_id
@@ -52,10 +56,6 @@ resource "aws_instance" "vm" {
     volume_type           = var.os_disk_type
     delete_on_termination = true
   }
-
-  tags = merge(local.tags, {
-    Name = "${var.customer}-${var.env}-vm-monitoring"
-  })
 
   lifecycle {
     ignore_changes = [ami]

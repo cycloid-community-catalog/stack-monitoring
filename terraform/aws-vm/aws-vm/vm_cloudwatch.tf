@@ -6,7 +6,7 @@
 resource "aws_cloudwatch_metric_alarm" "recover-monitoring" {
   alarm_actions       = ["arn:aws:automate:${var.aws_region}:ec2:recover"]
   alarm_description   = "Recover the instance"
-  alarm_name          = "recover-${var.project}-monitoring-ec2-${var.env}"
+  alarm_name          = "recover-ec2-${var.organization}-${var.project}-${var.env}"
   comparison_operator = "GreaterThanThreshold"
 
   dimensions = {

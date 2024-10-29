@@ -45,7 +45,7 @@ shared:
         widget: simple_text
         type: string
         default: "latest"
-      - name: "Blaxkbox exporter version"
+      - name: "Blackbox exporter version"
         description: "Blackbox exporter version to use."
         key: blackbox_exporter_version
         widget: simple_text
@@ -117,18 +117,16 @@ shared:
   - name: Setup
     technologies: [pipeline]
     vars:
-      - name: "AWS access key"
-        description: "Amazon AWS access key for Terraform."
-        key: aws_access_key
+      - name: "AWS access credential"
+        description: "AWS access credential which should be used"
+        key: aws_access_cred
         widget: cy_cred
+        widget_config:
+          display_keys: false
+          cred_types:
+            - aws
         type: string
-        default: "((aws.access_key))"
-      - name: "AWS secret key"
-        description: "Amazon AWS secret key for Terraform."
-        key: aws_secret_key
-        widget: cy_cred
-        type: string
-        default: "((aws.secret_key))"
+        default: "((aws))"
       - name: "AWS Assume Role"
         description: "Amazon AWS access key for Terraform."
         key: aws_role_arn
@@ -186,94 +184,46 @@ use_cases:
           widget: simple_text
           type: string
           required: true
+        - name: "IAM policies"
+          description: "Array of IAM ARN policies to associate to the VM."
+          key: vm_iam_policies
+          widget: text_area
+          type: array
+          default:
+            [
+              "ec2:DescribeTags",
+              "ec2:DescribeInstances",
+              "ec2:DescribeInstanceStatus",
+              "cloudwatch:ListMetrics",
+              "cloudwatch:GetMetricData",
+            ]
 
-    - name: SSH configuration
-      technologies: [pipeline]
+    - name: SSH access
+      technologies: [pipeline,terraform]
       vars:
+        - name: "SSH CIDR and CIDR to allow"
+          description: "Map containing the CIDR and security groups IDs to allow SSH access to the monitoring VM, use the map keys cidr and sg_ids. Default CIDR:0.0.0.0/0"
+          key: ssh_to_allow
+          widget: text_area
+          type: map
+          default:
+            cidr:
+              - 0.0.0.0/0
+            sg_ids: []
+
         - name: "Use Bastion"
-          description: "Select wheter to use a Bastion to SSH instance"
+          description: "Select wheter to use a Bastion to SSH instance.The bastion CIDR or SG should be added in the SSH allowed above"
           key: use_bastion
           type: boolean
           widget: switch
           default: true
-        - name: "Create ssh keypair"
-          description: "Wheter to create an aws keypair."
-          key: create_keypair
-          widget: switch
-          type: boolean
-          default: false
-        - name: "SSH Keypair name"
-          description: "Name of the SSH pairkey to use in AWS"
-          key: keypair_name
-          type: string
-          widget: simple_text
-          required: true
-        - name: "SSH private Key"
-          description: "SSH private key to use to connect to the machine."
-          key: ssh_private_key
-          widget: cy_cred
-          type: string
-          required: true
 
-    - name: SSH public key to create keypair
-      condition: $create_keypair == true
-      technologies: [pipeline]
-      vars:
-        - name: "SSH public key"
-          description: "SSH public key to use to create the key in AWS."
-          key: ssh_public_key
-          widget: cy_cred
-          type: string
-          default: ""
 
-    - name: Bastion SSH connection
-      condition: $use_bastion == true
-      technologies: [terraform]
-      vars:
-        - name: "Bastion Security Group"
-          description: "Security group ID of the bastion to allow SSH access."
-          key: bastion_sg_allow
-          widget: simple_text
-          type: string
-
-    - name: No Bastion - SSH access
-      condition: $use_bastion == false
-      technologies: [terraform]
-      vars:
-        - name: "SSH CIDRs to allow"
-          description: "List of CIDRs to allow."
-          key: ssh_ips_to_allow
-          widget: text_area
-          type: array
-          default: []
-
-    - name: Advanced Scraping
-      condition: $advanced_opt == true
-      technologies: [terraform]
-      vars:
-        - name: "VPCs to scrape"
-          description: "Array of VPCs to enable scraping. To allow the creation of the corresponding security groups to be used. TODO default"
-          key: vpcs_to_scrape
-          widget: text_area
-          type: array
-          default: []
-        - name: "Extra ports to scrape"
-          description: "Array of other ports to scrape in the machine. To allow th creation of the corresponding security groups to be used in the prometheus machine."
-          key: scraping_ports
-          widget: text_area
-          type: array
-          default: []
 
     - name: Optional VM parameters
       condition: $advanced_opt == true
       technologies: [terraform]
       vars:
-        - name: "Extra IAM policies"
-          description: "List of extra IAM policies to associate to the VM. Defaults here TODO"
-          key: optional_iam_policies
-          widget: text_area
-          type: array
-          default: []
         - name: "Extra tags"
           description: "Dict of extra tags to add to resources."
           key: extra_tags
@@ -283,24 +233,24 @@ use_cases:
 
   - name: Monitoring tools
     groups:
-    - name: Tools to skip install
-      technologies: [terraform, ansible]
+    - name: Tools to install
+      technologies: [terraform, ansible, pipeline]
       vars:
-        - name: "Skip Grafana install"
-          description: "Wheter to skip install Prometheus on the machine. To install select false"
-          key: grafana_skip_install
+        - name: "Grafana install"
+          description: "Wheter to install [Grafana](https://github.com/grafana/grafana-ansible-collection/tree/main/roles/grafana) on the machine as a service."
+          key: grafana_install
           widget: switch
           type: boolean
           default: true
-        - name: "Skip Alertmanager install"
-          description: "Wheter to skip install Prometheus on the machine. To install select false"
-          key: alertmanager_skip_install
+        - name: "Alertmanager install"
+          description: "Wheter to install [Alertmanager](https://github.com/prometheus-community/ansible/tree/main/roles/alertmanager) on the machine as a service."
+          key: alertmanager_install
           widget: switch
           type: boolean
           default: false
-        - name: "Skip Prometheus install"
-          description: "Wheter to skip install Prometheus on the machine. To install select false"
-          key: prometheus_skip_install
+        - name: "Prometheus install"
+          description: "Wheter to skip install [Prometheus](https://github.com/prometheus-community/ansible/tree/main/roles/prometheus) on the machine as a service."
+          key: prometheus_install
           widget: switch
           type: boolean
           default: false
@@ -310,47 +260,35 @@ use_cases:
     - name: Select exporters to install
       technologies: [ansible]
       vars:
-        - name: "Skip Blackbox exporter install"
-          description: "Wheter to skip install blackbox exporter on the machine. To install select false"
-          key: blackbox_exporter_skip_install
-          widget: switch
-          type: boolean
-          default: false
-        - name: "Skip MYSQL exporter install"
-          description: "Wheter to skip install mysql exporter TODO link on the machine. To install select false"
-          key: mysqld_exporter_skip_install
+        - name: "Blackbox exporter install"
+          description: "Wheter to install [blackbox exporter](https://github.com/prometheus-community/ansible/tree/main/roles/blackbox_exporter) on the machine as a service."
+          key: blackbox_exporter_install
           widget: switch
           type: boolean
           default: true
-        - name: "Skip Postgres exporter install"
-          description: "Wheter to skip install postgres exporter TODO link  on the machine. To install select false"
-          key: postgres_exporter_skip_install
+        - name: "MYSQL exporter install"
+          description: "Wheter to install [mysql exporter](https://github.com/prometheus-community/ansible/tree/main/roles/mysqld_exporter) on the machine as a service."
+          key: mysqld_exporter_install
+          widget: switch
+          type: boolean
+          default: false
+        - name: "Postgres exporter install"
+          description: "Wheter to install [postgres exporter](https://github.com/prometheus-community/ansible/tree/main/roles/postgres_exporter) on the machine as a service."
+          key: postgres_exporter_install
+          widget: switch
+          type: boolean
+          default: false
+        - name: "Node exporter install"
+          description: "Wheter to install [node exporter](https://github.com/prometheus-community/ansible/tree/main/roles/node_exporter) on the machine as a service."
+          key: node_exporter_install
           widget: switch
           type: boolean
           default: true
-        - name: "Skip Process exporter install"
-          description: "Wheter to skip install postgres exporter TODO link  on the machine. To install select false"
-          key: process_exporter_skip_install
-          widget: switch
-          type: boolean
-          default: false
-        - name: "Skip Systemd exporter install"
-          description: "Wheter to skip install systemd exporter TODO link  on the machine. To install select false"
-          key: systemd_exporter_skip_install
-          widget: switch
-          type: boolean
-          default: false
-        - name: "Skip Node exporter install"
-          description: "Wheter to skip install node exporter TODO link  on the machine. To install select false"
-          key: node_exporter_skip_install
-          widget: switch
-          type: boolean
-          default: false
 
   - name: Prometheus
     groups:
     - name: Prometheus login
-      condition: $prometheus_skip_install == false
+      condition: $prometheus_install == true
       technologies: [pipeline]
       vars:
         - name: "Prometheus DNS"
@@ -359,17 +297,12 @@ use_cases:
           widget: simple_text
           type: string
           default: prometheus.local
-        - name: "Prometheus weblogin"
-          description: "Htpasswd can be generated using `htpasswd -nb user password`"
-          key: prometheus_web_login
-          type: string
-          widget: cy_cred
     - name: General Configuration
-      condition: $prometheus_skip_install == false
+      condition: $prometheus_install == true
       technologies: [ansible]
       vars:
         - name: "Prometheus scraping config"
-          description: "Prometheus scraping config to use. Note! prometheus and alertmanager are scraped. By default For more information check [prometheus wiki](https://prometheus.io/docs/prometheus/latest/configuration/configuration/)"
+          description: "Prometheus scraping config to use. Note! prometheus and alertmanager are scraped. For more information check [prometheus wiki](https://prometheus.io/docs/prometheus/latest/configuration/configuration/)"
           key: prometheus_custom_configs
           widget: text_area
           type: array
@@ -410,10 +343,8 @@ use_cases:
                 target_label: env
               - source_labels: [__meta_ec2_tag_role]
                 target_label: role
-              - source_labels: [__meta_ec2_tag_customer]
-                target_label: customer
-              - source_labels: [__meta_ec2_availability_zone]
-                target_label: availability_zone
+              - source_labels: [__meta_ec2_tag_organization]
+                target_label: organization
               - source_labels: [__meta_ec2_instance_id]
                 target_label: instance_id
 
@@ -436,12 +367,9 @@ use_cases:
               - source_labels: [cycloid_tag_role]
                 regex: '(.+)'
                 target_label: role
-              - source_labels: [cycloid_tag_customer]
+              - source_labels: [cycloid_tag_organization]
                 regex: '(.+)'
-                target_label: customer
-              - source_labels: [cycloid_tag_availability_zone]
-                regex: '(.+)'
-                target_label: availability_zone
+                target_label: organization
               - source_labels: [cycloid_tag_instance_id]
                 regex: '(.+)'
                 target_label: instance_id
@@ -450,11 +378,14 @@ use_cases:
               - regex: 'cycloid_tag_.*'
                 action: labeldrop
         - name: "Prometheus custom rules"
-          description: "Definition of custom prometheus rules that will be saved at templates/rules/$customer.rules file"
+          description: "Definition of custom prometheus alert rules that will be saved at templates/rules/$organization.rules file. The syntax to follow can be find in the [prometheus doc](https://prometheus.io/docs/prometheus/latest/configuration/alerting_rules/). You just need to specify the set of group array without the groups keyword.  "
           key: prometheus_custom_rules
           widget: text_area
           type: array
-          default: []
+          default:
+            - name: example_empty
+              rules: []
+
         # temporary remove
         #- name: "Prometheus rules"
         #  description: "Definition of prometheus rules. Other default available in the role ansible-prometheus/templates/rules, you can also create news and add to the config repository."
@@ -464,116 +395,10 @@ use_cases:
         #  default:
         #    - templates/rules/opsgenie.rules
 
-  - name: Alertmanager
-    groups:
-    - name: Alertmanager login
-      condition: $alertmanager_skip_install == false
-      technologies: [pipeline]
-      vars:
-        - name: "Alertmanager DNS"
-          description: "DNS to use for Alertmanager."
-          key: alertmanager_domain_name
-          widget: simple_text
-          type: string
-          default: alertmanager.local
-        - name: "Alertmanager weblogin"
-          description: "Htpasswd can be generated using `htpasswd -nb user password`"
-          key: alertmanager_web_login
-          type: string
-          widget: cy_cred
-    - name: Alertmanager Configuration
-      technologies: [ansible]
-      condition: $alertmanager_skip_install == false
-      vars:
-      #TODO change to password
-        - name: "Alertmanager SMTP"
-          description: "The SMTP to be used by alertmanager, as specified in the oficial documentation [here](TODO)."
-          key: alertmanager_smtp
-          widget: text_area
-          type: map
-          default:
-            smarthost: 'smtp.gmail.com:587'
-            from: 'foo@bar.com'
-            auth_username: 'foo@bar.com'
-            auth_password: 'barfoo'
-        - name: "Alertmanager route"
-          description: "The root node of the routing tree, as specified in the oficial documentation [here](TODO)."
-          key: alertmanager_route
-          widget: text_area
-          type: map
-          default:
-            receiver: default
-            group_by:
-              - customer
-              - project
-              - env
-              - alertname
-            group_wait: 30s
-            group_interval: 5m
-            repeat_interval: 15m
-            routes:
-            - match:
-                receiver: 'null'
-              receiver: dev_null
-
-            - match:
-                receiver: email
-                severity: critical
-              receiver: default
-        - name: "Alertmanager inhibition rules"
-          description: "A list of inhibition rules, as specified in the oficial documentation [here](TODO)."
-          key: alertmanager_inhibit_rules
-          widget: text_area
-          type: array
-          default:
-            - source_match:
-                severity: critical
-              target_match:
-                severity: warning
-              equal:
-                - instance
-                - customer
-                - project
-                - env
-                - alertname
-        - name: "Alertmanager receivers"
-          description: "A list of notification receivers., as specified in the oficial documentation [here](TODO)."
-          key: alertmanager_receivers
-          widget: text_area
-          type: array
-          default:
-            - name: 'default'
-              email_configs:
-              - to: "foo@bar.com"
-                # Whether or not to notify about resolved alerts.
-                send_resolved: true
-
-            - name: 'dev_null'
-              # Deliberately left empty to not deliver anywhere.
-    - name: External Alertmanager
-      technologies: [pipeline]
-      condition: $alertmanager_skip_install == true && $prometheus_skip_install == false
-      vars:
-        - name: "Username"
-          description: "Basic authentification username to use to connect to external alertmanager"
-          key: external_alertmanager_username
-          widget: cy_cred
-          type: string
-        - name: "Password"
-          description: "Basic authentification passowrd to use to connect to external alertmanager"
-          key: external_alertmanager_password
-          widget: cy_cred
-          type: string
-        - name: "External Alertmanager list"
-          description: "Map of targets to connect to external alertmanager. Examples [here](TODO)"
-          key: external_alertmanager_targets
-          widget: text_area
-          type: map
-
   - name: Blackbox Exporter
     groups:
     - name: Configuration
-      condition: $blackbox_exporter_skip_install == false
+      condition: $blackbox_exporter_install == true
       technologies: [ansible]
       vars:
         - name: "Blackbox exporter modules"
@@ -586,13 +411,14 @@ use_cases:
               prober: http
               timeout: 15s
               http:
-                fail_if_not_ssl: true
                 method: GET
-                no_follow_redirects: false
-                preferred_ip_protocol: ip4
                 valid_http_versions:
                   - HTTP/1.1
                   - HTTP/2.0
+                fail_if_not_ssl: true
+                no_follow_redirects: false
+                preferred_ip_protocol: ip4
+
         - name: "Prometheus blackbox scraping"
           description: "Blackbox scraping configuration to be added to prometheus, for more information please check the [official documentation](https://github.com/prometheus/blackbox_exporter/tree/master)"
           key: prometheus_blackbox_config
@@ -611,17 +437,108 @@ use_cases:
               static_configs:
                 - targets: ["https://cycloid.io"]
                   labels:
-                    Name: "Name"
-                    customer: "{{customer}}"
+                    Name: "cycloid-website"
+                    organization: "{{organization}}"
                     project: "website"
                     env: "prod"
-  - *advanced
 
+
+  - name: Alertmanager
+    groups:
+    - name: Alertmanager DNS
+      condition: $alertmanager_install == true
+      technologies: [pipeline]
+      vars:
+        - name: "Alertmanager DNS"
+          description: "DNS to use for Alertmanager."
+          key: alertmanager_domain_name
+          widget: simple_text
+          type: string
+          default: alertmanager.local
+    - name: Alertmanager Configuration
+      technologies: [ansible]
+      condition: $alertmanager_install == true
+      vars:
+        - name: "Alertmanager route"
+          description: "The root node of the routing tree. More info about the syntax can be found in the [oficial documentation](https://prometheus.io/docs/alerting/latest/configuration/#route)."
+          key: alertmanager_route
+          widget: text_area
+          type: map
+          default:
+            receiver: default
+            group_by:
+              - organization
+              - project
+              - env
+              - alertname
+            group_wait: 30s
+            group_interval: 5m
+            repeat_interval: 15m
+            routes:
+            - match: # Send "critical" alerts to the default receiver
+                severity: critical
+              receiver: default
+            - match: # Send other alerts to a dummy receiver (no action)
+                receiver: 'null'
+              receiver: dev_null
+        - name: "Alertmanager inhibition rules"
+          description: "A list of inhibition rules to mute existing alerts. More info about the syntax can be found in the [oficial documentation](https://prometheus.io/docs/alerting/latest/configuration/#inhibit_rule)."
+          key: alertmanager_inhibit_rules
+          widget: text_area
+          type: array
+          default:
+            - source_match: # mutes alerts warning when a critical alert related is active
+                severity: critical
+              target_match:
+                severity: warning
+              equal:
+                - instance
+                - organization
+                - project
+                - env
+                - alertname
+        - name: "Alertmanager receivers"
+          description: "A list of notification receivers., as specified in the oficial documentation [here](TODO)."
+          key: alertmanager_receivers
+          widget: text_area
+          type: array
+          default:
+            - name: 'default'
+              email_configs:
+              - to: 'test@example.com'  # Placeholder email address for testing
+                from: 'alertmanager@example.com'  # Sender email (can be a dummy address)
+                smarthost: 'localhost:25'
+                send_resolved: true  # Send notifications for resolved alerts
+
+            - name: 'dev_null'
+              # Deliberately left empty to not deliver anywhere.
+    - name: External Alertmanager (not deployed in machine)
+      technologies: [pipeline]
+      condition: $alertmanager_install == false && $prometheus_install == true
+      vars:
+        - name: "Username"
+          description: "Basic authentification username to use to connect to external alertmanager"
+          key: external_alertmanager_username
+          widget: cy_cred
+          type: string
+        - name: "Password"
+          description: "Basic authentification password to use to connect to external alertmanager"
+          key: external_alertmanager_password
+          widget: cy_cred
+          type: string
+        - name: "External Alertmanager list"
+          description: "Array of targets to connect to external alertmanager"
+          key: external_alertmanager_targets
+          widget: text_area
+          type: array
+          default:
+            - alertmanager-0.test.com
+            - alertmanager-1.test.com
 
   - name: Grafana
     groups:
-    - name: Grafana login
-      condition: $grafana_skip_install == false
+    - name: Grafana DNS
+      condition: $grafana_install == true
       technologies: [pipeline]
       vars:
         - name: "Grafana DNS"
@@ -630,46 +547,22 @@ use_cases:
           widget: simple_text
           type: string
           default: grafana.local
-        - name: "Grafana weblogin"
-          description: "Htpasswd can be generated using `htpasswd -nb user password`"
-          key: grafana_web_login
-          type: string
-          widget: cy_cred
-        - name: "Grafana Admin Password"
-          description: "Grafana admin password to use for the local db and the service"
-          key: grafana_admin_pwd
-          type: string
-          widget: cy_cred
-        - name: "Grafana Admin User"
-          description: "Grafana admin user to use for the local db and the service"
-          key: grafana_admin_user
-          type: string
-          widget: cy_cred
-        # cannot have map cy_creds
-        #- name: "Grafana Datasources"
-        #  description: "Grafana "
-        #  key: grafana_extra_datasources
-        #  type: map
-        #  widget: cy_cred
+
     - name: Grafana Configuration
       technologies: [ansible]
-      condition: $grafana_skip_install == false
+      condition: $grafana_install == true
       vars:
         - name: "Grafana Dashboards"
-          description: "List of dashboards which should be imported by ID, available publicly atnod [grafana](https://grafana.com/grafana/dashboards/)"
+          description: "List of dashboards which should be imported by ID, available publicly at [grafana](https://grafana.com/grafana/dashboards/)"
           key: grafana_dashboards
           type: array
           widget: text_area
           default:
-            - dashboard_id: 1860
+            - dashboard_id: 1860 #node-exporter
               revision_id: 37
-              datasource: prometheus
-            - dashboard_id: 13882
-              revision_id: 10
-              datasource: prometheus
-            - dashboard_id: 1617
-              revision_id: 1
               datasource: prometheus
             - dashboard_id: 13659
               revision_id: 1
               datasource: prometheus
+
+  - *advanced

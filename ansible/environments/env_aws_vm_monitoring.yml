@@ -36,15 +36,10 @@
 
 ## MYSQL exporter
 # mysqld_exporter_skip_install: false
+# mysqld_exporter_version: "0.15.0"
 
 ## Postgres exporter
 # postgres_exporter_skip_install: false
-
-## Systemd exporter
-# systemd_exporter_skip_install: false
-
-## Process exporter
-# process_exporter_skip_install: false
 
 ## Node exporter
 #node_exporter_skip_install: false

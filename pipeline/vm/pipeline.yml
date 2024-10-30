@@ -159,6 +159,9 @@ jobs:
                 # login to cli
                 cy login --org $ORG
 
+                # required for htpasswd command
+                apk add apache2-utils
+
                 # check for prometheus
                 if [ "$PROMETHEUS_INSTALL" = "true" ]; then
 
@@ -173,11 +176,11 @@ jobs:
                       prometheus_password=$(pwgen -scny 16 1)
                       prometheus_httpd=$(htpasswd -nb "$prometheus_user" "$prometheus_password")
 
-                      cli --org "$ORG" credential create custom \
+                      cy --org "$ORG" credential create custom \
                           --canonical "$PROMETHEUS_CREDENTIAL" \
                           --name "$PROMETHEUS_CREDENTIAL" \
                           --field "prometheus_user=$prometheus_user" \
-                          --field "prometheus_password=$prometheus_password"
+                          --field "prometheus_password=$prometheus_password" \
                           --field "prometheus_htpwd=$prometheus_httpd"
 
                       echo "Credential created."
@@ -198,7 +201,7 @@ jobs:
                       alertmanager_password=$(pwgen -scny 16 1)
                       alertmanager_httpd=$(htpasswd -nb "$alertmanager_user" "$alertmanager_password")
 
-                      cli --org "$ORG" credential create custom \
+                      cy --org "$ORG" credential create custom \
                           --canonical "$ALERTMANAGER_CREDENTIAL" \
                           --name "$ALERTMANAGER_CREDENTIAL" \
                           --field "alertmanager_user=$alertmanager_user" \
@@ -225,7 +228,7 @@ jobs:
                       grafana_admin_pwd=$(pwgen -scny 16 1)
                       grafana_httpd=$(htpasswd -nb "$grafana_user" "$grafana_password")
 
-                      cli --org "$ORG" credential create custom \
+                      cy --org "$ORG" credential create custom \
                           --canonical "$GRAFANA_CREDENTIAL" \
                           --name "$GRAFANA_CREDENTIAL" \
                           --field "grafana_user=$grafana_user" \
@@ -250,7 +253,7 @@ jobs:
                     export SSH_PRIV=$(cat ssh_key)
                     export SSH_PUB=$(cat ssh_key.pub)
 
-                    cli --org "$ORG" credential create custom \
+                    cy --org "$ORG" credential create custom \
                         --canonical "$SSH_CREDENTIAL" \
                         --name "$SSH_CREDENTIAL" \
                         --field "priv=$SSH_PRIV" \

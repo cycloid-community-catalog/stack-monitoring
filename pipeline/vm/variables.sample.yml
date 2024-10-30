@@ -52,3 +52,5 @@ prometheus_domain_name: ""
 prometheus_web_login: ""
 prometheus_cred: "($ .project $)-alertmanager-($ .environment $)"
 
+# cycloid
+cycloid_api_key: ""

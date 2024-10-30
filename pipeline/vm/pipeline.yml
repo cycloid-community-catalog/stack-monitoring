@@ -157,10 +157,10 @@ jobs:
               - '-exc'
               - |
                 # login to cli
-                cy login --org $ORG
+                cy login --org $ORG > /dev/null 2>&1
 
                 # required for htpasswd command
-                apk add apache2-utils
+                apk add apache2-utils -q  > /dev/null
 
                 # check for prometheus
                 if [ "$PROMETHEUS_INSTALL" = "true" ]; then
@@ -168,20 +168,20 @@ jobs:
                   echo "Checking credentials for prometheus..."
 
                   # check if credential exists
-                  if [[ -z $(cy --org "$ORG"credential list -o json | jq -r ".[] | select(.canonical == \"$PROMETHEUS_CREDENTIAL\") | .canonical") ]]; then
+                  if [[ -z $(cy --org "$ORG"credential list -o json -o json 2>/dev/null | jq -r ".[] | select(.canonical == \"$PROMETHEUS_CREDENTIAL\") | .canonical") ]]; then
 
                       echo "Credential '$PROMETHEUS_CREDENTIAL' does not exist. Creating..."
 
                       prometheus_user=$ORG
                       prometheus_password=$(pwgen -scny 16 1)
-                      prometheus_httpd=$(htpasswd -nb "$prometheus_user" "$prometheus_password")
+                      prometheus_httpd=$(htpasswd -nb "$prometheus_user" "$prometheus_password" 2>/dev/null))
 
                       cy --org "$ORG" credential create custom \
-                          --canonical "$PROMETHEUS_CREDENTIAL" \
+                          --path "$PROMETHEUS_CREDENTIAL" \
                           --name "$PROMETHEUS_CREDENTIAL" \
-                          --field "prometheus_user=$prometheus_user" \
-                          --field "prometheus_password=$prometheus_password" \
-                          --field "prometheus_htpwd=$prometheus_httpd"
+                          --field "user=$prometheus_user" \
+                          --field "pwd=$prometheus_password" \
+                          --field "httpwd=$prometheus_httpd" > /dev/null 2>&1
 
                       echo "Credential created."
                   fi
@@ -190,10 +190,10 @@ jobs:
                 # check for alertmanager
                 if [ "$ALERTMANAGER_INSTALL" = "true" ]; then
 
-                  echo "Checking credentials for alertmanager..."
+                  echo -e "\nChecking credentials for alertmanager..."
 
                   # check if credential exists
-                  if [[ -z $(cy --org "$ORG"credential list -o json | jq -r ".[] | select(.canonical == \"$ALERTMANAGER_CREDENTIAL\") | .canonical") ]]; then
+                  if [[ -z $(cy --org "$ORG"credential list -o json 2>/dev/null | jq -r ".[] | select(.canonical == \"$ALERTMANAGER_CREDENTIAL\") | .canonical") ]]; then
 
                       echo "Credential '$ALERTMANAGER_CREDENTIAL' does not exist. Creating..."
 
@@ -202,11 +202,11 @@ jobs:
                       alertmanager_httpd=$(htpasswd -nb "$alertmanager_user" "$alertmanager_password")
 
                       cy --org "$ORG" credential create custom \
-                          --canonical "$ALERTMANAGER_CREDENTIAL" \
+                          --path "$ALERTMANAGER_CREDENTIAL" \
                           --name "$ALERTMANAGER_CREDENTIAL" \
-                          --field "alertmanager_user=$alertmanager_user" \
-                          --field "alertmanager_password=$alertmanager_password" \
-                          --field "alertmanager_htpwd=$alertmanager_httpd"
+                          --field "user=$alertmanager_user" \
+                          --field "pwd=$alertmanager_password" \
+                          --field "httpwd=$alertmanager_httpd" > /dev/null 2>&1
 
                       echo "Credential created."
                   fi
@@ -215,10 +215,10 @@ jobs:
                 # check for grafana
                 if [ "$GRAFANA_INSTALL" = "true" ]; then
 
-                  echo "Checking credentials for grafana..."
+                  echo -e "\nChecking credentials for grafana..."
 
                   # check if credential exists
-                  if [[ -z $(cy --org "$ORG"credential list -o json | jq -r ".[] | select(.canonical == \"$GRAFANA_CREDENTIAL\") | .canonical") ]]; then
+                  if [[ -z $(cy --org "$ORG"credential list -o json 2>/dev/null | jq -r ".[] | select(.canonical == \"$GRAFANA_CREDENTIAL\") | .canonical") ]]; then
 
                       echo "Credential '$GRAFANA_CREDENTIAL' does not exist. Creating..."
 
@@ -226,38 +226,38 @@ jobs:
                       grafana_password=$(pwgen -scny 16 1)
                       grafana_admin_user="admin"
                       grafana_admin_pwd=$(pwgen -scny 16 1)
-                      grafana_httpd=$(htpasswd -nb "$grafana_user" "$grafana_password")
+                      grafana_httpd=$(htpasswd -nb "$grafana_user" "$grafana_password" 2>/dev/null))
 
                       cy --org "$ORG" credential create custom \
-                          --canonical "$GRAFANA_CREDENTIAL" \
+                          --path "$GRAFANA_CREDENTIAL" \
                           --name "$GRAFANA_CREDENTIAL" \
-                          --field "grafana_user=$grafana_user" \
-                          --field "grafana_password=$grafana_password"\
-                          --field "grafana_admin_user=$grafana_admin_user" \
-                          --field "grafana_admin_pwd=$grafana_admin_pwd" \
-                          --field "grafana_htpwd=$grafana_httpd"
+                          --field "user=$grafana_user" \
+                          --field "pwd=$grafana_password"\
+                          --field "admin_user=$grafana_admin_user" \
+                          --field "admin_pwd=$grafana_admin_pwd" \
+                          --field "httpwd=$grafana_httpd" > /dev/null 2>&1 2>&1
 
                       echo "Credential created."
                   fi
                 fi
 
                 # check if credential exists to store SSH private key
-                echo "Checking SSH credential ..."
+                echo -e "\nChecking SSH credential ..."
 
-                  if [[ -z $(cy --org "$ORG"credential list -o json | jq -r ".[] | select(.canonical == \"$SSH_CREDENTIAL\") | .canonical") ]]; then
+                  if [[ -z $(cy --org "$ORG"credential list -o json 2>/dev/null | jq -r ".[] | select(.canonical == \"$SSH_CREDENTIAL\") | .canonical") ]]; then
 
-                    echo "Credential '$SSH_CREDENTIAL' does not exist. Creating...
+                    echo "Credential '$SSH_CREDENTIAL' does not exist. Creating..."
 
                     # Creates key
-                    ssh-keygen -t ed25519 -C "monitoring@${ORG}" -f "./ssh_key" -N ""
-                    export SSH_PRIV=$(cat ssh_key)
-                    export SSH_PUB=$(cat ssh_key.pub)
+                    ssh-keygen -t ed25519 -C "monitoring@${ORG}" -f "./ssh_key" -N "" > /dev/null
+                    export SSH_PRIV="$(cat ssh_key)"
+                    export SSH_PUB="$(cat ssh_key.pub)"
 
                     cy --org "$ORG" credential create custom \
-                        --canonical "$SSH_CREDENTIAL" \
+                        --path "$SSH_CREDENTIAL" \
                         --name "$SSH_CREDENTIAL" \
                         --field "priv=$SSH_PRIV" \
-                        --field "pub=$SSH_PUB"
+                        --field "pub=$SSH_PUB" > /dev/null 2>&1
 
                     echo "Credential created."
                 fi
@@ -398,158 +398,10 @@ jobs:
             args:
               - '-exc'
               - |
-                # Function to check if a credential exists in Cycloid
-                credential_exists() {
-                    local org=$1
-                    local cred_name=$2
-
-                    # Query Cycloid for credentials and filter by canonical name
-                    local cred=$(cy --org "$org" credential list -o json | jq -r ".[] | select( .canonical == \"$cred_name\") | .canonical")
-
-                    # Check if the credential exists
-                    if [[ -z "$cred" ]]; then
-                        # Credential does not exist
-                        echo "false"
-                    else
-                        # Credential exists
-                        echo "true"
-                    fi
-                }
-
-                # ENV VARS
-                ORG=$(echo "$EXTRA_ANSIBLE_VARS" | jq -r '.organization')
-                PROJECT=$(echo "$EXTRA_ANSIBLE_VARS" | jq -r '.project')
-                ENV=$(echo "$EXTRA_ANSIBLE_VARS" | jq -r '.env')
-
-                # login to cli
-                cy login --org $ORG --api-key $API_KEY
-
-                # check for prometheus
-                if [ "$PROMETHEUS_INSTALL" = "true" ]; then
-
-                  echo "Checking credentials for prometheus..."
-
-                  PROMETHEUS_CREDENTIAL="${PROJECT}-prometheus-${ENV}"
-
-                  # check if credential exists
-                  if [[ $(credential_exists "$ORG" "$PROMETHEUS_CREDENTIAL") == "true" ]]; then
-                      echo "Credential '$PROMETHEUS_CREDENTIAL' exists. Recovering existing data..."
-                      prometheus_user=$(cy --org $ORG credential get --canonical $PROMETHEUS_CREDENTIAL -o json | jq -r '.raw.prometheus_user')
-                      prometheus_password=$(cy --org $ORG credential get --canonical $PROMETHEUS_CREDENTIAL -o json | jq -r '.raw.prometheus_password')
-                      echo "Credential data successflly retrieved."
-
-                  else
-                      echo "Credential '$PROMETHEUS_CREDENTIAL' does not exist. Creating..."
-                      prometheus_user=$ORG
-                      prometheus_password=$(pwgen -scny 16 1)
-                      cli --org "$ORG" credential create custom \
-                          --canonical "$PROMETHEUS_CREDENTIAL" \
-                          --name "$PROMETHEUS_CREDENTIAL" \
-                          --field "prometheus_user=$prometheus_user" \
-                          --field "prometheus_password=$prometheus_password"
-                      echo "Credential created."
-                  fi
-
-                  # generate the htpasswd to be used by nginx and add variables to EXTRA_VARS to be passed to ansible
-                  prometheus_web_login=$(htpasswd -nb "$prometheus_user" "$prometheus_password")
-                  export EXTRA_VARS=$(echo "$EXTRA_VARS" "$prometheus_web_login" "$prometheus_user" "$prometheus_password" | jq -c -s 'add')
-
-                fi
-
-                # check for alertmanager
-                if [ "$ALERTMANAGER_INSTALL" = "true" ]; then
-
-                  echo "Checking credentials for alertmanager..."
-
-                  ALERTMANAGER_CREDENTIAL="${PROJECT}-alertmanager-${ENV}"
-
-                  # check if credential exists
-                  if [[ $(credential_exists "$ORG" "$ALERTMANAGER_CREDENTIAL") == "true" ]]; then
-                      echo "Credential '$ALERTMANAGER_CREDENTIAL' exists. Recovering existing data..."
-                      alertmanager_user=$(cy --org $ORG credential get --canonical $ALERTMANAGER_CREDENTIAL -o json | jq -r '.raw.alertmanager_user')
-                      alertmanager_password=$(cy --org $ORG credential get --canonical $ALERTMANAGER_CREDENTIAL -o json | jq -r '.raw.alertmanager_password')
-                      echo "Credential data successflly retrieved."
-
-                  else
-                      echo "Credential '$ALERTMANAGER_CREDENTIAL' does not exist. Creating..."
-                      alertmanager_user=$ORG
-                      alertmanager_password=$(pwgen -scny 16 1)
-                      cli --org "$ORG" credential create custom \
-                          --canonical "$ALERTMANAGER_CREDENTIAL" \
-                          --name "$ALERTMANAGER_CREDENTIAL" \
-                          --field "alertmanager_user=$alertmanager_user" \
-                          --field "alertmanager_password=$alertmanager_password"
-                      echo "Credential created."
-                  fi
-
-                  # generate the htpasswd to be used by nginx and add variables to EXTRA_VARS to be passed to ansible
-                  alertmanager_web_login=$(htpasswd -nb "$alertmanager_user" "$alertmanager_password")
-                  export EXTRA_VARS=$(echo "$EXTRA_VARS" "$alertmanager_web_login" "$alertmanager_user" "$alertmanager_password" | jq -c -s 'add')
-
-                fi
-
-
-                # check for grafana
-                if [ "$GRAFANA_INSTALL" = "true" ]; then
-
-                  echo "Checking credentials for grafana..."
-
-                  GRAFANA_CREDENTIAL="${PROJECT}-grafana-${ENV}"
-
-                  # check if credential exists
-                  if [[ $(credential_exists "$ORG" "$GRAFANA_CREDENTIAL") == "true" ]]; then
-                      echo "Credential '$GRAFANA_CREDENTIAL' exists. Recovering existing data..."
-                      grafana_user=$(cy --org $ORG credential get --canonical $GRAFANA_CREDENTIAL -o json | jq -r '.raw.grafana_user')
-                      grafana_password=$(cy --org $ORG credential get --canonical $GRAFANA_CREDENTIAL -o json | jq -r '.raw.grafana_password')
-                      grafana_admin_user=$(cy --org $ORG credential get --canonical $GRAFANA_CREDENTIAL -o json | jq -r '.raw.grafana_admin_user')
-                      grafana_admin_pwd=$(cy --org $ORG credential get --canonical $GRAFANA_CREDENTIAL -o json | jq -r '.raw.grafana_admin_pwd')
-                      echo "Credential data successflly retrieved."
-
-                  else
-                      echo "Credential '$GRAFANA_CREDENTIAL' does not exist. Creating..."
-                      grafana_user=$ORG
-                      grafana_password=$(pwgen -scny 16 1)
-                      grafana_admin_user="admin"
-                      grafana_admin_pwd=$(pwgen -scny 16 1)
-                      cli --org "$ORG" credential create custom \
-                          --canonical "$GRAFANA_CREDENTIAL" \
-                          --name "$GRAFANA_CREDENTIAL" \
-                          --field "grafana_user=$grafana_user" \
-                          --field "grafana_password=$grafana_password"\
-                          --field "grafana_admin_user=$grafana_admin_user" \
-                          --field "grafana_admin_pwd=$grafana_admin_pwd"\
-                      echo "Credential created."
-                  fi
-
-                  # generate the htpasswd to be used by nginx and add variables to EXTRA_VARS to be passed to ansible
-                  grafana_web_login=$(htpasswd -nb "$grafana_user" "$grafana_password")
-                  export EXTRA_VARS=$(echo "$EXTRA_VARS" "$grafana_web_login" "$grafana_user" "$grafana_password" "$grafana_admin_user" "$grafana_admin_pwd"| jq -c -s 'add')
-
-                fi
-
-                # check if credential exists to store SSH private key
-                SSH_CREDENTIAL="${PROJECT}-ssh-${ENV}"
-                if [[ $(credential_exists "$ORG" "$SSH_CREDENTIAL") == "false" ]]; then
-
-                    echo "Credential '$SSH_CREDENTIAL' does not exist. Creating...
-
-                    # Creates file to hold key
-                    echo "$ssh_private_key" > .ssh_key
-                    chmod 600 .ssh_key
-                    cy --org $ORG credential create ssh \
-                       --canonical "$SSH_CREDENTIAL" \
-                       --name "$SSH_CREDENTIAL" \
-                       --ssh-key .ssh_key
-
-                    echo "Credential created."
-                fi
-
-                # To be used by ansible script
-                export SSH_PRIVATE_KEY ="$ssh_private_key"
-
                 #issue with gnu run locally
                 #https://stackoverflow.com/questions/54377305/tar-not-found-in-archive-error-when-using-docker-alpine
-                apk add --no-cache tar
+                apk add --no-cache tar > /dev/null 2>&1
+
                 # Static inventory
                 ansible-inventory -i ansible-playbook/inventory --graph
                 /usr/bin/ansible-runner
@@ -566,6 +418,7 @@ jobs:
           ANSIBLE_PLAYBOOK_NAME: main.yml
 #($- if eq .use_bastion true $)
           BASTION_URL: ((bastion_url))
+          SSH_PRIVATE_KEY: ((((ssh_credential)).priv))
 #($- end $)
           ANSIBLE_INVENTORY: inventory
           EXTRA_ANSIBLE_ARGS: "-i inventory"
@@ -584,8 +437,18 @@ jobs:
             external_alertmanager_password: ((external_alertmanager_password))
             external_alertmanager_username: ((external_alertmanager_username))
             external_alertmanager_targets: ((external_alertmanager_targets))
-            prometheus_domain_name: ((prometheus_domain_name))
-            alertmanager_domain_name: ((alertmanager_domain_name))
+            prometheus_web_login: ((((prometheus_cred)).httpwd))
+            prometheus_user: ((((prometheus_cred)).user))
+            prometheus_password: ((((prometheus_cred)).pwd))
+            alertmanager_web_login: ((((alertmanager_cred)).httpwd))
+            alertmanager_user: ((((alertmanager_cred)).user))
+            alertmanager_password: ((((alertmanager_cred)).pwd))
+            grafana_web_login: ((((grafana_cred)).httpwd))
+            grafana_user: ((((grafana_cred)).user))
+            grafana_password: ((((grafana_cred)).pwd))
+            grafana_admin_user: ((((grafana_cred)).admin_user))
+            grafana_admin_pwd: ((((grafana_cred)).admin_pwd))
+
 #($- if eq .use_case "aws-vm" $)
             aws_default_region: ((aws_default_region))
 #($- else if eq .use_case "azure-vm" $)

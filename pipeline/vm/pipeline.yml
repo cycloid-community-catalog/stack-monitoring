@@ -173,8 +173,8 @@ jobs:
                       echo "Credential '$PROMETHEUS_CREDENTIAL' does not exist. Creating..."
 
                       prometheus_user=$ORG
-                      prometheus_password=$(pwgen -scny 16 1)
-                      prometheus_httpd=$(htpasswd -nb "$prometheus_user" "$prometheus_password" 2>/dev/null))
+                      prometheus_password=$(openssl rand -base64 32)
+                      prometheus_httpd=$(htpasswd -nb "$prometheus_user" "$prometheus_password" 2>/dev/null)
 
                       cy --org "$ORG" credential create custom \
                           --path "$PROMETHEUS_CREDENTIAL" \
@@ -198,7 +198,7 @@ jobs:
                       echo "Credential '$ALERTMANAGER_CREDENTIAL' does not exist. Creating..."
 
                       alertmanager_user=$ORG
-                      alertmanager_password=$(pwgen -scny 16 1)
+                      alertmanager_password=$(pwgen -scny 16 1 | tr -d '"\\')
                       alertmanager_httpd=$(htpasswd -nb "$alertmanager_user" "$alertmanager_password")
 
                       cy --org "$ORG" credential create custom \
@@ -223,10 +223,10 @@ jobs:
                       echo "Credential '$GRAFANA_CREDENTIAL' does not exist. Creating..."
 
                       grafana_user=$ORG
-                      grafana_password=$(pwgen -scny 16 1)
+                      grafana_password=$(openssl rand -base64 32)
                       grafana_admin_user="admin"
-                      grafana_admin_pwd=$(pwgen -scny 16 1)
-                      grafana_httpd=$(htpasswd -nb "$grafana_user" "$grafana_password" 2>/dev/null))
+                      grafana_admin_pwd=$(openssl rand -base64 32)
+                      grafana_httpd=$(htpasswd -nb "$grafana_user" "$grafana_password" 2>/dev/null)
 
                       cy --org "$ORG" credential create custom \
                           --path "$GRAFANA_CREDENTIAL" \

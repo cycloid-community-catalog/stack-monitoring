@@ -33,6 +33,9 @@ variable "ssh_to_allow" {
 variable "use_bastion" {
   default = false
 }
+variable "ssh_public_key" {
+  default = ""
+}
 
 # vm dns variables
 variable "create_dns" {

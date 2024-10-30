@@ -15,6 +15,7 @@ module "aws-vm" {
   # os_disk_size          = ""
   # os_disk_type          = ""
   # vm_iam_policies       = ""
+  ssh_public_key          = var.ssh_public_key
 
   ## vm network variables
   # subnet_id        = ""

@@ -4,14 +4,9 @@
 ###
 
 ## create keypair
-resource "tls_private_key" "vm" {
-  algorithm = "RSA"
-  rsa_bits  = 4096
-}
-
 resource "aws_key_pair" "vm" {
   key_name   = "${var.organization}-vm-monitoring-${var.env}"
-  public_key = tls_private_key.vm.public_key_openssh
+  public_key = var.ssh_public_key
 }
 
 # ami to use -> debian 10

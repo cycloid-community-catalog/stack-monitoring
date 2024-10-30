@@ -68,6 +68,7 @@ resources:
       aws_region: ((aws_default_region))
       aws_role_arn: ((aws_role_arn))
       aws_extra_tags: ((aws_extra_tags))
+      ssh_public_key: ((ssh_credential.pub))
 #($- else if eq .use_case "azure-vm" $)
       #azure_cred: ((($ .azure_cred $))
       #resource_group_name: ($ .resource_group_name$)
@@ -135,6 +136,155 @@ resources:
       - ($ .project $)/terraform/($ .environment $)/*
 
 jobs:
+  - name: creds-creation
+    build_logs_to_retain: 10
+    plan:
+    - do:
+      - task: creds-creation
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: cycloid/cycloid-toolkit
+              tag: "v((ansible_version))"
+          run:
+            path: /bin/bash
+            args:
+              - '-exc'
+              - |
+                # Function to check if a credential exists in Cycloid
+                credential_exists() {
+                    local org=$1
+                    local cred_name=$2
+
+                    # Query Cycloid for credentials and filter by canonical name
+                    local cred=$(cy --org "$org" credential list -o json | jq -r ".[] | select( .canonical == \"$cred_name\") | .canonical")
+
+                    # Check if the credential exists
+                    if [[ -z "$cred" ]]; then
+                        # Credential does not exist
+                        echo "false"
+                    else
+                        # Credential exists
+                        echo "true"
+                    fi
+                }
+
+                # login to cli
+                cy login --org $ORG --api-key $API_KEY
+
+                # check for prometheus
+                if [ "$PROMETHEUS_INSTALL" = "true" ]; then
+
+                  echo "Checking credentials for prometheus..."
+
+                  # check if credential exists
+                  if [[ $(credential_exists "$ORG" "$PROMETHEUS_CREDENTIAL") == "false" ]]; then
+
+                      echo "Credential '$PROMETHEUS_CREDENTIAL' does not exist. Creating..."
+
+                      prometheus_user=$ORG
+                      prometheus_password=$(pwgen -scny 16 1)
+                      prometheus_httpd=$(htpasswd -nb "$prometheus_user" "$prometheus_password")
+
+                      cli --org "$ORG" credential create custom \
+                          --canonical "$PROMETHEUS_CREDENTIAL" \
+                          --name "$PROMETHEUS_CREDENTIAL" \
+                          --field "prometheus_user=$prometheus_user" \
+                          --field "prometheus_password=$prometheus_password"
+                          --field "prometheus_htpwd=$prometheus_httpd"
+
+                      echo "Credential created."
+                  fi
+                fi
+
+                # check for alertmanager
+                if [ "$ALERTMANAGER_INSTALL" = "true" ]; then
+
+                  echo "Checking credentials for alertmanager..."
+
+                  # check if credential exists
+                  if [[ $(credential_exists "$ORG" "$ALERTMANAGER_CREDENTIAL") == "false" ]]; then
+
+                      echo "Credential '$ALERTMANAGER_CREDENTIAL' does not exist. Creating..."
+
+                      alertmanager_user=$ORG
+                      alertmanager_password=$(pwgen -scny 16 1)
+                      alertmanager_httpd=$(htpasswd -nb "$alertmanager_user" "$alertmanager_password")
+
+                      cli --org "$ORG" credential create custom \
+                          --canonical "$ALERTMANAGER_CREDENTIAL" \
+                          --name "$ALERTMANAGER_CREDENTIAL" \
+                          --field "alertmanager_user=$alertmanager_user" \
+                          --field "alertmanager_password=$alertmanager_password" \
+                          --field "alertmanager_htpwd=$alertmanager_httpd"
+
+                      echo "Credential created."
+                  fi
+                fi
+
+                # check for grafana
+                if [ "$GRAFANA_INSTALL" = "true" ]; then
+
+                  echo "Checking credentials for grafana..."
+
+                  # check if credential exists
+                  if [[ $(credential_exists "$ORG" "$GRAFANA_CREDENTIAL") == "false" ]]; then
+
+                      echo "Credential '$GRAFANA_CREDENTIAL' does not exist. Creating..."
+
+                      grafana_user=$ORG
+                      grafana_password=$(pwgen -scny 16 1)
+                      grafana_admin_user="admin"
+                      grafana_admin_pwd=$(pwgen -scny 16 1)
+                      grafana_httpd=$(htpasswd -nb "$grafana_user" "$grafana_password")
+
+                      cli --org "$ORG" credential create custom \
+                          --canonical "$GRAFANA_CREDENTIAL" \
+                          --name "$GRAFANA_CREDENTIAL" \
+                          --field "grafana_user=$grafana_user" \
+                          --field "grafana_password=$grafana_password"\
+                          --field "grafana_admin_user=$grafana_admin_user" \
+                          --field "grafana_admin_pwd=$grafana_admin_pwd" \
+                          --field "grafana_htpwd=$grafana_httpd"
+
+                      echo "Credential created."
+                  fi
+                fi
+
+                # check if credential exists to store SSH private key
+                echo "Checking SSH credential ..."
+
+                if [[ $(credential_exists "$ORG" "$SSH_CREDENTIAL") == "false" ]]; then
+
+                    echo "Credential '$SSH_CREDENTIAL' does not exist. Creating...
+
+                    # Creates key
+                    ssh-keygen -t ed25519 -C "monitoring@${ORG}" -f "./ssh_key" -N ""
+                    export SSH_PRIV=$(cat ssh_key)
+                    export SSH_PUB=$(cat ssh_key.pub)
+
+                    cli --org "$ORG" credential create custom \
+                        --canonical "$SSH_CREDENTIAL" \
+                        --name "$SSH_CREDENTIAL" \
+                        --field "priv=$SSH_PRIV" \
+                        --field "pub=$SSH_PUB"
+
+                    echo "Credential created."
+                fi
+        params:
+          PROMETHEUS_INSTALL: ((prometheus_install))
+          ALERTMANAGER_INSTALL: ((alertmanager_install))
+          GRAFANA_INSTALL: ((grafana_install))
+          ORG: ($ .organization_canonical $)
+          ENV: ($ .environment $)
+          PROJECT: ($ .project $)
+          SSH_CREDENTIAL: ((ssh_credential))
+          GRAFANA_CREDENTIAL: ((grafana_cred))
+          ALERTMANAGER_CREDENTIAL: ((alertmanager_cred))
+          PROMETHEUS_CREDENTIAL: ((prometheus_cred))
+
   - name: terraform-plan
     serial: true
     serial_groups: [terraform]

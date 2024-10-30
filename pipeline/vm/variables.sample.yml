@@ -20,6 +20,7 @@ ansible_version: "2.9"
 
 ## SSH key to acess instance
 #use_bastion: true
+ssh_credential: "($ .project $)-ssh-($ .environment $)"
 
 ## nginx certificates
 create_self_signed_certificate: true
@@ -32,11 +33,13 @@ grafana_install: false
 grafana_web_login: ""
 grafana_admin_pwd: ""
 grafana_admin_user: ""
+grafana_cred: "($ .project $)-grafana-($ .environment $)"
 
 # alertmanager - created
 alertmanager_install: false
 alertmanager_domain_name: ""
 alertmanager_web_login: ""
+alertmanager_cred: "($ .project $)-alertmanager-($ .environment $)"
 
 # alertmanager - external (not created with the stack)
 external_alertmanager_password: ""
@@ -47,3 +50,5 @@ external_alertmanager_targets: ""
 prometheus_install: true
 prometheus_domain_name: ""
 prometheus_web_login: ""
+prometheus_cred: "($ .project $)-alertmanager-($ .environment $)"
+

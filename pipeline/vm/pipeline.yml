@@ -141,6 +141,8 @@ jobs:
     build_logs_to_retain: 10
     plan:
     - do:
+      - get: git_config_terraform
+        trigger: true
       - task: creds-creation
         config:
           platform: linux
@@ -297,6 +299,8 @@ jobs:
           trigger: true
         - get: git_config_terraform
           trigger: true
+          passed:
+            - creds-creation
         - *task-merge-stack-and-config
         - put: tfstate
           params:

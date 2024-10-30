@@ -156,26 +156,8 @@ jobs:
             args:
               - '-exc'
               - |
-                # Function to check if a credential exists in Cycloid
-                credential_exists() {
-                    local org=$1
-                    local cred_name=$2
-
-                    # Query Cycloid for credentials and filter by canonical name
-                    local cred=$(cy --org "$org" credential list -o json | jq -r ".[] | select( .canonical == \"$cred_name\") | .canonical")
-
-                    # Check if the credential exists
-                    if [[ -z "$cred" ]]; then
-                        # Credential does not exist
-                        echo "false"
-                    else
-                        # Credential exists
-                        echo "true"
-                    fi
-                }
-
                 # login to cli
-                cy login --org $ORG --api-key $API_KEY
+                cy login --org $ORG
 
                 # check for prometheus
                 if [ "$PROMETHEUS_INSTALL" = "true" ]; then
@@ -183,7 +165,7 @@ jobs:
                   echo "Checking credentials for prometheus..."
 
                   # check if credential exists
-                  if [[ $(credential_exists "$ORG" "$PROMETHEUS_CREDENTIAL") == "false" ]]; then
+                  if [[ -z $(cy --org "$ORG"credential list -o json | jq -r ".[] | select(.canonical == \"$PROMETHEUS_CREDENTIAL\") | .canonical") ]]; then
 
                       echo "Credential '$PROMETHEUS_CREDENTIAL' does not exist. Creating..."
 
@@ -208,7 +190,7 @@ jobs:
                   echo "Checking credentials for alertmanager..."
 
                   # check if credential exists
-                  if [[ $(credential_exists "$ORG" "$ALERTMANAGER_CREDENTIAL") == "false" ]]; then
+                  if [[ -z $(cy --org "$ORG"credential list -o json | jq -r ".[] | select(.canonical == \"$ALERTMANAGER_CREDENTIAL\") | .canonical") ]]; then
 
                       echo "Credential '$ALERTMANAGER_CREDENTIAL' does not exist. Creating..."
 
@@ -233,7 +215,7 @@ jobs:
                   echo "Checking credentials for grafana..."
 
                   # check if credential exists
-                  if [[ $(credential_exists "$ORG" "$GRAFANA_CREDENTIAL") == "false" ]]; then
+                  if [[ -z $(cy --org "$ORG"credential list -o json | jq -r ".[] | select(.canonical == \"$GRAFANA_CREDENTIAL\") | .canonical") ]]; then
 
                       echo "Credential '$GRAFANA_CREDENTIAL' does not exist. Creating..."
 
@@ -259,7 +241,7 @@ jobs:
                 # check if credential exists to store SSH private key
                 echo "Checking SSH credential ..."
 
-                if [[ $(credential_exists "$ORG" "$SSH_CREDENTIAL") == "false" ]]; then
+                  if [[ -z $(cy --org "$ORG"credential list -o json | jq -r ".[] | select(.canonical == \"$SSH_CREDENTIAL\") | .canonical") ]]; then
 
                     echo "Credential '$SSH_CREDENTIAL' does not exist. Creating...
 
@@ -277,7 +259,7 @@ jobs:
                     echo "Credential created."
                 fi
         params:
-          API_KEY: ((cycloid_api_key))
+          CY_API_KEY: ((cycloid_api_key))
           PROMETHEUS_INSTALL: ((prometheus_install))
           ALERTMANAGER_INSTALL: ((alertmanager_install))
           GRAFANA_INSTALL: ((grafana_install))

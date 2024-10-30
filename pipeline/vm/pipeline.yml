@@ -154,7 +154,7 @@ jobs:
           run:
             path: /bin/bash
             args:
-              - '-exc'
+              - '-ec'
               - |
                 # login to cli
                 cy login --org $ORG > /dev/null 2>&1
@@ -416,10 +416,8 @@ jobs:
           GRAFANA_INSTALL: ((grafana_install))
           ANSIBLE_PLAYBOOK_PATH: ansible-playbook
           ANSIBLE_PLAYBOOK_NAME: main.yml
-#($- if eq .use_bastion true $)
           BASTION_URL: ((bastion_url))
           SSH_PRIVATE_KEY: ((((ssh_credential)).priv))
-#($- end $)
           ANSIBLE_INVENTORY: inventory
           EXTRA_ANSIBLE_ARGS: "-i inventory"
           ANSIBLE_FORCE_GALAXY: false

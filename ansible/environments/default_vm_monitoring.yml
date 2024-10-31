@@ -84,14 +84,14 @@ alertmanager_user: "{{organization}}"
 
 # Blackbox exporter role
 # all defaults here: https://github.com/prometheus-community/ansible/blob/main/roles/blackbox_exporter/defaults/main.yml
-
+blackbox_exporter_skip_install: "{{ not blackbox_exporter_install }}"
 blackbox_exporter_web_listen_address: "0.0.0.0:9115"
 blackbox_exporter_config_dir: /etc/blackbox_exporter
 
 
 # Mysql exporter role
 # # defaults at https://github.com/prometheus-community/ansible/blob/main/roles/mysqld_exporter/defaults/main.yml
-
+mysqld_exporter_skip_install: "{{ not mysqld_exporter_install }}"
 mysqld_exporter_web_listen_address: "0.0.0.0:9104"
 mysqld_exporter_config_dir: "/etc/mysqld_exporter"
 mysqld_exporter_version: "0.15.0"
@@ -102,7 +102,7 @@ mysqld_exporter_port: "{{mysql_db_port}}"
 
 # Postgresql exporter role
 # defaults at https://github.com/prometheus-community/ansible/blob/main/roles/postgres_exporter/defaults/main.yml
-
+postgres_exporter_skip_install: "{{ not postgres_exporter_install }}"
 postgres_exporter_web_listen_address: "0.0.0.0:9187"
 postgres_exporter_config_dir: "/etc/postgres_exporter"
 postgres_exporter_user: "{{postgres_db_user}}"
@@ -113,7 +113,7 @@ postgres_exporter_port: "{{postgres_db_port}}"
 
 # Node-exporter role
 # defaults at https://github.com/prometheus-community/ansible/blob/main/roles/node_exporter/defaults/main.yml
-
+node_exporter_skip_install: "{{ not node_exporter_install }}"
 node_exporter_web_listen_address: "0.0.0.0:9100"
 
 

@@ -9,7 +9,7 @@
 
 
 ## Prometheus
-# prometheus_skip_install: false
+# prometheus_install: false
 # prometheus_domain_name: "alertmanager.local"
 # prometheus_version: 2.54.0
 # prometheus_rule_files: TODO
@@ -20,7 +20,7 @@
 
 
 ## Alertmanager
-# alertmanager_skip_install: false
+# alertmanager_install: false
 # alertmanager_domain_name: "alertmanager.local"
 # alertmanager_version: 0.27.0
 # alertmanager_route: {}
@@ -29,24 +29,24 @@
 # alertmanager_smtp: {}
 
 ## Blackbox exporter
-# blackbox_exporter_skip_install: true
+# blackbox_exporter_install: true
 # blackbox_exporter_version: 0.25.0
 # blackbox_exporter_configuration_modules: {}
 # prometheus_blackbox_config: []
 
 ## MYSQL exporter
-# mysqld_exporter_skip_install: false
+# mysqld_exporter_install: false
 # mysqld_exporter_version: "0.15.0"
 
 ## Postgres exporter
-# postgres_exporter_skip_install: false
+# postgres_exporter_install: false
 
 ## Node exporter
-#node_exporter_skip_install: false
+#node_exporter_install: false
 
 ## Grafana
 # grafana_version: latest
-# grafana_skip_install: true
+# grafana_install: true
 # grafana_admin_user: admin
 # grafana_admin_pwd: ""
 # grafana_dashboards: []

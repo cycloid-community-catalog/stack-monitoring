@@ -8,12 +8,13 @@
     include_role:
       name: prometheus.prometheus.prometheus
     tags: prometheus
+    when: prometheus_install
 
   - name: "Create custom alert rule file"
     template:
       src: templates/organization.rules
       dest: "{{ prometheus_config_dir }}/rules/{{organization}}.rules"
-    when: prometheus_skip_install | bool and prometheus_custom_rules != ""
+    when: prometheus_install | bool and prometheus_custom_rules != ""
     tags: prometheus
 
   # Install Alertmanager
@@ -21,29 +22,34 @@
     include_role:
       name: prometheus.prometheus.alertmanager
     tags: alertmanager
+    when: alertmanager_install
 
     # Install exporters
   - name: Install Blackbox exporter
     include_role:
       name: prometheus.prometheus.blackbox_exporter
     tags: blackbox_exporter
+    when: blackbox_exporter_install
 
   - name: Install MYSQL exporter
     include_role:
       name: prometheus.prometheus.mysqld_exporter
     tags: mysqld_exporter
+    when: mysqld_exporter_install
 
   - name: Install PostgreSQL exporter
     include_role:
       name: prometheus.prometheus.postgres_exporter
     tags: postgres_exporter
+    when: postgres_exporter_install
 
   - name: Install Node exporter
     include_role:
       name: prometheus.prometheus.node_exporter
     tags: node_exporter
+    when: node_exporter_install
 
-  # Install Grafana
+ # Install Grafana
   - name: Install Grafana
     include_role:
       name: grafana.grafana.grafana

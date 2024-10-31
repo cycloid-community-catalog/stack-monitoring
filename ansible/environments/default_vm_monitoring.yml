@@ -5,7 +5,6 @@ create_self_signed_certificate: true
 
 # Prometheus role
 # all defaults here: https://github.com/prometheus-community/ansible/blob/main/roles/prometheus/defaults/main.yml
-prometheus_skip_install: "{{ not prometheus_install }}"
 prometheus_storage_retention: "60d"
 prometheus_config_dir: /etc/prometheus
 prometheus_db_dir: /var/lib/prometheus
@@ -48,7 +47,7 @@ prometheus_scrape_configs_alertmanager:
       regex: go_(.*)
 
 # merge default scrapings with custom ones
-prometheus_scrape_configs: "{{ prometheus_scrape_configs_global + prometheus_custom_configs + (prometheus_scrape_configs_alertmanager if not alertmanager_skip_install else []) + (prometheus_blackbox_config if not blackbox_exporter_skip_install else [])}}"
+prometheus_scrape_configs: "{{ prometheus_scrape_configs_global + prometheus_custom_configs + (prometheus_scrape_configs_alertmanager if  alertmanager_install else []) + (prometheus_blackbox_config if blackbox_exporter_install else [])}}"
 
 prometheus_alerting_local:
   - scheme: http
@@ -64,7 +63,7 @@ prometheus_alerting_external:
       static_configs:
       - targets:"{{external_alertmanager_targets}}"
 
-prometheus_alertmanager_config: "{{ prometheus_alerting_local if not alertmanager_skip_install else prometheus_alerting_external }}"
+prometheus_alertmanager_config: "{{ prometheus_alerting_local if alertmanager_install else prometheus_alerting_external }}"
 
 # TODO replace default alert rules prometheus_alert_rules with ours https://github.com/prometheus-community/ansible/blob/main/roles/prometheus/defaults/main.yml#L105
 # TODO add default_alert_rules true/false
@@ -72,7 +71,6 @@ prometheus_alertmanager_config: "{{ prometheus_alerting_local if not alertmanage
 
 # Alertmanager role
 # default values: https://github.com/prometheus-community/ansible/blob/main/roles/alertmanager/defaults/main.yml
-alertmanager_skip_install: "{{ not alertmanager_install }}"
 alertmanager_web_external_url: "{{ external_url_schema }}://{{ alertmanager_domain_name }}"
 alertmanager_web_listen_address: '0.0.0.0:9093'
 alertmanager_user: "{{organization}}"
@@ -84,14 +82,12 @@ alertmanager_user: "{{organization}}"
 
 # Blackbox exporter role
 # all defaults here: https://github.com/prometheus-community/ansible/blob/main/roles/blackbox_exporter/defaults/main.yml
-blackbox_exporter_skip_install: "{{ not blackbox_exporter_install }}"
 blackbox_exporter_web_listen_address: "0.0.0.0:9115"
 blackbox_exporter_config_dir: /etc/blackbox_exporter
 
 
 # Mysql exporter role
 # # defaults at https://github.com/prometheus-community/ansible/blob/main/roles/mysqld_exporter/defaults/main.yml
-mysqld_exporter_skip_install: "{{ not mysqld_exporter_install }}"
 mysqld_exporter_web_listen_address: "0.0.0.0:9104"
 mysqld_exporter_config_dir: "/etc/mysqld_exporter"
 mysqld_exporter_version: "0.15.0"
@@ -102,7 +98,6 @@ mysqld_exporter_port: "{{mysql_db_port}}"
 
 # Postgresql exporter role
 # defaults at https://github.com/prometheus-community/ansible/blob/main/roles/postgres_exporter/defaults/main.yml
-postgres_exporter_skip_install: "{{ not postgres_exporter_install }}"
 postgres_exporter_web_listen_address: "0.0.0.0:9187"
 postgres_exporter_config_dir: "/etc/postgres_exporter"
 postgres_exporter_user: "{{postgres_db_user}}"
@@ -113,7 +108,6 @@ postgres_exporter_port: "{{postgres_db_port}}"
 
 # Node-exporter role
 # defaults at https://github.com/prometheus-community/ansible/blob/main/roles/node_exporter/defaults/main.yml
-node_exporter_skip_install: "{{ not node_exporter_install }}"
 node_exporter_web_listen_address: "0.0.0.0:9100"
 
 
@@ -256,16 +250,16 @@ nginx_force_https:
 
 nginx_sites_default: "{{
           nginx_status_http
-          | combine(nginx_grafana_http if not (grafana_skip_install| default(true)) else {})
-          | combine(nginx_prometheus_http if not (prometheus_skip_install| default(false)) else {})
-          | combine(nginx_alertmanager_http if not (alertmanager_skip_install| default(true)) else {})
+          | combine(nginx_grafana_http if (grafana_install| default(true)) else {})
+          | combine(nginx_prometheus_http if (prometheus_install| default(false)) else {})
+          | combine(nginx_alertmanager_http if (alertmanager_install| default(true)) else {})
         }}"
 nginx_sites_default_https: "{{
           nginx_status_https
           | combine(nginx_force_https)
-          | combine(nginx_grafana_https if not (grafana_skip_install| default(true)) else {})
-          | combine(nginx_prometheus_https if not (prometheus_skip_install| default(false)) else {})
-          | combine(nginx_alertmanager_https if not (alertmanager_skip_install| default(true)) else {})
+          | combine(nginx_grafana_https if (grafana_install| default(true)) else {})
+          | combine(nginx_prometheus_https if (prometheus_install| default(false)) else {})
+          | combine(nginx_alertmanager_https if (alertmanager_install| default(true)) else {})
         }}"
 
 nginx_sites: "{% if not use_ssl %}{{ nginx_sites_default }}{% else %}{{ nginx_sites_default_https }}{% endif %}"
@@ -280,7 +274,6 @@ nginx_auth_basic_files:
 
 
 # Grafana
-grafana_skip_install: "{{ not grafana_install }}"
 grafana_logs_dir: "/var/log/grafana"
 grafana_data_dir: "/var/lib/grafana"
 grafana_database:
@@ -301,7 +294,7 @@ grafana_default_prometheus_datasource:
     version: 1
 grafana_datasources: "{{
     (grafana_extra_datasources | default([]))
-    + (grafana_default_prometheus_datasource if not (prometheus_skip_install | default(true)) else [])
+    + (grafana_default_prometheus_datasource if (prometheus_install | default(true)) else [])
   }}"
 grafana_dashboards_dir: "dashboards"
 grafana_dashboards_files: "{{ playbook_dir }}/files/grafana/dashboards/*.json"

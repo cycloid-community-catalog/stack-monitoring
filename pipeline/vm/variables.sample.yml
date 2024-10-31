@@ -34,6 +34,7 @@ grafana_install: false
 grafana_web_login: ""
 grafana_admin_pwd: ""
 grafana_admin_user: ""
+grafana_domain_name: ""
 grafana_cred: "($ .project $)-grafana-($ .environment $)"
 
 # alertmanager - created

@@ -31,7 +31,6 @@ nginx_certificate_key: ""
 ## monitoring credentials
 # grafana
 grafana_install: false
-grafana_web_login: ""
 grafana_admin_pwd: ""
 grafana_admin_user: ""
 grafana_domain_name: ""
@@ -53,6 +52,18 @@ prometheus_install: true
 prometheus_domain_name: ""
 prometheus_web_login: ""
 prometheus_cred: "($ .project $)-prometheus-($ .environment $)"
+
+# postgres exporter
+postgres_db_user: ""
+postgres_db_password: ""
+postgres_db_host: ""
+postgres_db_port: ""
+
+# mysql exporter
+mysql_db_user: ""
+mysql_db_password: ""
+mysql_db_host: ""
+mysql_db_port: ""
 
 # cycloid
 cycloid_api_key: ""

@@ -3,27 +3,6 @@
     apt:
       update_cache: yes
 
-  # Install Prometheus
-  - name: Install Prometheus
-    include_role:
-      name: prometheus.prometheus.prometheus
-    tags: prometheus
-    when: prometheus_install
-
-  - name: "Create custom alert rule file"
-    template:
-      src: templates/organization.rules
-      dest: "{{ prometheus_config_dir }}/rules/{{organization}}.rules"
-    when: prometheus_install | bool and prometheus_custom_rules != ""
-    tags: prometheus
-
-  # Install Alertmanager
-  - name: Install Alertmanager
-    include_role:
-      name: prometheus.prometheus.alertmanager
-    tags: alertmanager
-    when: alertmanager_install
-
     # Install exporters
   - name: Install Blackbox exporter
     include_role:
@@ -48,6 +27,27 @@
       name: prometheus.prometheus.node_exporter
     tags: node_exporter
     when: node_exporter_install
+
+  # Install Prometheus
+  - name: "Create custom alert rule file"
+    template:
+      src: templates/organization.rules
+      dest: "{{ prometheus_config_dir }}/rules/{{organization}}.rules"
+    when: prometheus_install | bool and prometheus_custom_rules != ""
+    tags: prometheus
+
+  - name: Install Prometheus
+    include_role:
+      name: prometheus.prometheus.prometheus
+    tags: prometheus
+    when: prometheus_install
+
+  # Install Alertmanager
+  - name: Install Alertmanager
+    include_role:
+      name: prometheus.prometheus.alertmanager
+    tags: alertmanager
+    when: alertmanager_install
 
  # Install Grafana
   - name: Install Grafana

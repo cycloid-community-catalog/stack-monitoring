@@ -38,6 +38,7 @@ data "aws_ami" "debian" {
 
 # vm instance
 resource "aws_instance" "vm" {
+  name = "${var.organization}-vm-monitoring-${var.env}"
   ami = data.aws_ami.debian.id
   iam_instance_profile = aws_iam_instance_profile.vm.name
   instance_type        = var.vm_size

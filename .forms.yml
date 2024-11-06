@@ -316,7 +316,7 @@ use_cases:
       technologies: [ansible]
       vars:
         - name: "Prometheus scraping config"
-          description: "Prometheus scraping config to use. Note! prometheus and alertmanager are scraped. For more information check [prometheus wiki](https://prometheus.io/docs/prometheus/latest/configuration/configuration/)"
+          description: "Prometheus scraping config to use. Note! prometheus, alertmanager and the database exporters are scraped. For more information check [prometheus wiki](https://prometheus.io/docs/prometheus/latest/configuration/configuration/)"
           key: prometheus_custom_configs
           widget: text_area
           type: array
@@ -455,6 +455,60 @@ use_cases:
                     organization: "{{organization}}"
                     project: "website"
                     env: "prod"
+
+  - name: MySQL Exporter
+    groups:
+    - name: Configuration
+      condition: $mysql_exporter_install == true
+      technologies: [pipeline]
+      vars:
+        - name: "DB Username"
+          description: "MySQL database username to be used to connect to the database."
+          key: mysql_db_user
+          widget: cy_cred
+          type: string
+        - name: "DB Username"
+          description: "MySQL Database password to be used to connect to the database"
+          key: mysql_db_password
+          widget: cy_cred
+          type: string
+        - name: "DB host"
+          description: "MySQL Database host where the metrics should be collected"
+          key: mysql_db_host
+          widget: simple_text
+          type: string
+        - name: "DB port"
+          description: "MySQL Database port where the metrics should be collected"
+          key: mysql_db_port
+          widget: simple_text
+          type: string
+
+  - name: PostgreSQL Exporter
+    groups:
+    - name: Configuration
+      condition: $postgres_exporter_install == true
+      technologies: [pipeline]
+      vars:
+        - name: "DB Username"
+          description: "PostgreSQL database username to be used to connect to the database."
+          key: postgres_db_user
+          widget: cy_cred
+          type: string
+        - name: "DB Username"
+          description: "PostgreSQL Database password to be used to connect to the database"
+          key: postgres_db_password
+          widget: cy_cred
+          type: string
+        - name: "DB host"
+          description: "PostgreSQL Database host where the metrics should be collected"
+          key: postgres_db_host
+          widget: simple_text
+          type: string
+        - name: "DB port"
+          description: "PostgreSQL Database port where the metrics should be collected"
+          key: postgres_db_port
+          widget: simple_text
+          type: string
 
 
   - name: Alertmanager

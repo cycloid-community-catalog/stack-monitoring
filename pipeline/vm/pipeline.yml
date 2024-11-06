@@ -222,20 +222,14 @@ jobs:
 
                       echo "Credential '$GRAFANA_CREDENTIAL' does not exist. Creating..."
 
-                      grafana_user=$ORG
-                      grafana_password=$(openssl rand -base64 32)
                       grafana_admin_user="admin"
                       grafana_admin_pwd=$(openssl rand -base64 32)
-                      grafana_httpd=$(htpasswd -nb "$grafana_user" "$grafana_password" 2>/dev/null)
 
                       cy --org "$ORG" credential create custom \
                           --path "$GRAFANA_CREDENTIAL" \
                           --name "$GRAFANA_CREDENTIAL" \
-                          --field "user=$grafana_user" \
-                          --field "pwd=$grafana_password"\
                           --field "admin_user=$grafana_admin_user" \
-                          --field "admin_pwd=$grafana_admin_pwd" \
-                          --field "httpwd=$grafana_httpd" > /dev/null 2>&1 2>&1
+                          --field "admin_pwd=$grafana_admin_pwd"
 
                       echo "Credential created."
                   fi
@@ -441,11 +435,16 @@ jobs:
             alertmanager_web_login: ((((alertmanager_cred)).httpwd))
             alertmanager_user: ((((alertmanager_cred)).user))
             alertmanager_password: ((((alertmanager_cred)).pwd))
-            grafana_web_login: ((((grafana_cred)).httpwd))
-            grafana_user: ((((grafana_cred)).user))
-            grafana_password: ((((grafana_cred)).pwd))
             grafana_admin_user: ((((grafana_cred)).admin_user))
             grafana_admin_pwd: ((((grafana_cred)).admin_pwd))
+            postgres_db_user: ((postgres_db_user))
+            postgres_db_password: ((postgres_db_password))
+            postgres_db_host: ((postgres_db_host))
+            postgres_db_port: ((postgres_db_port))
+            mysql_db_user: ((mysql_db_user))
+            mysql_db_password: ((mysql_db_password))
+            mysql_db_host: ((mysql_db_host))
+            mysql_db_port: ((mysql_db_port))
 
 #($- if eq .use_case "aws-vm" $)
             aws_default_region: ((aws_default_region))

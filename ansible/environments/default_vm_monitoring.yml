@@ -3,6 +3,37 @@ external_url_schema: "{% if use_ssl %}https{% else %}http{% endif %}"
 use_ssl: true
 create_self_signed_certificate: true
 
+
+
+# Blackbox exporter role
+# all defaults here: https://github.com/prometheus-community/ansible/blob/main/roles/blackbox_exporter/defaults/main.yml
+blackbox_exporter_web_listen_address: "0.0.0.0:9115"
+blackbox_exporter_config_dir: /etc/blackbox_exporter
+
+
+# Mysql exporter role
+# # defaults at https://github.com/prometheus-community/ansible/blob/main/roles/mysqld_exporter/defaults/main.yml
+mysqld_exporter_web_listen_address: "0.0.0.0:9104"
+mysqld_exporter_config_dir: "/etc/mysqld_exporter"
+mysqld_exporter_version: "0.15.0"
+mysqld_exporter_username: "{{mysql_db_user}}"
+mysqld_exporter_password: "{{mysql_db_password}}"
+mysqld_exporter_host: "{{mysql_db_host}}"
+mysqld_exporter_port: "{{mysql_db_port}}"
+
+# Postgresql exporter role
+# defaults at https://github.com/prometheus-community/ansible/blob/main/roles/postgres_exporter/defaults/main.yml
+postgres_exporter_web_listen_address: "0.0.0.0:9187"
+postgres_exporter_config_dir: "/etc/postgres_exporter"
+postgres_exporter_username: "{{postgres_db_user}}"
+postgres_exporter_password: "{{postgres_db_password}}"
+postgres_exporter_host: "{{postgres_db_host}}"
+postgres_exporter_port: "{{postgres_db_port}}"
+
+# Node-exporter role
+# defaults at https://github.com/prometheus-community/ansible/blob/main/roles/node_exporter/defaults/main.yml
+node_exporter_web_listen_address: "0.0.0.0:9100"
+
 # Prometheus role
 # all defaults here: https://github.com/prometheus-community/ansible/blob/main/roles/prometheus/defaults/main.yml
 prometheus_storage_retention: "60d"
@@ -35,7 +66,7 @@ prometheus_scrape_configs_global:
       action: drop
       regex: go_(.*)
 
-prometheus_scrape_configs_alertmanager:
+prometheus_scrape_config_alertmanager:
   - job_name: 'alertmanager'
     static_configs:
       - targets: ['localhost:9093']
@@ -46,8 +77,31 @@ prometheus_scrape_configs_alertmanager:
       action: drop
       regex: go_(.*)
 
+prometheus_mysql_exporter_config:
+  - job_name: 'mysqld-exporter'
+    static_configs:
+      - targets: ["localhost:9104"]
+
+    metric_relabel_configs:
+    # Don't store unwanted metrics
+    - source_labels: [__name__]
+      action: drop
+      regex: go_(.*)
+
+prometheus_postgres_exporter_config:
+  - job_name: 'postgres-exporter'
+    static_configs:
+      - targets: ["localhost:9187"]
+
+    metric_relabel_configs:
+    # Don't store unwanted metrics
+    - source_labels: [__name__]
+      action: drop
+      regex: go_(.*)
+
+
 # merge default scrapings with custom ones
-prometheus_scrape_configs: "{{ prometheus_scrape_configs_global + prometheus_custom_configs + (prometheus_scrape_configs_alertmanager if  alertmanager_install else []) + (prometheus_blackbox_config if blackbox_exporter_install else [])}}"
+prometheus_scrape_configs: "{{ prometheus_scrape_configs_global + prometheus_custom_configs + (prometheus_scrape_config_alertmanager if  alertmanager_install else []) + (prometheus_blackbox_config if blackbox_exporter_install else []) + (prometheus_mysql_exporter_config if mysql_exporter_install else []) + (prometheus_postgres_exporter_config if postgres_exporter_install else [])}}"
 
 prometheus_alerting_local:
   - scheme: http
@@ -78,37 +132,6 @@ alertmanager_user: "{{organization}}"
 # TODO copy default templates to folder
 # TODO if required global config https://github.com/prometheus-community/ansible/blob/main/roles/alertmanager/templates/alertmanager.yml.j2#L3
 # TODO if required time intervals -> alertmanager_time_intervals: []
-
-
-# Blackbox exporter role
-# all defaults here: https://github.com/prometheus-community/ansible/blob/main/roles/blackbox_exporter/defaults/main.yml
-blackbox_exporter_web_listen_address: "0.0.0.0:9115"
-blackbox_exporter_config_dir: /etc/blackbox_exporter
-
-
-# Mysql exporter role
-# # defaults at https://github.com/prometheus-community/ansible/blob/main/roles/mysqld_exporter/defaults/main.yml
-mysqld_exporter_web_listen_address: "0.0.0.0:9104"
-mysqld_exporter_config_dir: "/etc/mysqld_exporter"
-mysqld_exporter_version: "0.15.0"
-mysqld_exporter_user: "{{mysql_db_user}}"
-mysqld_exporter_password: "{{mysql_db_password}}"
-mysqld_exporter_host: "{{mysql_db_host}}"
-mysqld_exporter_port: "{{mysql_db_port}}"
-
-# Postgresql exporter role
-# defaults at https://github.com/prometheus-community/ansible/blob/main/roles/postgres_exporter/defaults/main.yml
-postgres_exporter_web_listen_address: "0.0.0.0:9187"
-postgres_exporter_config_dir: "/etc/postgres_exporter"
-postgres_exporter_user: "{{postgres_db_user}}"
-postgres_exporter_password: "{{postgres_db_password}}"
-postgres_exporter_host: "{{postgres_db_host}}"
-postgres_exporter_port: "{{postgres_db_port}}"
-
-
-# Node-exporter role
-# defaults at https://github.com/prometheus-community/ansible/blob/main/roles/node_exporter/defaults/main.yml
-node_exporter_web_listen_address: "0.0.0.0:9100"
 
 
 # NGINX
@@ -226,6 +249,7 @@ nginx_alertmanager_http:
     - auth_basic_user_file  auth_basic/alertmanager
     - location / {
         proxy_pass http://127.0.0.1:9093;
+        proxy_set_header   Host {{ alertmanager_domain_name }};
         proxy_set_header   X-FORWARDED_PROTO http;
         proxy_set_header   X-FORWARDED_PORT 80;
       }
@@ -269,8 +293,6 @@ nginx_auth_basic_files:
     - "{{ prometheus_web_login | default('') }}"
   alertmanager:
     - "{{ alertmanager_web_login | default('') }}"
-  grafana:
-    - "{{ grafana_web_login | default('') }}"
 
 
 # Grafana

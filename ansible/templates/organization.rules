@@ -1,7 +1,17 @@
 # Managed by Ansible
 groups:
 {% if prometheus_custom_rules %}
-  {{ prometheus_custom_rules | to_nice_yaml(indent=2) }}
+{% for rule_group in prometheus_custom_rules %}
+  - name: {{ rule_group.name }}
+{% if rule_group.rules is defined and rule_group.rules|length > 0 %}
+    rules:
+{% for rule in rule_group.rules %}
+      - {{ rule | to_nice_yaml(indent=6) | trim }}
+{% endfor %}
+{% else %}
+    rules: []
+{% endif %}
+{% endfor %}
 {% else %}
   []
 {% endif %}

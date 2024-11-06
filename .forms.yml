@@ -459,7 +459,7 @@ use_cases:
   - name: MySQL Exporter
     groups:
     - name: Configuration
-      condition: $mysql_exporter_install == true
+      condition: $mysqld_exporter_install == true
       technologies: [pipeline]
       vars:
         - name: "DB Username"

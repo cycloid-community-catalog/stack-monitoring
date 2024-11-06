@@ -198,6 +198,7 @@ nginx_grafana_http:
     # - auth_basic_user_file  auth_basic/grafana
     - location / {
         proxy_pass http://127.0.0.1:3000;
+        proxy_set_header   Host {{ grafana_domain_name }};
         proxy_set_header   X-FORWARDED_PROTO http;
         proxy_set_header   X-FORWARDED_PORT 80;
       }
@@ -212,6 +213,7 @@ nginx_grafana_https:
     # - auth_basic_user_file  auth_basic/grafana
     - location / {
         proxy_pass http://127.0.0.1:3000;
+        proxy_set_header   Host {{ grafana_domain_name }};
         proxy_set_header   X-FORWARDED_PROTO http;
         proxy_set_header   X-FORWARDED_PORT 80;
       }
@@ -249,7 +251,6 @@ nginx_alertmanager_http:
     - auth_basic_user_file  auth_basic/alertmanager
     - location / {
         proxy_pass http://127.0.0.1:9093;
-        proxy_set_header   Host {{ alertmanager_domain_name }};
         proxy_set_header   X-FORWARDED_PROTO http;
         proxy_set_header   X-FORWARDED_PORT 80;
       }

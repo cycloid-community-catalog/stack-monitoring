@@ -101,7 +101,7 @@ prometheus_postgres_exporter_config:
 
 
 # merge default scrapings with custom ones
-prometheus_scrape_configs: "{{ prometheus_scrape_configs_global + prometheus_custom_configs + (prometheus_scrape_config_alertmanager if  alertmanager_install else []) + (prometheus_blackbox_config if blackbox_exporter_install else []) + (prometheus_mysql_exporter_config if mysql_exporter_install else []) + (prometheus_postgres_exporter_config if postgres_exporter_install else [])}}"
+prometheus_scrape_configs: "{{ prometheus_scrape_configs_global + prometheus_custom_configs + (prometheus_scrape_config_alertmanager if  alertmanager_install else []) + (prometheus_blackbox_config if blackbox_exporter_install else []) + (prometheus_mysql_exporter_config if mysqld_exporter_install else []) + (prometheus_postgres_exporter_config if postgres_exporter_install else [])}}"
 
 prometheus_alerting_local:
   - scheme: http

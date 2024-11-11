@@ -198,7 +198,7 @@ use_cases:
           key: grafana_install
           widget: switch
           type: boolean
-          default: true
+          default: false
         - name: "Alertmanager install"
           description: "Wheter to install [Alertmanager](https://github.com/prometheus-community/ansible/tree/main/roles/alertmanager) on the machine as a service."
           key: alertmanager_install
@@ -210,7 +210,7 @@ use_cases:
           key: prometheus_install
           widget: switch
           type: boolean
-          default: false
+          default: true
 
   - name: Exporters
     groups:
@@ -666,7 +666,7 @@ use_cases:
           key: grafana_install
           widget: switch
           type: boolean
-          default: true
+          default: false
         - name: "Alertmanager install"
           description: "Wheter to install [Alertmanager](https://github.com/prometheus-community/ansible/tree/main/roles/alertmanager) on the k8s cluster."
           key: alertmanager_install
@@ -678,7 +678,7 @@ use_cases:
           key: prometheus_install
           widget: switch
           type: boolean
-          default: false
+          default: true
         - name: "Thanos install"
           description: "Wheter to skip install [Thanos](https://thanos.io/) on the k8s cluster."
           key: thanos_install
@@ -741,29 +741,6 @@ use_cases:
                 fail_if_not_ssl: true
                 no_follow_redirects: false
                 preferred_ip_protocol: ip4
-
-        - name: "Prometheus blackbox scraping"
-          description: "Blackbox scraping configuration to be added to prometheus, for more information please check the [official documentation](https://github.com/prometheus/blackbox_exporter/tree/master)"
-          key: prometheus_blackbox_config
-          widget: text_area
-          type: array
-          default:
-            - job_name: 'blackbox-targets'
-              params:
-                module: [http_2xx]
-              metrics_path: /probe
-              relabel_configs:
-                - source_labels: [ "__address__" ]
-                  target_label: "__param_target"
-                - target_label: "__address__"
-                  replacement: "localhost:9115"
-              static_configs:
-                - targets: ["https://cycloid.io"]
-                  labels:
-                    Name: "cycloid-website"
-                    organization: "{{organization}}"
-                    project: "website"
-                    env: "prod"
 
   - name: Alertmanager
     groups:

@@ -768,8 +768,8 @@ use_cases:
           key: alertmanager_additional_rules
           widget: text_area
           type: map
-        - name: "Alertmanager additional rules"
-          description: "Provide custom rules to be deployed in the cluster. Note! The default value corresponds to the helm chart default value for the config of alertmanager. For more information about syntax check the [official alertmanager documentation](https://prometheus.io/docs/alerting/configuration/#configuration-file)"
+        - name: "Alertmanager config"
+          description: "Alertmanager configuration. Note! The default value corresponds to the helm chart default value for the config of alertmanager. For more information about syntax check the [official alertmanager documentation](https://prometheus.io/docs/alerting/configuration/#configuration-file)"
           key: alertmanager_config
           widget: text_area
           type: map
@@ -918,7 +918,7 @@ use_cases:
           default: false
 
     - name: Opsgenie gateway configuration
-      condition: $opsgenie_heartbeat_install == true
+      condition: $advanced_opt == true && $opsgenie_heartbeat_install == true
       technologies: [terraform]
       vars:
         - name: "K8s config file"

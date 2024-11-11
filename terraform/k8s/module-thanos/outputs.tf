@@ -2,8 +2,8 @@
 # Outputs
 #
 
-output "thanos_dns" {
-  value = var.thanos_dns
+output "thanos_domain_name" {
+  value = var.thanos_domain_name
 }
 
 output "thanos_bucket" {

@@ -55,7 +55,7 @@ resource "kubernetes_secret" "alertmanager_basic_auth" {
 
 resource "kubernetes_secret" "grafana_basic_auth" {
 
-  count = var.enable_grafana ? 1 : 0
+  count = var.grafana_install ? 1 : 0
 
   metadata {
     name = "grafana-basic-auth-${var.project}-${var.env}"

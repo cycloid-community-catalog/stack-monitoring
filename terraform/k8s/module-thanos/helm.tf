@@ -7,7 +7,7 @@
 
 resource "helm_release" "thanos" {
 
-  count = var.enable_thanos ? 1 : 0
+  count = var.thanos_install ? 1 : 0
 
   name       = "thanos"
   repository = "https://github.com/bitnami/charts/tree/main/bitnami"
@@ -31,7 +31,7 @@ resource "helm_release" "thanos" {
 
   set {
     name  = "https.existingSecret"
-    value = var.thanos_dns
+    value = var.thanos_domain_name
   }
 
   set {
@@ -67,7 +67,7 @@ resource "helm_release" "thanos" {
 
   set {
     name  = "queryFrontend.ingress.hostname"
-    value = var.thanos_dns
+    value = var.thanos_domain_name
   }
 
   set {

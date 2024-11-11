@@ -1,4 +1,20 @@
 shared:
+- &api-key
+  name: Cycloid API key
+  groups:
+  - name: API KEY
+    technologies: [pipeline]
+    vars:
+    - name: "Cycloid API Key"
+      description: "Cycloid API Key with full rigths to manage credentials"
+      key: cycloid_api_key
+      type: string
+      widget: cy_cred
+      required: true
+      widget_config:
+        cred_types: [custom]
+      default: "((cycloid_io_api_key.api_key))"
+
 - &advanced
   name: Advanced
   groups:
@@ -53,64 +69,6 @@ shared:
         default: "latest"
         #TODO others
 
-  - name: NGINX configuration
-    condition: $advanced_opt == true
-    technologies: [ansible]
-    vars:
-      - name: "Enable Nginx HTTPs"
-        description: "Select wheter to enable HTTPs traffic and using SSL certificates."
-        key: use_ssl
-        type: boolean
-        widget: switch
-        default: true
-
-  - name: SSL configuration
-    condition: $advanced_opt == true && $use_ssl == true
-    technologies: [ansible]
-    vars:
-      - name: "Create self signed certificate"
-        description: "Wheter to create a self signed certificate automatically in the VM. Otherwise a certificate needs to be imported"
-        key: create_self_signed_certificate
-        type: boolean
-        widget: switch
-        default: true
-
-  - name: SSL certificate import
-    condition: $advanced_opt == true && create_self_signed_certificate == false
-    technologies: [pipeline]
-    vars:
-      - name: "Nginx certificate"
-        description: "Credential containing nginx certificate to be used by server"
-        key: nginx_certificate
-        type: string
-        widget: cy_cred
-      - name: "Nginx certificate key"
-        description: "Credential containing nginx certificate to be used by server"
-        key: nginx_certificate_key
-        type: string
-        widget: cy_cred
-
-  - name: DNS Creation
-    condition: $advanced_opt == true
-    technologies: [terraform]
-    vars:
-      - name: Create DNS
-        description: Wheter to create DNS records for prometheus, alertmanager and grafana using AWS DNS. Note! Requires a DNS Zone
-        key: create_dns
-        widget: switch
-        type: boolean
-        default: false
-  - name: DNS Zone
-    technologies: [terraform]
-    condition: $advanced_opt == true && $create_dns == true
-    vars:
-      - name: " AWS Route53 Zone"
-        description: "AWS Route53 Zone name to use for creating the different monitoring records."
-        key: aws_dns_zone_name
-        widget: simple_text
-        type: string
-        default: ""
-
 - &aws-creds
   name: AWS Credentials
   groups:
@@ -144,20 +102,7 @@ version: "2"
 use_cases:
 - name: aws-vm
   sections:
-  - name: Cycloid API key
-    groups:
-    - name: API KEY
-      technologies: [pipeline]
-      vars:
-      - name: "Cycloid API Key"
-        description: "Cycloid API Key with full rigths to manage credentials"
-        key: cycloid_api_key
-        type: string
-        widget: cy_cred
-        required: true
-        widget_config:
-          cred_types: [custom]
-        default: "((cycloid_io_api_key.api_key))"
+  - *api-key
   - *aws-creds
   - name: VM Configuration
     groups:
@@ -231,8 +176,6 @@ use_cases:
           type: boolean
           widget: switch
           default: true
-
-
 
     - name: Optional VM parameters
       condition: $advanced_opt == true
@@ -634,3 +577,402 @@ use_cases:
               datasource: prometheus
 
   - *advanced
+  - name: NGINX configuration
+    condition: $advanced_opt == true
+    technologies: [ansible]
+    vars:
+      - name: "Enable Nginx HTTPs"
+        description: "Select wheter to enable HTTPs traffic and using SSL certificates."
+        key: use_ssl
+        type: boolean
+        widget: switch
+        default: true
+
+  - name: SSL configuration
+    condition: $advanced_opt == true && $use_ssl == true
+    technologies: [ansible]
+    vars:
+      - name: "Create self signed certificate"
+        description: "Wheter to create a self signed certificate automatically in the VM. Otherwise a certificate needs to be imported"
+        key: create_self_signed_certificate
+        type: boolean
+        widget: switch
+        default: true
+
+  - name: SSL certificate import
+    condition: $advanced_opt == true && create_self_signed_certificate == false
+    technologies: [pipeline]
+    vars:
+      - name: "Nginx certificate"
+        description: "Credential containing nginx certificate to be used by server"
+        key: nginx_certificate
+        type: string
+        widget: cy_cred
+      - name: "Nginx certificate key"
+        description: "Credential containing nginx certificate to be used by server"
+        key: nginx_certificate_key
+        type: string
+        widget: cy_cred
+
+  - name: DNS Creation
+    condition: $advanced_opt == true
+    technologies: [terraform]
+    vars:
+      - name: Create DNS
+        description: Wheter to create DNS records for prometheus, alertmanager and grafana using AWS DNS. Note! Requires a DNS Zone
+        key: create_dns
+        widget: switch
+        type: boolean
+        default: false
+  - name: DNS Zone
+    technologies: [terraform]
+    condition: $advanced_opt == true && $create_dns == true
+    vars:
+      - name: " AWS Route53 Zone"
+        description: "AWS Route53 Zone name to use for creating the different monitoring records."
+        key: aws_dns_zone_name
+        widget: simple_text
+        type: string
+        default: ""
+
+- name: k8s
+  sections:
+  - *api-key
+
+  - name: K8s general parameters
+    groups:
+    - name: Tools to install
+      technologies: [pipeline]
+      vars:
+      - name: "K8s config file"
+        description: "The k8s config file content to be used to connect to the cluster and deploy the different monitoring resources."
+        key: kubeconfig_content
+        widget: cy_cred
+        type: string
+        required: true
+      - name: "K8s node selector"
+        description: "The k8s node selector to be used to select in which node to deploy the different resources. More information in the [k8s official pages](https://kubernetes.io/docs/user-guide/node-selection/)"
+        key: stack_monitoring_node_selector
+        widget: text_area
+        type: map
+
+  - name: Monitoring tools
+    groups:
+    - name: Tools to install
+      technologies: [terraform, pipeline]
+      vars:
+        - name: "Grafana install"
+          description: "Wheter to install [Grafana](https://github.com/grafana/grafana-ansible-collection/tree/main/roles/grafana) on the k8s cluster."
+          key: grafana_install
+          widget: switch
+          type: boolean
+          default: true
+        - name: "Alertmanager install"
+          description: "Wheter to install [Alertmanager](https://github.com/prometheus-community/ansible/tree/main/roles/alertmanager) on the k8s cluster."
+          key: alertmanager_install
+          widget: switch
+          type: boolean
+          default: false
+        - name: "Prometheus install"
+          description: "Wheter to skip install [Prometheus](https://github.com/prometheus-community/ansible/tree/main/roles/prometheus) on the k8s cluster."
+          key: prometheus_install
+          widget: switch
+          type: boolean
+          default: false
+        - name: "Thanos install"
+          description: "Wheter to skip install [Thanos](https://thanos.io/) on the k8s cluster."
+          key: thanos_install
+          widget: switch
+          type: boolean
+          default: false
+
+  - name: Prometheus
+    groups:
+    - name: Prometheus login
+      condition: $prometheus_install == true
+      technologies: [terraform]
+      vars:
+        - name: "Prometheus DNS"
+          description: "DNS to use for Prometheus."
+          key: prometheus_domain_name
+          widget: simple_text
+          type: string
+          default: prometheus.local
+    - name: General Configuration
+      condition: $prometheus_install == true
+      technologies: [terraform]
+      vars:
+        - name: "Prometheus scraping extra config"
+          description: "Prometheus scraping extra config to use. TODO "
+          key: prometheus_additional_scrape
+          widget: text_area
+          type: map
+
+  - name: Blackbox Exporter
+    groups:
+    - name: Install
+      technologies: [terraform, pipeline]
+      vars:
+        - name: "Blackbox exporter install"
+          description: "Wheter to install [blackbox exporter](https://github.com/prometheus-community/ansible/tree/main/roles/blackbox_exporter) on the machine as a service."
+          key: blackbox_exporter_install
+          widget: switch
+          type: boolean
+          default: true
+
+    - name: Configuration
+      condition: $blackbox_exporter_install == true
+      technologies: [terraform]
+      vars:
+        - name: "Blackbox exporter modules"
+          description: "Blackbox exporter modules to be used, for more information please check the [official documentation](https://github.com/prometheus/blackbox_exporter/blob/master/CONFIGURATION.md)"
+          key: blackbox_exporter_modules
+          widget: text_area
+          type: map
+          default:
+            http_2xx:
+              prober: http
+              timeout: 15s
+              http:
+                method: GET
+                valid_http_versions:
+                  - HTTP/1.1
+                  - HTTP/2.0
+                fail_if_not_ssl: true
+                no_follow_redirects: false
+                preferred_ip_protocol: ip4
+
+        - name: "Prometheus blackbox scraping"
+          description: "Blackbox scraping configuration to be added to prometheus, for more information please check the [official documentation](https://github.com/prometheus/blackbox_exporter/tree/master)"
+          key: prometheus_blackbox_config
+          widget: text_area
+          type: array
+          default:
+            - job_name: 'blackbox-targets'
+              params:
+                module: [http_2xx]
+              metrics_path: /probe
+              relabel_configs:
+                - source_labels: [ "__address__" ]
+                  target_label: "__param_target"
+                - target_label: "__address__"
+                  replacement: "localhost:9115"
+              static_configs:
+                - targets: ["https://cycloid.io"]
+                  labels:
+                    Name: "cycloid-website"
+                    organization: "{{organization}}"
+                    project: "website"
+                    env: "prod"
+
+  - name: Alertmanager
+    groups:
+    - name: Alertmanager DNS
+      condition: $alertmanager_install == true
+      technologies: [terraform]
+      vars:
+        - name: "Alertmanager DNS"
+          description: "DNS to use for Alertmanager."
+          key: alertmanager_domain_name
+          widget: simple_text
+          type: string
+          default: alertmanager.local
+    - name: Alertmanager Configuration
+      technologies: [terraform]
+      condition: $alertmanager_install == true
+      vars:
+        - name: "Alertmanager route"
+          description: "Customize the default enabled rules. For more information about syntax and default rules check the k8s prometheus stack [chart default values](https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/values.yaml#L38)"
+          key: alertmanager_customRules
+          widget: text_area
+          type: map
+        - name: "Alertmanager additional rules"
+          description: "Provide custom rules to be deployed in the cluster. For more information about syntax and default rules check the k8s prometheus stack [chart default values](https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/values.yaml#L198)"
+          key: alertmanager_additional_rules
+          widget: text_area
+          type: map
+        - name: "Alertmanager additional rules"
+          description: "Provide custom rules to be deployed in the cluster. Note! The default value corresponds to the helm chart default value for the config of alertmanager. For more information about syntax check the [official alertmanager documentation](https://prometheus.io/docs/alerting/configuration/#configuration-file)"
+          key: alertmanager_config
+          widget: text_area
+          type: map
+          default:
+            global:
+              resolve_timeout: 5m
+            inhibit_rules:
+              - source_matchers:
+                  - 'severity = critical'
+                target_matchers:
+                  - 'severity =~ warning|info'
+                equal:
+                  - 'namespace'
+                  - 'alertname'
+              - source_matchers:
+                  - 'severity = warning'
+                target_matchers:
+                  - 'severity = info'
+                equal:
+                  - 'namespace'
+                  - 'alertname'
+              - source_matchers:
+                  - 'alertname = InfoInhibitor'
+                target_matchers:
+                  - 'severity = info'
+                equal:
+                  - 'namespace'
+              - target_matchers:
+                  - 'alertname = InfoInhibitor'
+            route:
+              group_by: ['namespace']
+              group_wait: 30s
+              group_interval: 5m
+              repeat_interval: 12h
+              receiver: 'null'
+              routes:
+              - receiver: 'null'
+                matchers:
+                  - alertname = "Watchdog"
+            receivers:
+            - name: 'null'
+            templates:
+            - '/etc/alertmanager/config/*.tmpl'
+
+    - name: External Alertmanager (not deployed in k8s cluster)
+      technologies: [terraform]
+      condition: $alertmanager_install == false && $prometheus_install == true
+      vars:
+        - name: "External endpoint"
+          description: "External alertmanager endpoints to be used to send prometheus alerts. You should create a credential that allows to specify how to connet to it. For more information on the parameters check the [following link](https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/api.md#alertmanagerendpoints)"
+          key: alertmanager_use_external
+          widget: cy_cred
+          type: string
+
+  - name: Grafana
+    groups:
+    - name: Grafana DNS
+      condition: $grafana_install == true
+      technologies: [terraform]
+      vars:
+        - name: "Grafana DNS"
+          description: "DNS to use for Grafana."
+          key: grafana_domain_name
+          widget: simple_text
+          type: string
+          default: grafana.local
+
+    - name: Grafana Configuration
+      technologies: [terraform]
+      condition: $grafana_install == true
+      vars:
+        - name: Use default grafana dashboards
+          description: "Wheter to use of not the default grafana dashboards"
+          key: enable_default_grafana_dashboards
+          widget: switch
+          type: boolean
+          default: true
+
+        - name: "Grafana Dashboard Timezone"
+          description: "Timezone for the default dashboards"
+          key: grafana_default_timezone
+          type: string
+          widget: simple_text
+          default: Europe/France
+
+  - name: Thanos
+    groups:
+    - name: Thanos DNS
+      condition: $thanos_install == true
+      technologies: [terraform]
+      vars:
+        - name: "Thanos DNS"
+          description: "DNS to use for Thanos."
+          key: thanos_domain_name
+          widget: simple_text
+          type: string
+          default: thanos.local
+
+    - name: Thanos Configuration
+      technologies: [terraform]
+      condition: $thanos_install == true
+      vars:
+        - name: Raw retention
+          description: "Retention amount for data at the same ingestion rate as scraping interval. The value should be in the format 1d, 1w, 1m, 1y"
+          key: retentionResolutionRaw
+          widget: switch
+          type: boolean
+          default: true
+        - name: 5min retention
+          description: "Retention amount for data at 5 min intervals. The value should be in the format 1d, 1w, 1m, 1y"
+          key: retentionResolution5m
+          widget: switch
+          type: boolean
+          default: true
+        - name: 1h retention
+          description: "Retention amount for data at 1 hour intervals. The value should be in the format 1d, 1w, 1m, 1y"
+          key: retentionResolution1h
+          widget: switch
+          type: boolean
+          default: true
+  - *advanced
+
+  - name: Optional parameters
+    groups:
+    - name: Other k8s parameters
+      condition: $advanced_opt == true
+      technologies: [terraform]
+      vars:
+        - name: "Enable HTTPs"
+          description: "Select wheter to enable HTTPs traffic and using SSL certificates for the k8s ingress."
+          key: enable_tls
+          type: boolean
+          widget: switch
+          default: false
+        - name: "Extra tags"
+          description: "Dict of extra tags to add to cluster resources crated."
+          key: extra_tags
+          widget: text_area
+          type: map
+          default: {}
+        - name: "Opsgenie gateway install"
+          description: "Wheter to install [opsgenie gateway](https://hub.docker.com/r/cycloid/opsgenie-heartbeat-gw) on the k8s cluster."
+          key: opsgenie_heartbeat_install
+          widget: switch
+          type: boolean
+          default: false
+
+    - name: Opsgenie gateway configuration
+      condition: $opsgenie_heartbeat_install == true
+      technologies: [terraform]
+      vars:
+        - name: "K8s config file"
+          description: "Opsgenie heartbeat access token"
+          key: opsgenie_token
+          widget: cy_cred
+          type: string
+
+
+    - name: TLS configuration
+      condition: $advanced_opt == true && $enable_tls == true
+      technologies: [pipeline]
+      vars:
+        - name: "Create self signed certificate"
+          description: "Wheter to create a self signed certificate to be used for the k8s ingress of each component. Otherwise a certificate needs to be imported"
+          key: create_self_signed_certificate
+          type: boolean
+          widget: switch
+          default: true
+
+    - name: TLS certificate import
+      condition: $advanced_opt == true && create_self_signed_certificate == false
+      technologies: [pipeline]
+      vars:
+        - name: "TLS certificate"
+          description: "Credential containing certificate to be used by the k8s ingresses"
+          key: tls_crt
+          type: string
+          widget: cy_cred
+        - name: "TLS certificate key"
+          description: "Credential containing certificate key to be used by the k8s ingresses"
+          key: tls_key
+          type: string
+          widget: cy_cred

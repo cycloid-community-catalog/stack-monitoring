@@ -1,7 +1,7 @@
 
 resource "kubernetes_manifest" "opsgenie_heartbeat_gw_servicemonitor" {
 
-  count = var.create_opsgenie_heartbeat ? 1 : 0
+  count = var.opsgenie_heartbeat_install ? 1 : 0
 
   manifest = {
     apiVersion = "monitoring.coreos.com/v1"

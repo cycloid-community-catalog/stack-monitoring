@@ -16,30 +16,30 @@ module "kube-prometheus" {
   tls_key                        = var.tls_key
   stack_monitoring_node_selector = {}
 
-  enable_prometheus              = true
-  prometheus_dns                 = "prometheus.local"
+  prometheus_install              = true
+  prometheus_domain_name          = "prometheus.local"
   prometheus_basic_auth_username = var.prometheus_basic_auth_username
   prometheus_basic_auth_password = var.prometheus_basic_auth_password
   prometheus_additional_scrape   = {}
 
-  enable_grafana                    = false
+  grafana_install                   = false
   enable_default_grafana_dashboards = true
   grafana_default_timezone          = "Europe/Paris"
   grafana_admin_password            = var.grafana_admin_password
-  grafana_dns                       = "grafana.local"
+  grafana_domain_name               = "grafana.local"
   grafana_basic_auth_username       = var.grafana_basic_auth_username
   grafana_basic_auth_password       = var.grafana_basic_auth_password
 
-  enable_alertmanager              = false
-  alertmanager_use_external        = var.alertmanager_use_external
-  alertmanager_dns                 = "alertmanager.local"
+  alertmanager_install             = false
+  alertmanager_use_external        = {}
+  alertmanager_domain_name         = "alertmanager.local"
   alertmanager_basic_auth_username = var.alertmanager_basic_auth_username
   alertmanager_basic_auth_password = var.alertmanager_basic_auth_password
   alertmanager_customRules         = {}
   alertmanager_additional_rules    = {}
   alertmanager_config              = {}
 
-  enable_thanos = false
+  thanos_install = false
 
 }
 
@@ -55,7 +55,7 @@ module "prometheus-blackbox-exporter" {
   namespace                      = local.namespace
   stack_monitoring_node_selector = module.kube-prometheus.stack_monitoring_node_selector
 
-  install_blackbox_exporter = "false"
+  blackbox_exporter_install = "false"
   blackbox_helm_version     = "8.17.0"
   blackbox_exporter_modules = []
 
@@ -73,7 +73,7 @@ module "opsgenie-heartbeat" {
   extra_labels                   = module.kube-prometheus.extra_labels
   stack_monitoring_node_selector = module.kube-prometheus.stack_monitoring_node_selector
 
-  create_opsgenie_heartbeat = true
+  opsgenie_heartbeat_install = false
   opsgenie_token            = var.opsgenie_token
 
 }
@@ -96,10 +96,10 @@ module "thanos" {
   stack_monitoring_node_selector  = module.kube-prometheus.stack_monitoring_node_selector
   thanos_object_store_secret_name = module.kube-prometheus.thanos_object_store_secret_name
 
-  enable_thanos              = module.kube-prometheus.enable_thanos
+  thanos_install             = module.kube-prometheus.thanos_install
   thanos_basic_auth_username = var.thanos_basic_auth_username
   thanos_basic_auth_password = var.thanos_basic_auth_password
-  thanos_dns                 = "thanos.local"
+  thanos_domain_name         = "thanos.local"
   thanos_retention_raw       = "30d"
   thanos_retention_5m        = "120d"
   thanos_retention_1h        = "1y"

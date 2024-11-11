@@ -4,7 +4,7 @@
 
 resource "kubernetes_secret" "opsgenie_heartbeat_gw" {
 
-  count = var.create_opsgenie_heartbeat ? 1 : 0
+  count = var.opsgenie_heartbeat_install ? 1 : 0
 
   metadata {
     name      = "opsgenie-heartbeat-gw"

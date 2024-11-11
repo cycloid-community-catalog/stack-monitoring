@@ -30,10 +30,10 @@ variable "tls_key" {}
 #
 # PROMETHEUS
 #
-variable "enable_prometheus" {
+variable "prometheus_install" {
   default = true
 }
-variable "prometheus_dns" {
+variable "prometheus_domain_name" {
   default = "prometheus.local"
 }
 
@@ -51,7 +51,7 @@ variable "prometheus_additional_scrape" {}
 #
 # GRAFANA
 #
-variable "enable_grafana" {
+variable "grafana_install" {
   default = true
 }
 
@@ -67,7 +67,7 @@ variable "grafana_admin_password" {
   default = "adminPWD"
 }
 
-variable "grafana_dns" {
+variable "grafana_domain_name" {
   default = "grafana.local"
 }
 
@@ -82,13 +82,13 @@ variable "grafana_basic_auth_password" {
 #
 # ALERTMANAGER
 #
-variable "enable_alertmanager" {
+variable "alertmanager_install" {
   default = true
 }
 
 variable "alertmanager_use_external" {}
 
-variable "alertmanager_dns" {
+variable "alertmanager_domain_name" {
   default = "alertmanager.local"
 }
 
@@ -109,7 +109,7 @@ variable "alertmanager_config" {}
 #
 # Thanos
 #
-variable "enable_thanos" {
+variable "thanos_install" {
   default = false
 }
 

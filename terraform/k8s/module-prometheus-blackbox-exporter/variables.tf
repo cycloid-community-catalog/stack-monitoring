@@ -13,7 +13,7 @@ variable "namespace"{}
 
 variable "stack_monitoring_node_selector" {}
 
-variable "install_blackbox_exporter"{
+variable "blackbox_exporter_install"{
   default = false
 }
 

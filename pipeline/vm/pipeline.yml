@@ -546,21 +546,33 @@ jobs:
             args:
             - -ec
             - |
-              DIR=${PWD}
-              # conects to cli using  api_key and checks if credential exists
-              cy --insecure login --org vianeo --api-key $API_KEY
-              CRED=$(cy --insecure  --org vianeo  credential list -o json | jq -r ".[] | select( .canonical == \"$CRED_CANONICAL_SECRETS\") | .canonical")
+              # login to cli
+              cy login --org $ORG > /dev/null 2>&1
 
-              if [ ! -z "$CRED" ]; then
-                cy --insecure  --org vianeo  credential delete --canonical $CRED_CANONICAL_SECRETS
-                echo "Credential [$CRED_CANONICAL_SECRETS]: removed"
-              else
-                echo "Credential [$CRED_CANONICAL_SECRETS]: already removed"
-              fi
+              delete_credential_if_exists() {
+                  # $1 is org, $2 is credential name
 
-              CRED=$(cy --insecure  --org vianeo  credential list -o json | jq -r ".[] | select( .canonical == \"$CRED_CANONICAL_TAG\") | .canonical")
+                  # Check if the credential exists
+                  CRED=$(cy --org "$1" credential list -o json | jq -r ".[] | select(.canonical == \"$2\") | .canonical")
 
+                  if [[ -n "$CRED" ]]; then
+                      # Delete the credential if it exists
+                      if cy --org "$1" credential delete --canonical "$2"; then
+                          echo "Credential [$2]: removed"
+                      else
+                          echo "Failed to remove credential [$2]" >&2
+                      fi
+                  else
+                      echo "Credential [$2]: already removed"
+                  fi
+              }
+
+              delete_credential_if_exists "$ORG" "$ALERTMANAGER_CREDENTIAL"
+              delete_credential_if_exists "$ORG" "$GRAFANA_CREDENTIAL"
+              delete_credential_if_exists "$ORG" "$PROMETHEUS_CREDENTIAL"
           params:
-            API_KEY: ((cycloid_api_key))
-            CRED_CANONICAL_SECRETS: ((project))-((env))
-            CRED_CANONICAL_TAG: ((project))-((env))-docker-tag
+            CY_API_KEY: ((cycloid_api_key))
+            ORG: ($ .organization_canonical $)
+            ALERTMANAGER_CREDENTIAL: ((alertmanager_cred))
+            GRAFANA_CREDENTIAL: ((grafana_cred))
+            PROMETHEUS_CREDENTIAL: ((prometheus_cred))

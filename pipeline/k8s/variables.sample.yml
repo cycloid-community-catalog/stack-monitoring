@@ -3,49 +3,48 @@
 ## Example configuration
 ###
 
+## kubeconfig to allow to connect to instance
+#kubeconfig_content
+kubeconfig_filename: "kubeconfig"
 
-## AWS access to use to run terraform
-#aws_access_key: ""
-#aws_secret_key: ""
-#aws_role_arn: ""
-#aws_region: ""
-#
 ## terraform version used to execute your code
-#terraform_version: ""
-#ansible_version: ""
-#
-## SSH key to acess instance
-use_bastion: true
-ssh_private_key: ""
-ssh_public_key: ""
-keypair_name: ""
-#
+terraform_version: "1.6.3"
+ansible_version: "10.1"
+
 ## nginx certificates
-nginx_certificate: ""
-nginx_certificate_key: ""
-#
-## Repos
-#config_git_repository: ""
-#config_git_branch: ""
-#config_git_username: ""
-#config_git_password: ""
-#stack_path: stack-monitoring # The path of the stack in the service catalog, basically the path to the `.cycloid.yml` file
-#
+# TODO ! ideas on how to pass terraform variable using tls cert
+enable_tls: false
+create_self_signed_certificate: true
+tls_crt: ""
+tls_key: ""
+
 ## monitoring credentials
-grafana_web_login: ""
-grafana_admin_password: ""
+# grafana
+grafana_install: false
+grafana_admin_pwd: ""
 grafana_admin_user: ""
-alertmanager_web_login: ""
+grafana_domain_name: ""
+grafana_cred: "($ .project $)-grafana-($ .environment $)"
+
+# alertmanager - created
+alertmanager_install: false
+alertmanager_cred: "($ .project $)-alertmanager-($ .environment $)"
+
+# alertmanager - external (not created with the stack)
 external_alertmanager_password: ""
 external_alertmanager_username: ""
 external_alertmanager_targets: ""
-prometheus_web_login: ""
-#
-####
-## Cycloid variables
-####
-env: ($ environment $)
-project: ($ project $)
-org: ($ organization_canonical $)
-customer: ($ organization_canonical $)
-cycloid_api_url: https://http-api.cycloid.io # The URL of the Cycloid API
+
+#prometheus
+prometheus_install: true
+prometheus_cred: "($ .project $)-prometheus-($ .environment $)"
+
+# thanos
+thanos_install: true
+thanos_cred: "($ .project $)-thanos-($ .environment $)"
+
+#heartbeat
+opsgenie_token: ""
+
+# cycloid
+cycloid_api_key: ""

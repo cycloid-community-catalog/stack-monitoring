@@ -3,16 +3,16 @@
 #
 
 # kube-prometheus-stack module
-output "prometheus_dns" {
-  value = module.kube-prometheus.prometheus_dns
+output "prometheus_domain_name" {
+  value = module.kube-prometheus.prometheus_domain_name
 }
 
-output "alertmanager_dns" {
-  value = module.kube-prometheus.alertmanager_dns
+output "alertmanager_domain_name" {
+  value = module.kube-prometheus.alertmanager_domain_name
 }
 
-output "grafana_dns" {
-  value = module.kube-prometheus.grafana_dns
+output "grafana_domain_name" {
+  value = module.kube-prometheus.grafana_domain_name
 }
 
 
@@ -24,8 +24,8 @@ output "extra_labels" {
   value = module.kube-prometheus.extra_labels
 }
 
-output "enable_thanos" {
-  value = module.kube-prometheus.enable_thanos
+output "thanos_install" {
+  value = module.kube-prometheus.thanos_install
 }
 
 output "thanos_object_store_secret_name" {
@@ -33,8 +33,8 @@ output "thanos_object_store_secret_name" {
 }
 
 # thanos module
-output "thanos_dns" {
-  value = module.thanos.thanos_dns
+output "thanos_domain_name" {
+  value = module.thanos.thanos_domain_name
 }
 
 output "thanos_bucket" {

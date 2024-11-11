@@ -19,8 +19,8 @@ variable "extra_labels" {
 #
 # Opsgenie heartbeat
 #
-variable "create_opsgenie_heartbeat" {
-  default = true
+variable "opsgenie_heartbeat_install" {
+  default = false
 }
 
 variable "opsgenie_token" {}

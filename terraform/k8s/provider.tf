@@ -1,9 +1,9 @@
 provider "kubernetes" {
-  config_context = var.kubeconfig_content
+  config_path = var.kubeconfig_filename
 }
 
 provider "helm" {
   kubernetes {
-    config_context = var.kubeconfig_content
+    config_path = var.kubeconfig_filename
   }
 }

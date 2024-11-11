@@ -6,12 +6,12 @@
 # tls secret
 resource "kubernetes_secret" "thanos_tls_secret" {
 
-  count = var.enable_thanos && var.enable_tls ? 1 : 0
+  count = var.thanos_install && var.enable_tls ? 1 : 0
 
   type = "kubernetes.io/tls"
 
   metadata {
-    name      = var.thanos_dns
+    name      = var.thanos_domain_name
     namespace = var.namespace
   }
 
@@ -25,7 +25,7 @@ resource "kubernetes_secret" "thanos_tls_secret" {
 # thanos s3 secret
 resource "kubernetes_secret" "thanos_s3_secret" {
 
-  count = var.enable_thanos ? 1 : 0
+  count = var.thanos_install ? 1 : 0
 
   metadata {
     name      = var.thanos_object_store_secret_name

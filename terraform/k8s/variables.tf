@@ -8,7 +8,7 @@ variable "env" {}
 variable "organization" {}
 
 # kubeconfig to use
-variable "kubeconfig_content" {}
+variable "kubeconfig_filename" {}
 
 # tls configuration
 variable "enable_tls" {

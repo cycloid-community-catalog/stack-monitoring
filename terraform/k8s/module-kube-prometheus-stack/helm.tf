@@ -47,7 +47,7 @@ resource "helm_release" "kube_prometheus_stack" {
 
   set {
     name  = "alertmanager.enabled"
-    value = var.enable_alertmanager
+    value = var.alertmanager_install
   }
 
   set {
@@ -57,12 +57,12 @@ resource "helm_release" "kube_prometheus_stack" {
 
   set {
     name  = "alertmanager.ingress.enabled"
-    value = var.enable_alertmanager
+    value = var.alertmanager_install
   }
 
   set {
     name  = "alertmanager.ingress.hosts"
-    value = var.alertmanager_dns
+    value = var.alertmanager_domain_name
   }
 
   dynamic "set" {
@@ -72,7 +72,7 @@ resource "helm_release" "kube_prometheus_stack" {
       value = <<YAML
         - secretName: "imported-cert-${var.project}-${var.env}"
           hosts:
-            - ${var.alertmanager_dns}
+            - ${var.alertmanager_domain_name}
       YAML
     }
   }
@@ -95,7 +95,7 @@ resource "helm_release" "kube_prometheus_stack" {
 
   set {
     name  = "grafana.enabled"
-    value = var.enable_grafana
+    value = var.grafana_install
   }
 
   set {
@@ -115,12 +115,12 @@ resource "helm_release" "kube_prometheus_stack" {
 
   set {
     name  = "grafana.ingress.enabled"
-    value = var.enable_grafana
+    value = var.grafana_install
   }
 
   set {
     name  = "grafana.ingress.hosts"
-    value = var.grafana_dns
+    value = var.grafana_domain_name
   }
 
   dynamic "set" {
@@ -130,7 +130,7 @@ resource "helm_release" "kube_prometheus_stack" {
       value = <<YAML
         - secretName: "imported-cert-${var.project}-${var.env}"
           hosts:
-            - ${var.grafana_dns}
+            - ${var.grafana_domain_name}
       YAML
     }
   }
@@ -158,17 +158,17 @@ resource "helm_release" "kube_prometheus_stack" {
   # PROMETHEUS
   set {
     name  = "prometheus.enabled"
-    value = var.enable_prometheus
+    value = var.prometheus_install
   }
 
   set {
     name  = "prometheus.ingress.enabled"
-    value = var.enable_prometheus
+    value = var.prometheus_install
   }
 
   set {
     name  = "prometheus.ingress.hosts"
-    value = var.prometheus_dns
+    value = var.prometheus_domain_name
   }
 
  dynamic "set" {
@@ -178,7 +178,7 @@ resource "helm_release" "kube_prometheus_stack" {
       value = <<YAML
         - secretName: "imported-cert-${var.project}-${var.env}"
           hosts:
-            - ${var.prometheus_dns}
+            - ${var.prometheus_domain_name}
       YAML
     }
   }
@@ -194,7 +194,7 @@ resource "helm_release" "kube_prometheus_stack" {
 
   set {
     name  = "prometheus.prometheusSpec.alertingEndpoints"
-    value = var.enable_alertmanager ? [] : var.alertmanager_use_external
+    value = var.alertmanager_install ? [] : var.alertmanager_use_external
   }
 
   set {
@@ -211,12 +211,12 @@ resource "helm_release" "kube_prometheus_stack" {
 
   set {
     name  = "prometheus.thanosService.enabled"
-    value = var.enable_thanos
+    value = var.thanos_install
   }
 
   set {
     name  = "prometheus.thanosService.thanosServiceMonitor.enabled"
-    value = var.enable_thanos
+    value = var.thanos_install
   }
 
   set {

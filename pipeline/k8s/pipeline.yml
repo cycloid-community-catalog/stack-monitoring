@@ -50,7 +50,6 @@ groups:
   - creds-creation
   - terraform-plan
   - terraform-apply
-  - deploy
 
 - name: destroy
   jobs:

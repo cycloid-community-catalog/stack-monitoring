@@ -25,7 +25,7 @@ resource "kubernetes_secret" "tls_secret" {
 # basic auth
 resource "kubernetes_secret" "prometheus_basic_auth" {
 
-  count = var.enable_tls ? 1 : 0
+  count = var.prometheus_install ? 1 : 0
 
   metadata {
     name = "prometheus-basic-auth-${var.project}-${var.env}"
@@ -40,7 +40,7 @@ resource "kubernetes_secret" "prometheus_basic_auth" {
 
 resource "kubernetes_secret" "alertmanager_basic_auth" {
 
-    count = var.enable_tls ? 1 : 0
+    count = var.alertmanager_install ? 1 : 0
 
   metadata {
     name = "alertmanager-basic-auth-${var.project}-${var.env}"

@@ -74,15 +74,19 @@ resources:
       enable_tls: ((enable_tls))
       tls_crt: ((tls_crt)) ##todo check
       tls_key: ((tls_key)) ##todo how to manage certs
+      prometheus_install: ((prometheus_install))
       prometheus_basic_auth_username: ((((prometheus_cred)).user))
       prometheus_basic_auth_password: ((((prometheus_cred)).pwd))
+      grafana_install: ((grafana_install))
       grafana_admin_password: ((((grafana_cred)).admin_pwd))
       grafana_basic_auth_username: ((((grafana_cred)).admin_user))
       grafana_basic_auth_password: ((((grafana_cred)).admin_pwd))
+      alertmanager_install: ((alertmanager_install))
       alertmanager_basic_auth_username: ((((alertmanager_cred)).user))
       alertmanager_basic_auth_password: ((((alertmanager_cred)).pwd))
       alertmanager_use_external: ((alertmanager_use_external))
       opsgenie_token: ((opsgenie_token))
+      thanos_install: ((thanos_install))
       #thanos_basic_auth_username: ((((thanos_cred)).user))
       #thanos_basic_auth_password: ((((thanos_cred)).pwd))
 

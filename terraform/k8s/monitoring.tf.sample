@@ -16,13 +16,13 @@ module "kube-prometheus" {
   tls_key                        = var.tls_key
   stack_monitoring_node_selector = {}
 
-  prometheus_install              = true
+  prometheus_install              = var.prometheus_install
   prometheus_domain_name          = "prometheus.local"
   prometheus_basic_auth_username = var.prometheus_basic_auth_username
   prometheus_basic_auth_password = var.prometheus_basic_auth_password
   prometheus_additional_scrape   = {}
 
-  grafana_install                   = false
+  grafana_install                   = var.grafana_install
   enable_default_grafana_dashboards = true
   grafana_default_timezone          = "Europe/Paris"
   grafana_admin_password            = var.grafana_admin_password
@@ -30,7 +30,7 @@ module "kube-prometheus" {
   grafana_basic_auth_username       = var.grafana_basic_auth_username
   grafana_basic_auth_password       = var.grafana_basic_auth_password
 
-  alertmanager_install             = false
+  alertmanager_install             = var.alertmanager_install
   alertmanager_use_external        = var.alertmanager_use_external
   alertmanager_domain_name         = "alertmanager.local"
   alertmanager_basic_auth_username = var.alertmanager_basic_auth_username
@@ -39,7 +39,7 @@ module "kube-prometheus" {
   alertmanager_additional_rules    = {}
   alertmanager_config              = {}
 
-  thanos_install = false
+  thanos_install = var.thanos_install
 
 }
 

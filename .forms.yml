@@ -659,7 +659,7 @@ use_cases:
   - name: Monitoring tools
     groups:
     - name: Tools to install
-      technologies: [terraform, pipeline]
+      technologies: [pipeline]
       vars:
         - name: "Grafana install"
           description: "Wheter to install [Grafana](https://github.com/grafana/grafana-ansible-collection/tree/main/roles/grafana) on the k8s cluster."
@@ -694,7 +694,7 @@ use_cases:
       vars:
         - name: "Prometheus DNS"
           description: "DNS to use for Prometheus."
-          key: prometheus_domain_name
+          key: module.kube-prometheus.prometheus_domain_name
           widget: simple_text
           type: string
           default: prometheus.local
@@ -704,18 +704,18 @@ use_cases:
       vars:
         - name: "Prometheus scraping extra config"
           description: "Prometheus scraping extra config to use. TODO "
-          key: prometheus_additional_scrape
+          key: module.kube-prometheus.prometheus_additional_scrape
           widget: text_area
           type: map
 
   - name: Blackbox Exporter
     groups:
     - name: Install
-      technologies: [terraform, pipeline]
+      technologies: [terraform]
       vars:
         - name: "Blackbox exporter install"
           description: "Wheter to install [blackbox exporter](https://github.com/prometheus-community/ansible/tree/main/roles/blackbox_exporter) on the machine as a service."
-          key: blackbox_exporter_install
+          key: module.prometheus-blackbox-exporter.blackbox_exporter_install
           widget: switch
           type: boolean
           default: true
@@ -726,7 +726,7 @@ use_cases:
       vars:
         - name: "Blackbox exporter modules"
           description: "Blackbox exporter modules to be used, for more information please check the [official documentation](https://github.com/prometheus/blackbox_exporter/blob/master/CONFIGURATION.md)"
-          key: blackbox_exporter_modules
+          key: module.prometheus-blackbox-exporter.blackbox_exporter_modules
           widget: text_area
           type: map
           default:
@@ -750,7 +750,7 @@ use_cases:
       vars:
         - name: "Alertmanager DNS"
           description: "DNS to use for Alertmanager."
-          key: alertmanager_domain_name
+          key: module.kube-prometheus.alertmanager_domain_name
           widget: simple_text
           type: string
           default: alertmanager.local
@@ -760,17 +760,17 @@ use_cases:
       vars:
         - name: "Alertmanager route"
           description: "Customize the default enabled rules. For more information about syntax and default rules check the k8s prometheus stack [chart default values](https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/values.yaml#L38)"
-          key: alertmanager_customRules
+          key: module.kube-prometheus.alertmanager_customRules
           widget: text_area
           type: map
         - name: "Alertmanager additional rules"
           description: "Provide custom rules to be deployed in the cluster. For more information about syntax and default rules check the k8s prometheus stack [chart default values](https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/values.yaml#L198)"
-          key: alertmanager_additional_rules
+          key: module.kube-prometheus.alertmanager_additional_rules
           widget: text_area
           type: map
         - name: "Alertmanager config"
           description: "Alertmanager configuration. Note! The default value corresponds to the helm chart default value for the config of alertmanager. For more information about syntax check the [official alertmanager documentation](https://prometheus.io/docs/alerting/configuration/#configuration-file)"
-          key: alertmanager_config
+          key: module.kube-prometheus.alertmanager_config
           widget: text_area
           type: map
           default:
@@ -815,7 +815,7 @@ use_cases:
             - '/etc/alertmanager/config/*.tmpl'
 
     - name: External Alertmanager (not deployed in k8s cluster)
-      technologies: [terraform]
+      technologies: [pipeline]
       condition: $alertmanager_install == false && $prometheus_install == true
       vars:
         - name: "External endpoint"
@@ -832,7 +832,7 @@ use_cases:
       vars:
         - name: "Grafana DNS"
           description: "DNS to use for Grafana."
-          key: grafana_domain_name
+          key: module.kube-prometheus.grafana_domain_name
           widget: simple_text
           type: string
           default: grafana.local
@@ -843,14 +843,13 @@ use_cases:
       vars:
         - name: Use default grafana dashboards
           description: "Wheter to use of not the default grafana dashboards"
-          key: enable_default_grafana_dashboards
+          key: module.kube-prometheus.enable_default_grafana_dashboards
           widget: switch
           type: boolean
           default: true
-
         - name: "Grafana Dashboard Timezone"
           description: "Timezone for the default dashboards"
-          key: grafana_default_timezone
+          key: module.kube-prometheus.grafana_default_timezone
           type: string
           widget: simple_text
           default: Europe/France
@@ -863,7 +862,7 @@ use_cases:
       vars:
         - name: "Thanos DNS"
           description: "DNS to use for Thanos."
-          key: thanos_domain_name
+          key: module.thanos.thanos_domain_name
           widget: simple_text
           type: string
           default: thanos.local
@@ -874,19 +873,19 @@ use_cases:
       vars:
         - name: Raw retention
           description: "Retention amount for data at the same ingestion rate as scraping interval. The value should be in the format 1d, 1w, 1m, 1y"
-          key: retentionResolutionRaw
+          key: module.thanos.retentionResolutionRaw
           widget: switch
           type: boolean
           default: true
         - name: 5min retention
           description: "Retention amount for data at 5 min intervals. The value should be in the format 1d, 1w, 1m, 1y"
-          key: retentionResolution5m
+          key: module.thanos.retentionResolution5m
           widget: switch
           type: boolean
           default: true
         - name: 1h retention
           description: "Retention amount for data at 1 hour intervals. The value should be in the format 1d, 1w, 1m, 1y"
-          key: retentionResolution1h
+          key: module.thanos.retentionResolution1h
           widget: switch
           type: boolean
           default: true
@@ -912,7 +911,7 @@ use_cases:
           default: {}
         - name: "Opsgenie gateway install"
           description: "Wheter to install [opsgenie gateway](https://hub.docker.com/r/cycloid/opsgenie-heartbeat-gw) on the k8s cluster."
-          key: opsgenie_heartbeat_install
+          key: module.opsgenie-heartbeat.opsgenie_heartbeat_install
           widget: switch
           type: boolean
           default: false
@@ -923,7 +922,7 @@ use_cases:
       vars:
         - name: "K8s config file"
           description: "Opsgenie heartbeat access token"
-          key: opsgenie_token
+          key: module.opsgenie-heartbeat.opsgenie_token
           widget: cy_cred
           type: string
 

@@ -23,6 +23,16 @@ resource "kubernetes_secret" "tls_secret" {
 }
 
 # basic auth
+
+variable "k8s_secret_infra_basic_auth_user" {
+  default = "admin"
+}
+
+resource "random_password" "k8s_secret_infra_basic_auth_password" {
+  length  = 32
+  special = false
+}
+
 resource "kubernetes_secret" "prometheus_basic_auth" {
 
   count = var.prometheus_install ? 1 : 0
@@ -33,8 +43,7 @@ resource "kubernetes_secret" "prometheus_basic_auth" {
   }
 
   data = {
-    "username" = var.prometheus_basic_auth_username
-    "password" = var.prometheus_basic_auth_password
+    "username" = random_password.k8s_secret_infra_basic_auth_password.bcrypt_hash
   }
 }
 

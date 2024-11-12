@@ -32,6 +32,10 @@ output "thanos_object_store_secret_name" {
   value = module.kube-prometheus.thanos_object_store_secret_name
 }
 
+output "k8s_secret_infra_basic_auth_password" {
+  value     = module.kube-prometheus.k8s_secret_infra_basic_auth_password
+}
+
 # thanos module
 output "thanos_domain_name" {
   value = module.thanos.thanos_domain_name

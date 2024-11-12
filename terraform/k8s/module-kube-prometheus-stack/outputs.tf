@@ -30,3 +30,7 @@ output "thanos_install" {
 output "thanos_object_store_secret_name" {
   value       = local.thanos_object_store_secret_name
 }
+
+output "k8s_secret_infra_basic_auth_password" {
+  value     = random_password.k8s_secret_infra_basic_auth_password.result
+}

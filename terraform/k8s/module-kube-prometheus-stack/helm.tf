@@ -187,11 +187,11 @@ resource "helm_release" "kube_prometheus_stack" {
 
   set {
     name  = "alertmanager.ingress.annotations"
-    value = yamlencode(
+    value = yamlencode({
       "nginx.ingress.kubernetes.io/auth-type"=  "basic"
       "nginx.ingress.kubernetes.io/auth-secret"= "alertmanager-basic-auth-${var.project}-${var.env}"
       "nginx.ingress.kubernetes.io/auth-secret-type"= "auth-map"
-    )
+    })
   }
 
   #set {
@@ -245,11 +245,11 @@ resource "helm_release" "kube_prometheus_stack" {
 
   set {
     name  = "grafana.ingress.annotations"
-    value = yamlencode(
+    value = yamlencode({
       "nginx.ingress.kubernetes.io/auth-type"=  "basic"
       "nginx.ingress.kubernetes.io/auth-secret"= "grafana-basic-auth-${var.project}-${var.env}"
       "nginx.ingress.kubernetes.io/auth-secret-type"= "auth-map"
-    )
+  })
   }
 
   #set {
@@ -293,11 +293,11 @@ resource "helm_release" "kube_prometheus_stack" {
 
   set {
     name  = "prometheus.ingress.annotations"
-    value = yamlencode(
-      "nginx.ingress.kubernetes.io/auth-type"=  "basic"
-      "nginx.ingress.kubernetes.io/auth-secret"= "prometheus-basic-auth-${var.project}-${var.env}"
-      "nginx.ingress.kubernetes.io/auth-secret-type"= "auth-map"
-    )
+    value = yamlencode({
+      "nginx.ingress.kubernetes.io/auth-type" =  "basic"
+      "nginx.ingress.kubernetes.io/auth-secret" = "prometheus-basic-auth-${var.project}-${var.env}"
+      "nginx.ingress.kubernetes.io/auth-secret-type" = "auth-map"
+  })
   }
 
   #set {

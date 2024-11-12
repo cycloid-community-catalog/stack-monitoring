@@ -169,8 +169,8 @@ resource "helm_release" "kube_prometheus_stack" {
   }
 
   set {
-    name  = "alertmanager.ingress.hosts"
-    value = var.alertmanager_domain_name
+    name  = "alertmanager.ingress.hosts[0]"
+    value = [var.alertmanager_domain_name]
   }
 
   dynamic "set" {
@@ -187,7 +187,7 @@ resource "helm_release" "kube_prometheus_stack" {
 
   set {
     name  = "alertmanager.ingress.annotations.nginx\\.ingress\\.kubernetes\\.io/auth-type"
-    value = yamlencode({"nginx.ingress.kubernetes.io/auth-type"=  "basic"})
+    value = "basic"
   }
   set {
     name  = "alertmanager.ingress.annotations.nginx\\.ingress\\.kubernetes\\.io/auth-secret"
@@ -231,7 +231,7 @@ resource "helm_release" "kube_prometheus_stack" {
   }
 
   set {
-    name  = "grafana.ingress.hosts"
+    name  = "grafana.ingress.hosts[0]"
     value = var.grafana_domain_name
   }
 
@@ -249,7 +249,7 @@ resource "helm_release" "kube_prometheus_stack" {
 
   set {
     name  = "grafana.ingress.annotations.nginx\\.ingress\\.kubernetes\\.io/auth-type"
-    value = yamlencode({"nginx.ingress.kubernetes.io/auth-type"=  "basic"})
+    value = "basic"
   }
   set {
     name  = "grafana.ingress.annotations.nginx\\.ingress\\.kubernetes\\.io/auth-secret"
@@ -282,7 +282,7 @@ resource "helm_release" "kube_prometheus_stack" {
   }
 
   set {
-    name  = "prometheus.ingress.hosts"
+    name  = "prometheus.ingress.hosts[0]"
     value = var.prometheus_domain_name
   }
 
@@ -300,7 +300,7 @@ resource "helm_release" "kube_prometheus_stack" {
 
   set {
     name  = "prometheus.ingress.annotations.nginx\\.ingress\\.kubernetes\\.io/auth-type"
-    value = yamlencode({"nginx.ingress.kubernetes.io/auth-type"=  "basic"})
+    value = "basic"
   }
   set {
     name  = "prometheus.ingress.annotations.nginx\\.ingress\\.kubernetes\\.io/auth-secret"

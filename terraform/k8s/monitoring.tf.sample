@@ -31,7 +31,7 @@ module "kube-prometheus" {
   grafana_basic_auth_password       = var.grafana_basic_auth_password
 
   alertmanager_install             = false
-  alertmanager_use_external        = []
+  alertmanager_use_external        = var.alertmanager_use_external
   alertmanager_domain_name         = "alertmanager.local"
   alertmanager_basic_auth_username = var.alertmanager_basic_auth_username
   alertmanager_basic_auth_password = var.alertmanager_basic_auth_password

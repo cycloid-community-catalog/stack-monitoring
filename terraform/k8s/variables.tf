@@ -26,7 +26,9 @@ variable "prometheus_basic_auth_password" {
   default = "pwdToChange"
 }
 
-variable "alertmanager_use_external" {}
+variable "alertmanager_use_external" {
+  default = []
+}
 
 # grafana - basic auth
 variable "grafana_admin_password" {

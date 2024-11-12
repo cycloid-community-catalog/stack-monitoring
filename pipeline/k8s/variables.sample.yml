@@ -31,9 +31,7 @@ alertmanager_install: false
 alertmanager_cred: "($ .project $)-alertmanager-($ .environment $)"
 
 # alertmanager - external (not created with the stack)
-external_alertmanager_password: ""
-external_alertmanager_username: ""
-external_alertmanager_targets: ""
+alertmanager_use_external: []
 
 #prometheus
 prometheus_install: true

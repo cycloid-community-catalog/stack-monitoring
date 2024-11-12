@@ -86,7 +86,9 @@ variable "alertmanager_install" {
   default = true
 }
 
-variable "alertmanager_use_external" {}
+variable "alertmanager_use_external" {
+  default = []
+}
 
 variable "alertmanager_domain_name" {
   default = "alertmanager.local"

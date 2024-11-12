@@ -170,7 +170,7 @@ resource "helm_release" "kube_prometheus_stack" {
 
   set {
     name  = "alertmanager.ingress.hosts[0]"
-    value = [var.alertmanager_domain_name]
+    value = var.alertmanager_domain_name
   }
 
   dynamic "set" {

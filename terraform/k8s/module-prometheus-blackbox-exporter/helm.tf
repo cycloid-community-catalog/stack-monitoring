@@ -10,7 +10,7 @@
 locals {
   node_selector= <<EOL
 ---
-node_selector:|
+node_selector:
     ${indent(2, yamlencode(var.stack_monitoring_node_selector))}
 EOL
 

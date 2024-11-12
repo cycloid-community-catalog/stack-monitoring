@@ -14,14 +14,14 @@ locals {
 # general variables
   commonLabels= <<EOL
 ---
-commonLabels:|
+commonLabels:
     ${indent(2, yamlencode(local.common_labels))}
 EOL
 
   prometheus_operator_node_selector= <<EOL
 ---
 prometheusOperator:
-  nodeSelector: |
+  nodeSelector:
     ${indent(4, yamlencode(var.stack_monitoring_node_selector))}
 EOL
 
@@ -48,7 +48,7 @@ EOL
   alertmanager_node_selector= <<EOL
 ---
 alertmanager:
-  nodeSelector: |
+  nodeSelector:
     ${indent(4, yamlencode(var.stack_monitoring_node_selector))}
 EOL
 
@@ -56,7 +56,7 @@ EOL
   grafana_node_selector= <<EOL
 ---
 grafana:
-  nodeSelector: |
+  nodeSelector:
     ${indent(4, yamlencode(var.stack_monitoring_node_selector))}
 EOL
 
@@ -64,7 +64,7 @@ EOL
   prometheus_node_selector= <<EOL
 ---
 prometheus:
-  nodeSelector: |
+  nodeSelector:
     ${indent(4, yamlencode(var.stack_monitoring_node_selector))}
 EOL
 
@@ -88,7 +88,7 @@ EOL
   thanos_node_selector= <<EOL
 ---
 thanos:
-  nodeSelector: |
+  nodeSelector:
     ${indent(4, yamlencode(var.stack_monitoring_node_selector))}
 EOL
 

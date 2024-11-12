@@ -264,11 +264,11 @@ resource "helm_release" "kube_prometheus_stack" {
   #  value = var.stack_monitoring_node_selector
   #}
 
-
-  set {
-    name  = "grafana.dashboards"
-    value = var.enable_default_grafana_dashboards
-  }
+#todo
+  #set {
+  #  name  = "grafana.dashboards"
+  #  value = var.enable_default_grafana_dashboards
+  #}
 
   # PROMETHEUS
   set {

@@ -3,6 +3,25 @@
 ################################################################################
 # https://github.com/prometheus-community/helm-charts/tree/main/charts/prometheus-blackbox-exporter
 #VALUES: https://raw.githubusercontent.com/prometheus-community/helm-charts/main/charts/prometheus-blackbox-exporter/values.yaml
+
+# non string or boolean values cannot be set as value in helm
+# https://github.com/hashicorp/terraform-provider-helm/issues/669
+# all the map variables need to apply this little trick
+locals {
+  node_selector= <<EOL
+---
+node_selector:|
+    ${indent(2, local.stack_monitoring_node_selector)}
+EOL
+
+  blackbox_exporter_modules= <<EOL
+---
+config:
+  modules:|
+    ${indent(4, var.blackbox_exporter_modules)}
+EOL
+}
+
 resource "helm_release" "prometheus_blackbox" {
 
   count = var.blackbox_exporter_install ? 1 : 0
@@ -14,7 +33,9 @@ resource "helm_release" "prometheus_blackbox" {
   namespace  = var.namespace
 
   values = [
-    file("${path.module}/values.yaml")
+    file("${path.module}/values.yaml"),
+    local.node_selector,
+    local.blackbox_exporter_modules
   ]
 
   # Fix the service name
@@ -28,14 +49,14 @@ resource "helm_release" "prometheus_blackbox" {
     value = true
   }
 
-  set {
-    name  = "node_selector"
-    value = jsonencode(var.stack_monitoring_node_selector)
-  }
+  #set {
+  #  name  = "node_selector"
+  #  value = var.stack_monitoring_node_selector
+  #}
 
-  set {
-    name  = "config.modules"
-    value = jsonencode(var.blackbox_exporter_modules)
-  }
+  #set {
+  #  name  = "config.modules"
+  #  value = var.blackbox_exporter_modules
+  #}
 
 }

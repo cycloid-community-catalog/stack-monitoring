@@ -5,6 +5,40 @@
 # todo:  check limits, add oauth2, check storage if default increase 8-10Gi, compactor 20Gi, probes to keep?
 ################################################################################
 
+# non string or boolean values cannot be set as value in helm
+# https://github.com/hashicorp/terraform-provider-helm/issues/669
+# all the map variables need to apply this little trick
+
+locals {
+  query_node_selector= <<EOL
+---
+query:
+  nodeSelector:|
+    ${indent(4, local.stack_monitoring_node_selector)}
+EOL
+
+  query_frontend_node_selector= <<EOL
+---
+queryFrontend:
+  nodeSelector:|
+    ${indent(4, local.stack_monitoring_node_selector)}
+EOL
+
+  compactor_node_selector= <<EOL
+---
+compactor:
+  nodeSelector:|
+    ${indent(4, local.stack_monitoring_node_selector)}
+EOL
+
+  storegateway_node_selector= <<EOL
+---
+storegateway:
+  nodeSelector:|
+    ${indent(4, local.stack_monitoring_node_selector)}
+EOL
+}
+
 resource "helm_release" "thanos" {
 
   count = var.thanos_install ? 1 : 0
@@ -17,6 +51,10 @@ resource "helm_release" "thanos" {
 
   values = [
     file("${path.module}/values.yaml"),
+    local.query_node_selector,
+    ĺocal.query_frontend_node_selector,
+    local.compactor_node_selector,
+    local.storegateway_node_selector
   ]
   # GENERAL VARS
   set {
@@ -54,10 +92,10 @@ resource "helm_release" "thanos" {
     value = var.namespace
   }
 
-  set {
-    name  = "query.nodeSelector"
-    value = jsonencode(var.stack_monitoring_node_selector)
-  }
+  #set {
+  #  name  = "query.nodeSelector"
+  #  value = var.stack_monitoring_node_selector
+  #}
 
   # QueryFrontend - allows to create a service similiar to prometheus to read the data stored
   set {
@@ -75,10 +113,10 @@ resource "helm_release" "thanos" {
     value = var.enable_tls
   }
 
-  set {
-    name  = "queryFrontend.nodeSelector"
-    value = jsonencode(var.stack_monitoring_node_selector)
-  }
+  #set {
+  #  name  = "queryFrontend.nodeSelector"
+  #  value = var.stack_monitoring_node_selector
+  #}
 
   # Bucket web
   set {
@@ -112,10 +150,10 @@ resource "helm_release" "thanos" {
     value = var.thanos_retention_1h
   }
 
-  set {
-    name  = "compactor.nodeSelector"
-    value = jsonencode(var.stack_monitoring_node_selector)
-  }
+  #set {
+  #  name  = "compactor.nodeSelector"
+  #  value = var.stack_monitoring_node_selector
+  #}
 
   # Store Gtw - exposes the content of the bucket
   set {
@@ -123,10 +161,10 @@ resource "helm_release" "thanos" {
     value = true
   }
 
-  set {
-    name  = "storegateway.nodeSelector"
-    value = jsonencode(var.stack_monitoring_node_selector)
-  }
+  #set {
+  #  name  = "storegateway.nodeSelector"
+  #  value = var.stack_monitoring_node_selector
+  #}
   # Metrics - here allows to scrape metrics from the different thanos pods
   set {
     name  = "metrics.enabled"

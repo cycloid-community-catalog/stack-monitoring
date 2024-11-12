@@ -194,7 +194,7 @@ resource "helm_release" "kube_prometheus_stack" {
 
   set {
     name  = "prometheus.prometheusSpec.alertingEndpoints"
-    value = var.alertmanager_install ? [] : jsonencode(var.alertmanager_use_external)
+    value = var.alertmanager_install ? jsonencode("[]") : jsonencode(var.alertmanager_use_external)
   }
 
   set {

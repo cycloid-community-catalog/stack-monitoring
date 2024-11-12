@@ -15,41 +15,41 @@ locals {
   commonLabels= <<EOL
 ---
 commonLabels:|
-    ${indent(2, local.common_labels)}
+    ${indent(2, yamlencode(local.common_labels))}
 EOL
 
   prometheus_operator_node_selector= <<EOL
 ---
 prometheusOperator:
   nodeSelector: |
-    ${indent(4, var.stack_monitoring_node_selector)}
+    ${indent(4, yamlencode(var.stack_monitoring_node_selector))}
 EOL
 
 # alertmanager
   alertmanager_customRules= <<EOL
 ---
 customRules: |
-    ${indent(2, var.alertmanager_customRules)}
+    ${indent(2, yamlencode(var.alertmanager_customRules))}
 EOL
 
   alertmanager_additional_rules= <<EOL
 ---
 additionalPrometheusRulesMap:|
-    ${indent(2, var.alertmanager_additional_rules)}
+    ${indent(2, yamlencode(var.alertmanager_additional_rules))}
 EOL
 
   alertmanager_config= <<EOL
 ---
 alertmanager:
   config: |
-    ${indent(4, var.alertmanager_config)}
+    ${indent(4, yamlencode(var.alertmanager_config))}
 EOL
 
   alertmanager_node_selector= <<EOL
 ---
 alertmanager:
   nodeSelector: |
-    ${indent(4, var.stack_monitoring_node_selector)}
+    ${indent(4, yamlencode(var.stack_monitoring_node_selector))}
 EOL
 
 # grafana
@@ -57,7 +57,7 @@ EOL
 ---
 grafana:
   nodeSelector: |
-    ${indent(4, var.stack_monitoring_node_selector)}
+    ${indent(4, yamlencode(var.stack_monitoring_node_selector))}
 EOL
 
 # prometheus
@@ -65,7 +65,7 @@ EOL
 ---
 prometheus:
   nodeSelector: |
-    ${indent(4, var.stack_monitoring_node_selector)}
+    ${indent(4, yamlencode(var.stack_monitoring_node_selector))}
 EOL
 
   prometheus_additional_scrape= <<EOL
@@ -73,7 +73,7 @@ EOL
 prometheus:
   prometheusSpec:
     additionalScrapeConfigs: |
-    ${indent(6, var.prometheus_additional_scrape)}
+    ${indent(6, var.yamlencode(prometheus_additional_scrape))}
 EOL
 
   alertmanager_use_external= <<EOL
@@ -81,7 +81,7 @@ EOL
 prometheus:
   prometheusSpec:
     alertingEndpoints: |
-    ${indent(6, var.alertmanager_use_external)}
+    ${indent(6, var.yamlencode(alertmanager_use_external))}
 EOL
 
 # thanos
@@ -89,7 +89,7 @@ EOL
 ---
 thanos:
   nodeSelector: |
-    ${indent(4, var.stack_monitoring_node_selector)}
+    ${indent(4, var.yamlencode(stack_monitoring_node_selector))}
 EOL
 
 }

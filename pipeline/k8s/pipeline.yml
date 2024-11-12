@@ -28,7 +28,7 @@ definitions:
             path: "merged-stack"
       params:
         CONFIG_PATH: ($ .project $)/terraform/($ .environment $)
-        STACK_PATH: terraform/aws-vm
+        STACK_PATH: terraform/k8s
         KUBECONFIG_CONTENT: ((kubeconfig_content))
         KUBECONFIG_FILENAME: ((kubeconfig_filename))
         #($- if eq .use_case "aws-vm" $)
@@ -82,8 +82,8 @@ resources:
       alertmanager_basic_auth_username: ((((alertmanager_cred)).user))
       alertmanager_basic_auth_password: ((((alertmanager_cred)).pwd))
       opsgenie_token: ((opsgenie_token))
-      thanos_basic_auth_username: ((((thanos_cred)).user))
-      thanos_basic_auth_password: ((((thanos_cred)).pwd))
+      #thanos_basic_auth_username: ((((thanos_cred)).user))
+      #thanos_basic_auth_password: ((((thanos_cred)).pwd))
 
 - name: git_stack_terraform
   type: git

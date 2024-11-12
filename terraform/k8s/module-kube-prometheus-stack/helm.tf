@@ -337,8 +337,8 @@ resource "helm_release" "kube_prometheus_stack" {
     value = "data"
   }
 
-  set {
-    name  = "thanos.nodeSelector"
-    value = var.stack_monitoring_node_selector
-  }
+  #set {
+  #  name  = "thanos.nodeSelector"
+  #  value = var.stack_monitoring_node_selector
+  #}
 }

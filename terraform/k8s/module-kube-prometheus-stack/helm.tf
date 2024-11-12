@@ -22,7 +22,7 @@ EOL
 ---
 prometheusOperator:
   nodeSelector: |
-    ${indent(4, local.stack_monitoring_node_selector)}
+    ${indent(4, var.stack_monitoring_node_selector)}
 EOL
 
 # alertmanager
@@ -49,7 +49,7 @@ EOL
 ---
 alertmanager:
   nodeSelector: |
-    ${indent(4, local.stack_monitoring_node_selector)}
+    ${indent(4, var.stack_monitoring_node_selector)}
 EOL
 
 # grafana
@@ -57,7 +57,7 @@ EOL
 ---
 grafana:
   nodeSelector: |
-    ${indent(4, local.stack_monitoring_node_selector)}
+    ${indent(4, var.stack_monitoring_node_selector)}
 EOL
 
 # prometheus
@@ -65,7 +65,7 @@ EOL
 ---
 prometheus:
   nodeSelector: |
-    ${indent(4, local.stack_monitoring_node_selector)}
+    ${indent(4, var.stack_monitoring_node_selector)}
 EOL
 
   prometheus_additional_scrape= <<EOL
@@ -89,7 +89,7 @@ EOL
 ---
 thanos:
   nodeSelector: |
-    ${indent(4, local.stack_monitoring_node_selector)}
+    ${indent(4, var.stack_monitoring_node_selector)}
 EOL
 
 }

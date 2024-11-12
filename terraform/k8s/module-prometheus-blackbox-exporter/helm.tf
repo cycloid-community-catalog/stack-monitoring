@@ -11,7 +11,7 @@ locals {
   node_selector= <<EOL
 ---
 node_selector:|
-    ${indent(2, local.stack_monitoring_node_selector)}
+    ${indent(2, var.stack_monitoring_node_selector)}
 EOL
 
   blackbox_exporter_modules= <<EOL

@@ -14,28 +14,28 @@ locals {
 ---
 query:
   nodeSelector:|
-    ${indent(4, local.stack_monitoring_node_selector)}
+    ${indent(4, var.stack_monitoring_node_selector)}
 EOL
 
   query_frontend_node_selector= <<EOL
 ---
 queryFrontend:
   nodeSelector:|
-    ${indent(4, local.stack_monitoring_node_selector)}
+    ${indent(4, var.stack_monitoring_node_selector)}
 EOL
 
   compactor_node_selector= <<EOL
 ---
 compactor:
   nodeSelector:|
-    ${indent(4, local.stack_monitoring_node_selector)}
+    ${indent(4, var.stack_monitoring_node_selector)}
 EOL
 
   storegateway_node_selector= <<EOL
 ---
 storegateway:
   nodeSelector:|
-    ${indent(4, local.stack_monitoring_node_selector)}
+    ${indent(4, var.stack_monitoring_node_selector)}
 EOL
 }
 

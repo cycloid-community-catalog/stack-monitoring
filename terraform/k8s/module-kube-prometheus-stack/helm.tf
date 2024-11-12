@@ -14,41 +14,41 @@ locals {
 # general variables
   commonLabels= <<EOL
 ---
-commonLabels: |
+commonLabels:
     ${yamlencode(local.common_labels)}
 EOL
 
   prometheus_operator_node_selector= <<EOL
 ---
 prometheusOperator:
-  nodeSelector: |
+  nodeSelector:
     ${yamlencode(var.stack_monitoring_node_selector)}
 EOL
 
 # alertmanager
   alertmanager_customRules= <<EOL
 ---
-customRules: |
+customRules:
     ${yamlencode(var.alertmanager_customRules)}
 EOL
 
   alertmanager_additional_rules= <<EOL
 ---
-additionalPrometheusRulesMap:|
+additionalPrometheusRulesMap:
     ${yamlencode(var.alertmanager_additional_rules)}
 EOL
 
   alertmanager_config= <<EOL
 ---
 alertmanager:
-  config: |
+  config:
     ${yamlencode(var.alertmanager_config)}
 EOL
 
   alertmanager_node_selector= <<EOL
 ---
 alertmanager:
-  nodeSelector: |
+  nodeSelector:
     ${yamlencode(var.stack_monitoring_node_selector)}
 EOL
 
@@ -56,7 +56,7 @@ EOL
   grafana_node_selector= <<EOL
 ---
 grafana:
-  nodeSelector: |
+  nodeSelector:
     ${yamlencode(var.stack_monitoring_node_selector)}
 EOL
 
@@ -64,7 +64,7 @@ EOL
   prometheus_node_selector= <<EOL
 ---
 prometheus:
-  nodeSelector: |
+  nodeSelector:
     ${yamlencode(var.stack_monitoring_node_selector)}
 EOL
 
@@ -72,7 +72,7 @@ EOL
 ---
 prometheus:
   prometheusSpec:
-    additionalScrapeConfigs: |
+    additionalScrapeConfigs:
       ${yamlencode(var.prometheus_additional_scrape)}
 EOL
 
@@ -80,7 +80,7 @@ EOL
 ---
 prometheus:
   prometheusSpec:
-    alertingEndpoints: |
+    alertingEndpoints:
       ${yamlencode(var.alertmanager_use_external)}
 EOL
 
@@ -88,7 +88,7 @@ EOL
   thanos_node_selector= <<EOL
 ---
 thanos:
-  nodeSelector: |
+  nodeSelector:
     ${yamlencode(var.stack_monitoring_node_selector)}
 EOL
 

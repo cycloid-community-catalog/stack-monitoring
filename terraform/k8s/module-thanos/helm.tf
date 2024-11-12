@@ -13,28 +13,28 @@ locals {
   query_node_selector= <<EOL
 ---
 query:
-  nodeSelector: |
+  nodeSelector:
     ${yamlencode(var.stack_monitoring_node_selector)}
 EOL
 
   query_frontend_node_selector= <<EOL
 ---
 queryFrontend:
-  nodeSelector: |
+  nodeSelector:
     ${yamlencode(var.stack_monitoring_node_selector)}
 EOL
 
   compactor_node_selector= <<EOL
 ---
 compactor:
-  nodeSelector: |
+  nodeSelector:
     ${yamlencode(var.stack_monitoring_node_selector)}
 EOL
 
   storegateway_node_selector= <<EOL
 ---
 storegateway:
-  nodeSelector: |
+  nodeSelector:
     ${yamlencode(var.stack_monitoring_node_selector)}
 EOL
 }

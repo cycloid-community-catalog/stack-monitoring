@@ -10,14 +10,14 @@
 locals {
   node_selector= <<EOL
 ---
-node_selector: |
+node_selector:
     ${yamlencode(var.stack_monitoring_node_selector)}
 EOL
 
   blackbox_exporter_modules= <<EOL
 ---
 config:
-  modules: |
+  modules:
     ${yamlencode(var.blackbox_exporter_modules)}
 EOL
 }

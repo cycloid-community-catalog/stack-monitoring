@@ -30,12 +30,12 @@ resource "helm_release" "prometheus_blackbox" {
 
   set {
     name  = "node_selector"
-    value = var.stack_monitoring_node_selector
+    value = jsonencode(var.stack_monitoring_node_selector)
   }
 
   set {
     name  = "config.modules"
-    value = var.blackbox_exporter_modules
+    value = jsonencode(var.blackbox_exporter_modules)
   }
 
 }

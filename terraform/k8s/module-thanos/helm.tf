@@ -21,7 +21,7 @@ resource "helm_release" "thanos" {
   # GENERAL VARS
   set {
     name  = "commonLabels"
-    value = local.common_labels
+    value = jsonencode(local.common_labels)
   }
 
   set {
@@ -56,7 +56,7 @@ resource "helm_release" "thanos" {
 
   set {
     name  = "query.nodeSelector"
-    value = var.stack_monitoring_node_selector
+    value = jsonencode(var.stack_monitoring_node_selector)
   }
 
   # QueryFrontend - allows to create a service similiar to prometheus to read the data stored
@@ -77,7 +77,7 @@ resource "helm_release" "thanos" {
 
   set {
     name  = "queryFrontend.nodeSelector"
-    value = var.stack_monitoring_node_selector
+    value = jsonencode(var.stack_monitoring_node_selector)
   }
 
   # Bucket web
@@ -88,7 +88,7 @@ resource "helm_release" "thanos" {
 
   set {
     name  = "bucketweb.nodeSelector"
-    value = var.stack_monitoring_node_selector
+    value = jsonencode(var.stack_monitoring_node_selector)
   }
 
   # Compactor - compacts the data to be stored in remote storage
@@ -114,7 +114,7 @@ resource "helm_release" "thanos" {
 
   set {
     name  = "compactor.nodeSelector"
-    value = var.stack_monitoring_node_selector
+    value = jsonencode(var.stack_monitoring_node_selector)
   }
 
   # Store Gtw - exposes the content of the bucket
@@ -125,7 +125,7 @@ resource "helm_release" "thanos" {
 
   set {
     name  = "storegateway.nodeSelector"
-    value = var.stack_monitoring_node_selector
+    value = jsonencode(var.stack_monitoring_node_selector)
   }
   # Metrics - here allows to scrape metrics from the different thanos pods
   set {

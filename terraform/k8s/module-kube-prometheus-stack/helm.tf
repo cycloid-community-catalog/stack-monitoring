@@ -19,7 +19,7 @@ resource "helm_release" "kube_prometheus_stack" {
   # GENERAL VARS
   set {
     name  = "commonLabels"
-    value = local.common_labels
+    value = jsonencode(local.common_labels)
   }
 
   dynamic "set" {
@@ -32,17 +32,17 @@ resource "helm_release" "kube_prometheus_stack" {
 
   set {
     name  = "prometheusOperator.nodeSelector"
-    value = var.stack_monitoring_node_selector
+    value = jsonencode(var.stack_monitoring_node_selector)
   }
 
   # ALERTMANAGER
   set {
     name  = "customRules"
-    value = var.alertmanager_customRules
+    value = jsonencode(var.alertmanager_customRules)
   }
   set {
     name  = "additionalPrometheusRulesMap"
-    value = var.alertmanager_additional_rules
+    value = jsonencode(var.alertmanager_additional_rules)
   }
 
   set {
@@ -52,7 +52,7 @@ resource "helm_release" "kube_prometheus_stack" {
 
   set {
     name  = "alertmanager.config"
-    value = var.alertmanager_config
+    value = jsonencode(var.alertmanager_config)
   }
 
   set {
@@ -79,16 +79,16 @@ resource "helm_release" "kube_prometheus_stack" {
 
   set {
     name  = "alertmanager.ingress.annotations"
-    value = {
+    value = jsonencode({
       "nginx.ingress.kubernetes.io/auth-type" = "basic"
       "nginx.ingress.kubernetes.io/auth-secret" = "alertmanager-basic-auth-${var.project}-${var.env}"
       "nginx.ingress.kubernetes.io/auth-secret-type" = "auth-map"
-    }
+    })
   }
 
   set {
     name  = "alertmanager.nodeSelector"
-    value = var.stack_monitoring_node_selector
+    value = jsonencode(var.stack_monitoring_node_selector)
   }
 
   # GRAFANA
@@ -137,16 +137,16 @@ resource "helm_release" "kube_prometheus_stack" {
 
   set {
     name  = "grafana.ingress.annotations"
-    value = {
+    value = jsonencode({
       "nginx.ingress.kubernetes.io/auth-type" = "basic"
       "nginx.ingress.kubernetes.io/auth-secret" = "grafana-basic-auth-${var.project}-${var.env}"
       "nginx.ingress.kubernetes.io/auth-secret-type" = "auth-map"
-    }
+    })
   }
 
   set {
     name  = "grafana.nodeSelector"
-    value = var.stack_monitoring_node_selector
+    value = jsonencode(var.stack_monitoring_node_selector)
   }
 
 
@@ -185,26 +185,26 @@ resource "helm_release" "kube_prometheus_stack" {
 
   set {
     name  = "prometheus.ingress.annotations"
-    value = {
+    value = jsonencode({
       "nginx.ingress.kubernetes.io/auth-type" = "basic"
       "nginx.ingress.kubernetes.io/auth-secret" = "prometheus-basic-auth-${var.project}-${var.env}"
       "nginx.ingress.kubernetes.io/auth-secret-type" = "auth-map"
-    }
+    })
   }
 
   set {
     name  = "prometheus.prometheusSpec.alertingEndpoints"
-    value = var.alertmanager_install ? [] : var.alertmanager_use_external
+    value = var.alertmanager_install ? [] : jsonencode(var.alertmanager_use_external)
   }
 
   set {
     name  = "prometheus.prometheusSpec.additionalScrapeConfigs"
-    value = var.prometheus_additional_scrape
+    value = jsonencode(var.prometheus_additional_scrape)
   }
 
   set {
     name  = "prometheus.nodeSelector"
-    value = var.stack_monitoring_node_selector
+    value = jsonencode(var.stack_monitoring_node_selector)
   }
 
   # THANOS
@@ -231,6 +231,6 @@ resource "helm_release" "kube_prometheus_stack" {
 
   set {
     name  = "thanos.nodeSelector"
-    value = var.stack_monitoring_node_selector
+    value = jsonencode(var.stack_monitoring_node_selector)
   }
 }

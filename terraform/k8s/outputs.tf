@@ -33,7 +33,7 @@ output "thanos_object_store_secret_name" {
 }
 
 output "k8s_secret_infra_basic_auth_password" {
-  sensitive = false
+  sensitive = true
   value     = module.kube-prometheus.k8s_secret_infra_basic_auth_password
 }
 

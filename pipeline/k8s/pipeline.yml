@@ -16,8 +16,8 @@ definitions:
           args:
           - '-ec'
           - |
+            echo -e "${KUBECONFIG_CONTENT}" > stack/terraform/k8s/${KUBECONFIG_FILENAME}
             /usr/bin/merge-stack-and-config
-            echo -e "${KUBECONFIG_CONTENT}" > merged-stack/terraform/${KUBECONFIG_FILENAME}
         inputs:
           - name: git_config_terraform
             path: "config"

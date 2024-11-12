@@ -52,7 +52,7 @@ resource "helm_release" "thanos" {
   values = [
     file("${path.module}/values.yaml"),
     local.query_node_selector,
-    ĺocal.query_frontend_node_selector,
+    local.query_frontend_node_selector,
     local.compactor_node_selector,
     local.storegateway_node_selector
   ]

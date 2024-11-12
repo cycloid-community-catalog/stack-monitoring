@@ -14,58 +14,58 @@ locals {
 # general variables
   commonLabels= <<EOL
 ---
-commonLabels:
-    ${indent(2, yamlencode(local.common_labels))}
+commonLabels: |
+    ${yamlencode(local.common_labels)}
 EOL
 
   prometheus_operator_node_selector= <<EOL
 ---
 prometheusOperator:
-  nodeSelector:
-    ${indent(4, yamlencode(var.stack_monitoring_node_selector))}
+  nodeSelector: |
+    ${yamlencode(var.stack_monitoring_node_selector)}
 EOL
 
 # alertmanager
   alertmanager_customRules= <<EOL
 ---
 customRules: |
-    ${indent(2, yamlencode(var.alertmanager_customRules))}
+    ${yamlencode(var.alertmanager_customRules)}
 EOL
 
   alertmanager_additional_rules= <<EOL
 ---
 additionalPrometheusRulesMap:|
-    ${indent(2, yamlencode(var.alertmanager_additional_rules))}
+    ${yamlencode(var.alertmanager_additional_rules)}
 EOL
 
   alertmanager_config= <<EOL
 ---
 alertmanager:
   config: |
-    ${indent(4, yamlencode(var.alertmanager_config))}
+    ${yamlencode(var.alertmanager_config)}
 EOL
 
   alertmanager_node_selector= <<EOL
 ---
 alertmanager:
-  nodeSelector:
-    ${indent(4, yamlencode(var.stack_monitoring_node_selector))}
+  nodeSelector: |
+    ${yamlencode(var.stack_monitoring_node_selector)}
 EOL
 
 # grafana
   grafana_node_selector= <<EOL
 ---
 grafana:
-  nodeSelector:
-    ${indent(4, yamlencode(var.stack_monitoring_node_selector))}
+  nodeSelector: |
+    ${yamlencode(var.stack_monitoring_node_selector)}
 EOL
 
 # prometheus
   prometheus_node_selector= <<EOL
 ---
 prometheus:
-  nodeSelector:
-    ${indent(4, yamlencode(var.stack_monitoring_node_selector))}
+  nodeSelector: |
+    ${yamlencode(var.stack_monitoring_node_selector)}
 EOL
 
   prometheus_additional_scrape= <<EOL
@@ -73,7 +73,7 @@ EOL
 prometheus:
   prometheusSpec:
     additionalScrapeConfigs: |
-    ${indent(6, yamlencode(var.prometheus_additional_scrape))}
+      ${yamlencode(var.prometheus_additional_scrape)}
 EOL
 
   alertmanager_use_external= <<EOL
@@ -81,15 +81,15 @@ EOL
 prometheus:
   prometheusSpec:
     alertingEndpoints: |
-    ${indent(6, yamlencode(var.alertmanager_use_external))}
+      ${yamlencode(var.alertmanager_use_external)}
 EOL
 
 # thanos
   thanos_node_selector= <<EOL
 ---
 thanos:
-  nodeSelector:
-    ${indent(4, yamlencode(var.stack_monitoring_node_selector))}
+  nodeSelector: |
+    ${yamlencode(var.stack_monitoring_node_selector)}
 EOL
 
 }

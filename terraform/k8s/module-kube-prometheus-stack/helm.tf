@@ -73,7 +73,7 @@ EOL
 prometheus:
   prometheusSpec:
     additionalScrapeConfigs: |
-    ${indent(6, var.yamlencode(prometheus_additional_scrape))}
+    ${indent(6, yamlencode(var.prometheus_additional_scrape))}
 EOL
 
   alertmanager_use_external= <<EOL
@@ -81,7 +81,7 @@ EOL
 prometheus:
   prometheusSpec:
     alertingEndpoints: |
-    ${indent(6, var.yamlencode(alertmanager_use_external))}
+    ${indent(6, yamlencode(var.alertmanager_use_external))}
 EOL
 
 # thanos
@@ -89,7 +89,7 @@ EOL
 ---
 thanos:
   nodeSelector: |
-    ${indent(4, var.yamlencode(stack_monitoring_node_selector))}
+    ${indent(4, yamlencode(var.stack_monitoring_node_selector))}
 EOL
 
 }

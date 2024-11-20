@@ -197,9 +197,8 @@ use_cases:
         - name: "Bastion URL"
           description: "The URL to be used to connect to the bastion, in the format <USER>@<INSTANCE>"
           key: bastion_url
-          type: boolean
-          widget: switch
-          default: true
+          type: string
+          widget: simple_text
 
     - name: Optional VM parameters
       condition: $advanced_opt == true

@@ -7,7 +7,7 @@
 # tls secret
 
 resource "tls_private_key" "cert" {
-  count = var.enable_tls && var.create_self_signed_certificate : 1 ? 0
+  count = (var.enable_tls && var.create_self_signed_certificate) : 1 ? 0
   algorithm = "ED25519"
 }
 

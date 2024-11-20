@@ -23,9 +23,6 @@ variable "thanos_install" {
   default = false
 }
 
-variable "thanos_basic_auth_username"{}
-variable "thanos_basic_auth_password"{}
-
 variable "thanos_domain_name" {
   default = "thanos.local"
 }

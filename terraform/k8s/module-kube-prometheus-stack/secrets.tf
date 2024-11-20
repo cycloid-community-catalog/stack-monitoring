@@ -5,6 +5,29 @@
 # - Object storage: to be used by thanos to store the monitoring data
 ################################################################################
 # tls secret
+
+resource "tls_private_key" "cert" {
+  count = var.enable_tls && var.create_self_signed_certificate : 1 ? 0
+  algorithm = "ED25519"
+}
+
+resource "tls_self_signed_cert" "cert" {
+  key_algorithm   = tls_private_key.cert.algorithm
+  private_key_pem = tls_private_key.cert.private_key_pem
+
+  # Certificate expires after 1 year (365×24)
+  validity_period_hours = 8760
+
+  # Generate a new certificate if Terraform is run within 6 months before expiration
+  early_renewal_hours = 4380
+
+  allowed_uses = [
+    "key_encipherment",
+    "digital_signature",
+    "server_auth",
+  ]
+}
+
 resource "kubernetes_secret" "tls_secret" {
   count = var.enable_tls ? 1 : 0
 
@@ -17,18 +40,15 @@ resource "kubernetes_secret" "tls_secret" {
 
   # base64encode
   data = {
-    "tls.crt" = var.tls_crt
-    "tls.key" = var.tls_key
+    "tls.crt" = var.tls_crt != "" ? var.tls_crt : tls_self_signed_cert.cert.cert_pem
+    "tls.key" = var.tls_key != "" ? var.tls_key : tls_private_key.cert.private_key_pem
   }
 }
 
 # basic auth
 
-variable "k8s_secret_infra_basic_auth_user" {
-  default = "admin"
-}
-
-resource "random_password" "k8s_secret_infra_basic_auth_password" {
+resource "random_password" "prometheus_basic_auth_password" {
+  count = var.prometheus_install ? 1 : 0
   length  = 32
   special = false
 }
@@ -43,8 +63,14 @@ resource "kubernetes_secret" "prometheus_basic_auth" {
   }
 
   data = {
-    "username" = random_password.k8s_secret_infra_basic_auth_password.bcrypt_hash
+    "${var.organization}" = random_password.prometheus_basic_auth.bcrypt_hash
   }
+}
+
+resource "random_password" "alertmanager_basic_auth_password" {
+  count = var.alertmanager_install ? 1 : 0
+  length  = 32
+  special = false
 }
 
 resource "kubernetes_secret" "alertmanager_basic_auth" {
@@ -57,9 +83,14 @@ resource "kubernetes_secret" "alertmanager_basic_auth" {
   }
 
   data = {
-    "username" = var.alertmanager_basic_auth_username
-    "password" = var.alertmanager_basic_auth_password
+    "${var.organization}" = random_password.alertmanager_basic_auth_password.bcrypt_hash
   }
+}
+
+resource "random_password" "grafana_basic_auth_password" {
+  count = var.grafana_install ? 1 : 0
+  length  = 32
+  special = false
 }
 
 resource "kubernetes_secret" "grafana_basic_auth" {
@@ -72,7 +103,6 @@ resource "kubernetes_secret" "grafana_basic_auth" {
   }
 
   data = {
-    "username" = var.grafana_basic_auth_username
-    "password" = var.grafana_basic_auth_password
+    "${var.organization}" = random_password.grafana_basic_auth_password.bcrypt_hash
   }
 }

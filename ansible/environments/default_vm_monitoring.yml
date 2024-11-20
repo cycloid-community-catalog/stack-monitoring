@@ -1,9 +1,9 @@
+# Note! You can check at the end of the default all the variables passed via terraform and the pipeline
+
 # General variables
-external_url_schema: "{% if use_ssl %}https{% else %}http{% endif %}"
-use_ssl: true
+external_url_schema: "{% if enable_tls %}https{% else %}http{% endif %}"
+use_ssl: "{{enable_tls}}"
 create_self_signed_certificate: true
-
-
 
 # Blackbox exporter role
 # all defaults here: https://github.com/prometheus-community/ansible/blob/main/roles/blackbox_exporter/defaults/main.yml
@@ -15,7 +15,6 @@ blackbox_exporter_config_dir: /etc/blackbox_exporter
 # # defaults at https://github.com/prometheus-community/ansible/blob/main/roles/mysqld_exporter/defaults/main.yml
 mysqld_exporter_web_listen_address: "0.0.0.0:9104"
 mysqld_exporter_config_dir: "/etc/mysqld_exporter"
-mysqld_exporter_version: "0.15.0"
 mysqld_exporter_username: "{{mysql_db_user}}"
 mysqld_exporter_password: "{{mysql_db_password}}"
 mysqld_exporter_host: "{{mysql_db_host}}"
@@ -40,7 +39,6 @@ prometheus_storage_retention: "60d"
 prometheus_config_dir: /etc/prometheus
 prometheus_db_dir: /var/lib/prometheus
 prometheus_web_listen_address: "0.0.0.0:9090"
-prometheus_user: "{{organization}}"
 prometheus_web_external_url: "{{ external_url_schema }}://{{ prometheus_domain_name }}"
 prometheus_external_labels: {}
 prometheus_global:
@@ -127,7 +125,6 @@ prometheus_alertmanager_config: "{{ prometheus_alerting_local if alertmanager_in
 # default values: https://github.com/prometheus-community/ansible/blob/main/roles/alertmanager/defaults/main.yml
 alertmanager_web_external_url: "{{ external_url_schema }}://{{ alertmanager_domain_name }}"
 alertmanager_web_listen_address: '0.0.0.0:9093'
-alertmanager_user: "{{organization}}"
 
 # TODO copy default templates to folder
 # TODO if required global config https://github.com/prometheus-community/ansible/blob/main/roles/alertmanager/templates/alertmanager.yml.j2#L3
@@ -143,7 +140,6 @@ alertmanager_certificate_key_name: "{{ prometheus_certificate_key_name }}"
 grafana_certificate_name: "{{ prometheus_certificate_name }}"
 grafana_certificate_key_name: "{{ prometheus_certificate_key_name }}"
 
-certificates_src: "{{ playbook_dir }}/files/nginx/ssl/*"
 certificates_dest: "/etc/nginx/ssl"
 
 nginx_configs:
@@ -194,8 +190,6 @@ nginx_grafana_http:
   07-grafana-80:
     - listen 80
     - server_name {{ grafana_domain_name }}
-    # - auth_basic            "Restricted"
-    # - auth_basic_user_file  auth_basic/grafana
     - location / {
         proxy_pass http://127.0.0.1:3000;
         proxy_set_header   Host {{ grafana_domain_name }};
@@ -208,9 +202,6 @@ nginx_grafana_https:
     - server_name {{ grafana_domain_name }}
     - ssl_certificate  {{ certificates_dest }}/{{ grafana_certificate_name }}
     - ssl_certificate_key {{ certificates_dest }}/{{ grafana_certificate_key_name }}
-
-    # - auth_basic            "Restricted"
-    # - auth_basic_user_file  auth_basic/grafana
     - location / {
         proxy_pass http://127.0.0.1:3000;
         proxy_set_header   Host {{ grafana_domain_name }};
@@ -287,7 +278,7 @@ nginx_sites_default_https: "{{
           | combine(nginx_alertmanager_https if (alertmanager_install| default(true)) else {})
         }}"
 
-nginx_sites: "{% if not use_ssl %}{{ nginx_sites_default }}{% else %}{{ nginx_sites_default_https }}{% endif %}"
+nginx_sites: "{% if not enable_tls %}{{ nginx_sites_default }}{% else %}{{ nginx_sites_default_https }}{% endif %}"
 
 nginx_auth_basic_files:
   prometheus:
@@ -321,3 +312,40 @@ grafana_datasources: "{{
   }}"
 grafana_dashboards_dir: "dashboards"
 grafana_dashboards_files: "{{ playbook_dir }}/files/grafana/dashboards/*.json"
+
+# variables defined as outputs in terraform
+prometheus_domain_name: "prometheus.local"
+prometheus_web_login: "{{prometheus_basic_auth_httpwd}}"
+prometheus_user: "{{prometheus_basic_auth_username}}"
+prometheus_password: "{{prometheus_basic_auth_password}}"
+
+alertmanager_domain_name: "alertmanager.local"
+alertmanager_web_login: "{{alertmanager_basic_auth_httpd}}"
+alertmanager_user: "{{alertmanager_basic_auth_username}}"
+alertmanager_password: "{{alertmanager_basic_auth_password}}"
+
+grafana_domain_name: "alertmanager.local"
+grafana_admin_user: "{{grafana_basic_auth_username}}"
+grafana_admin_pwd: "{{grafana_basic_auth_password}}"
+
+enable_tls: "true"
+nginx_cert: ""
+nginx_cert_key: ""
+
+# variables passed in pipeline (cycloid-credentials)
+
+#external_alertmanager_password: ((external_alertmanager_password))
+#external_alertmanager_username: ((external_alertmanager_username))
+#external_alertmanager_targets: ((external_alertmanager_targets))
+
+#postgres_db_user: ((postgres_db_user))
+#postgres_db_password: ((postgres_db_password))
+#postgres_db_host: ((postgres_db_host))
+#postgres_db_port: ((postgres_db_port))
+
+#mysql_db_user: ((mysql_db_user))
+#mysql_db_password: ((mysql_db_password))
+#mysql_db_host: ((mysql_db_host))
+#mysql_db_port: ((mysql_db_port))
+
+#aws_default_region: ((aws_default_region))

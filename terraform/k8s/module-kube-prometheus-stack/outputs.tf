@@ -14,6 +14,8 @@ output "grafana_domain_name" {
   value       = var.grafana_domain_name
 }
 
+
+# shared variables with other modules
 output "stack_monitoring_node_selector" {
   value       = var.stack_monitoring_node_selector
 }
@@ -22,7 +24,6 @@ output "extra_labels" {
   value       = var.extra_labels
 }
 
-# required for thanos module
 output "thanos_install" {
   value       = var.thanos_install
 }
@@ -31,7 +32,35 @@ output "thanos_object_store_secret_name" {
   value       = local.thanos_object_store_secret_name
 }
 
-output "k8s_secret_infra_basic_auth_password" {
+
+# basic auth
+
+output "prometheus_basic_auth_username" {
   sensitive = true
-  value     = random_password.k8s_secret_infra_basic_auth_password.result
+  value     = var.organization
+}
+
+output "prometheus_basic_auth_password" {
+  sensitive = true
+  value     = random_password.prometheus_basic_auth_password.result
+}
+
+output "alertmanager_basic_auth_username" {
+  sensitive = true
+  value     = var.organization
+}
+
+output "alertmanager_basic_auth_password" {
+  sensitive = true
+  value     = random_password.alertmanager_basic_auth_password.result
+}
+
+output "grafana_basic_auth_username" {
+  sensitive = true
+  value     = var.organization
+}
+
+output "grafana_basic_auth_password" {
+  sensitive = true
+  value     = random_password.grafana_basic_auth_password.result
 }

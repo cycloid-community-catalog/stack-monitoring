@@ -21,37 +21,16 @@ ansible_version: "10.1"
 ## SSH key to acess instance
 use_bastion: true
 bastion_url: ""
-ssh_credential: "($ .project $)-ssh-($ .environment $)"
+ssh_to_allow: {}
 
 ## nginx certificates
-create_self_signed_certificate: true
-nginx_certificate: ""
-nginx_certificate_key: ""
-
-## monitoring credentials
-# grafana
-grafana_install: false
-grafana_admin_pwd: ""
-grafana_admin_user: ""
-grafana_domain_name: ""
-grafana_cred: "($ .project $)-grafana-($ .environment $)"
-
-# alertmanager - created
-alertmanager_install: false
-alertmanager_domain_name: ""
-alertmanager_web_login: ""
-alertmanager_cred: "($ .project $)-alertmanager-($ .environment $)"
+tls_crt: ""
+tls_key: ""
 
 # alertmanager - external (not created with the stack)
 external_alertmanager_password: ""
 external_alertmanager_username: ""
 external_alertmanager_targets: ""
-
-#prometheus
-prometheus_install: true
-prometheus_domain_name: ""
-prometheus_web_login: ""
-prometheus_cred: "($ .project $)-prometheus-($ .environment $)"
 
 # postgres exporter
 postgres_db_user: ""

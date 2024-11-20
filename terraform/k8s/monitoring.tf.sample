@@ -11,15 +11,14 @@ module "kube-prometheus" {
   namespace                      = local.namespace
   extra_labels                   = {}
   disable_component_scraping     = [] #kubeApiServer kubelet kubeControllerManager coreDns kubeDns kubeEtcd kubeScheduler kubeProxy kubeStateMetrics
-  enable_tls                     = var.enable_tls
+  enable_tls                     = false
+  create_self_signed_certificate = true
   tls_crt                        = var.tls_crt
   tls_key                        = var.tls_key
   stack_monitoring_node_selector = {}
 
   prometheus_install              = var.prometheus_install
   prometheus_domain_name          = "prometheus.local"
-  prometheus_basic_auth_username = var.prometheus_basic_auth_username
-  prometheus_basic_auth_password = var.prometheus_basic_auth_password
   prometheus_additional_scrape   = {}
 
   grafana_install                   = var.grafana_install
@@ -27,14 +26,10 @@ module "kube-prometheus" {
   grafana_default_timezone          = "Europe/Paris"
   grafana_admin_password            = var.grafana_admin_password
   grafana_domain_name               = "grafana.local"
-  grafana_basic_auth_username       = var.grafana_basic_auth_username
-  grafana_basic_auth_password       = var.grafana_basic_auth_password
 
   alertmanager_install             = var.alertmanager_install
   alertmanager_use_external        = var.alertmanager_use_external
   alertmanager_domain_name         = "alertmanager.local"
-  alertmanager_basic_auth_username = var.alertmanager_basic_auth_username
-  alertmanager_basic_auth_password = var.alertmanager_basic_auth_password
   alertmanager_customRules         = {}
   alertmanager_additional_rules    = {}
   alertmanager_config              = {}
@@ -57,7 +52,7 @@ module "prometheus-blackbox-exporter" {
 
   blackbox_exporter_install = "false"
   blackbox_helm_version     = "8.17.0"
-  blackbox_exporter_modules = []
+  blackbox_exporter_modules = {}
 
 }
 
@@ -97,8 +92,6 @@ module "thanos" {
   thanos_object_store_secret_name = module.kube-prometheus.thanos_object_store_secret_name
 
   thanos_install             = module.kube-prometheus.thanos_install
-  thanos_basic_auth_username = var.thanos_basic_auth_username
-  thanos_basic_auth_password = var.thanos_basic_auth_password
   thanos_domain_name         = "thanos.local"
   thanos_retention_raw       = "30d"
   thanos_retention_5m        = "120d"

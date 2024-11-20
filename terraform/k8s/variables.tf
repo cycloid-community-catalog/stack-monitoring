@@ -17,59 +17,14 @@ variable "enable_tls" {
 variable "tls_crt" {}
 variable "tls_key" {}
 
-# prometheus - basic auth + declare alertmanager when using external
-variable "prometheus_install" {
-  default = false
-}
-variable "prometheus_basic_auth_username" {
-  default = "prometheus"
-}
-
-variable "prometheus_basic_auth_password" {
-  default = "pwdToChange"
-}
+# monitoring tools
+variable "prometheus_install" {}
+variable "grafana_install" {}
+variable "alertmanager_install" {}
+variable "thanos_install" {}
 
 variable "alertmanager_use_external" {
   default = []
-}
-
-# grafana - basic auth
-variable "grafana_install" {
-  default = false
-}
-variable "grafana_admin_password" {
-  default = "adminPWD"
-}
-variable "grafana_basic_auth_username" {
-  default = "grafana"
-}
-
-variable "grafana_basic_auth_password" {
-  default = "pwdToChange"
-}
-
-# alertmanager - basic auth
-variable "alertmanager_install" {
-  default = false
-}
-variable "alertmanager_basic_auth_username" {
-  default = "alertmanager"
-}
-
-variable "alertmanager_basic_auth_password" {
-  default = "pwdToChange"
-}
-
-# thanos
-variable "thanos_install" {
-  default = false
-}
-
-variable "thanos_basic_auth_username" {
-  default = "thanos"
-}
-variable "thanos_basic_auth_password" {
-  default = "pwdToChange"
 }
 
 # opsgenie

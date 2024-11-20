@@ -21,8 +21,13 @@ variable "disable_component_scraping" {}
 
 variable "stack_monitoring_node_selector" {}
 
+# Certificates
+
 variable "enable_tls" {
-  default = false
+  default = true
+}
+variable "create_self_signed_certificate"{
+  default = true
 }
 variable "tls_crt" {}
 variable "tls_key" {}
@@ -63,20 +68,8 @@ variable "grafana_default_timezone" {
   default = "Europe/Paris"
 }
 
-variable "grafana_admin_password" {
-  default = "adminPWD"
-}
-
 variable "grafana_domain_name" {
   default = "grafana.local"
-}
-
-variable "grafana_basic_auth_username" {
-  default = "grafana"
-}
-
-variable "grafana_basic_auth_password" {
-  default = "pwdToChange"
 }
 
 #
@@ -92,14 +85,6 @@ variable "alertmanager_use_external" {
 
 variable "alertmanager_domain_name" {
   default = "alertmanager.local"
-}
-
-variable "alertmanager_basic_auth_username" {
-  default = "alertmanager"
-}
-
-variable "alertmanager_basic_auth_password" {
-  default = "pwdToChange"
 }
 
 variable "alertmanager_customRules" {}

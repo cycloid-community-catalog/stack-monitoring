@@ -29,7 +29,7 @@ shared:
         default: false
   - name: Version selection
     condition: $advanced_opt == true
-    technologies: [pipeline, ansible]
+    technologies: [pipeline]
     vars:
       - name: "Terraform version"
         description: "Terraform version to use."
@@ -43,31 +43,44 @@ shared:
         widget: simple_text
         type: string
         default: "10.1"
-      - name: "Prometheus version"
-        description: "Prometheus version to use."
-        key: prometheus_version
-        widget: simple_text
+
+  - name: Enable SSL
+    condition: $advanced_opt == true
+    technologies: [terraform]
+    vars:
+      - name: "Enable HTTPs"
+        description: "Select wheter to enable HTTPs traffic and use SSL certificates."
+        key: enable_tls
+        type: boolean
+        widget: switch
+        default: true
+
+  - name: SSL configuration
+    condition: $advanced_opt == true && $enable_tls == true
+    technologies: [terraform]
+    vars:
+      - name: "Create self signed certificate"
+        description: "Wheter to create a self signed certificate automatically. Otherwise a certificate needs to be imported"
+        key: create_self_signed_certificate
+        type: boolean
+        widget: switch
+        default: true
+
+  - name: SSL certificate import
+    condition: $advanced_opt == true && create_self_signed_certificate == false
+    technologies: [pipeline]
+    vars:
+      - name: "Certificate"
+        description: "Credential containing certificate"
+        key: tls_crt
         type: string
-        default: "latest"
-      - name: "Alertmananager version"
-        description: "Alertmanager version to use."
-        key: alertmanager_version
-        widget: simple_text
+        widget: cy_cred
+      - name: "Certificate key"
+        description: "Credential containing ssl certificate"
+        key: tls_key
         type: string
-        default: "latest"
-      - name: "Grafana version"
-        description: "Grafana version to use."
-        key: grafana_version
-        widget: simple_text
-        type: string
-        default: "latest"
-      - name: "Blackbox exporter version"
-        description: "Blackbox exporter version to use."
-        key: blackbox_exporter_version
-        widget: simple_text
-        type: string
-        default: "latest"
-        #TODO others
+        widget: cy_cred
+
 
 - &aws-creds
   name: AWS Credentials
@@ -158,7 +171,7 @@ use_cases:
             ]
 
     - name: SSH access
-      technologies: [pipeline,terraform]
+      technologies: [pipeline]
       vars:
         - name: "SSH CIDR and CIDR to allow"
           description: "Map containing the CIDR and security groups IDs to allow SSH access to the monitoring VM, use the map keys cidr and sg. Default CIDR:0.0.0.0/0"
@@ -173,6 +186,17 @@ use_cases:
         - name: "Use Bastion"
           description: "Select wheter to use a Bastion to SSH instance.The bastion CIDR or SG should be added in the SSH allowed above"
           key: use_bastion
+          type: boolean
+          widget: switch
+          default: true
+
+    - name: Bastion connection
+      condition: $use_bastion == true
+      technologies: [pipeline]
+      vars:
+        - name: "Bastion URL"
+          description: "The URL to be used to connect to the bastion, in the format <USER>@<INSTANCE>"
+          key: bastion_url
           type: boolean
           widget: switch
           default: true
@@ -246,7 +270,7 @@ use_cases:
     groups:
     - name: Prometheus login
       condition: $prometheus_install == true
-      technologies: [pipeline]
+      technologies: [terraform]
       vars:
         - name: "Prometheus DNS"
           description: "DNS to use for Prometheus."
@@ -453,12 +477,11 @@ use_cases:
           widget: simple_text
           type: string
 
-
   - name: Alertmanager
     groups:
     - name: Alertmanager DNS
       condition: $alertmanager_install == true
-      technologies: [pipeline]
+      technologies: [terraform]
       vars:
         - name: "Alertmanager DNS"
           description: "DNS to use for Alertmanager."
@@ -550,7 +573,7 @@ use_cases:
     groups:
     - name: Grafana DNS
       condition: $grafana_install == true
-      technologies: [pipeline]
+      technologies: [terraform]
       vars:
         - name: "Grafana DNS"
           description: "DNS to use for Grafana."
@@ -577,42 +600,6 @@ use_cases:
               datasource: prometheus
 
   - *advanced
-  - name: NGINX configuration
-    condition: $advanced_opt == true
-    technologies: [ansible]
-    vars:
-      - name: "Enable Nginx HTTPs"
-        description: "Select wheter to enable HTTPs traffic and using SSL certificates."
-        key: use_ssl
-        type: boolean
-        widget: switch
-        default: true
-
-  - name: SSL configuration
-    condition: $advanced_opt == true && $use_ssl == true
-    technologies: [ansible]
-    vars:
-      - name: "Create self signed certificate"
-        description: "Wheter to create a self signed certificate automatically in the VM. Otherwise a certificate needs to be imported"
-        key: create_self_signed_certificate
-        type: boolean
-        widget: switch
-        default: true
-
-  - name: SSL certificate import
-    condition: $advanced_opt == true && create_self_signed_certificate == false
-    technologies: [pipeline]
-    vars:
-      - name: "Nginx certificate"
-        description: "Credential containing nginx certificate to be used by server"
-        key: nginx_certificate
-        type: string
-        widget: cy_cred
-      - name: "Nginx certificate key"
-        description: "Credential containing nginx certificate to be used by server"
-        key: nginx_certificate_key
-        type: string
-        widget: cy_cred
 
   - name: DNS Creation
     condition: $advanced_opt == true
@@ -718,7 +705,7 @@ use_cases:
           key: module.prometheus-blackbox-exporter.blackbox_exporter_install
           widget: switch
           type: boolean
-          default: true
+          default: false
 
     - name: Configuration
       condition: $module.prometheus-blackbox-exporter.blackbox_exporter_install == true
@@ -897,12 +884,6 @@ use_cases:
       condition: $advanced_opt == true
       technologies: [terraform]
       vars:
-        - name: "Enable HTTPs"
-          description: "Select wheter to enable HTTPs traffic and using SSL certificates for the k8s ingress."
-          key: enable_tls
-          type: boolean
-          widget: switch
-          default: false
         - name: "Extra tags"
           description: "Dict of extra tags to add to cluster resources crated."
           key: extra_tags
@@ -925,30 +906,3 @@ use_cases:
           key: module.opsgenie-heartbeat.opsgenie_token
           widget: cy_cred
           type: string
-
-
-    - name: TLS configuration
-      condition: $advanced_opt == true && $enable_tls == true
-      technologies: [pipeline]
-      vars:
-        - name: "Create self signed certificate"
-          description: "Wheter to create a self signed certificate to be used for the k8s ingress of each component. Otherwise a certificate needs to be imported"
-          key: create_self_signed_certificate
-          type: boolean
-          widget: switch
-          default: true
-
-    - name: TLS certificate import
-      condition: $advanced_opt == true && create_self_signed_certificate == false
-      technologies: [pipeline]
-      vars:
-        - name: "TLS certificate"
-          description: "Credential containing certificate to be used by the k8s ingresses"
-          key: tls_crt
-          type: string
-          widget: cy_cred
-        - name: "TLS certificate key"
-          description: "Credential containing certificate key to be used by the k8s ingresses"
-          key: tls_key
-          type: string
-          widget: cy_cred

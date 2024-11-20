@@ -40,15 +40,14 @@ resource_types:
 groups:
 - name: setup
   jobs:
-  - creds-creation
   - terraform-plan
   - terraform-apply
   - deploy
+  - access-mgmt
 
 - name: destroy
   jobs:
   - terraform-destroy
-  - clean-vm-credential
 
 resources:
 - name: tfstate
@@ -68,16 +67,16 @@ resources:
       aws_access_cred: ((aws_access_cred))
       aws_region: ((aws_default_region))
       aws_role_arn: ((aws_role_arn))
-      aws_extra_tags: ((aws_extra_tags))
-      ssh_public_key: ((((ssh_credential)).pub))
+      aws_extra_tags: ((aws_extra_tags)
+      ssh_to_allow: ((ssh_to_allow))
+      use_bastion: ((use_bastion))
+      tls_crt: ((tls_crt))
+      tls_key: ((tls_key))
 #($- else if eq .use_case "azure-vm" $)
       #azure_cred: ((($ .azure_cred $))
       #resource_group_name: ($ .resource_group_name$)
       #resource_group_location: ($ .resource_group_location$)
 #($- end $)
-      prometheus_domain_name: ((prometheus_domain_name))
-      alertmanager_domain_name: ((alertmanager_domain_name))
-      grafana_domain_name: ((grafana_domain_name))
 
 - name: git_stack_ansible
   type: git
@@ -137,137 +136,6 @@ resources:
       - ($ .project $)/terraform/($ .environment $)/*
 
 jobs:
-  - name: creds-creation
-    build_logs_to_retain: 10
-    plan:
-    - do:
-      - get: git_config_terraform
-        trigger: true
-      - task: creds-creation
-        config:
-          platform: linux
-          image_resource:
-            type: docker-image
-            source:
-              repository: cycloid/cycloid-toolkit
-              tag: "v((ansible_version))"
-          run:
-            path: /bin/bash
-            args:
-              - '-ec'
-              - |
-                # login to cli
-                cy login --org $ORG > /dev/null 2>&1
-
-                # required for htpasswd command
-                apk add apache2-utils -q  > /dev/null
-
-                # check for prometheus
-                if [ "$PROMETHEUS_INSTALL" = "true" ]; then
-
-                  echo "Checking credentials for prometheus..."
-
-                  # check if credential exists
-                  if [[ -z $(cy --org "$ORG"credential list -o json -o json 2>/dev/null | jq -r ".[] | select(.canonical == \"$PROMETHEUS_CREDENTIAL\") | .canonical") ]]; then
-
-                      echo "Credential '$PROMETHEUS_CREDENTIAL' does not exist. Creating..."
-
-                      prometheus_user=$ORG
-                      prometheus_password=$(openssl rand -base64 32)
-                      prometheus_httpd=$(htpasswd -nb "$prometheus_user" "$prometheus_password" 2>/dev/null)
-
-                      cy --org "$ORG" credential create custom \
-                          --path "$PROMETHEUS_CREDENTIAL" \
-                          --name "$PROMETHEUS_CREDENTIAL" \
-                          --field "user=$prometheus_user" \
-                          --field "pwd=$prometheus_password" \
-                          --field "httpwd=$prometheus_httpd" > /dev/null 2>&1
-
-                      echo "Credential created."
-                  fi
-                fi
-
-                # check for alertmanager
-                if [ "$ALERTMANAGER_INSTALL" = "true" ]; then
-
-                  echo -e "\nChecking credentials for alertmanager..."
-
-                  # check if credential exists
-                  if [[ -z $(cy --org "$ORG"credential list -o json 2>/dev/null | jq -r ".[] | select(.canonical == \"$ALERTMANAGER_CREDENTIAL\") | .canonical") ]]; then
-
-                      echo "Credential '$ALERTMANAGER_CREDENTIAL' does not exist. Creating..."
-
-                      alertmanager_user=$ORG
-                      alertmanager_password=$(pwgen -scny 16 1 | tr -d '"\\')
-                      alertmanager_httpd=$(htpasswd -nb "$alertmanager_user" "$alertmanager_password")
-
-                      cy --org "$ORG" credential create custom \
-                          --path "$ALERTMANAGER_CREDENTIAL" \
-                          --name "$ALERTMANAGER_CREDENTIAL" \
-                          --field "user=$alertmanager_user" \
-                          --field "pwd=$alertmanager_password" \
-                          --field "httpwd=$alertmanager_httpd" > /dev/null 2>&1
-
-                      echo "Credential created."
-                  fi
-                fi
-
-                # check for grafana
-                if [ "$GRAFANA_INSTALL" = "true" ]; then
-
-                  echo -e "\nChecking credentials for grafana..."
-
-                  # check if credential exists
-                  if [[ -z $(cy --org "$ORG"credential list -o json 2>/dev/null | jq -r ".[] | select(.canonical == \"$GRAFANA_CREDENTIAL\") | .canonical") ]]; then
-
-                      echo "Credential '$GRAFANA_CREDENTIAL' does not exist. Creating..."
-
-                      grafana_admin_user="admin"
-                      grafana_admin_pwd=$(openssl rand -base64 32)
-
-                      cy --org "$ORG" credential create custom \
-                          --path "$GRAFANA_CREDENTIAL" \
-                          --name "$GRAFANA_CREDENTIAL" \
-                          --field "admin_user=$grafana_admin_user" \
-                          --field "admin_pwd=$grafana_admin_pwd"
-
-                      echo "Credential created."
-                  fi
-                fi
-
-                # check if credential exists to store SSH private key
-                echo -e "\nChecking SSH credential ..."
-
-                  if [[ -z $(cy --org "$ORG"credential list -o json 2>/dev/null | jq -r ".[] | select(.canonical == \"$SSH_CREDENTIAL\") | .canonical") ]]; then
-
-                    echo "Credential '$SSH_CREDENTIAL' does not exist. Creating..."
-
-                    # Creates key
-                    ssh-keygen -t ed25519 -C "monitoring@${ORG}" -f "./ssh_key" -N "" > /dev/null
-                    export SSH_PRIV="$(cat ssh_key)"
-                    export SSH_PUB="$(cat ssh_key.pub)"
-
-                    cy --org "$ORG" credential create custom \
-                        --path "$SSH_CREDENTIAL" \
-                        --name "$SSH_CREDENTIAL" \
-                        --field "priv=$SSH_PRIV" \
-                        --field "pub=$SSH_PUB" > /dev/null 2>&1
-
-                    echo "Credential created."
-                fi
-        params:
-          CY_API_KEY: ((cycloid_api_key))
-          PROMETHEUS_INSTALL: ((prometheus_install))
-          ALERTMANAGER_INSTALL: ((alertmanager_install))
-          GRAFANA_INSTALL: ((grafana_install))
-          ORG: ($ .organization_canonical $)
-          ENV: ($ .environment $)
-          PROJECT: ($ .project $)
-          SSH_CREDENTIAL: ((ssh_credential))
-          GRAFANA_CREDENTIAL: ((grafana_cred))
-          ALERTMANAGER_CREDENTIAL: ((alertmanager_cred))
-          PROMETHEUS_CREDENTIAL: ((prometheus_cred))
-
   - name: terraform-plan
     serial: true
     serial_groups: [terraform]
@@ -279,8 +147,6 @@ jobs:
           trigger: true
         - get: git_config_terraform
           trigger: true
-          passed:
-            - creds-creation
         - *task-merge-stack-and-config
         - put: tfstate
           params:
@@ -355,12 +221,6 @@ jobs:
                 fi
                 cat merged-stack/inventory
 
-                # import nginx certificates
-                if [ "$CREATE_SELF_SIGNED_CERTIFICATE" = false ]; then
-                echo -e "${NGINX_SSL_KEY}" > merged-stack/files/nginx/ssl/tls.key
-                echo -e "${NGINX_SSL_CERTIFICATE}" > merged-stack/files/nginx/ssl/tls.crt
-                fi
-
           inputs:
             - name: git_config_ansible
               path: "config"
@@ -374,9 +234,6 @@ jobs:
         params:
           CONFIG_PATH: ($ .project $)/ansible
           STACK_PATH: ansible
-          CREATE_SELF_SIGNED_CERTIFICATE: ((create_self_signed_certificate))
-          NGINX_SSL_CERTIFICATE: ((nginx_certificate))
-          NGINX_SSL_KEY: ((nginx_certificate_key))
           USE_BASTION: ((use_bastion))
 
       - task: run-ansible
@@ -396,6 +253,8 @@ jobs:
                 #https://stackoverflow.com/questions/54377305/tar-not-found-in-archive-error-when-using-docker-alpine
                 apk add --no-cache tar > /dev/null 2>&1
 
+                export SSH_PRIVATE_KEY = $(jq -r '.ssh_private_key' terraform/metadata)
+
                 # Static inventory
                 ansible-inventory -i ansible-playbook/inventory --graph
                 /usr/bin/ansible-runner
@@ -405,13 +264,9 @@ jobs:
           - name: merged-stack
             path: ansible-playbook
         params:
-          PROMETHEUS_INSTALL: ((prometheus_install))
-          ALERTMANAGER_INSTALL: ((alertmanager_install))
-          GRAFANA_INSTALL: ((grafana_install))
           ANSIBLE_PLAYBOOK_PATH: ansible-playbook
           ANSIBLE_PLAYBOOK_NAME: main.yml
           BASTION_URL: ((bastion_url))
-          SSH_PRIVATE_KEY: ((((ssh_credential)).priv))
           ANSIBLE_INVENTORY: inventory
           EXTRA_ANSIBLE_ARGS: "-i inventory"
           ANSIBLE_FORCE_GALAXY: false
@@ -429,14 +284,6 @@ jobs:
             external_alertmanager_password: ((external_alertmanager_password))
             external_alertmanager_username: ((external_alertmanager_username))
             external_alertmanager_targets: ((external_alertmanager_targets))
-            prometheus_web_login: ((((prometheus_cred)).httpwd))
-            prometheus_user: ((((prometheus_cred)).user))
-            prometheus_password: ((((prometheus_cred)).pwd))
-            alertmanager_web_login: ((((alertmanager_cred)).httpwd))
-            alertmanager_user: ((((alertmanager_cred)).user))
-            alertmanager_password: ((((alertmanager_cred)).pwd))
-            grafana_admin_user: ((((grafana_cred)).admin_user))
-            grafana_admin_pwd: ((((grafana_cred)).admin_pwd))
             postgres_db_user: ((postgres_db_user))
             postgres_db_password: ((postgres_db_password))
             postgres_db_host: ((postgres_db_host))
@@ -456,54 +303,79 @@ jobs:
 #            azure_resource_group: ($ .resource_group_name $)
 #($- end $)
 
-#  - name: access-mgmt
-#    build_logs_to_retain: 10
-#    plan:
-#    - do:
-#      - get: tfstate
-#        trigger: false
-#        passed:
-#          - deploy
-#
-#      - task: show-creds
-#        config:
-#          platform: linux
-#          image_resource:
-#            type: docker-image
-#            source:
-#              repository: cycloid/cycloid-toolkit
-#              tag: latest
-#          run:
-#            path: /bin/bash
-#            args:
-#              - '-exc'
-#              - |
-#                # Define color codes
-#                GREEN='\033[0;32m'
-#                BLUE='\033[0;34m'
-#                YELLOW='\033[0;33m'
-#                RED='\033[0;31m'
-#                NC='\033[0m' # No Color
-#
-#                # Display connection credentials
-#                echo "${GREEN}Here are your connection credentials:${NC}"
-#
-#                echo "${BLUE}External Alertmanager Username:${NC} $external_alertmanager_username"
-#                echo "${BLUE}External Alertmanager Password:${NC} $external_alertmanager_password"
-#                echo "${BLUE}External Alertmanager Targets:${NC} $external_alertmanager_targets"
-#                echo ""
-#                echo "${YELLOW}Remember to keep these credentials safe!${NC}"
-#                echo ""
-#                echo "${RED}Command Tips for Troubleshooting:${NC}"
-#                echo "  1. If you encounter issues, check your connection using the following command:"
-#                echo "     - curl -u \"$external_alertmanager_username:$external_alertmanager_password\" $external_alertmanager_targets"
-#                echo "  2. Verify the AWS region and ensure your permissions are correctly set."
-#                echo "  3. Use 'echo' to debug your variables:"
-#                echo "     - echo \"Environment: \$env\""
-#                echo "  4. If using Ansible, run the playbook with increased verbosity:"
-#                echo "     - ansible-playbook playbook.yml -vvvv"
-#                echo ""
-#                echo "${GREEN}Happy connecting!${NC}"
+
+  - name: access-mgmt
+    serial: True
+    build_logs_to_retain: 3
+    plan:
+    - do:
+      - get: tfstate
+        trigger: true
+        passed:
+          - terraform-apply
+
+      - task: tips-and-access
+        config:
+          platform: linux
+          image_resource:
+            type: registry-image
+            source:
+              repository: cycloid/cycloid-toolkit
+              tag: latest
+          run:
+            path: /bin/bash
+            args:
+            - -ec
+            - |
+              # Display connection credentials
+              echo -e "Here are your connection credentials:"
+
+              if [ "$PROMETHEUS_INSTALL" = "true" ]; then
+                echo -e "Prometheus available at $(jq -r .prometheus_domain_name tfstate/metadata)"
+                echo -e "Basic auth username: $(jq -r .prometheus_basic_auth_username tfstate/metadata)"
+                echo -e "Basic auth password: $(jq -r .prometheus_basic_auth_password tfstate/metadata)"
+              fi
+
+              if [ "$ALERTMANAGER_INSTALL" = "true" ]; then
+                echo -e "Alertmanager available at $(jq -r .alertmanager_domain_name tfstate/metadata)"
+                echo -e "Basic auth username: $(jq -r .alertmanager_basic_auth_username tfstate/metadata)"
+                echo -e "Basic auth password: $(jq -r .alertmanager_basic_auth_password tfstate/metadata)"
+              fi
+
+              if [ "$GRAFANA_INSTALL" = "true" ]; then
+                echo -e "Grafana available at $(jq -r .grafana_domain_name tfstate/metadata)"
+                echo -e "Basic auth username: $(jq -r .grafana_basic_auth_username tfstate/metadata)"
+                echo -e "Basic auth password: $(jq -r .grafana_basic_auth_password tfstate/metadata)"
+              fi
+
+              if [ "$THANOS_INSTALL" = "true" ]; then
+                echo -e "Thanos available at $(jq -r .thanos_domain_name tfstate/metadata)"
+                echo -e "Basic auth username: $(jq -r .thanos_basic_auth_username tfstate/metadata)"
+                echo -e "Basic auth password: $(jq -r .thanos_basic_auth_password tfstate/metadata)"
+              fi
+
+              # Display tips
+              echo -e "Here are some tips to help debug issues"
+              echo -e "Remote connect to the cluster using the kubeconfig context.
+              echo -e "Copy the kubeconfig in /tmp for example and export the as env var KUBECONFIG=/tmp/kubeconfig.yaml kubectl <cmd> <obj>"
+              echo -e "kubeconfig: \n ${KUBECONFIG_CONTENT}"
+
+              echo -e "k8s namespace: $(jq -r .namespace tfstate/metadata)"
+
+              echo -e "For local tests add an entry in the /etc/hosts file, as follows <DNS> <k8s NODE IP>"
+
+          inputs:
+          - name: tfstate
+
+          params:
+            ORG: ($ .organization_canonical $)
+            ENV: ($ .environment $)
+            PROJECT: ($ .project $)
+            KUBECONFIG_CONTENT: ((kubeconfig_content))
+            GRAFANA_INSTALL: ((grafana_install))
+            PROMETHEUS_INSTALL: ((prometheus_install))
+            THANOS_INSTALL: ((thanos_install))
+            ALERTMANAGER_INSTALL: ((alertmanager_install))
 
   - name: terraform-destroy
     serial: true
@@ -522,57 +394,3 @@ jobs:
               terraform_source: merged-stack/
             get_params:
               action: destroy
-
-  - name: clean-vm-credential
-    serial_groups: [terraform]
-    build_logs_to_retain: 3
-    plan:
-    - do:
-      - get: git_config_terraform
-        trigger: true
-        passed:
-          - terraform-destroy
-
-      - task: clean-cred
-        config:
-          platform: linux
-          image_resource:
-            type: registry-image
-            source:
-              repository: cycloid/cycloid-toolkit
-              tag: latest
-          run:
-            path: /bin/bash
-            args:
-            - -ec
-            - |
-              # login to cli
-              cy login --org $ORG > /dev/null 2>&1
-
-              delete_credential_if_exists() {
-                  # $1 is org, $2 is credential name
-
-                  # Check if the credential exists
-                  CRED=$(cy --org "$1" credential list -o json | jq -r ".[] | select(.canonical == \"$2\") | .canonical")
-
-                  if [[ -n "$CRED" ]]; then
-                      # Delete the credential if it exists
-                      if cy --org "$1" credential delete --canonical "$2"; then
-                          echo "Credential [$2]: removed"
-                      else
-                          echo "Failed to remove credential [$2]" >&2
-                      fi
-                  else
-                      echo "Credential [$2]: already removed"
-                  fi
-              }
-
-              delete_credential_if_exists "$ORG" "$ALERTMANAGER_CREDENTIAL"
-              delete_credential_if_exists "$ORG" "$GRAFANA_CREDENTIAL"
-              delete_credential_if_exists "$ORG" "$PROMETHEUS_CREDENTIAL"
-          params:
-            CY_API_KEY: ((cycloid_api_key))
-            ORG: ($ .organization_canonical $)
-            ALERTMANAGER_CREDENTIAL: ((alertmanager_cred))
-            GRAFANA_CREDENTIAL: ((grafana_cred))
-            PROMETHEUS_CREDENTIAL: ((prometheus_cred))

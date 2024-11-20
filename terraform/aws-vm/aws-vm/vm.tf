@@ -1,15 +1,9 @@
 ###
 # Creates the VM used to deploy grafana, prometheus and alertmanager
-# Creates also the associated keypair (optional)
 ###
 
-## create keypair
-resource "aws_key_pair" "vm" {
-  key_name   = "${var.organization}-vm-monitoring-${var.env}"
-  public_key = var.ssh_public_key
-}
 
-# ami to use -> debian 10
+# ami to use -> debian 12
 data "aws_ami" "debian" {
   most_recent = true
 

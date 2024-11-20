@@ -5,6 +5,13 @@
 # todo:  check limits, add oauth2, check storage if default increase 8-10Gi, compactor 20Gi, probes to keep?
 ################################################################################
 
+# basic auth for thanos
+resource "random_password" "thanos_basic_auth_password" {
+  count = var.thanos_install ? 1 : 0
+  length  = 32
+  special = false
+}
+
 # non string or boolean values cannot be set as value in helm
 # https://github.com/hashicorp/terraform-provider-helm/issues/669
 # all the map variables need to apply this little trick
@@ -74,7 +81,7 @@ resource "helm_release" "thanos" {
 
   set {
     name  = "auth.basicAuthUsers"
-    value = "${var.thanos_basic_auth_username}:${var.thanos_basic_auth_password}"
+    value = "${var.organization}:${random_password.thanos_basic_auth_password.result}"
   }
 
   set {

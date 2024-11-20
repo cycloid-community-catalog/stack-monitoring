@@ -33,8 +33,21 @@ variable "ssh_to_allow" {
 variable "use_bastion" {
   default = false
 }
-variable "ssh_public_key" {
+
+# ssl
+variable "tls_crt" {
   default = ""
+}
+
+variable "tls_key" {
+  default = ""
+}
+variable "enable_tls" {
+  default = false
+}
+
+variable "create_self_signed_certificate" {
+  default = true
 }
 
 # vm dns variables

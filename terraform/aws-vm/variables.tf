@@ -10,10 +10,12 @@ variable "aws_role_arn" {
   default = ""
 }
 variable "aws_extra_tags" {}
-variable "prometheus_domain_name" {}
-variable "alertmanager_domain_name" {}
-variable "grafana_domain_name" {}
-variable "ssh_public_key" {}
+
+variable "ssh_to_allow" {}
+variable "use_bastion" {}
+
+variable "tls_crt" {}
+variable "tls_key" {}
 
 # default tags to be applied in all created objects
 locals {

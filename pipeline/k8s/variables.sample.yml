@@ -12,34 +12,17 @@ terraform_version: "1.6.3"
 ansible_version: "10.1"
 
 ## nginx certificates
-# TODO ! ideas on how to pass terraform variable using tls cert
-enable_tls: false
-create_self_signed_certificate: true
 tls_crt: ""
 tls_key: ""
 
-## monitoring credentials
-# grafana
+## monitoring tools
 grafana_install: false
-grafana_admin_pwd: ""
-grafana_admin_user: ""
-grafana_domain_name: ""
-grafana_cred: "($ .project $)-grafana-($ .environment $)"
-
-# alertmanager - created
 alertmanager_install: false
-alertmanager_cred: "($ .project $)-alertmanager-($ .environment $)"
+prometheus_install: true
+thanos_install: true
 
 # alertmanager - external (not created with the stack)
 alertmanager_use_external: []
-
-#prometheus
-prometheus_install: true
-prometheus_cred: "($ .project $)-prometheus-($ .environment $)"
-
-# thanos
-thanos_install: true
-thanos_cred: "($ .project $)-thanos-($ .environment $)"
 
 #heartbeat
 opsgenie_token: ""

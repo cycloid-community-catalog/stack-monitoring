@@ -30,7 +30,6 @@ config:
   aws-vm:
     name: 'AWS VM'
     description: 'Deploys a VM in AWS with the different monitoring services'
-    cloud_provider: aws
     pipeline:
       pipeline:
         path: pipeline/vm/pipeline.yml

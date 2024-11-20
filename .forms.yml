@@ -195,7 +195,7 @@ use_cases:
       technologies: [pipeline]
       vars:
         - name: "Bastion URL"
-          description: "The URL to be used to connect to the bastion, in the format <USER>@<INSTANCE>"
+          description: "The URL to be used to connect to the bastion, in the format USER@INSTANCE"
           key: bastion_url
           type: string
           widget: simple_text

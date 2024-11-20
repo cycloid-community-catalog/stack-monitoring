@@ -20,11 +20,12 @@ resource "aws_key_pair" "vm" {
 
 # self signed certificate
 resource "tls_private_key" "cert" {
-  count = (var.enable_tls && var.create_self_signed_certificate) : 1 ? 0
+  count = (var.enable_tls && var.create_self_signed_certificate) ? 1 : 0
   algorithm = "ED25519"
 }
 
 resource "tls_self_signed_cert" "cert" {
+  count = (var.enable_tls && var.create_self_signed_certificate) ? 1 : 0
   key_algorithm   = tls_private_key.cert.algorithm
   private_key_pem = tls_private_key.cert.private_key_pem
 

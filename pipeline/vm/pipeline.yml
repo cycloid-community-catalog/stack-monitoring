@@ -346,21 +346,15 @@ jobs:
                 echo -e "Basic auth password: $(jq -r .grafana_basic_auth_password tfstate/metadata)"
               fi
 
-              if [ "$THANOS_INSTALL" = "true" ]; then
-                echo -e "Thanos available at $(jq -r .thanos_domain_name tfstate/metadata)"
-                echo -e "Basic auth username: $(jq -r .thanos_basic_auth_username tfstate/metadata)"
-                echo -e "Basic auth password: $(jq -r .thanos_basic_auth_password tfstate/metadata)"
-              fi
-
               # Display tips
               echo -e "Here are some tips to help debug issues"
-              echo -e "Remote connect to the cluster using the kubeconfig context.
+              echo -e "Remote connect to the vm.""
               echo -e "Copy the kubeconfig in /tmp for example and export the as env var KUBECONFIG=/tmp/kubeconfig.yaml kubectl <cmd> <obj>"
               echo -e "kubeconfig: \n ${KUBECONFIG_CONTENT}"
 
               echo -e "k8s namespace: $(jq -r .namespace tfstate/metadata)"
 
-              echo -e "For local tests add an entry in the /etc/hosts file, as follows <DNS> <k8s NODE IP>"
+              echo -e "For local tests add an entry in the /etc/hosts file, as follows <DNS> <machi> TODO!!"
 
           inputs:
           - name: tfstate
@@ -369,10 +363,8 @@ jobs:
             ORG: ($ .organization_canonical $)
             ENV: ($ .environment $)
             PROJECT: ($ .project $)
-            KUBECONFIG_CONTENT: ((kubeconfig_content))
             GRAFANA_INSTALL: ((grafana_install))
             PROMETHEUS_INSTALL: ((prometheus_install))
-            THANOS_INSTALL: ((thanos_install))
             ALERTMANAGER_INSTALL: ((alertmanager_install))
 
   - name: terraform-destroy

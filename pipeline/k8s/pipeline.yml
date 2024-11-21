@@ -194,7 +194,7 @@ jobs:
 
               # Display tips
               echo -e "Here are some tips to help debug issues"
-              echo -e "Remote connect to the cluster using the kubeconfig context.
+              echo -e "Remote connect to the cluster using the kubeconfig context."
               echo -e "Copy the kubeconfig in /tmp for example and export the as env var KUBECONFIG=/tmp/kubeconfig.yaml kubectl <cmd> <obj>"
               echo -e "kubeconfig: \n ${KUBECONFIG_CONTENT}"
 

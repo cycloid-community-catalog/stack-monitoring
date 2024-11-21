@@ -29,12 +29,12 @@ output "prometheus_basic_auth_username" {
 
 output "prometheus_basic_auth_password" {
   sensitive = true
-  value     = random_password.prometheus_basic_auth_password[0].result
+  value     = var.prometheus_install ? random_password.prometheus_basic_auth_password[0].result : ""
 }
 
 output "prometheus_basic_auth_httpwd" {
   sensitive = true
-  value     = random_password.prometheus_basic_auth_password[0].bcrypt_hash
+  value     = var.prometheus_install ? random_password.prometheus_basic_auth_password[0].bcrypt_hash : ""
 }
 
 output "alertmanager_basic_auth_username" {
@@ -44,12 +44,12 @@ output "alertmanager_basic_auth_username" {
 
 output "alertmanager_basic_auth_password" {
   sensitive = true
-  value     = random_password.alertmanager_basic_auth_password[0].result
+  value     = var.alertmanager_install ? random_password.alertmanager_basic_auth_password[0].result : ""
 }
 
 output "alertmanager_basic_auth_httpwd" {
   sensitive = true
-  value     = random_password.alertmanager_basic_auth_password[0].bcrypt_hash
+  value     = var.alertmanager_install ? random_password.alertmanager_basic_auth_password[0].bcrypt_hash : ""
 }
 
 output "grafana_basic_auth_username" {
@@ -59,12 +59,12 @@ output "grafana_basic_auth_username" {
 
 output "grafana_basic_auth_password" {
   sensitive = true
-  value     = random_password.grafana_basic_auth_password[0].result
+  value     = var.grafana_install ? random_password.grafana_basic_auth_password[0].result : ""
 }
 
 output "grafana_basic_auth_httpwd" {
   sensitive = true
-  value     = random_password.grafana_basic_auth_password[0].bcrypt_hash
+  value     = var.grafana_install ? random_password.grafana_basic_auth_password[0].bcrypt_hash : ""
 }
 
 # certs

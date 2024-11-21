@@ -7,31 +7,31 @@ module "kube-prometheus" {
   organization = var.organization
   #####################################
 
-  kube_prometheus_helm_version   = "59.0.0"
-  namespace                      = local.namespace
-  extra_labels                   = {}
-  disable_component_scraping     = [] #kubeApiServer kubelet kubeControllerManager coreDns kubeDns kubeEtcd kubeScheduler kubeProxy kubeStateMetrics
-  enable_tls                     = false
-  create_self_signed_certificate = true
+  #kube_prometheus_helm_version   = "59.0.0"
+  #namespace                      = local.namespace
+  #extra_labels                   = {}
+  #disable_component_scraping     = [] #kubeApiServer kubelet kubeControllerManager coreDns kubeDns kubeEtcd kubeScheduler kubeProxy kubeStateMetrics
+  #enable_tls                     = false
+  #create_self_signed_certificate = true
   tls_crt                        = var.tls_crt
   tls_key                        = var.tls_key
-  stack_monitoring_node_selector = {}
+  #stack_monitoring_node_selector = {}
 
   prometheus_install              = var.prometheus_install
-  prometheus_domain_name          = "prometheus.local"
-  prometheus_additional_scrape   = {}
+  #prometheus_domain_name          = "prometheus.local"
+  #prometheus_additional_scrape   = {}
 
   grafana_install                   = var.grafana_install
-  enable_default_grafana_dashboards = true
-  grafana_default_timezone          = "Europe/Paris"
-  grafana_domain_name               = "grafana.local"
+  #enable_default_grafana_dashboards = true
+  #grafana_default_timezone          = "Europe/Paris"
+  #grafana_domain_name               = "grafana.local"
 
   alertmanager_install             = var.alertmanager_install
   alertmanager_use_external        = var.alertmanager_use_external
-  alertmanager_domain_name         = "alertmanager.local"
-  alertmanager_customRules         = {}
-  alertmanager_additional_rules    = {}
-  alertmanager_config              = {}
+  #alertmanager_domain_name         = "alertmanager.local"
+  #alertmanager_customRules         = {}
+  #alertmanager_additional_rules    = {}
+  #alertmanager_config              = {}
 
   thanos_install = var.thanos_install
 
@@ -49,9 +49,9 @@ module "prometheus-blackbox-exporter" {
   namespace                      = local.namespace
   stack_monitoring_node_selector = module.kube-prometheus.stack_monitoring_node_selector
 
-  blackbox_exporter_install = "false"
-  blackbox_helm_version     = "8.17.0"
-  blackbox_exporter_modules = {}
+  #blackbox_exporter_install = "false"
+  #blackbox_helm_version     = "8.17.0"
+  #blackbox_exporter_modules = {}
 
 }
 
@@ -81,7 +81,7 @@ module "thanos" {
   organization = var.organization
   #####################################
 
-  thanos_helm_version             = "15.7.7"
+  #thanos_helm_version             = "15.7.7"
   namespace                       = local.namespace
   extra_labels                    = module.kube-prometheus.extra_labels
   enable_tls                      = var.enable_tls
@@ -91,8 +91,8 @@ module "thanos" {
   thanos_object_store_secret_name = module.kube-prometheus.thanos_object_store_secret_name
 
   thanos_install             = module.kube-prometheus.thanos_install
-  thanos_domain_name         = "thanos.local"
-  thanos_retention_raw       = "30d"
-  thanos_retention_5m        = "120d"
-  thanos_retention_1h        = "1y"
+  #thanos_domain_name         = "thanos.local"
+  #thanos_retention_raw       = "30d"
+  #thanos_retention_5m        = "120d"
+  #thanos_retention_1h        = "1y"
 }

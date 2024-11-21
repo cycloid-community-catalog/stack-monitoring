@@ -11,32 +11,32 @@ module "aws-vm" {
   aws_region = var.aws_region
 
   # vm configuration variables
-  vm_size               = ""
-  os_disk_size          = ""
-  os_disk_type          = ""
-  vm_iam_policies       = ""
+  #vm_size               = ""
+  #os_disk_size          = ""
+  #os_disk_type          = ""
+  #vm_iam_policies       = ""
 
   # vm network variables
-  subnet_id    = ""
-  vpc_id       = ""
-  ssh_to_allow = {}
+  #subnet_id    = ""
+  #vpc_id       = ""
+  #ssh_to_allow = {}
   use_bastion    = var.use_bastion
 
   # tls variables
-  enable_tls = true
-  create_self_signed_certificate = true
+  #enable_tls = true
+  #create_self_signed_certificate = true
   tls_crt = var.tls_crt
   tls_key = var.tls_key
 
   # vm dns variables
-  create_dns             = false
-  aws_dns_zone_id        = ""
-  prometheus_domain_name   = "prometheus.local"
-  alertmanager_domain_name = "alertmanager.local"
-  grafana_domain_name      = "grafana.local"
+  #create_dns             = false
+  #aws_dns_zone_id        = ""
+  #prometheus_domain_name   = "prometheus.local"
+  #alertmanager_domain_name = "alertmanager.local"
+  #grafana_domain_name      = "grafana.local"
 
   # vm monitoring software
-  prometheus_install   = true
-  alertmanager_install = false
-  grafana_install = false
+  #prometheus_install   = true
+  #alertmanager_install = false
+  #grafana_install = false
 }

@@ -296,7 +296,7 @@ grafana_address: "0.0.0.0"
 grafana_port: 3000
 grafana_user: "{{organization}}"
 grafana_security:
-  admin_user: "{{grafana_admin_user}}"
+  admin_user: "{{grafana_admin_user | default('admin') }}"
   admin_password: "{{grafana_admin_pwd}}"
 grafana_default_prometheus_datasource:
   - name: prometheus

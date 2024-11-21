@@ -348,13 +348,11 @@ jobs:
 
               # Display tips
               echo -e "Here are some tips to help debug issues"
-              echo -e "Remote connect to the vm.""
-              echo -e "Copy the kubeconfig in /tmp for example and export the as env var KUBECONFIG=/tmp/kubeconfig.yaml kubectl <cmd> <obj>"
-              echo -e "kubeconfig: \n ${KUBECONFIG_CONTENT}"
+              #TODO in case of bastion!
 
-              echo -e "k8s namespace: $(jq -r .namespace tfstate/metadata)"
-
-              echo -e "For local tests add an entry in the /etc/hosts file, as follows <DNS> <machi> TODO!!"
+              echo -e "Remote connect to the vm:"
+              echo -e "export SSH_KEY_MONITORING=$(jq -r .ssh_private_key tfstate/metadata)"
+              echo -e "ssh -i ${SSH_KEY_MONITORING} admin@$(jq -r .machine_ip_private_address tfstate/metadata)"
 
           inputs:
           - name: tfstate

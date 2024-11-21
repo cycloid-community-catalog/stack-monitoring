@@ -68,7 +68,6 @@ resources:
       aws_region: ((aws_default_region))
       aws_role_arn: ((aws_role_arn))
       aws_extra_tags: ((aws_extra_tags))
-      ssh_to_allow: ((ssh_to_allow))
       use_bastion: ((use_bastion))
       tls_crt: ((tls_crt))
       tls_key: ((tls_key))
@@ -292,7 +291,6 @@ jobs:
             mysql_db_password: ((mysql_db_password))
             mysql_db_host: ((mysql_db_host))
             mysql_db_port: ((mysql_db_port))
-
 #($- if eq .use_case "aws-vm" $)
             aws_default_region: ((aws_default_region))
 #($- else if eq .use_cas[0]e "azure-vm" $)

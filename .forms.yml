@@ -171,7 +171,7 @@ use_cases:
             ]
 
     - name: SSH access
-      technologies: [pipeline]
+      technologies: [terraform]
       vars:
         - name: "SSH CIDR and CIDR to allow"
           description: "Map containing the CIDR and security groups IDs to allow SSH access to the monitoring VM, use the map keys cidr and sg. Default CIDR:0.0.0.0/0"
@@ -183,6 +183,9 @@ use_cases:
               - 0.0.0.0/0
             sg: []
 
+    - name: Bastion enable
+      technologies: [pipeline]
+      vars:
         - name: "Use Bastion"
           description: "Select wheter to use a Bastion to SSH instance.The bastion CIDR or SG should be added in the SSH allowed above"
           key: use_bastion
@@ -190,12 +193,12 @@ use_cases:
           widget: switch
           default: true
 
-    - name: Bastion connection
+    - name: Bastion URL
       condition: $use_bastion == true
       technologies: [pipeline]
       vars:
         - name: "Bastion URL"
-          description: "The URL to be used to connect to the bastion, in the format USER@INSTANCE"
+          description: "The URL to be used to connect to the bastion, in the format {USER}@{INSTANCE"
           key: bastion_url
           type: string
           widget: simple_text

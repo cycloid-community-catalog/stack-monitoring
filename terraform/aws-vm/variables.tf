@@ -11,7 +11,6 @@ variable "aws_role_arn" {
 }
 variable "aws_extra_tags" {}
 
-variable "ssh_to_allow" {}
 variable "use_bastion" {}
 
 variable "tls_crt" {}

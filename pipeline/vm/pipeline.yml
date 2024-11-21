@@ -67,7 +67,7 @@ resources:
       aws_access_cred: ((aws_access_cred))
       aws_region: ((aws_default_region))
       aws_role_arn: ((aws_role_arn))
-      aws_extra_tags: ((aws_extra_tags)
+      aws_extra_tags: ((aws_extra_tags))
       ssh_to_allow: ((ssh_to_allow))
       use_bastion: ((use_bastion))
       tls_crt: ((tls_crt))
@@ -295,7 +295,7 @@ jobs:
 
 #($- if eq .use_case "aws-vm" $)
             aws_default_region: ((aws_default_region))
-#($- else if eq .use_case "azure-vm" $)
+#($- else if eq .use_cas[0]e "azure-vm" $)
 #            azure_subscription_id: ((($ .azure_cred $).subscription_id))
 #            azure_tenant_id: ((($ .azure_cred $).tenant_id))
 #            azure_client_id: ((($ .azure_cred $).client_id))

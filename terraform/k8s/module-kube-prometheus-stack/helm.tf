@@ -222,7 +222,7 @@ resource "helm_release" "kube_prometheus_stack" {
 
   set {
     name  = "grafana.adminPassword"
-    value = random_password.grafana_basic_auth_password.result
+    value = random_password.grafana_basic_auth_password[0].result
   }
 
   set {

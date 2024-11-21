@@ -86,10 +86,10 @@ output "nginx_cert_key" {
 # ssh key
 
 output "ssh_private_key" {
-  value     = module.aws-vm.private_key
+  value     = module.aws-vm.ssh_private_key
   sensitive = true
 }
 
 output "ssh_public_key" {
-  value = module.aws-vm.public_key
+  value = module.aws-vm.ssh_public_key
 }

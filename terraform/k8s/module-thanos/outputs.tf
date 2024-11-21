@@ -19,5 +19,5 @@ output "thanos_basic_auth_username" {
 }
 
 output "thanos_basic_auth_password" {
-  value = random_password.thanos_basic_auth_password.result
+  value = random_password.thanos_basic_auth_password[0].result
 }

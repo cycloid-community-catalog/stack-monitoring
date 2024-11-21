@@ -13,8 +13,7 @@ resource "tls_private_key" "cert" {
 
 resource "tls_self_signed_cert" "cert" {
   count = (var.enable_tls && var.create_self_signed_certificate) ? 1 : 0
-  key_algorithm   = tls_private_key.cert.algorithm
-  private_key_pem = tls_private_key.cert.private_key_pem
+  private_key_pem = tls_private_key.cert[0].private_key_pem
 
   # Certificate expires after 1 year (365×24)
   validity_period_hours = 8760
@@ -41,8 +40,8 @@ resource "kubernetes_secret" "tls_secret" {
 
   # base64encode
   data = {
-    "tls.crt" = var.tls_crt != "" ? var.tls_crt : tls_self_signed_cert.cert.cert_pem
-    "tls.key" = var.tls_key != "" ? var.tls_key : tls_private_key.cert.private_key_pem
+    "tls.crt" = var.tls_crt != "" ? var.tls_crt : tls_self_signed_cert.cert[0].cert_pem
+    "tls.key" = var.tls_key != "" ? var.tls_key : tls_private_key.cert[0].private_key_pem
   }
 }
 
@@ -64,7 +63,7 @@ resource "kubernetes_secret" "prometheus_basic_auth" {
   }
 
   data = {
-    "${var.organization}" = random_password.prometheus_basic_auth.bcrypt_hash
+    "${var.organization}" = random_password.prometheus_basic_auth_password[0].bcrypt_hash
   }
 }
 
@@ -84,7 +83,7 @@ resource "kubernetes_secret" "alertmanager_basic_auth" {
   }
 
   data = {
-    "${var.organization}" = random_password.alertmanager_basic_auth_password.bcrypt_hash
+    "${var.organization}" = random_password.alertmanager_basic_auth_password[0].bcrypt_hash
   }
 }
 
@@ -104,6 +103,6 @@ resource "kubernetes_secret" "grafana_basic_auth" {
   }
 
   data = {
-    "${var.organization}" = random_password.grafana_basic_auth_password.bcrypt_hash
+    "${var.organization}" = random_password.grafana_basic_auth_password[0].bcrypt_hash
   }
 }

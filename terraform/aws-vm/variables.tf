@@ -24,6 +24,7 @@ locals {
     env          = var.env
     project      = var.project
     organization = var.organization
+    Name         = "${var.organization}-vm-monitoring-${var.env}"
   }
   tags = merge(local.standard_tags, var.aws_extra_tags)
 }

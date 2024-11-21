@@ -24,7 +24,6 @@ module "kube-prometheus" {
   grafana_install                   = var.grafana_install
   enable_default_grafana_dashboards = true
   grafana_default_timezone          = "Europe/Paris"
-  grafana_admin_password            = var.grafana_admin_password
   grafana_domain_name               = "grafana.local"
 
   alertmanager_install             = var.alertmanager_install

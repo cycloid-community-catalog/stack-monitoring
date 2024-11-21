@@ -81,7 +81,7 @@ resource "helm_release" "thanos" {
 
   set {
     name  = "auth.basicAuthUsers"
-    value = "${var.organization}:${random_password.thanos_basic_auth_password.result}"
+    value = "${var.organization}:${random_password.thanos_basic_auth_password[0].result}"
   }
 
   set {

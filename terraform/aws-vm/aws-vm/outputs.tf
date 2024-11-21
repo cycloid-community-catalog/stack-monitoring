@@ -29,12 +29,12 @@ output "prometheus_basic_auth_username" {
 
 output "prometheus_basic_auth_password" {
   sensitive = true
-  value     = random_password.prometheus_basic_auth_password.result
+  value     = random_password.prometheus_basic_auth_password[0].result
 }
 
 output "prometheus_basic_auth_httpwd" {
   sensitive = true
-  value     = random_password.prometheus_basic_auth_password.bcrypt_hash
+  value     = random_password.prometheus_basic_auth_password[0].bcrypt_hash
 }
 
 output "alertmanager_basic_auth_username" {
@@ -44,12 +44,12 @@ output "alertmanager_basic_auth_username" {
 
 output "alertmanager_basic_auth_password" {
   sensitive = true
-  value     = random_password.alertmanager_basic_auth_password.result
+  value     = random_password.alertmanager_basic_auth_password[0].result
 }
 
 output "alertmanager_basic_auth_httpwd" {
   sensitive = true
-  value     = random_password.alertmanager_basic_auth_password.bcrypt_hash
+  value     = random_password.alertmanager_basic_auth_password[0].bcrypt_hash
 }
 
 output "grafana_basic_auth_username" {
@@ -59,12 +59,12 @@ output "grafana_basic_auth_username" {
 
 output "grafana_basic_auth_password" {
   sensitive = true
-  value     = random_password.grafana_basic_auth_password.result
+  value     = random_password.grafana_basic_auth_password[0].result
 }
 
 output "grafana_basic_auth_httpwd" {
   sensitive = true
-  value     = random_password.grafana_basic_auth_password.bcrypt_hash
+  value     = random_password.grafana_basic_auth_password[0].bcrypt_hash
 }
 
 # certs
@@ -75,12 +75,12 @@ output "enable_tls"{
 
 output "nginx_cert" {
   sensitive = true
-  value     = var.tls_crt != "" ? var.tls_crt : tls_self_signed_cert.cert.cert_pem
+  value     = var.tls_crt != "" ? var.tls_crt : tls_self_signed_cert.cert[0].cert_pem
 }
 
 output "nginx_cert_key" {
   sensitive = true
-  value     = var.tls_key != "" ? var.tls_key : tls_private_key.cert.private_key_pem
+  value     = var.tls_key != "" ? var.tls_key : tls_private_key.cert[0].private_key_pem
 }
 
 

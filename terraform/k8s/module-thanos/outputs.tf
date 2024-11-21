@@ -3,7 +3,7 @@
 #
 
 output "thanos_domain_name" {
-  value = var.thanos_domain_name
+  value = var.thanos_install ? var.thanos_domain_name : ""
 }
 
 output "thanos_bucket" {
@@ -16,7 +16,7 @@ output "thanos_bucket_user" {
 
 output "thanos_basic_auth_username" {
   sensitive = true
-  value = var.organization
+  value = var.thanos_install ? var.organization : ""
 }
 
 output "thanos_basic_auth_password" {

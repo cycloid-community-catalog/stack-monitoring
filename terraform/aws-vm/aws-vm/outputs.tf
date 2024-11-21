@@ -10,15 +10,15 @@ output "machine_ip_public_address" {
 
 # dns
 output "prometheus_domain_name" {
-  value = var.prometheus_domain_name
+  value = var.prometheus_install ? var.prometheus_domain_name : ""
 }
 
 output "grafana_domain_name" {
-  value = var.grafana_domain_name
+  value = var.grafana_install ? var.grafana_domain_name : ""
 }
 
 output "alertmanager_domain_name" {
-  value = var.alertmanager_domain_name
+  value = var.alertmanager_install ? var.alertmanager_domain_name : ""
 }
 
 # basic_auth

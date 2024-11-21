@@ -3,41 +3,39 @@
 #
 
 output "prometheus_domain_name" {
-  value       = var.prometheus_domain_name
+  value = var.prometheus_install ? var.prometheus_domain_name : ""
 }
 
 output "alertmanager_domain_name" {
-  value       = var.alertmanager_domain_name
+  value = var.alertmanager_install ? var.alertmanager_domain_name : ""
 }
 
 output "grafana_domain_name" {
-  value       = var.grafana_domain_name
+  value = var.grafana_install ? var.grafana_domain_name : ""
 }
-
 
 # shared variables with other modules
 output "stack_monitoring_node_selector" {
-  value       = var.stack_monitoring_node_selector
+  value = var.stack_monitoring_node_selector
 }
 
 output "extra_labels" {
-  value       = var.extra_labels
+  value = var.extra_labels
 }
 
 output "thanos_install" {
-  value       = var.thanos_install
+  value = var.thanos_install
 }
 
 output "thanos_object_store_secret_name" {
-  value       = local.thanos_object_store_secret_name
+  value = local.thanos_object_store_secret_name
 }
-
 
 # basic auth
 
 output "prometheus_basic_auth_username" {
   sensitive = true
-  value     = var.organization
+  value     = var.prometheus_install ? var.organization : ""
 }
 
 output "prometheus_basic_auth_password" {
@@ -47,7 +45,7 @@ output "prometheus_basic_auth_password" {
 
 output "alertmanager_basic_auth_username" {
   sensitive = true
-  value     = var.organization
+  value     = var.alertmanager_install ? var.organization : ""
 }
 
 output "alertmanager_basic_auth_password" {
@@ -57,7 +55,7 @@ output "alertmanager_basic_auth_password" {
 
 output "grafana_basic_auth_username" {
   sensitive = true
-  value     = var.organization
+  value     = var.grafana_install ? var.organization : ""
 }
 
 output "grafana_basic_auth_password" {

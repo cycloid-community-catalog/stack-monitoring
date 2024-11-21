@@ -293,7 +293,7 @@ jobs:
             mysql_db_port: ((mysql_db_port))
 #($- if eq .use_case "aws-vm" $)
             aws_default_region: ((aws_default_region))
-#($- else if eq .use_cas[0]e "azure-vm" $)
+#($- else if eq .use_case "azure-vm" $)
 #            azure_subscription_id: ((($ .azure_cred $).subscription_id))
 #            azure_tenant_id: ((($ .azure_cred $).tenant_id))
 #            azure_client_id: ((($ .azure_cred $).client_id))

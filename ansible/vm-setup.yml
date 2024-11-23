@@ -82,8 +82,8 @@
       dest: "{{ certificates_dest }}"
       mode: 0600
     with_fileglob:
-      - "{{nginx_cert}}"
-      - "{{nginx_cert_key}}"
+      - "{{nginx_cert | default('')}}"
+      - "{{nginx_cert_key | default('')}}"
     when: enable_tls | bool
     tags: nginx
 

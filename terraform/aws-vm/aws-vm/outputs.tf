@@ -35,8 +35,6 @@ output "prometheus_basic_auth_password" {
 output "prometheus_basic_auth_httpwd" {
   sensitive = true
   value     = var.prometheus_install ? "${var.organization}:${random_password.prometheus_basic_auth_password[0].bcrypt_hash}" : ""
-
-  random_password.prometheus_basic_auth_password[0].bcrypt_hash : ""
 }
 
 output "alertmanager_basic_auth_username" {

@@ -34,7 +34,9 @@ output "prometheus_basic_auth_password" {
 
 output "prometheus_basic_auth_httpwd" {
   sensitive = true
-  value     = var.prometheus_install ? random_password.prometheus_basic_auth_password[0].bcrypt_hash : ""
+  value     = var.prometheus_install ? "${var.organization}:${random_password.prometheus_basic_auth_password[0].bcrypt_hash}" : ""
+
+  random_password.prometheus_basic_auth_password[0].bcrypt_hash : ""
 }
 
 output "alertmanager_basic_auth_username" {
@@ -74,12 +76,10 @@ output "enable_tls"{
 }
 
 output "nginx_cert" {
-  sensitive = true
   value     = var.tls_crt != "" ? var.tls_crt : tls_self_signed_cert.cert[0].cert_pem
 }
 
 output "nginx_cert_key" {
-  sensitive = true
   value     = var.tls_key != "" ? var.tls_key : tls_private_key.cert[0].private_key_pem
 }
 

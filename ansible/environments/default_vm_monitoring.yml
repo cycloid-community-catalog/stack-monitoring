@@ -5,7 +5,7 @@ prometheus_user: "{{prometheus_basic_auth_username}}"
 prometheus_password: "{{prometheus_basic_auth_password}}"
 
 #alertmanager_domain_name: "alertmanager.local"
-alertmanager_web_login: "{{alertmanager_basic_auth_httpd}}"
+alertmanager_web_login: "{{alertmanager_basic_auth_httpwd}}"
 alertmanager_user: "{{alertmanager_basic_auth_username}}"
 alertmanager_password: "{{alertmanager_basic_auth_password}}"
 

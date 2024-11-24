@@ -24,7 +24,7 @@ output "alertmanager_domain_name" {
 # basic_auth
 output "prometheus_basic_auth_username" {
   sensitive = true
-  value     = var.organization
+  value     = local.username
 }
 
 output "prometheus_basic_auth_password" {
@@ -34,12 +34,12 @@ output "prometheus_basic_auth_password" {
 
 output "prometheus_basic_auth_httpwd" {
   sensitive = true
-  value     = var.prometheus_install ? "${var.organization}:${random_password.prometheus_basic_auth_password[0].bcrypt_hash}" : ""
+  value     = var.prometheus_install ? "${local.username}:${random_password.prometheus_basic_auth_password[0].bcrypt_hash}" : ""
 }
 
 output "alertmanager_basic_auth_username" {
   sensitive = true
-  value     = var.organization
+  value     = local.username
 }
 
 output "alertmanager_basic_auth_password" {
@@ -49,12 +49,12 @@ output "alertmanager_basic_auth_password" {
 
 output "alertmanager_basic_auth_httpwd" {
   sensitive = true
-  value     = var.alertmanager_install ? random_password.alertmanager_basic_auth_password[0].bcrypt_hash : ""
+  value     = var.alertmanager_install ? "${local.username}:${random_password.alertmanager_basic_auth_password[0].bcrypt_hash}" : ""
 }
 
 output "grafana_basic_auth_username" {
   sensitive = true
-  value     = var.organization
+  value     = local.username
 }
 
 output "grafana_basic_auth_password" {
@@ -64,7 +64,7 @@ output "grafana_basic_auth_password" {
 
 output "grafana_basic_auth_httpwd" {
   sensitive = true
-  value     = var.grafana_install ? random_password.grafana_basic_auth_password[0].bcrypt_hash : ""
+  value     = var.grafana_install ? "${local.username}:${random_password.grafana_basic_auth_password[0].bcrypt_hash}" : ""
 }
 
 # certs

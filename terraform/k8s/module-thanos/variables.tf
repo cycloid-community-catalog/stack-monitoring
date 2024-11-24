@@ -51,4 +51,6 @@ locals {
     stack = "stack-monitoring"
   }
   common_labels = merge(local.default_labels, var.extra_labels)
+
+  username = var.organization
 }

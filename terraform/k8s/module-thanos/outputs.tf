@@ -16,7 +16,7 @@ output "thanos_bucket_user" {
 
 output "thanos_basic_auth_username" {
   sensitive = true
-  value = var.thanos_install ? var.organization : ""
+  value = var.thanos_install ? local.username : ""
 }
 
 output "thanos_basic_auth_password" {

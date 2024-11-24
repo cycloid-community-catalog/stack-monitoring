@@ -76,3 +76,7 @@ variable "grafana_domain_name" {
 
 # required for cloudwatch recovery
 variable "aws_region" {}
+
+locals{
+  username = var.organization
+}

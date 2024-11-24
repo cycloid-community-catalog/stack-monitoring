@@ -35,7 +35,7 @@ output "thanos_object_store_secret_name" {
 
 output "prometheus_basic_auth_username" {
   sensitive = true
-  value     = var.prometheus_install ? var.organization : ""
+  value     = var.prometheus_install ? local.username : ""
 }
 
 output "prometheus_basic_auth_password" {
@@ -45,7 +45,7 @@ output "prometheus_basic_auth_password" {
 
 output "alertmanager_basic_auth_username" {
   sensitive = true
-  value     = var.alertmanager_install ? var.organization : ""
+  value     = var.alertmanager_install ? local.username : ""
 }
 
 output "alertmanager_basic_auth_password" {
@@ -55,7 +55,7 @@ output "alertmanager_basic_auth_password" {
 
 output "grafana_basic_auth_username" {
   sensitive = true
-  value     = var.grafana_install ? var.organization : ""
+  value     = var.grafana_install ? local.username : ""
 }
 
 output "grafana_basic_auth_password" {

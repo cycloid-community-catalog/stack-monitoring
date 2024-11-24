@@ -63,7 +63,7 @@ resource "kubernetes_secret" "prometheus_basic_auth" {
   }
 
   data = {
-    "${var.organization}" = random_password.prometheus_basic_auth_password[0].bcrypt_hash
+    "${local.username}" = random_password.prometheus_basic_auth_password[0].bcrypt_hash
   }
 }
 
@@ -83,7 +83,7 @@ resource "kubernetes_secret" "alertmanager_basic_auth" {
   }
 
   data = {
-    "${var.organization}" = random_password.alertmanager_basic_auth_password[0].bcrypt_hash
+    "${local.username}" = random_password.alertmanager_basic_auth_password[0].bcrypt_hash
   }
 }
 
@@ -103,6 +103,6 @@ resource "kubernetes_secret" "grafana_basic_auth" {
   }
 
   data = {
-    "${var.organization}" = random_password.grafana_basic_auth_password[0].bcrypt_hash
+    "${local.username}" = random_password.grafana_basic_auth_password[0].bcrypt_hash
   }
 }

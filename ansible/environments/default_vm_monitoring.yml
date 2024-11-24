@@ -1,4 +1,39 @@
-# Note! You can check at the end of the default all the variables passed via terraform and the pipeline
+# Variables defined as outputs in terraform
+#prometheus_domain_name: "prometheus.local"
+prometheus_web_login: "{{prometheus_basic_auth_httpwd}}"
+prometheus_user: "{{prometheus_basic_auth_username}}"
+prometheus_password: "{{prometheus_basic_auth_password}}"
+
+#alertmanager_domain_name: "alertmanager.local"
+alertmanager_web_login: "{{alertmanager_basic_auth_httpd}}"
+alertmanager_user: "{{alertmanager_basic_auth_username}}"
+alertmanager_password: "{{alertmanager_basic_auth_password}}"
+
+#grafana_domain_name: "alertmanager.local"
+grafana_admin_user: "{{grafana_basic_auth_username}}"
+grafana_admin_pwd: "{{grafana_basic_auth_password}}"
+#
+#enable_tls: "true"
+#nginx_cert: ""
+#nginx_cert_key: ""
+
+# variables passed in pipeline (cycloid-credentials)
+
+#external_alertmanager_password: ((external_alertmanager_password))
+#external_alertmanager_username: ((external_alertmanager_username))
+#external_alertmanager_targets: ((external_alertmanager_targets))
+
+#postgres_db_user: ((postgres_db_user))
+#postgres_db_password: ((postgres_db_password))
+#postgres_db_host: ((postgres_db_host))
+#postgres_db_port: ((postgres_db_port))
+
+#mysql_db_user: ((mysql_db_user))
+#mysql_db_password: ((mysql_db_password))
+#mysql_db_host: ((mysql_db_host))
+#mysql_db_port: ((mysql_db_port))
+
+#aws_default_region: ((aws_default_region))
 
 # General variables
 external_url_schema: "{% if enable_tls %}https{% else %}http{% endif %}"
@@ -312,40 +347,3 @@ grafana_datasources: "{{
   }}"
 grafana_dashboards_dir: "dashboards"
 grafana_dashboards_files: "{{ playbook_dir }}/files/grafana/dashboards/*.json"
-
-# variables defined as outputs in terraform
-#prometheus_domain_name: "prometheus.local"
-prometheus_web_login: "{{prometheus_basic_auth_httpwd}}"
-prometheus_user: "{{prometheus_basic_auth_username}}"
-prometheus_password: "{{prometheus_basic_auth_password}}"
-
-#alertmanager_domain_name: "alertmanager.local"
-alertmanager_web_login: "{{alertmanager_basic_auth_httpd}}"
-alertmanager_user: "{{alertmanager_basic_auth_username}}"
-alertmanager_password: "{{alertmanager_basic_auth_password}}"
-
-#grafana_domain_name: "alertmanager.local"
-grafana_admin_user: "{{grafana_basic_auth_username}}"
-grafana_admin_pwd: "{{grafana_basic_auth_password}}"
-#
-#enable_tls: "true"
-#nginx_cert: ""
-#nginx_cert_key: ""
-
-# variables passed in pipeline (cycloid-credentials)
-
-#external_alertmanager_password: ((external_alertmanager_password))
-#external_alertmanager_username: ((external_alertmanager_username))
-#external_alertmanager_targets: ((external_alertmanager_targets))
-
-#postgres_db_user: ((postgres_db_user))
-#postgres_db_password: ((postgres_db_password))
-#postgres_db_host: ((postgres_db_host))
-#postgres_db_port: ((postgres_db_port))
-
-#mysql_db_user: ((mysql_db_user))
-#mysql_db_password: ((mysql_db_password))
-#mysql_db_host: ((mysql_db_host))
-#mysql_db_port: ((mysql_db_port))
-
-#aws_default_region: ((aws_default_region))

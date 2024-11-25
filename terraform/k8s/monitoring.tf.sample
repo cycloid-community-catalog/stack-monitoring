@@ -8,7 +8,7 @@ module "kube-prometheus" {
   #####################################
 
   #kube_prometheus_helm_version   = "59.0.0"
-  #namespace                      = local.namespace
+  namespace                      = local.namespace
   #extra_labels                   = {}
   #disable_component_scraping     = [] #kubeApiServer kubelet kubeControllerManager coreDns kubeDns kubeEtcd kubeScheduler kubeProxy kubeStateMetrics
   #enable_tls                     = false

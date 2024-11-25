@@ -49,7 +49,7 @@ groups:
   jobs:
   - terraform-plan
   - terraform-apply
-  - access-mgmt
+  - access-view
 
 - name: destroy
   jobs:
@@ -147,7 +147,7 @@ jobs:
             plan_run: true
             terraform_source: merged-stack/
 
-  - name: access-mgmt
+  - name: access-view
     serial: True
     build_logs_to_retain: 3
     plan:

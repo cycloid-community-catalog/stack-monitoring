@@ -628,9 +628,9 @@ use_cases:
   sections:
   - *api-key
 
-  - name: K8s general parameters
+  - name: K8s Access
     groups:
-    - name: Tools to install
+    - name: k8s Access
       technologies: [pipeline]
       vars:
       - name: "K8s config file"
@@ -639,11 +639,6 @@ use_cases:
         widget: cy_cred
         type: string
         required: true
-      - name: "K8s node selector"
-        description: "The k8s node selector to be used to select in which node to deploy the different resources. More information in the [k8s official pages](https://kubernetes.io/docs/user-guide/node-selection/)"
-        key: stack_monitoring_node_selector
-        widget: text_area
-        type: map
 
   - name: Monitoring tools
     groups:
@@ -898,12 +893,18 @@ use_cases:
           widget: switch
           type: boolean
           default: false
+        - name: "K8s node selector"
+          description: "The k8s node selector to be used to select in which node to deploy the different resources. More information in the [k8s official pages](https://kubernetes.io/docs/user-guide/node-selection/)"
+          key: stack_monitoring_node_selector
+          widget: text_area
+          type: map
+          default: {}
 
     - name: Opsgenie gateway configuration
       condition: $advanced_opt == true && $module.opsgenie-heartbeat.opsgenie_heartbeat_install == true
       technologies: [terraform]
       vars:
-        - name: "K8s config file"
+        - name: "Heartbeat Access Token"
           description: "Opsgenie heartbeat access token"
           key: module.opsgenie-heartbeat.opsgenie_token
           widget: cy_cred

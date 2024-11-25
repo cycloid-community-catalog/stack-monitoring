@@ -48,23 +48,29 @@ output "extra_labels" {
 
 # basic auth
 output "prometheus_basic_auth_username" {
+  sensitive = true
   value = module.kube-prometheus.prometheus_basic_auth_username
 }
 output "prometheus_basic_auth_password" {
+  sensitive = true
   value = module.kube-prometheus.prometheus_basic_auth_password
 }
 
 output "alertmanager_basic_auth_username" {
+  sensitive = true
   value = module.kube-prometheus.alertmanager_basic_auth_username
 }
 output "alertmanager_basic_auth_password" {
+  sensitive = true
   value = module.kube-prometheus.alertmanager_basic_auth_password
 }
 
 output "grafana_basic_auth_username" {
+  sensitive = true
   value = module.kube-prometheus.grafana_basic_auth_username
 }
 output "grafana_basic_auth_password" {
+  sensitive = true
   value = module.kube-prometheus.grafana_basic_auth_password
 }
 

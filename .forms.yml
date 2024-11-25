@@ -858,21 +858,18 @@ use_cases:
         - name: Raw retention
           description: "Retention amount for data at the same ingestion rate as scraping interval. The value should be in the format 1d, 1w, 1m, 1y"
           key: module.thanos.retentionResolutionRaw
-          widget: switch
-          type: boolean
-          default: true
+          widget: simple_text
+          type: string
         - name: 5min retention
           description: "Retention amount for data at 5 min intervals. The value should be in the format 1d, 1w, 1m, 1y"
           key: module.thanos.retentionResolution5m
-          widget: switch
-          type: boolean
-          default: true
+          widget: simple_text
+          type: string
         - name: 1h retention
           description: "Retention amount for data at 1 hour intervals. The value should be in the format 1d, 1w, 1m, 1y"
           key: module.thanos.retentionResolution1h
-          widget: switch
-          type: boolean
-          default: true
+          widget: simple_text
+          type: string
   - *advanced
 
   - name: Optional parameters

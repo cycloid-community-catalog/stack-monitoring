@@ -37,11 +37,17 @@ variable "stack_monitoring_node_selector" {
   default = {}
 }
 
-variable "thanos_retention_raw" {}
+variable "thanos_retention_raw" {
+  default = "1w"
+}
 
-variable "thanos_retention_5m" {}
+variable "thanos_retention_5m" {
+  default = "3m"
+}
 
-variable "thanos_retention_1h" {}
+variable "thanos_retention_1h" {
+  default = "1y"
+}
 
 variable "thanos_object_store_secret_name" {}
 

@@ -29,22 +29,22 @@ output "extra_labels" {
   value = module.kube-prometheus.extra_labels
 }
 
-output "thanos_install" {
-  value = module.kube-prometheus.thanos_install
-}
+#output "thanos_install" {
+#  value = module.kube-prometheus.thanos_install
+#}
 
 # thanos module
-output "thanos_domain_name" {
-  value = module.thanos.thanos_domain_name
-}
-
-output "thanos_bucket" {
-  value = module.thanos.thanos_bucket
-}
-
-output "thanos_bucket_user" {
-  value = module.thanos.thanos_bucket_user
-}
+#output "thanos_domain_name" {
+#  value = module.thanos.thanos_domain_name
+#}
+#
+#output "thanos_bucket" {
+#  value = module.thanos.thanos_bucket
+#}
+#
+#output "thanos_bucket_user" {
+#  value = module.thanos.thanos_bucket_user
+#}
 
 # basic auth
 output "prometheus_basic_auth_username" {
@@ -68,9 +68,9 @@ output "grafana_basic_auth_password" {
   value = module.kube-prometheus.grafana_basic_auth_password
 }
 
-output "thanos_basic_auth_username" {
-  value = module.thanos.thanos_basic_auth_username
-}
-output "thanos_basic_auth_password" {
-  value = module.thanos.thanos_basic_auth_password
-}
+#output "thanos_basic_auth_username" {
+#  value = module.thanos.thanos_basic_auth_username
+#}
+#output "thanos_basic_auth_password" {
+#  value = module.thanos.thanos_basic_auth_password
+#}

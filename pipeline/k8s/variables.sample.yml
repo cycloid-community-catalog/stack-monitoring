@@ -19,7 +19,7 @@ tls_key: ""
 grafana_install: false
 alertmanager_install: false
 prometheus_install: true
-thanos_install: true
+#thanos_install: true
 
 # alertmanager - external (not created with the stack)
 alertmanager_use_external: []

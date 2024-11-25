@@ -73,7 +73,7 @@ resources:
       prometheus_install: ((prometheus_install))
       grafana_install: ((grafana_install))
       alertmanager_install: ((alertmanager_install))
-      thanos_install: ((thanos_install))
+      #thanos_install: ((thanos_install))
       alertmanager_use_external: ((alertmanager_use_external))
       opsgenie_token: ((opsgenie_token))
       tls_crt: ((tls_crt))
@@ -212,7 +212,7 @@ jobs:
             KUBECONFIG_CONTENT: ((kubeconfig_content))
             GRAFANA_INSTALL: ((grafana_install))
             PROMETHEUS_INSTALL: ((prometheus_install))
-            THANOS_INSTALL: ((thanos_install))
+            #THANOS_INSTALL: ((thanos_install))
             ALERTMANAGER_INSTALL: ((alertmanager_install))
 
   - name: terraform-destroy

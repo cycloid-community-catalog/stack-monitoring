@@ -39,6 +39,9 @@
 ## Node exporter
 #node_exporter_install: false
 
+## Node exporter
+#cadvisor_install: false
+
 ## Grafana
 # grafana_version: latest
 # grafana_install: true

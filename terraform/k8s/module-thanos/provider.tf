@@ -1,7 +1,9 @@
 provider "aws" {
-  access_key = var.aws_access_cred.access_key != null ? var.aws_access_cred.access_key : null
-  secret_key = var.aws_access_cred.secret_key != null ? var.aws_access_cred.secret_key : null
-  region     = var.aws_region != null ? var.aws_region : null
+  alias = "module-thanos"
+
+  access_key = var.aws_access_cred != null ? var.aws_access_cred.access_key : null
+  secret_key = var.aws_access_cred != null ? var.aws_access_cred.secret_key : null
+  region     = var.aws_access_cred != null ? var.aws_region : null
 
   dynamic "assume_role" {
     for_each = var.aws_role_arn != "" ? [1] : []

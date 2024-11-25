@@ -11,11 +11,7 @@ variable "organization" {}
 # cycloid credentials - passed via pipeline
 variable "aws_access_cred" {
   type = map(string)
-  default = {
-    access_key = null
-    secret_key = null
-
-  }
+  default = null
 }
 variable "aws_region" {
   default = null

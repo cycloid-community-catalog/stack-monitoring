@@ -21,7 +21,9 @@ variable "tls_key" {}
 variable "prometheus_install" {}
 variable "grafana_install" {}
 variable "alertmanager_install" {}
-variable "thanos_install" {}
+variable "thanos_install" {
+  default = false
+}
 
 variable "alertmanager_use_external" {
   default = []
@@ -30,10 +32,10 @@ variable "alertmanager_use_external" {
 # opsgenie
 variable "opsgenie_token" {}
 
-
 #
 # AWS
 #
+
 # cycloid credentials - passed via pipeline
 variable "aws_access_cred" {
   type = map(string)

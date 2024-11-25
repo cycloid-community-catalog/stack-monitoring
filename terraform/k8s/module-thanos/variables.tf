@@ -9,8 +9,17 @@ variable "organization" {}
 # AWS
 #
 # cycloid credentials - passed via pipeline
-variable "aws_access_cred" {}
-variable "aws_region" {}
+variable "aws_access_cred" {
+  type = map(string)
+  default = {
+    access_key = ""
+    secret_key = ""
+
+  }
+}
+variable "aws_region" {
+  default = "eu-west-1"
+}
 variable "aws_role_arn" {
   default = ""
 }

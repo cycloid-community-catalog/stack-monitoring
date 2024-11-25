@@ -80,7 +80,7 @@ module "thanos" {
   env          = var.env
   organization = var.organization
   #####################################
-
+  providers = module.kube-prometheus.thanos_install ? { aws = aws.module-thanos } : {}
   #thanos_helm_version             = "15.7.7"
   namespace                       = local.namespace
   extra_labels                    = module.kube-prometheus.extra_labels

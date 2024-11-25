@@ -31,6 +31,21 @@ variable "alertmanager_use_external" {
 variable "opsgenie_token" {}
 
 
+#
+# AWS
+#
+# cycloid credentials - passed via pipeline
+variable "aws_access_cred" {
+  type = map(string)
+  default = null
+}
+variable "aws_region" {
+  default = null
+}
+variable "aws_role_arn" {
+  default = null
+}
+
 locals {
 
   namespace = "stack-monitoring"

@@ -6,6 +6,17 @@ variable "env" {}
 variable "organization" {}
 
 #
+# AWS
+#
+# cycloid credentials - passed via pipeline
+variable "aws_access_cred" {}
+variable "aws_region" {}
+variable "aws_role_arn" {
+  default = ""
+}
+variable "aws_extra_tags" {}
+
+#
 # Thanos
 #
 

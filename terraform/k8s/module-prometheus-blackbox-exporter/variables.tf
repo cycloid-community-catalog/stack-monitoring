@@ -11,7 +11,9 @@ variable "organization" {}
 #
 variable "namespace"{}
 
-variable "stack_monitoring_node_selector" {}
+variable "stack_monitoring_node_selector" {
+  default = {}
+}
 
 variable "blackbox_exporter_install"{
   default = false

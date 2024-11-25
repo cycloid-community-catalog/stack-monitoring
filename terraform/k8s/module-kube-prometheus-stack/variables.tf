@@ -17,9 +17,13 @@ variable "extra_labels" {
   default = {}
 }
 
-variable "disable_component_scraping" {}
+variable "disable_component_scraping" {
+  default = []
+}
 
-variable "stack_monitoring_node_selector" {}
+variable "stack_monitoring_node_selector" {
+  default = {}
+}
 
 # Certificates
 

@@ -25,7 +25,9 @@ variable "opsgenie_heartbeat_install" {
 
 variable "opsgenie_token" {}
 
-variable "stack_monitoring_node_selector" {}
+variable "stack_monitoring_node_selector" {
+  default = {}
+}
 
 locals {
 

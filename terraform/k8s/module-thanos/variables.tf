@@ -33,7 +33,9 @@ variable "enable_tls" {
 variable "tls_crt" {}
 variable "tls_key" {}
 
-variable "stack_monitoring_node_selector" {}
+variable "stack_monitoring_node_selector" {
+  default = {}
+}
 
 variable "thanos_retention_raw" {}
 

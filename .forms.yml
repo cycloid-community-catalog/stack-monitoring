@@ -663,12 +663,12 @@ use_cases:
           widget: switch
           type: boolean
           default: true
-        - name: "Thanos install"
-          description: "Wheter to skip install [Thanos](https://thanos.io/) on the k8s cluster."
-          key: thanos_install
-          widget: switch
-          type: boolean
-          default: false
+        #- name: "Thanos install"
+        #  description: "Wheter to skip install [Thanos](https://thanos.io/) on the k8s cluster."
+        #  key: thanos_install
+        #  widget: switch
+        #  type: boolean
+        #  default: false
 
   - name: Prometheus
     groups:
@@ -838,38 +838,38 @@ use_cases:
           widget: simple_text
           default: Europe/France
 
-  - name: Thanos
-    groups:
-    - name: Thanos DNS
-      condition: $thanos_install == true
-      technologies: [terraform]
-      vars:
-        - name: "Thanos DNS"
-          description: "DNS to use for Thanos."
-          key: module.thanos.thanos_domain_name
-          widget: simple_text
-          type: string
-          default: thanos.local
-
-    - name: Thanos Configuration
-      technologies: [terraform]
-      condition: $thanos_install == true
-      vars:
-        - name: Raw retention
-          description: "Retention amount for data at the same ingestion rate as scraping interval. The value should be in the format 1d, 1w, 1m, 1y"
-          key: module.thanos.retentionResolutionRaw
-          widget: simple_text
-          type: string
-        - name: 5min retention
-          description: "Retention amount for data at 5 min intervals. The value should be in the format 1d, 1w, 1m, 1y"
-          key: module.thanos.retentionResolution5m
-          widget: simple_text
-          type: string
-        - name: 1h retention
-          description: "Retention amount for data at 1 hour intervals. The value should be in the format 1d, 1w, 1m, 1y"
-          key: module.thanos.retentionResolution1h
-          widget: simple_text
-          type: string
+#  - name: Thanos
+#    groups:
+#    - name: Thanos DNS
+#      condition: $thanos_install == true
+#      technologies: [terraform]
+#      vars:
+#        - name: "Thanos DNS"
+#          description: "DNS to use for Thanos."
+#          key: module.thanos.thanos_domain_name
+#          widget: simple_text
+#          type: string
+#          default: thanos.local
+#
+#    - name: Thanos Configuration
+#      technologies: [terraform]
+#      condition: $thanos_install == true
+#      vars:
+#        - name: Raw retention
+#          description: "Retention amount for data at the same ingestion rate as scraping interval. The value should be in the format 1d, 1w, 1m, 1y"
+#          key: module.thanos.retentionResolutionRaw
+#          widget: simple_text
+#          type: string
+#        - name: 5min retention
+#          description: "Retention amount for data at 5 min intervals. The value should be in the format 1d, 1w, 1m, 1y"
+#          key: module.thanos.retentionResolution5m
+#          widget: simple_text
+#          type: string
+#        - name: 1h retention
+#          description: "Retention amount for data at 1 hour intervals. The value should be in the format 1d, 1w, 1m, 1y"
+#          key: module.thanos.retentionResolution1h
+#          widget: simple_text
+#          type: string
   - *advanced
 
   - name: Optional parameters

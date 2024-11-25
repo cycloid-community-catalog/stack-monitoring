@@ -33,7 +33,7 @@ module "kube-prometheus" {
   #alertmanager_additional_rules    = {}
   #alertmanager_config              = {}
 
-  thanos_install = var.thanos_install
+  #thanos_install = var.thanos_install
 
 }
 
@@ -72,31 +72,31 @@ module "opsgenie-heartbeat" {
 
 }
 
-module "thanos" {
+#module "thanos" {
   #####################################
   # Do not modify the following lines #
-  source       = "./module-thanos"
-  project      = var.project
-  env          = var.env
-  organization = var.organization
+#  source       = "./module-thanos"
+#  project      = var.project
+#  env          = var.env
+#  organization = var.organization
   #####################################
 
-  providers = {
-    aws = aws.module-thanos
-  }
+#  providers = {
+#    aws = aws.module-thanos
+#  }
 
   #thanos_helm_version            = "15.7.7"
-  namespace                       = local.namespace
-  extra_labels                    = module.kube-prometheus.extra_labels
-  enable_tls                      = var.enable_tls
-  tls_crt                         = var.tls_crt
-  tls_key                         = var.tls_key
-  stack_monitoring_node_selector  = module.kube-prometheus.stack_monitoring_node_selector
-  thanos_object_store_secret_name = module.kube-prometheus.thanos_object_store_secret_name
+#  namespace                       = local.namespace
+# extra_labels                    = module.kube-prometheus.extra_labels
+#  enable_tls                      = var.enable_tls
+#  tls_crt                         = var.tls_crt
+#  tls_key                         = var.tls_key
+#  stack_monitoring_node_selector  = module.kube-prometheus.stack_monitoring_node_selector
+#  thanos_object_store_secret_name = module.kube-prometheus.thanos_object_store_secret_name
 
-  thanos_install             = module.kube-prometheus.thanos_install
+  #thanos_install             = module.kube-prometheus.thanos_install
   #thanos_domain_name         = "thanos.local"
   #thanos_retention_raw       = "30d"
   #thanos_retention_5m        = "120d"
   #thanos_retention_1h        = "1y"
-}
+#}

@@ -84,15 +84,15 @@ prometheus:
       ${yamlencode(var.alertmanager_use_external)}
 EOL
 
-# thanos
-  thanos_node_selector= <<EOL
----
-thanos:
-  nodeSelector:
-    ${yamlencode(var.stack_monitoring_node_selector)}
-EOL
-
+## thanos
+#  thanos_node_selector= <<EOL
+#---
+#thanos:
+#  nodeSelector:
+#    ${yamlencode(var.stack_monitoring_node_selector)}
+#EOL
 }
+
 resource "helm_release" "kube_prometheus_stack" {
   name       = "kube-prometheus-stack"
   repository = "https://prometheus-community.github.io/helm-charts"
@@ -121,7 +121,7 @@ resource "helm_release" "kube_prometheus_stack" {
     local.alertmanager_use_external,
 
     #thanos
-    local.thanos_node_selector,
+    #local.thanos_node_selector,
 
   ]
   # GENERAL VARS
@@ -327,25 +327,25 @@ resource "helm_release" "kube_prometheus_stack" {
 
   # THANOS
 
-  set {
-    name  = "prometheus.thanosService.enabled"
-    value = var.thanos_install
-  }
-
-  set {
-    name  = "prometheus.thanosService.thanosServiceMonitor.enabled"
-    value = var.thanos_install
-  }
-
-  set {
-    name  = "objectStorageConfig.existingSecret.name"
-    value = local.thanos_object_store_secret_name
-  }
-
-  set {
-    name  = "objectStorageConfig.existingSecret.key"
-    value = "data"
-  }
+#  set {
+#    name  = "prometheus.thanosService.enabled"
+#    value = var.thanos_install
+#  }
+#
+#  set {
+#    name  = "prometheus.thanosService.thanosServiceMonitor.enabled"
+#    value = var.thanos_install
+#  }
+#
+#  set {
+#    name  = "objectStorageConfig.existingSecret.name"
+#    value = local.thanos_object_store_secret_name
+#  }
+#
+#  set {
+#    name  = "objectStorageConfig.existingSecret.key"
+#    value = "data"
+#  }
 
   #set {
   #  name  = "thanos.nodeSelector"

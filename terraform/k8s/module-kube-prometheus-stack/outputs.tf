@@ -23,13 +23,13 @@ output "extra_labels" {
   value = var.extra_labels
 }
 
-output "thanos_install" {
-  value = var.thanos_install
-}
-
-output "thanos_object_store_secret_name" {
-  value = local.thanos_object_store_secret_name
-}
+#output "thanos_install" {
+#  value = var.thanos_install
+#}
+#
+#output "thanos_object_store_secret_name" {
+#  value = local.thanos_object_store_secret_name
+#}
 
 # basic auth
 

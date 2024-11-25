@@ -100,9 +100,9 @@ variable "alertmanager_config" {}
 #
 # Thanos
 #
-variable "thanos_install" {
-  default = false
-}
+#variable "thanos_install" {
+#  default = false
+#}
 
 locals {
 
@@ -113,7 +113,7 @@ locals {
   }
   common_labels = merge(local.default_labels, var.extra_labels)
 
-  thanos_object_store_secret_name = "${var.project}-thanos-object-store-${var.env}"
+  #thanos_object_store_secret_name = "${var.project}-thanos-object-store-${var.env}"
 
   username = var.organization
 }

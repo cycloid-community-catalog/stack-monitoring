@@ -23,7 +23,6 @@ variable "aws_region" {
 variable "aws_role_arn" {
   default = ""
 }
-variable "aws_extra_tags" {}
 
 #
 # Thanos

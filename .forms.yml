@@ -267,6 +267,12 @@ use_cases:
           widget: switch
           type: boolean
           default: true
+        - name: "Cadvisor install"
+          description: "Wheter to install [cadvisor](https://github.com/google/cadvisor) on the machine as a service."
+          key: cadvisor_install
+          widget: switch
+          type: boolean
+          default: true
 
   - name: Prometheus
     groups:

@@ -12,16 +12,16 @@ variable "organization" {}
 variable "aws_access_cred" {
   type = map(string)
   default = {
-    access_key = ""
-    secret_key = ""
+    access_key = null
+    secret_key = null
 
   }
 }
 variable "aws_region" {
-  default = "eu-west-1"
+  default = null
 }
 variable "aws_role_arn" {
-  default = ""
+  default = null
 }
 
 #

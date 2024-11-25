@@ -113,4 +113,3 @@ locals {
 
   username = var.organization
 }
-}

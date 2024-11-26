@@ -26,6 +26,3 @@ alertmanager_use_external: []
 
 #heartbeat
 opsgenie_token: ""
-
-# cycloid
-cycloid_api_key: ""

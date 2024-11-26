@@ -40,7 +40,7 @@ shared:
         default: true
 
   - name: SSL configuration
-    condition: $advanced_opt == true && $enable_tls == true
+    condition: $advanced_opt == true && $module.kube-prometheus.enable_tls == true
     technologies: [terraform]
     vars:
       - name: "Create self signed certificate"
@@ -51,7 +51,7 @@ shared:
         default: true
 
   - name: SSL certificate import
-    condition: $advanced_opt == true && module.kube-prometheus.create_self_signed_certificate == false
+    condition: $advanced_opt == true && $module.kube-prometheus.enable_tls == true && module.kube-prometheus.create_self_signed_certificate == false
     technologies: [pipeline]
     vars:
       - name: "Certificate"

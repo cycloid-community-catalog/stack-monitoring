@@ -26,3 +26,13 @@ variable "blackbox_exporter_modules"{
   default = []
 }
 
+# Certificates
+
+variable "enable_tls" {
+  default = true
+}
+variable "create_self_signed_certificate"{
+  default = true
+}
+variable "tls_crt" {}
+variable "tls_key" {}

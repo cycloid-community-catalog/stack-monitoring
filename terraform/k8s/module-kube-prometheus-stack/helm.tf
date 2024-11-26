@@ -138,10 +138,10 @@ resource "helm_release" "kube_prometheus_stack" {
     }
   }
 
-  #set {
-  #  name  = "prometheusOperator.nodeSelector"
-  #  value = var.stack_monitoring_node_selector
-  #}
+  set {
+    name  = "prometheusOperator.nodeSelector"
+    value = var.stack_monitoring_node_selector
+  }
 
   # ALERTMANAGER
   #set {
@@ -150,7 +150,7 @@ resource "helm_release" "kube_prometheus_stack" {
   #}
   #set {
   #  name  = "additionalPrometheusRulesMap"
-  #  value = «var.alertmanager_additional_rules
+  #  value = var.alertmanager_additional_rules
   #}
 
   set {
@@ -198,10 +198,10 @@ resource "helm_release" "kube_prometheus_stack" {
     value = "auth-map"
   }
 
-  #set {
-  #  name  = "alertmanager.nodeSelector"
-  #  value = var.stack_monitoring_node_selector
-  #}
+  set {
+    name  = "alertmanager.nodeSelector"
+    value = var.stack_monitoring_node_selector
+  }
 
   # GRAFANA
 
@@ -259,10 +259,10 @@ resource "helm_release" "kube_prometheus_stack" {
     name  = "grafana.ingress.annotations.nginx\\.ingress\\.kubernetes\\.io/auth-secret-type"
     value = "auth-map"
   }
-  #set {
-  #  name  = "grafana.nodeSelector"
-  #  value = var.stack_monitoring_node_selector
-  #}
+  set {
+    name  = "grafana.nodeSelector"
+    value = var.stack_monitoring_node_selector
+  }
 
 #todo
   #set {
@@ -319,11 +319,11 @@ resource "helm_release" "kube_prometheus_stack" {
 #    name  = "prometheus.prometheusSpec.additionalScrapeConfigs"
 #    value = var.prometheus_additional_scrape)
 #  }
-#
-#  set {
-#    name  = "prometheus.nodeSelector"
-#    value = var.stack_monitoring_node_selector
-  #}
+
+set {
+    name  = "prometheus.nodeSelector"
+    value = var.stack_monitoring_node_selector
+}
 
   # THANOS
 

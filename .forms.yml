@@ -99,7 +99,6 @@ version: "2"
 use_cases:
 - name: aws-vm
   sections:
-  - *api-key
   - *aws-creds
   - name: VM Configuration
     groups:
@@ -616,7 +615,6 @@ use_cases:
 
 - name: k8s
   sections:
-  - *api-key
 
   - name: K8s Access
     groups:

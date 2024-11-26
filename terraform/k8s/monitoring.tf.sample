@@ -49,6 +49,8 @@ module "prometheus-blackbox-exporter" {
   namespace                      = local.namespace
   stack_monitoring_node_selector = module.kube-prometheus.stack_monitoring_node_selector
 
+  tls_crt                        = var.tls_crt
+  tls_key                        = var.tls_key
   #blackbox_exporter_install = "false"
   #blackbox_helm_version     = "8.17.0"
   #blackbox_exporter_modules = {}
@@ -66,6 +68,9 @@ module "opsgenie-heartbeat" {
   namespace                      = local.namespace
   extra_labels                   = module.kube-prometheus.extra_labels
   stack_monitoring_node_selector = module.kube-prometheus.stack_monitoring_node_selector
+
+  tls_crt                        = var.tls_crt
+  tls_key                        = var.tls_key
 
   opsgenie_heartbeat_install = false
   opsgenie_token            = var.opsgenie_token
@@ -85,9 +90,9 @@ module "opsgenie-heartbeat" {
 #    aws = aws.module-thanos
 #  }
 
-  #thanos_helm_version            = "15.7.7"
+#thanos_helm_version            = "15.7.7"
 #  namespace                       = local.namespace
-# extra_labels                    = module.kube-prometheus.extra_labels
+#  extra_labels                    = module.kube-prometheus.extra_labels
 #  enable_tls                      = var.enable_tls
 #  tls_crt                         = var.tls_crt
 #  tls_key                         = var.tls_key

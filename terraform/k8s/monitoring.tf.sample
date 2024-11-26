@@ -29,7 +29,7 @@ module "kube-prometheus" {
   alertmanager_install             = var.alertmanager_install
   alertmanager_use_external        = var.alertmanager_use_external
   #alertmanager_domain_name         = "alertmanager.local"
-  #alertmanager_customRules         = {}
+  alertmanager_customRules         = {}
   alertmanager_additional_rules    = {}
   #alertmanager_config              = {}
 

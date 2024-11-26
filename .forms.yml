@@ -34,7 +34,7 @@ shared:
     vars:
       - name: "Enable HTTPs"
         description: "Select wheter to enable HTTPs traffic and use SSL certificates."
-        key: enable_tls
+        key: module.kube-prometheus.enable_tls
         type: boolean
         widget: switch
         default: true
@@ -45,13 +45,13 @@ shared:
     vars:
       - name: "Create self signed certificate"
         description: "Wheter to create a self signed certificate automatically. Otherwise a certificate needs to be imported"
-        key: create_self_signed_certificate
+        key: module.kube-prometheus.create_self_signed_certificate
         type: boolean
         widget: switch
         default: true
 
   - name: SSL certificate import
-    condition: $advanced_opt == true && create_self_signed_certificate == false
+    condition: $advanced_opt == true && module.kube-prometheus.create_self_signed_certificate == false
     technologies: [pipeline]
     vars:
       - name: "Certificate"

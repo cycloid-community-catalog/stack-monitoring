@@ -19,7 +19,7 @@ module "kube-prometheus" {
 
   prometheus_install              = var.prometheus_install
   #prometheus_domain_name          = "prometheus.local"
-  #prometheus_additional_scrape   = {}
+  prometheus_additional_scrape   = {}
 
   grafana_install                   = var.grafana_install
   #enable_default_grafana_dashboards = true
@@ -30,7 +30,7 @@ module "kube-prometheus" {
   alertmanager_use_external        = var.alertmanager_use_external
   #alertmanager_domain_name         = "alertmanager.local"
   #alertmanager_customRules         = {}
-  #alertmanager_additional_rules    = {}
+  alertmanager_additional_rules    = {}
   #alertmanager_config              = {}
 
   #thanos_install = var.thanos_install

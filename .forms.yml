@@ -868,7 +868,7 @@ use_cases:
       vars:
         - name: "Extra tags"
           description: "Dict of extra tags to add to cluster resources crated."
-          key: extra_tags
+          key: module.kube-prometheus.extra_labels
           widget: text_area
           type: map
           default: {}
@@ -880,7 +880,7 @@ use_cases:
           default: false
         - name: "K8s node selector"
           description: "The k8s node selector to be used to select in which node to deploy the different resources. More information in the [k8s official pages](https://kubernetes.io/docs/user-guide/node-selection/)"
-          key: stack_monitoring_node_selector
+          key: module.kube-prometheus.stack_monitoring_node_selector
           widget: text_area
           type: map
           default: {}

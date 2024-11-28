@@ -63,11 +63,12 @@ EOL
 ---
 grafana:
   dashboards:
-    prometheus-stats:
-      # Ref: https://grafana.com/dashboards/2
-      gnetId: 2
-      revision: 2
-      datasource: Prometheus
+    default:
+      prometheus-stats:
+        # Ref: https://grafana.com/dashboards/2
+        gnetId: 2
+        revision: 2
+        datasource: Prometheus
 EOL
 
     #value = var.grafana_dashboard_import

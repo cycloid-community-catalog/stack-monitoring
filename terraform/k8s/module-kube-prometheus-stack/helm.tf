@@ -65,9 +65,9 @@ grafana:
   dashboards:
     default:
       prometheus-stats:
-        # Ref: https://grafana.com/dashboards/2
-        gnetId: 2
-        revision: 2
+        # Ref: https://grafana.com/dashboards/14900
+        gnetId: 14900
+        revision: 1
         datasource: Prometheus
 EOL
 

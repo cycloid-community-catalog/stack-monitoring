@@ -68,7 +68,7 @@ grafana:
         # Ref: https://grafana.com/dashboards/14900
         gnetId: 14900
         revision: 1
-        datasource: Prometheus
+        datasource: prometheus
 EOL
 
     #value = var.grafana_dashboard_import

@@ -72,6 +72,19 @@ grafana:
 EOL
 
     #value = var.grafana_dashboard_import
+  dashboard_provider= <<EOL
+---
+grafana:
+  dashboardProviders:
+    dashboardproviders.yaml:
+      apiVersion: 1
+      providers:
+        - name: 'default'
+          folder: ''
+          options:
+            path: /var/lib/grafana/dashboards/default
+EOL
+
 
 
 # prometheus
@@ -129,6 +142,7 @@ resource "helm_release" "kube_prometheus_stack" {
     # grafana
     local.grafana_node_selector,
     local.grafana_dashboards,
+    local.dashboard_provider,
 
     # prometheus
     local.prometheus_node_selector,

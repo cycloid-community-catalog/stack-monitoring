@@ -57,7 +57,13 @@ variable "enable_default_grafana_dashboards" {
   default = true
 }
 
-var.grafana_dashboard_import
+variable "enable_default_grafana_dashboards" {
+  default = true
+}
+
+variable "grafana_dashboard_import" {
+  default = {}
+}
 
 variable "grafana_default_timezone" {
   default = "Europe/Paris"

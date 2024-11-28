@@ -59,6 +59,20 @@ grafana:
     ${yamlencode(var.stack_monitoring_node_selector)}
 EOL
 
+  grafana_dashboards= <<EOL
+---
+grafana:
+  dashboards:
+    prometheus-stats:
+      # Ref: https://grafana.com/dashboards/2
+      gnetId: 2
+      revision: 2
+      datasource: Prometheus
+EOL
+
+    #value = var.grafana_dashboard_import
+
+
 # prometheus
   prometheus_node_selector= <<EOL
 ---
@@ -113,6 +127,7 @@ resource "helm_release" "kube_prometheus_stack" {
 
     # grafana
     local.grafana_node_selector,
+    local.grafana_dashboards,
 
     # prometheus
     local.prometheus_node_selector,
@@ -123,11 +138,6 @@ resource "helm_release" "kube_prometheus_stack" {
     #local.thanos_node_selector,
 
   ]
-  # GENERAL VARS
-  #set {
-  #  name  = "commonLabels"
-  #  value = local.common_labels
-  #}
 
   dynamic "set" {
     for_each = toset(var.disable_component_scraping)
@@ -137,30 +147,11 @@ resource "helm_release" "kube_prometheus_stack" {
     }
   }
 
-  #set {
-  #  name  = "prometheusOperator.nodeSelector"
-  #  value = var.stack_monitoring_node_selector
-  #}
-
   # ALERTMANAGER
-  #set {
-  #  name  = "customRules"
-  #  value = var.alertmanager_customRules
-  #}
-  #set {
-  #  name  = "additionalPrometheusRulesMap"
-  #  value = «var.alertmanager_additional_rules
-  #}
-
   set {
     name  = "alertmanager.enabled"
     value = var.alertmanager_install
   }
-
-  #set {
-  #  name  = "alertmanager.config"
-  #  value = jsonencode(var.alertmanager_config)
-  #}
 
   set {
     name  = "alertmanager.ingress.enabled"
@@ -185,13 +176,7 @@ resource "helm_release" "kube_prometheus_stack" {
     value = "auth-map"
   }
 
-  #set {
-  #  name  = "alertmanager.nodeSelector"
-  #  value = var.stack_monitoring_node_selector
-  #}
-
   # GRAFANA
-
   set {
     name  = "grafana.enabled"
     value = var.grafana_install
@@ -234,16 +219,7 @@ resource "helm_release" "kube_prometheus_stack" {
     name  = "grafana.ingress.annotations.nginx\\.ingress\\.kubernetes\\.io/auth-secret-type"
     value = "auth-map"
   }
-  #set {
-  #  name  = "grafana.nodeSelector"
-  #  value = var.stack_monitoring_node_selector
-  #}
 
-#todo
-  #set {
-  #  name  = "grafana.dashboards"
-  #  value = var.enable_default_grafana_dashboards
-  #}
 
   # PROMETHEUS
   set {
@@ -273,45 +249,24 @@ resource "helm_release" "kube_prometheus_stack" {
     name  = "prometheus.ingress.annotations.nginx\\.ingress\\.kubernetes\\.io/auth-secret-type"
     value = "auth-map"
   }
-  #set {
-  #  name  = "prometheus.prometheusSpec.alertingEndpoints"
-  #  value = var.alertmanager_install ? [] : var.alertmanager_use_external
-  #}
-
-#  set {
-#    name  = "prometheus.prometheusSpec.additionalScrapeConfigs"
-#    value = var.prometheus_additional_scrape)
-#  }
-#
-#  set {
-#    name  = "prometheus.nodeSelector"
-#    value = var.stack_monitoring_node_selector
-  #}
-
-  # THANOS
-
-#  set {
-#    name  = "prometheus.thanosService.enabled"
-#    value = var.thanos_install
-#  }
-#
-#  set {
-#    name  = "prometheus.thanosService.thanosServiceMonitor.enabled"
-#    value = var.thanos_install
-#  }
-#
-#  set {
-#    name  = "objectStorageConfig.existingSecret.name"
-#    value = local.thanos_object_store_secret_name
-#  }
-#
-#  set {
-#    name  = "objectStorageConfig.existingSecret.key"
-#    value = "data"
-#  }
-
-  #set {
-  #  name  = "thanos.nodeSelector"
-  #  value = var.stack_monitoring_node_selector
-  #}
+  # THANOS - disabled for now
+  #  set {
+  #    name  = "prometheus.thanosService.enabled"
+  #    value = var.thanos_install
+  #  }
+  #
+  #  set {
+  #    name  = "prometheus.thanosService.thanosServiceMonitor.enabled"
+  #    value = var.thanos_install
+  #  }
+  #
+  #  set {
+  #    name  = "objectStorageConfig.existingSecret.name"
+  #    value = local.thanos_object_store_secret_name
+  #  }
+  #
+  #  set {
+  #    name  = "objectStorageConfig.existingSecret.key"
+  #    value = "data"
+  #  }
 }

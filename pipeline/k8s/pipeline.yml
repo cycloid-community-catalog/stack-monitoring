@@ -76,8 +76,6 @@ resources:
       #thanos_install: ((thanos_install))
       alertmanager_use_external: ((alertmanager_use_external))
       opsgenie_token: ((opsgenie_token))
-      tls_crt: ((tls_crt))
-      tls_key: ((tls_key))
 
 - name: git_stack_terraform
   type: git

@@ -25,17 +25,6 @@ variable "stack_monitoring_node_selector" {
   default = {}
 }
 
-# Certificates
-
-variable "enable_tls" {
-  default = true
-}
-variable "create_self_signed_certificate"{
-  default = true
-}
-variable "tls_crt" {}
-variable "tls_key" {}
-
 #
 # PROMETHEUS
 #
@@ -67,6 +56,8 @@ variable "grafana_install" {
 variable "enable_default_grafana_dashboards" {
   default = true
 }
+
+var.grafana_dashboard_import
 
 variable "grafana_default_timezone" {
   default = "Europe/Paris"

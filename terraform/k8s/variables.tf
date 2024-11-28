@@ -10,13 +10,6 @@ variable "organization" {}
 # kubeconfig to use
 variable "kubeconfig_filename" {}
 
-# tls configuration
-variable "enable_tls" {
-  default = false
-}
-variable "tls_crt" {}
-variable "tls_key" {}
-
 # monitoring tools
 variable "prometheus_install" {}
 variable "grafana_install" {}

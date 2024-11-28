@@ -3,7 +3,6 @@
 # CHART: https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack
 # VALUES: https://raw.githubusercontent.com/prometheus-community/helm-charts/main/charts/kube-prometheus-stack/values.yaml
 # NOTE! The value specification follows the order of the values.yaml to be more easy to follow the params setup and add new ones
-# todo: backup of configs, extra dashboards grafana
 ################################################################################
 
 # non string or boolean values cannot be set as value in helm
@@ -173,18 +172,6 @@ resource "helm_release" "kube_prometheus_stack" {
     value = var.alertmanager_domain_name
   }
 
-  dynamic "set" {
-    for_each = var.enable_tls == true ? [1] : []
-    content {
-      name  = "alertmanager.ingress.tls"
-      value = <<YAML
-        - secretName: "imported-cert-${var.project}-${var.env}"
-          hosts:
-            - ${var.alertmanager_domain_name}
-      YAML
-    }
-  }
-
   set {
     name  = "alertmanager.ingress.annotations.nginx\\.ingress\\.kubernetes\\.io/auth-type"
     value = "basic"
@@ -235,18 +222,6 @@ resource "helm_release" "kube_prometheus_stack" {
     value = var.grafana_domain_name
   }
 
-  dynamic "set" {
-    for_each = var.enable_tls == true ? [1] : []
-    content {
-      name  = "grafana.ingress.tls"
-      value = <<YAML
-        - secretName: "imported-cert-${var.project}-${var.env}"
-          hosts:
-            - ${var.grafana_domain_name}
-      YAML
-    }
-  }
-
   set {
     name  = "grafana.ingress.annotations.nginx\\.ingress\\.kubernetes\\.io/auth-type"
     value = "basic"
@@ -284,18 +259,6 @@ resource "helm_release" "kube_prometheus_stack" {
   set {
     name  = "prometheus.ingress.hosts[0]"
     value = var.prometheus_domain_name
-  }
-
- dynamic "set" {
-    for_each = var.enable_tls == true ? [1] : []
-    content {
-      name  = "prometheus.ingress.tls"
-      value = <<YAML
-        - secretName: "imported-cert-${var.project}-${var.env}"
-          hosts:
-            - ${var.prometheus_domain_name}
-      YAML
-    }
   }
 
   set {

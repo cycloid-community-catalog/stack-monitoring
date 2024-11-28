@@ -11,10 +11,6 @@ kubeconfig_filename: "kubeconfig"
 terraform_version: "1.6.3"
 ansible_version: "10.1"
 
-## nginx certificates
-tls_crt: ""
-tls_key: ""
-
 ## monitoring tools
 grafana_install: false
 alertmanager_install: false

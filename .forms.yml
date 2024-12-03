@@ -28,43 +28,6 @@ shared:
         type: string
         default: "10.1"
 
-  - name: Enable SSL
-    condition: $advanced_opt == true
-    technologies: [terraform]
-    vars:
-      - name: "Enable HTTPs"
-        description: "Select wheter to enable HTTPs traffic and use SSL certificates."
-        key: enable_tls
-        type: boolean
-        widget: switch
-        default: true
-
-  - name: SSL configuration
-    condition: $advanced_opt == true && $enable_tls == true
-    technologies: [terraform]
-    vars:
-      - name: "Create self signed certificate"
-        description: "Wheter to create a self signed certificate automatically. Otherwise a certificate needs to be imported"
-        key: create_self_signed_certificate
-        type: boolean
-        widget: switch
-        default: true
-
-  - name: SSL certificate import
-    condition: $advanced_opt == true && $enable_tls == true && create_self_signed_certificate == false
-    technologies: [pipeline]
-    vars:
-      - name: "Certificate"
-        description: "Credential containing certificate"
-        key: tls_crt
-        type: string
-        widget: cy_cred
-      - name: "Certificate key"
-        description: "Credential containing ssl certificate"
-        key: tls_key
-        type: string
-        widget: cy_cred
-
 
 - &aws-creds
   name: AWS Credentials
@@ -591,6 +554,43 @@ use_cases:
               datasource: prometheus
 
   - *advanced
+
+  - name: Enable SSL
+    condition: $advanced_opt == true
+    technologies: [terraform]
+    vars:
+      - name: "Enable HTTPs"
+        description: "Select wheter to enable HTTPs traffic and use SSL certificates."
+        key: enable_tls
+        type: boolean
+        widget: switch
+        default: true
+
+  - name: SSL configuration
+    condition: $advanced_opt == true && $enable_tls == true
+    technologies: [terraform]
+    vars:
+      - name: "Create self signed certificate"
+        description: "Wheter to create a self signed certificate automatically. Otherwise a certificate needs to be imported"
+        key: create_self_signed_certificate
+        type: boolean
+        widget: switch
+        default: true
+
+  - name: SSL certificate import
+    condition: $advanced_opt == true && $enable_tls == true && create_self_signed_certificate == false
+    technologies: [pipeline]
+    vars:
+      - name: "Certificate"
+        description: "Credential containing certificate"
+        key: tls_crt
+        type: string
+        widget: cy_cred
+      - name: "Certificate key"
+        description: "Credential containing ssl certificate"
+        key: tls_key
+        type: string
+        widget: cy_cred
 
   - name: DNS Creation
     condition: $advanced_opt == true

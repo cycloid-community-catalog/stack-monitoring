@@ -7,8 +7,8 @@ groups:
 
   {% for custom_config in prometheus_default_rules_custom.get('AlertmanagerIsDown', [{}]) %}
     {% set joined_config = prometheus_default_rules_global |
-                                  combine(prometheus_default_rules_predefined['AlertmanagerIsDown'], custom_config) %}
-    - alert: AlertmanagerIsDown
+                           combine(prometheus_default_rules_predefined['AlertmanagerIsDown'], custom_config) %}
+    - alert: "{{ joined_config['name'] }}"
       expr: absent(up{job="alertmanager", {{ joined_config['selector'] }}})
       for: "{{ joined_config['for'] }}"
       labels: "{{ joined_config['labels'] |

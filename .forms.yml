@@ -321,14 +321,19 @@ use_cases:
             - name: example_empty
               rules: []
 
-        # temporary remove
-        #- name: "Prometheus rules"
-        #  description: "Definition of prometheus rules. Other default available in the role ansible-prometheus/templates/rules, you can also create news and add to the config repository."
-        #  key: prometheus_rule_files
-        #  widget: text_area
-        #  type: array
-        #  default:
-        #    - templates/rules/opsgenie.rules
+        - name: "Default prometheus rules"
+          description: "Default prometheus rules to use. You can see all the values available [here](TODO)."
+          key: prometheus_rule_files
+          widget: text_area
+          type: array
+          default:
+            - alertmanager.rules
+
+        - name: "Default prometheus rules configuration"
+          description: "Change the default prometheus values that are defined. You can see all the values available [here](TODO)."
+          key: prometheus_default_rules_custom
+          widget: text_area
+          type: map
 
   - name: Blackbox Exporter
     groups:

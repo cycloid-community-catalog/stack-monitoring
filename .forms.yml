@@ -323,7 +323,7 @@ use_cases:
 
         - name: "Default prometheus rules"
           description: "Default prometheus rules to use. You can see all the values available [here](TODO)."
-          key: prometheus_rule_files
+          key: prometheus_default_rule_files
           widget: text_area
           type: array
           default:

@@ -68,6 +68,10 @@ postgres_exporter_port: "{{postgres_db_port}}"
 # defaults at https://github.com/prometheus-community/ansible/blob/main/roles/node_exporter/defaults/main.yml
 node_exporter_web_listen_address: "0.0.0.0:9100"
 
+cadvisor_listen_ip: "0.0.0.0"
+cadvisor_port: "8080"
+cadvisor_docker_only: true
+
 # Prometheus role
 # all defaults here: https://github.com/prometheus-community/ansible/blob/main/roles/prometheus/defaults/main.yml
 prometheus_storage_retention: "60d"
@@ -174,15 +178,24 @@ prometheus_alertmanager_config: "{{ prometheus_alerting_local if alertmanager_in
 prometheus_alert_rules: []
 # default rule files should be copied here {{ prometheus_config_dir }}/rules/
 
+prometheus_default_rules_global:
+  for: 5m
+  receiver: on_call
+  selector: ""
+  severity: critical
+  labels:
+    organization: "{{ organization }}"
+    project: "{{ project }}"
+    env: "{{ environment }}"
+
+prometheus_default_rules_predefined:
+  AlertmanagerIsDown:
+    name: AlertmanagerIsDown
+
 # Alertmanager role
 # default values: https://github.com/prometheus-community/ansible/blob/main/roles/alertmanager/defaults/main.yml
 alertmanager_web_external_url: "{{ external_url_schema }}://{{ alertmanager_domain_name }}"
 alertmanager_web_listen_address: '0.0.0.0:9093'
-
-# TODO copy default templates to folder
-# TODO if required global config https://github.com/prometheus-community/ansible/blob/main/roles/alertmanager/templates/alertmanager.yml.j2#L3
-# TODO if required time intervals -> alertmanager_time_intervals: []
-
 
 # NGINX
 

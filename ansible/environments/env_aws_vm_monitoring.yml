@@ -16,7 +16,8 @@
 #  - templates/rules/opsgenie.rules
 # prometheus_custom_rules: []
 # prometheus_custom_configs: []
-
+# prometheus_default_rules_custom: {}
+# prometheus_default_rule_files: {}
 
 ## Alertmanager
 # alertmanager_install: false

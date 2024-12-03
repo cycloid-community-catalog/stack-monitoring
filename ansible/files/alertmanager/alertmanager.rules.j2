@@ -1,0 +1,46 @@
+# defines the set of alerts to check the status of alertmanager
+# this rules are always enabled by default if alertmanager is enabled
+
+groups:
+- name: alertmanager.rules
+  rules:
+
+  {% for custom_config in prometheus_default_rules_custom.get('AlertmanagerIsDown', [{}]) %}
+    {% set joined_config = prometheus_default_rules_global |
+                                  combine(prometheus_default_rules_predefined['AlertmanagerIsDown'], custom_config) %}
+    - alert: AlertmanagerIsDown
+      expr: absent(up{job="alertmanager", {{ joined_config['selector'] }}})
+      for: "{{ joined_config['for'] }}"
+      labels: "{{ joined_config['labels'] |
+                  joined_config({'severity': joined_config['severity']}) }}"
+      annotations:
+        summary: Alertmanager is down
+        description: "The Alertmanager job has disappeared"
+  {% endfor %}
+
+
+#  {% for alert_config in prometheus_default_rules_config.get('AlertmanagerConfigurationReloadFailure', [{}]) %}
+#    - alert: AlertmanagerConfigurationReloadFailure
+#      expr: absent(up{job="alertmanager", {{ alert_config['selector'] }}})
+#      for: "{{ alert_config['for'] }}"
+#      labels:
+#        severity: "{{ alert_config['severity'] }}"
+#        organization: "{{ alert_config['organization'] }}"
+#        project: "{{ alert_config['project'] }}"
+#        env: "{{ alert_config['env'] }}"
+#      annotations:
+#        summary: Alertmanager is down
+#        description: "The Alertmanager job has disappeared"
+#  {% endfor %}
+#
+#    - alert: AlertmanagerConfigurationReloadFailure
+#      expr: alertmanager_config_last_reload_successful != 1
+#      for: TODO
+#      labels:
+#        severity: TODO
+#        organization: TODO
+#        project: todo
+#        env: TODO
+#      annotations:
+#        summary: Alertmanager configuration reload failure
+#        description: "There seems to be an error on the alertmanager configuration reload"

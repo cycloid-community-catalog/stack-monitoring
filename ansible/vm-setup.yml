@@ -49,6 +49,24 @@
     when: prometheus_install | bool and prometheus_custom_rules != ""
     tags: prometheus
 
+  - name: copy prometheus rules
+    template: >
+      src="templates/rules/{{ item }}.j2"
+      dest="{{ prometheus_config_dir }}/rules/"
+    with_fileglob: "{{ prometheus_default_rule_files }}"
+    tags:
+      - prometheus
+
+  - name: Reload prometheus
+    become: true
+    ansible.builtin.systemd:
+      daemon_reload: true
+      name: prometheus
+      state: started
+      enabled: true
+    tags:
+      - prometheus
+
   # Install Alertmanager
   - name: Install Alertmanager
     include_role:

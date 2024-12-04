@@ -1,0 +1,20 @@
+# defines the set of alerts to check the status of alertmanager
+# this rules are always enabled by default if alertmanager is enabled
+
+groups:
+- name: alertmanager.rules
+  rules:
+
+  {% for custom_config in prometheus_default_rules_custom.get('AlertmanagerIsDown', [{}]) %}
+    {% set joined_config = prometheus_default_rules_global |
+                           combine(prometheus_default_rules_predefined['AlertmanagerIsDown']) |
+                           combine(custom_config) %}
+    - alert: "{{ joined_config['name'] }}"
+      expr: absent(up{job="alertmanager", {{ joined_config['selector'] }}})
+      for: "{{ joined_config['for'] }}"
+      labels: "{{ joined_config['labels'] |
+                  combine({'severity': joined_config['severity']}) | to_nice_yaml |indent(2)}}"
+      annotations:
+        summary: Alertmanager is down
+        description: "The Alertmanager job has disappeared"
+  {% endfor %}

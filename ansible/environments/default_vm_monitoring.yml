@@ -192,6 +192,7 @@ prometheus_default_rules_predefined:
   AlertmanagerIsDown:
     name: AlertmanagerIsDown
 
+prometheus_default_rules_custom: {}
 # Alertmanager role
 # default values: https://github.com/prometheus-community/ansible/blob/main/roles/alertmanager/defaults/main.yml
 alertmanager_web_external_url: "{{ external_url_schema }}://{{ alertmanager_domain_name }}"

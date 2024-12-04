@@ -8,11 +8,12 @@ groups:
     {% set joined_config = prometheus_default_rules_global |
                            combine(prometheus_default_rules_predefined['AlertmanagerIsDown']) |
                            combine(custom_config) %}
+
     - alert: "{{ joined_config['name'] }}"
-      expr: absent(up{job="alertmanager" {% if joined_config['selector'] != "" %}, {{ joined_config['selector'] }}{% endif %}}}})
+      expr: absent(up{job="alertmanager" {% if joined_config['selector'] != "" %}, {{ joined_config['selector'] }}{% endif %}})
       for: "{{ joined_config['for'] }}"
       labels:
-        {{ joined_config['labels'] | combine({'severity': joined_config['severity']}) | to_nice_yaml |indent(8)}}
+        {{ joined_config['labels'] | combine({'severity': joined_config['severity']}) | to_nice_yaml | indent(8) | trim }}
       annotations:
         summary: "Alertmanager is down"
         description: "The Alertmanager job has disappeared"

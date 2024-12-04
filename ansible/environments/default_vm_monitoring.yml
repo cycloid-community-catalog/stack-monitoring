@@ -186,7 +186,7 @@ prometheus_default_rules_global:
   labels:
     organization: "{{ organization }}"
     project: "{{ project }}"
-    env: "{{ environment }}"
+    env: "{{ env }}"
 
 prometheus_default_rules_predefined:
   AlertmanagerIsDown:

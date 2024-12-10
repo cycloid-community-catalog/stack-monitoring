@@ -29,7 +29,7 @@ EOL
   prometheus_custom_rules= <<EOL
 ---
 customRules:
-    ${yamlencode(var.prometheus_customRules)}
+    ${yamlencode(var.prometheus_custom_rules)}
 EOL
 
   prometheus_additional_rules= <<EOL

@@ -702,12 +702,12 @@ use_cases:
           type: map
         - name: "Prometheus default rules"
           description: "Customize the default enabled rules. For more information about syntax and default rules check the k8s prometheus stack [chart default values](https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/values.yaml#L38)"
-          key: module.kube-prometheus.alertmanager_customRules
+          key: module.kube-prometheus.prometheus_custom_rules
           widget: text_area
           type: map
         - name: "Prometheus aditional rules"
           description: "Provide custom rules to be deployed in the cluster. For more information about syntax and default rules check the k8s prometheus stack [chart default values](https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/values.yaml#L198)"
-          key: module.kube-prometheus.alertmanager_additional_rules
+          key: module.kube-prometheus.prometheus_additional_rules
           widget: text_area
           type: map
 

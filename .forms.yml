@@ -1,19 +1,19 @@
 shared:
 - &cycloid-api-key
-  - name: Cycloid API key
-    groups:
-    - name: API KEY
-      technologies: [pipeline]
-      vars:
-      - name: "Cycloid API Key"
-        description: "Cycloid API Key with full rigths to manage credentials"
-        key: cycloid_api_key
-        type: string
-        widget: cy_cred
-        required: true
-        widget_config:
-          cred_types: [custom]
-        default: "((cycloid_io_api_key.api_key))"
+  name: Cycloid API key
+  groups:
+  - name: API KEY
+    technologies: [pipeline]
+    vars:
+    - name: "Cycloid API Key"
+      description: "Cycloid API Key with full rigths to manage credentials"
+      key: cycloid_api_key
+      type: string
+      widget: cy_cred
+      required: true
+      widget_config:
+        cred_types: [custom]
+      default: "((cycloid_io_api_key.api_key))"
 - &advanced
   name: Advanced
   groups:
@@ -841,12 +841,6 @@ use_cases:
       technologies: [terraform]
       condition: $grafana_install == true
       vars:
-        - name: Use default grafana dashboards
-          description: "Wheter to use of not the default grafana dashboards"
-          key: module.kube-prometheus.enable_default_grafana_dashboards
-          widget: switch
-          type: boolean
-          default: true
         - name: "Grafana Dashboard Timezone"
           description: "Timezone for the default dashboards"
           key: module.kube-prometheus.grafana_default_timezone

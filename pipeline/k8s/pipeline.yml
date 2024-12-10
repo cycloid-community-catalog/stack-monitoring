@@ -169,9 +169,9 @@ jobs:
             args:
             - -ec
             - |
-              if [ "${GRAFANA_INSTALL}" = true]; then
-
-                export KUBECONFIG=stack/terraform/k8s/${KUBECONFIG_FILENAME}
+              if [ "${GRAFANA_INSTALL}" = true ]; then
+                echo -e "${KUBECONFIG_CONTENT}" > ./$kubeconfig
+                export KUBECONFIG=./$kubeconfig
                 export GRAFANA_CMS_TO_REMOVE=$(jq -r .grafana_cms_to_remove tfstate/metadata)
                 NAMESPACE=$(jq -r .namespace tfstate/metadata)
 
@@ -191,6 +191,7 @@ jobs:
           - name: tfstate
           params:
             GRAFANA_INSTALL: ((grafana_install))
+            KUBECONFIG_CONTENT: ((kubeconfig_content))
 
   - name: access-view
     serial: True

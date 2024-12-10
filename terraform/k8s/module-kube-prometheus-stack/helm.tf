@@ -40,30 +40,6 @@ EOL
 
 # alertmanager
 
-#  alertmanager_config_inhibit_rules= <<EOL
-#---
-#alertmanager:
-#  config:
-#    inhibit_rules:
-#      ${var.alertmanager_config_inhibit_rules}
-#EOL
-#
-  alertmanager_config_route= <<EOL
----
-alertmanager:
-  config:
-    route:
-      ${yamlencode(var.alertmanager_config_route)}
-EOL
-
-  alertmanager_config_receivers= <<EOL
----
-alertmanager:
-  config:
-    receivers:
-      ${yamlencode(var.alertmanager_config_receivers)}
-EOL
-
   alertmanager_node_selector= <<EOL
 ---
 alertmanager:
@@ -136,15 +112,17 @@ EOL
 }
 
 locals {
-  alertmanager_config_inhibit_rules = {
+  alertmanager_config = {
     alertmanager = {
       config = {
+        route = var.alertmanager_config_route
         inhibit_rules = var.alertmanager_config_inhibit_rules
+        receivers = alertmanager_config_receivers
       }
     }
   }
-}
 
+}
 
 resource "helm_release" "kube_prometheus_stack" {
   name       = "kube-prometheus-stack"
@@ -162,9 +140,9 @@ resource "helm_release" "kube_prometheus_stack" {
     local.prometheus_additional_rules,
 
     # alertmanager
-    yamlencode(local.alertmanager_config_inhibit_rules),
-    local.alertmanager_config_route,
-    local.alertmanager_config_receivers,
+    yamlencode(local.alertmanager_config),
+    #local.alertmanager_config_route,
+    #local.alertmanager_config_receivers,
     local.alertmanager_node_selector,
 
     # grafana

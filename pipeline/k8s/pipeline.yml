@@ -170,19 +170,22 @@ jobs:
             - -ec
             - |
               if [ "${GRAFANA_INSTALL}" = true ]; then
-                echo -e "${KUBECONFIG_CONTENT}" > ./$kubeconfig
-                export KUBECONFIG=./$kubeconfig
+                echo -e "${KUBECONFIG_CONTENT}" > ./.kubeconfig
+                export KUBECONFIG=./.kubeconfig
                 export GRAFANA_CMS_TO_REMOVE=$(jq -r .grafana_cms_to_remove tfstate/metadata)
                 NAMESPACE=$(jq -r .namespace tfstate/metadata)
 
-                for configmap in "${GRAFANA_CMS_TO_REMOVE[@]}"; do
+                if [ ${#GRAFANA_CMS_TO_REMOVE[@]} -gt 0 ]; then
+                  for configmap in "${GRAFANA_CMS_TO_REMOVE[@]}"; do
 
-                  # kubectl delete dashboards
-                  kubectl delete configmap "kube-prometheus-stack-${configmap}" -n $NAMESPACE
+                    # kubectl delete dashboards
+                    kubectl delete configmap "kube-prometheus-stack-${configmap}" -n $NAMESPACE
 
-                    echo "Configmap ${configmap} deleted"
-                done
-
+                      echo "Configmap ${configmap} deleted"
+                  done
+                else
+                  echo "No default dashboard selected to delete!"
+                fi
               else
                   echo "Grafana not installed... No configmaps to delete!"
               fi

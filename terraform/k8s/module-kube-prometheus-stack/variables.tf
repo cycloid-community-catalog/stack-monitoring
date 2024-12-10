@@ -38,8 +38,12 @@ variable "prometheus_basic_auth_password" {
   default = "pwdToChange"
 }
 variable "prometheus_additional_scrape" {}
-variable "prometheus_custom_rules" {}
-variable "prometheus_additional_rules" {}
+variable "prometheus_custom_rules" {
+    default = {}
+}
+variable "prometheus_additional_rules" {
+  default = {}
+}
 
 #
 # GRAFANA

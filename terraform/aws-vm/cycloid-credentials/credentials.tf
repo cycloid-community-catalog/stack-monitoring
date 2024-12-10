@@ -12,7 +12,7 @@ resource "cycloid_credential" "vm_ssh" {
   canonical              = "${var.project}-vm-ssh-${var.env}"
   type                   = "ssh"
   body = {
-    ssh_key = var.vm_private_ssh_key
+    ssh_key = chomp(var.vm_private_ssh_key)
   }
 }
 

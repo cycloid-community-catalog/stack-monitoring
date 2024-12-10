@@ -4,7 +4,11 @@ provider "aws" {
   region     = var.aws_region
 
   dynamic "assume_role" {
-    for_each = var.aws_role_arn != "" ? { "role" = var.aws_role_arn } : {}
+    for_each = var.aws_role_arn != "" ? [var.aws_role_arn] : []
+
+    content {
+      role_arn = assume_role.value
+    }
   }
 
   default_tags {

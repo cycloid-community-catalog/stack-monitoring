@@ -49,6 +49,7 @@ groups:
   jobs:
   - terraform-plan
   - terraform-apply
+  - grafana-default-dashboards
   - access-view
 
 - name: destroy
@@ -146,7 +147,16 @@ jobs:
             plan_run: true
             terraform_source: merged-stack/
 
-      - task: grafana-dashboard-config-updates
+  - name: grafana-default-dashboards
+    serial: True
+    build_logs_to_retain: 3
+    plan:
+    - do:
+      - get: tfstate
+        trigger: true
+        passed:
+          - terraform-apply
+      - task: grafana-dashboard-config-update
         config:
           platform: linux
           image_resource:
@@ -160,7 +170,7 @@ jobs:
             - -ec
             - |
               DIR=${PWD}
-              if [ "${GRAFANA_INSTALL}" == true]; then
+              if [ "${GRAFANA_INSTALL}" = true]; then
 
                 export KUBECONFIG=stack/terraform/k8s/${KUBECONFIG_FILENAME}
                 export GRAFANA_CMS_TO_REMOVE=$(jq -r .grafana_cms_to_remove tfstate/metadata)

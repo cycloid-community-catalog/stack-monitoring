@@ -12,15 +12,12 @@ variable "kube_prometheus_helm_version" {
   default = "59.0.0"
 }
 variable "namespace" {}
-
 variable "extra_labels" {
   default = {}
 }
-
 variable "disable_component_scraping" {
   default = []
 }
-
 variable "stack_monitoring_node_selector" {
   default = {}
 }
@@ -34,17 +31,15 @@ variable "prometheus_install" {
 variable "prometheus_domain_name" {
   default = "prometheus.local"
 }
-
 variable "prometheus_basic_auth_username" {
   default = "prometheus"
 }
-
 variable "prometheus_basic_auth_password" {
   default = "pwdToChange"
 }
-
 variable "prometheus_additional_scrape" {}
-
+variable "prometheus_custom_rules" {}
+variable "prometheus_additional_rules" {}
 
 #
 # GRAFANA
@@ -52,21 +47,20 @@ variable "prometheus_additional_scrape" {}
 variable "grafana_install" {
   default = true
 }
-
 variable "enable_default_grafana_dashboards" {
   default = true
 }
-
 variable "grafana_dashboard_import" {
   default = {}
 }
-
 variable "grafana_default_timezone" {
   default = "Europe/Paris"
 }
-
 variable "grafana_domain_name" {
   default = "grafana.local"
+}
+variable "grafana_cms_to_remove" {
+  default = []
 }
 
 #
@@ -75,20 +69,15 @@ variable "grafana_domain_name" {
 variable "alertmanager_install" {
   default = true
 }
-
 variable "alertmanager_use_external" {
   default = []
 }
-
 variable "alertmanager_domain_name" {
   default = "alertmanager.local"
 }
-
-variable "alertmanager_customRules" {}
-
-variable "alertmanager_additional_rules" {}
-
-variable "alertmanager_config" {}
+variable "alertmanager_config_inhibit_rules" {}
+variable "alertmanager_config_route" {}
+variable "alertmanager_config_receivers" {}
 
 #
 # Thanos

@@ -25,20 +25,13 @@ variable "alertmanager_use_external" {
 # opsgenie
 variable "opsgenie_token" {}
 
-#
-# AWS
-#
+# provider cycloid
+variable "cycloid_api_url" {
+  default = "https://http-api.cycloid.io"
+}
 
-# cycloid credentials - passed via pipeline
-variable "aws_access_cred" {
-  type = map(string)
-  default = null
-}
-variable "aws_region" {
-  default = null
-}
-variable "aws_role_arn" {
-  default = null
+variable "cycloid_api_key" {
+  sensitive = true
 }
 
 locals {

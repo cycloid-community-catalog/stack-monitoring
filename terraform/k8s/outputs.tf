@@ -19,6 +19,9 @@ output "alertmanager_domain_name" {
 output "grafana_domain_name" {
   value = module.kube-prometheus.grafana_domain_name
 }
+output "grafana_cms_to_remove" {
+  value = module.kube-prometheus.grafana_cms_to_remove
+}
 
 # shared in the different modules
 output "stack_monitoring_node_selector" {
@@ -46,33 +49,19 @@ output "extra_labels" {
 #  value = module.thanos.thanos_bucket_user
 #}
 
-# basic auth
-output "prometheus_basic_auth_username" {
-  sensitive = true
-  value = module.kube-prometheus.prometheus_basic_auth_username
-}
-output "prometheus_basic_auth_password" {
-  sensitive = true
-  value = module.kube-prometheus.prometheus_basic_auth_password
+# credentials canonical
+output "prometheus_basic_auth_cred_cannonical" {
+  value = module.cycloid-credentials.prometheus_basic_auth_cred_cannonical
 }
 
-output "alertmanager_basic_auth_username" {
-  sensitive = true
-  value = module.kube-prometheus.alertmanager_basic_auth_username
-}
-output "alertmanager_basic_auth_password" {
-  sensitive = true
-  value = module.kube-prometheus.alertmanager_basic_auth_password
+output "alertmanager_basic_auth_cred_cannonical" {
+  value = module.cycloid-credentials.alertmanager_basic_auth_cred_cannonical
 }
 
-output "grafana_basic_auth_username" {
-  sensitive = true
-  value = module.kube-prometheus.grafana_basic_auth_username
+output "grafana_basic_auth_cred_cannonical" {
+  value = module.cycloid-credentials.grafana_basic_auth_cred_cannonical
 }
-output "grafana_basic_auth_password" {
-  sensitive = true
-  value = module.kube-prometheus.grafana_basic_auth_password
-}
+
 
 #output "thanos_basic_auth_username" {
 #  value = module.thanos.thanos_basic_auth_username

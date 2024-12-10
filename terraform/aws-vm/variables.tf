@@ -3,11 +3,25 @@ variable "organization" {}
 variable "project" {}
 variable "env" {}
 
+# provider cycloid
+variable "cycloid_api_url" {
+  default = "https://http-api.cycloid.io"
+}
+
+variable "cycloid_api_key" {
+  sensitive = true
+}
+
 # cycloid credentials - passed via pipeline
-variable "aws_access_cred" {}
-variable "aws_region" {}
+variable "aws_access_cred" {
+  sensitive = true
+}
+variable "aws_region" {
+  sensitive = true
+}
 variable "aws_role_arn" {
-  default = ""
+  sensitive = true
+  default   = ""
 }
 variable "aws_extra_tags" {}
 

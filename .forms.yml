@@ -1,4 +1,19 @@
 shared:
+- &cycloid-api-key
+  - name: Cycloid API key
+    groups:
+    - name: API KEY
+      technologies: [pipeline]
+      vars:
+      - name: "Cycloid API Key"
+        description: "Cycloid API Key with full rigths to manage credentials"
+        key: cycloid_api_key
+        type: string
+        widget: cy_cred
+        required: true
+        widget_config:
+          cred_types: [custom]
+        default: "((cycloid_io_api_key.api_key))"
 - &advanced
   name: Advanced
   groups:
@@ -62,6 +77,7 @@ version: "2"
 use_cases:
 - name: aws-vm
   sections:
+  - *cycloid-api-key
   - *aws-creds
   - name: VM Configuration
     groups:
@@ -70,7 +86,7 @@ use_cases:
       vars:
         - name: "Instance type"
           description: "Instance type for the worker."
-          key: vm_size
+          key: module.aws-vm.vm_size
           widget: auto_complete
           type: string
           default: "t3.small"
@@ -83,7 +99,7 @@ use_cases:
         - name: "Disk size"
           unit: Go
           description: "Root Disk size for the instance."
-          key: os_disk_size
+          key: module.aws-vm.os_disk_size
           widget: slider_range
           type: integer
           default: 30
@@ -92,19 +108,19 @@ use_cases:
               - 250
         - name: "Subnet ID"
           description: "Subnet ID where to create VM."
-          key: subnet_id
+          key: module.aws-vm.subnet_id
           widget: simple_text
           type: string
           required: true
         - name: "VPC ID"
           description: "VPC ID where to create VM."
-          key: vpc_id
+          key: module.aws-vm.vpc_id
           widget: simple_text
           type: string
           required: true
         - name: "IAM policies"
           description: "Array of IAM ARN policies to associate to the VM."
-          key: vm_iam_policies
+          key: module.aws-vm.vm_iam_policies
           widget: text_area
           type: array
           default:
@@ -121,7 +137,7 @@ use_cases:
       vars:
         - name: "SSH CIDR and CIDR to allow"
           description: "Map containing the CIDR and security groups IDs to allow SSH access to the monitoring VM, use the map keys cidr and sg. Default CIDR:0.0.0.0/0"
-          key: ssh_to_allow
+          key: module.aws-vm.ssh_to_allow
           widget: text_area
           type: map
           default:
@@ -228,7 +244,7 @@ use_cases:
       vars:
         - name: "Prometheus DNS"
           description: "DNS to use for Prometheus."
-          key: prometheus_domain_name
+          key: module.aws-vm.prometheus_domain_name
           widget: simple_text
           type: string
           default: prometheus.local
@@ -444,7 +460,7 @@ use_cases:
       vars:
         - name: "Alertmanager DNS"
           description: "DNS to use for Alertmanager."
-          key: alertmanager_domain_name
+          key: module.aws-vm.alertmanager_domain_name
           widget: simple_text
           type: string
           default: alertmanager.local
@@ -536,7 +552,7 @@ use_cases:
       vars:
         - name: "Grafana DNS"
           description: "DNS to use for Grafana."
-          key: grafana_domain_name
+          key: module.aws-vm.grafana_domain_name
           widget: simple_text
           type: string
           default: grafana.local
@@ -566,7 +582,7 @@ use_cases:
     vars:
       - name: "Enable HTTPs"
         description: "Select wheter to enable HTTPs traffic and use SSL certificates."
-        key: enable_tls
+        key: module.aws-vm.enable_tls
         type: boolean
         widget: switch
         default: true
@@ -577,7 +593,7 @@ use_cases:
     vars:
       - name: "Create self signed certificate"
         description: "Wheter to create a self signed certificate automatically. Otherwise a certificate needs to be imported"
-        key: create_self_signed_certificate
+        key: module.aws-vm.create_self_signed_certificate
         type: boolean
         widget: switch
         default: true
@@ -603,7 +619,7 @@ use_cases:
     vars:
       - name: Create DNS
         description: Wheter to create DNS records for prometheus, alertmanager and grafana using AWS DNS. Note! Requires a DNS Zone
-        key: create_dns
+        key: module.aws-vm.create_dns
         widget: switch
         type: boolean
         default: false
@@ -611,16 +627,16 @@ use_cases:
     technologies: [terraform]
     condition: $advanced_opt == true && $create_dns == true
     vars:
-      - name: " AWS Route53 Zone"
+      - name: "AWS Route53 Zone"
         description: "AWS Route53 Zone name to use for creating the different monitoring records."
-        key: aws_dns_zone_name
+        key: module.aws-vm.aws_dns_zone_name
         widget: simple_text
         type: string
         default: ""
 
 - name: k8s
   sections:
-
+  - *cycloid-api-key
   - name: K8s Access
     groups:
     - name: k8s Access
@@ -684,6 +700,16 @@ use_cases:
           key: module.kube-prometheus.prometheus_additional_scrape
           widget: text_area
           type: map
+        - name: "Prometheus default rules"
+          description: "Customize the default enabled rules. For more information about syntax and default rules check the k8s prometheus stack [chart default values](https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/values.yaml#L38)"
+          key: module.kube-prometheus.alertmanager_customRules
+          widget: text_area
+          type: map
+        - name: "Prometheus aditional rules"
+          description: "Provide custom rules to be deployed in the cluster. For more information about syntax and default rules check the k8s prometheus stack [chart default values](https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/values.yaml#L198)"
+          key: module.kube-prometheus.alertmanager_additional_rules
+          widget: text_area
+          type: map
 
   - name: Blackbox Exporter
     groups:
@@ -735,25 +761,36 @@ use_cases:
       technologies: [terraform]
       condition: $alertmanager_install == true
       vars:
-        - name: "Alertmanager route"
-          description: "Customize the default enabled rules. For more information about syntax and default rules check the k8s prometheus stack [chart default values](https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/values.yaml#L38)"
-          key: module.kube-prometheus.alertmanager_customRules
+        - name: "Alertmanager receivers"
+          description: "Alertmanager receivers configuration. Note! The default value corresponds to the helm chart default value for the config of alertmanager. For more information about syntax check the [official alertmanager documentation](https://prometheus.io/docs/alerting/latest/configuration/#general-receiver-related-settings)"
+          key: module.kube-prometheus.alertmanager_config_receivers
           widget: text_area
-          type: map
-        - name: "Alertmanager additional rules"
-          description: "Provide custom rules to be deployed in the cluster. For more information about syntax and default rules check the k8s prometheus stack [chart default values](https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/values.yaml#L198)"
-          key: module.kube-prometheus.alertmanager_additional_rules
-          widget: text_area
-          type: map
-        - name: "Alertmanager config"
-          description: "Alertmanager configuration. Note! The default value corresponds to the helm chart default value for the config of alertmanager. For more information about syntax check the [official alertmanager documentation](https://prometheus.io/docs/alerting/configuration/#configuration-file)"
-          key: module.kube-prometheus.alertmanager_config
+          type: array
+          default:
+            - name: 'null'
+
+        - name: "Alertmanager routes"
+          description: "Alertmanager route configuration. Note! The default value corresponds to the helm chart default value for the config of alertmanager. For more information about syntax check the [official alertmanager documentation](https://prometheus.io/docs/alerting/latest/configuration/#route-related-settings)"
+          key: module.kube-prometheus.alertmanager_config_route
           widget: text_area
           type: map
           default:
-            global:
-              resolve_timeout: 5m
-            inhibit_rules:
+            group_by: ['namespace']
+            group_wait: 30s
+            group_interval: 5m
+            repeat_interval: 12h
+            receiver: 'null'
+            routes:
+            - receiver: 'null'
+              matchers:
+                - alertname = "Watchdog"
+
+        - name: "Alertmanager inhibit rules"
+          description: "Alertmanager inhibit rules configuration. Note! The default value corresponds to the helm chart default value for the config of alertmanager. For more information about syntax check the [official alertmanager documentation](https://prometheus.io/docs/alerting/latest/configuration/#inhibition-related-settings)"
+          key: module.kube-prometheus.alertmanager_config_inhibit_rules
+          widget: text_area
+          type: array
+          default:
               - source_matchers:
                   - 'severity = critical'
                 target_matchers:
@@ -776,20 +813,6 @@ use_cases:
                   - 'namespace'
               - target_matchers:
                   - 'alertname = InfoInhibitor'
-            route:
-              group_by: ['namespace']
-              group_wait: 30s
-              group_interval: 5m
-              repeat_interval: 12h
-              receiver: 'null'
-              routes:
-              - receiver: 'null'
-                matchers:
-                  - alertname = "Watchdog"
-            receivers:
-            - name: 'null'
-            templates:
-            - '/etc/alertmanager/config/*.tmpl'
 
     - name: External Alertmanager (not deployed in k8s cluster)
       technologies: [pipeline]
@@ -830,6 +853,28 @@ use_cases:
           type: string
           widget: simple_text
           default: Europe/France
+        - name: Use default grafana dashboards
+          description: "Wheter to use of not the default grafana dashboards"
+          key: module.kube-prometheus.enable_default_grafana_dashboards
+          widget: switch
+          type: boolean
+          default: true
+        - name: Default dashboards to delete
+          description: "Array of all dashboard corresponding configmaps to delete. TODO doc of all"
+          key: module.kube-prometheus.grafana_cms_to_remove
+          widget: text_area
+          type: array
+        - name: Grafana dashboards import
+          description: "Defines the public dashboards to import. TODO add link in doc on how to add"
+          key: module.kube-prometheus.grafana_dashboard_import
+          widget: text_area
+          type: map
+          #default:
+            #prometheus-stats:
+            #  # Ref: https://grafana.com/dashboards/14900
+            #  gnetId: 14900
+            #  revision: 1
+            #  datasource: prometheus
 
 #  - name: Thanos
 #    groups:

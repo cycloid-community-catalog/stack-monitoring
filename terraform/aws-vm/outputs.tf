@@ -68,7 +68,7 @@ output "grafana_basic_auth_httpwd" {
 }
 
 # certs
-output "enable_tls"{
+output "enable_tls" {
   value = module.aws-vm.enable_tls
 }
 
@@ -92,4 +92,22 @@ output "ssh_private_key" {
 
 output "ssh_public_key" {
   value = module.aws-vm.ssh_public_key
+}
+
+# credentials canonical
+output "prometheus_basic_auth_cred_cannonical" {
+  value = module.cycloid-credentials.prometheus_basic_auth_cred_cannonical
+}
+
+output "alertmanager_basic_auth_cred_cannonical" {
+  value = module.cycloid-credentials.alertmanager_basic_auth_cred_cannonical
+}
+
+output "grafana_basic_auth_cred_cannonical" {
+  value = module.cycloid-credentials.grafana_basic_auth_cred_cannonical
+}
+
+# ssh key
+output "ssh_private_key_cred_cannonical" {
+  value = module.cycloid-credentials.ssh_private_key_cred_cannonical
 }

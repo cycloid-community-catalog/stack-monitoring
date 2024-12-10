@@ -14,3 +14,12 @@ provider "aws" {
     tags = local.tags
   }
 }
+
+provider "cycloid" {
+  # The Cycloid API URL to use.
+  url = var.cycloid_api_url
+  # The Cycloid API key to use.
+  jwt = var.cycloid_api_key
+
+  organization_canonical = "cycloid-io"
+}

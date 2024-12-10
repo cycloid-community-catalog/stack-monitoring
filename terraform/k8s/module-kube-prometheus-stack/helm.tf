@@ -24,24 +24,44 @@ prometheusOperator:
     ${yamlencode(var.stack_monitoring_node_selector)}
 EOL
 
-# alertmanager
-  alertmanager_customRules= <<EOL
+# prometheus
+
+  prometheus_custom_rules= <<EOL
 ---
 customRules:
-    ${yamlencode(var.alertmanager_customRules)}
+    ${yamlencode(var.prometheus_customRules)}
 EOL
 
-  alertmanager_additional_rules= <<EOL
+  prometheus_additional_rules= <<EOL
 ---
 additionalPrometheusRulesMap:
-    ${yamlencode(var.alertmanager_additional_rules)}
+    ${yamlencode(var.prometheus_additional_rules)}
 EOL
 
-  alertmanager_config= <<EOL
+# alertmanager
+
+  alertmanager_config_inhibit_rules= <<EOL
 ---
 alertmanager:
   config:
-    ${yamlencode(var.alertmanager_config)}
+    inhibit_rules:
+      ${yamlencode(var.alertmanager_config_inhibit_rules)}
+EOL
+
+  alertmanager_config_route= <<EOL
+---
+alertmanager:
+  config:
+    route:
+      ${yamlencode(var.alertmanager_config_route)}
+EOL
+
+  alertmanager_config_receivers= <<EOL
+---
+alertmanager:
+  config:
+    receivers:
+      ${yamlencode(var.alertmanager_config_receivers)}
 EOL
 
   alertmanager_node_selector= <<EOL
@@ -64,14 +84,11 @@ EOL
 grafana:
   dashboards:
     default:
-      prometheus-stats:
-        # Ref: https://grafana.com/dashboards/14900
-        gnetId: 14900
-        revision: 1
-        datasource: prometheus
+      ${yamlencode(var.grafana_dashboard_import)}
 EOL
 
-    #value = var.grafana_dashboard_import
+  #https://github.com/grafana/helm-charts/issues/127#issuecomment-776311048
+  #issue with import dashboards
   dashboard_provider= <<EOL
 ---
 grafana:
@@ -84,8 +101,6 @@ grafana:
           options:
             path: /var/lib/grafana/dashboards/default
 EOL
-
-
 
 # prometheus
   prometheus_node_selector= <<EOL
@@ -132,11 +147,13 @@ resource "helm_release" "kube_prometheus_stack" {
     # general vars
     local.commonLabels,
     local.prometheus_operator_node_selector,
+    local.prometheus_custom_rules,
+    local.prometheus_additional_rules,
 
     # alertmanager
-    local.alertmanager_customRules,
-    local.alertmanager_additional_rules,
-    local.alertmanager_config,
+    local.alertmanager_config_inhibit_rules,
+    local.alertmanager_config_route,
+    local.alertmanager_config_receivers,
     local.alertmanager_node_selector,
 
     # grafana
@@ -184,7 +201,7 @@ resource "helm_release" "kube_prometheus_stack" {
   }
   set {
     name  = "alertmanager.ingress.annotations.nginx\\.ingress\\.kubernetes\\.io/auth-secret"
-    value = "grafana-basic-auth-${var.project}-${var.env}"
+    value = "alertmanager-basic-auth-${var.project}-${var.env}"
   }
   set {
     name  = "alertmanager.ingress.annotations.nginx\\.ingress\\.kubernetes\\.io/auth-secret-type"
@@ -222,18 +239,18 @@ resource "helm_release" "kube_prometheus_stack" {
     value = var.grafana_domain_name
   }
 
-  set {
-    name  = "grafana.ingress.annotations.nginx\\.ingress\\.kubernetes\\.io/auth-type"
-    value = "basic"
-  }
-  set {
-    name  = "grafana.ingress.annotations.nginx\\.ingress\\.kubernetes\\.io/auth-secret"
-    value = "grafana-basic-auth-${var.project}-${var.env}"
-  }
-  set {
-    name  = "grafana.ingress.annotations.nginx\\.ingress\\.kubernetes\\.io/auth-secret-type"
-    value = "auth-map"
-  }
+  #set {
+  #  name  = "grafana.ingress.annotations.nginx\\.ingress\\.kubernetes\\.io/auth-type"
+  #  value = "basic"
+  #}
+  #set {
+  #  name  = "grafana.ingress.annotations.nginx\\.ingress\\.kubernetes\\.io/auth-secret"
+  #  value = "grafana-basic-auth-${var.project}-${var.env}"
+  #}
+  #set {
+  #  name  = "grafana.ingress.annotations.nginx\\.ingress\\.kubernetes\\.io/auth-secret-type"
+  #  value = "auth-map"
+  #}
 
 
   # PROMETHEUS

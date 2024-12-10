@@ -42,3 +42,6 @@ mysql_db_user: ""
 mysql_db_password: ""
 mysql_db_host: ""
 mysql_db_port: ""
+
+# cycloid
+cycloid_api_key: ""

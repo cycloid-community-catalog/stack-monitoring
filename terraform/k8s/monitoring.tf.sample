@@ -8,26 +8,29 @@ module "kube-prometheus" {
   #####################################
 
   #kube_prometheus_helm_version   = "59.0.0"
-  namespace                      = local.namespace
+  namespace                       = local.namespace
   #extra_labels                   = {}
   #disable_component_scraping     = [] #kubeApiServer kubelet kubeControllerManager coreDns kubeDns kubeEtcd kubeScheduler kubeProxy kubeStateMetrics
   #stack_monitoring_node_selector = {}
 
-  prometheus_install              = var.prometheus_install
-  #prometheus_domain_name          = "prometheus.local"
-  prometheus_additional_scrape   = {}
+  prometheus_install            = var.prometheus_install
+  #prometheus_domain_name       = "prometheus.local"
+  #prometheus_additional_scrape = {}
+  #prometheus_custom_rules      = {}
+  #prometheus_additional_rules  = {}
 
-  grafana_install                   = var.grafana_install
+  grafana_install                    = var.grafana_install
   #enable_default_grafana_dashboards = true
   #grafana_default_timezone          = "Europe/Paris"
   #grafana_domain_name               = "grafana.local"
+  #grafana_cms_to_remove             = []
 
-  alertmanager_install             = var.alertmanager_install
-  alertmanager_use_external        = var.alertmanager_use_external
-  #alertmanager_domain_name         = "alertmanager.local"
-  alertmanager_customRules         = {}
-  alertmanager_additional_rules    = {}
-  #alertmanager_config              = {}
+  alertmanager_install               = var.alertmanager_install
+  alertmanager_use_external          = var.alertmanager_use_external
+  #alertmanager_domain_name          = "alertmanager.local"
+  #alertmanager_config_inhibit_rules = []
+  #alertmanager_config_route         = {}
+  #alertmanager_config_receivers     = []
 
   #thanos_install = var.thanos_install
 
@@ -66,6 +69,29 @@ module "opsgenie-heartbeat" {
   opsgenie_heartbeat_install = false
   opsgenie_token            = var.opsgenie_token
 
+}
+
+module "cycloid-credentials" {
+  #####################################
+  # Do not modify the following lines #
+  source       = "./cycloid-credentials"
+  project      = var.project
+  env          = var.env
+  organization = var.organization
+  #####################################
+
+
+  prometheus_install  = var.prometheus_install
+  prometheus_username = module.kube-prometheus.prometheus_basic_auth_username
+  prometheus_password = module.kube-prometheus.prometheus_basic_auth_password
+
+  alertmanager_install  = var.alertmanager_install
+  alertmanager_username = module.kube-prometheus.alertmanager_basic_auth_username
+  alertmanager_password = module.kube-prometheus.alertmanager_basic_auth_password
+
+  grafana_install  = var.grafana_install
+  grafana_username = module.kube-prometheus.grafana_basic_auth_username
+  grafana_password = module.kube-prometheus.grafana_basic_auth_password
 }
 
 #module "thanos" {

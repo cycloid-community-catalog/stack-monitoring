@@ -71,6 +71,7 @@ resources:
       use_bastion: ((use_bastion))
       tls_crt: ((tls_crt))
       tls_key: ((tls_key))
+      cycloid_api_key: ((cycloid_api_key))
 #($- else if eq .use_case "azure-vm" $)
       #azure_cred: ((($ .azure_cred $))
       #resource_group_name: ($ .resource_group_name$)
@@ -330,35 +331,34 @@ jobs:
             args:
             - -ec
             - |
+              source /usr/bin/cecho-utils
               # Display connection credentials
-              echo -e "Here are your connection credentials:"
+              echo -n "Here are your connection credentials for VM at "; perror "$(jq -r .machine_ip_public_address tfstate/metadata):"
 
               if [ "$PROMETHEUS_INSTALL" = "true" ]; then
-                echo -e "Prometheus available at $(jq -r .prometheus_domain_name tfstate/metadata)"
-                echo -e "Basic auth username: $(jq -r .prometheus_basic_auth_username tfstate/metadata)"
-                echo -e "Basic auth password: $(jq -r .prometheus_basic_auth_password tfstate/metadata)"
+                echo -n "Prometheus available at "; pwarning "$(jq -r .prometheus_domain_name tfstate/metadata)"
+                echo -n "Basic credential : "; pwarning  "$(jq -r .prometheus_basic_auth_cred_cannonical tfstate/metadata)"
               fi
 
               if [ "$ALERTMANAGER_INSTALL" = "true" ]; then
-                echo -e "Alertmanager available at $(jq -r .alertmanager_domain_name tfstate/metadata)"
-                echo -e "Basic auth username: $(jq -r .alertmanager_basic_auth_username tfstate/metadata)"
-                echo -e "Basic auth password: $(jq -r .alertmanager_basic_auth_password tfstate/metadata)"
+                echo -e "\n"
+                echo -n "Alertmanager available at "; pwarning "$(jq -r .alertmanager_domain_name tfstate/metadata)"
+                echo -n "Basic credential : "; pwarning  "$(jq -r .alertmanager_basic_auth_cred_cannonical tfstate/metadata)"
               fi
 
               if [ "$GRAFANA_INSTALL" = "true" ]; then
-                echo -e "Grafana available at $(jq -r .grafana_domain_name tfstate/metadata)"
-                echo -e "Basic auth username: $(jq -r .grafana_basic_auth_username tfstate/metadata)"
-                echo -e "Basic auth password: $(jq -r .grafana_basic_auth_password tfstate/metadata)"
+                echo -e "\n"
+                echo -n "Grafana available at "; pwarning "$(jq -r .grafana_domain_name tfstate/metadata)"
+                echo -n "Basic credential : "; pwarning  "$(jq -r .grafana_basic_auth_cred_cannonical tfstate/metadata)"
               fi
 
               # Display tips
-              echo -e "Here are some tips to help debug issues"
-              #TODO in case of bastion!
+              echo -e "Here are some tips to help debug issues\n"
 
               echo -e "Remote connect to the vm:"
-              echo -e "SSH_KEY : $(jq -r .ssh_private_key tfstate/metadata)"
+              echo -e "Private ssh key available at the credential : $(jq -r .ssh_private_key_cred_cannonical tfstate/metadata)"
               echo -e "Copy the key into a local file"
-              echo -e "ssh -i SSH_FILE admin@$(jq -r .machine_ip_private_address tfstate/metadata)"
+              pinfo "ssh -i .SSH_FILE admin@$(jq -r .machine_ip_public_address tfstate/metadata)"
 
           inputs:
           - name: tfstate

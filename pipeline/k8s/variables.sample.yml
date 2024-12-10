@@ -10,6 +10,9 @@ kubeconfig_filename: "kubeconfig"
 ## terraform version used to execute your code
 terraform_version: "1.6.3"
 ansible_version: "10.1"
+# kubectl version used to run extra cmd. Using alpine/k8s image.
+# https://hub.docker.com/r/alpine/k8s/tags?page=1
+kubectl_version: "1.23.12"
 
 ## monitoring tools
 grafana_install: false
@@ -22,3 +25,6 @@ alertmanager_use_external: []
 
 #heartbeat
 opsgenie_token: ""
+
+# cycloid
+cycloid_api_key: ""

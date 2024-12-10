@@ -48,7 +48,7 @@ EOL
 #      ${var.alertmanager_config_inhibit_rules}
 #EOL
 #
-#  alertmanager_config_route= <<EOL
+  alertmanager_config_route= <<EOL
 ---
 alertmanager:
   config:

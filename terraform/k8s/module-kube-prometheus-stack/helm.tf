@@ -45,7 +45,7 @@ EOL
 alertmanager:
   config:
     inhibit_rules:
-      ${yamlencode(var.alertmanager_config_inhibit_rules)}
+      ${var.alertmanager_config_inhibit_rules}
 EOL
 
   alertmanager_config_route= <<EOL

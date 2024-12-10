@@ -3,14 +3,6 @@ provider "aws" {
   secret_key = var.aws_access_cred.secret_key
   region     = var.aws_region
 
-  dynamic "assume_role" {
-    for_each = var.aws_role_arn != "" ? { "role" = var.aws_role_arn } : {}
-
-    content {
-      role_arn = each.value
-    }
-  }
-
   default_tags {
     tags = local.tags
   }

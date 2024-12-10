@@ -66,7 +66,6 @@ resources:
 #($- if eq .use_case "aws-vm" $)
       aws_access_cred: ((aws_access_cred))
       aws_region: ((aws_default_region))
-      aws_role_arn: ((aws_role_arn))
       aws_extra_tags: ((aws_extra_tags))
       use_bastion: ((use_bastion))
       tls_crt: ((tls_crt))

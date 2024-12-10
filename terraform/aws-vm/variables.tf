@@ -19,10 +19,6 @@ variable "aws_access_cred" {
 variable "aws_region" {
   sensitive = true
 }
-variable "aws_role_arn" {
-  sensitive = true
-  default   = ""
-}
 variable "aws_extra_tags" {}
 
 variable "use_bastion" {}

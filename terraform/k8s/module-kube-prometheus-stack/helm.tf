@@ -117,7 +117,7 @@ locals {
       config = {
         route = var.alertmanager_config_route
         inhibit_rules = var.alertmanager_config_inhibit_rules
-        receivers = alertmanager_config_receivers
+        receivers = var.alertmanager_config_receivers
       }
     }
   }

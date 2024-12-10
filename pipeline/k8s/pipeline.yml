@@ -169,7 +169,6 @@ jobs:
             args:
             - -ec
             - |
-              DIR=${PWD}
               if [ "${GRAFANA_INSTALL}" = true]; then
 
                 export KUBECONFIG=stack/terraform/k8s/${KUBECONFIG_FILENAME}
@@ -184,7 +183,7 @@ jobs:
                     echo "Configmap ${configmap} deleted"
                 done
 
-              else;
+              else
                   echo "Grafana not installed... No configmaps to delete!"
               fi
 

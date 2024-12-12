@@ -90,13 +90,13 @@ resource "helm_release" "kube_prometheus_stack" {
   values = [
     file("${path.module}/values.yaml"),
     # general vars
-    yamlencode(local.global_helm_vars)
+    yamlencode(local.global_helm_vars),
 
     # alertmanager
     yamlencode(local.alertmanager_config),
 
     # grafana
-    yamlencode(local.grafana_helm_vars)
+    yamlencode(local.grafana_helm_vars),
     local.dashboard_default_provider,
 
     # prometheus

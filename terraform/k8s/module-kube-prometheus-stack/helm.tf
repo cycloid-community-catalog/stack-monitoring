@@ -93,7 +93,7 @@ resource "helm_release" "kube_prometheus_stack" {
     yamlencode(local.global_helm_vars),
 
     # alertmanager
-    yamlencode(local.alertmanager_config),
+    yamlencode(local.alertmanager_helm_vars),
 
     # grafana
     yamlencode(local.grafana_helm_vars),

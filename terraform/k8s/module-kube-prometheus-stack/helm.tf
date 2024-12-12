@@ -19,9 +19,7 @@ locals {
 
   # prometheus
   prometheus_helm_vars = {
-    defaultRules = {
-      labels = local.alert_labels
-    }
+    additionalRuleLabels = local.alert_labels
     customRules = var.prometheus_custom_rules
     additionalPrometheusRulesMap = var.prometheus_additional_rules
     prometheus = {

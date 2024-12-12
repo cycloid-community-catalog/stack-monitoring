@@ -27,6 +27,7 @@ locals {
       prometheusSpec = {
         additionalScrapeConfigs = var.prometheus_additional_scrape
         alertingEndpoints = var.alertmanager_use_external
+        externalLabels = local.alert_labels
       }
     }
   }

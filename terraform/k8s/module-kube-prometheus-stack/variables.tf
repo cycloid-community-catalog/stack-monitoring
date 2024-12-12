@@ -92,13 +92,22 @@ variable "alertmanager_config_receivers" {}
 
 locals {
 
-  default_labels = {
+  default_resource_labels = {
     env = "${var.env}"
     project = "${var.project}"
+    organization = "${var.organization}"
     stack = "stack-monitoring"
   }
-  common_labels = merge(local.default_labels, var.extra_labels)
 
+  default_alert_labels = {
+    env = "${var.env}"
+    project = "${var.project}"
+    organization = "${var.organization}"
+    receiver = "oncall"
+  }
+
+  resource_labels = merge(local.default_resource_labels, var.extra_labels)
+  alert_labels = merge(local.default_alert_labels, var.extra_labels)
   #thanos_object_store_secret_name = "${var.project}-thanos-object-store-${var.env}"
 
   username = var.organization

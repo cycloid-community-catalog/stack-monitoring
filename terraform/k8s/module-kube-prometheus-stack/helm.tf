@@ -9,63 +9,64 @@
 # https://github.com/hashicorp/terraform-provider-helm/issues/669
 # all the map variables need to apply this little trick
 locals {
+  # general variables
+  global_helm_vars = {
+    commonLabels = local.resource_labels
+    prometheusOperator = {
+      nodeSelector = var.stack_monitoring_node_selector
+    }
+  }
 
-# general variables
-  commonLabels= <<EOL
----
-commonLabels:
-    ${yamlencode(local.common_labels)}
-EOL
+  # prometheus
+  prometheus_helm_vars = {
+    defaultRules = {
+      labels = local.alert_labels
+    }
+    customRules = var.prometheus_custom_rules
+    additionalPrometheusRulesMap = var.prometheus_additional_rules
+    prometheus = {
+      nodeSelector = var.stack_monitoring_node_selector
+      prometheusSpec = {
+        additionalScrapeConfigs = var.prometheus_additional_scrape
+        alertingEndpoints = var.alertmanager_use_external
+      }
+    }
+  }
 
-  prometheus_operator_node_selector= <<EOL
----
-prometheusOperator:
-  nodeSelector:
-    ${yamlencode(var.stack_monitoring_node_selector)}
-EOL
+  # alertmanager
+  alertmanager_helm_vars = {
+    nodeSelector = var.stack_monitoring_node_selector
+    alertmanager = {
+      config = {
+        route = var.alertmanager_config_route
+        inhibit_rules = var.alertmanager_config_inhibit_rules
+        receivers = var.alertmanager_config_receivers
+      }
+    }
+  }
+  # grafana
+  grafana_helm_vars = {
+    grafana = {
+      nodeSelector = var.stack_monitoring_node_selector
+      dashboards = {
+        default = var.grafana_dashboard_import
+      }
+    }
+  }
 
-# prometheus
+  ## thanos
+  #thanos_helm_vars = {
+  #  thanos = {
+  #    nodeSelector = var.stack_monitoring_node_selector
+  #  }
+  #}
+}
 
-  prometheus_custom_rules= <<EOL
----
-customRules:
-    ${yamlencode(var.prometheus_custom_rules)}
-EOL
-
-  prometheus_additional_rules= <<EOL
----
-additionalPrometheusRulesMap:
-    ${yamlencode(var.prometheus_additional_rules)}
-EOL
-
-# alertmanager
-
-  alertmanager_node_selector= <<EOL
----
-alertmanager:
-  nodeSelector:
-    ${yamlencode(var.stack_monitoring_node_selector)}
-EOL
-
+locals {
 # grafana
-  grafana_node_selector= <<EOL
----
-grafana:
-  nodeSelector:
-    ${yamlencode(var.stack_monitoring_node_selector)}
-EOL
-
-  grafana_dashboards= <<EOL
----
-grafana:
-  dashboards:
-    default:
-      ${yamlencode(var.grafana_dashboard_import)}
-EOL
-
   #https://github.com/grafana/helm-charts/issues/127#issuecomment-776311048
   #issue with import dashboards
-  dashboard_provider= <<EOL
+  dashboard_default_provider= <<EOL
 ---
 grafana:
   dashboardProviders:
@@ -77,51 +78,6 @@ grafana:
           options:
             path: /var/lib/grafana/dashboards/default
 EOL
-
-# prometheus
-  prometheus_node_selector= <<EOL
----
-prometheus:
-  nodeSelector:
-    ${yamlencode(var.stack_monitoring_node_selector)}
-EOL
-
-  prometheus_additional_scrape= <<EOL
----
-prometheus:
-  prometheusSpec:
-    additionalScrapeConfigs:
-      ${yamlencode(var.prometheus_additional_scrape)}
-EOL
-
-  alertmanager_use_external= <<EOL
----
-prometheus:
-  prometheusSpec:
-    alertingEndpoints:
-      ${yamlencode(var.alertmanager_use_external)}
-EOL
-
-## thanos
-#  thanos_node_selector= <<EOL
-#---
-#thanos:
-#  nodeSelector:
-#    ${yamlencode(var.stack_monitoring_node_selector)}
-#EOL
-}
-
-locals {
-  alertmanager_config = {
-    alertmanager = {
-      config = {
-        route = var.alertmanager_config_route
-        inhibit_rules = var.alertmanager_config_inhibit_rules
-        receivers = var.alertmanager_config_receivers
-      }
-    }
-  }
-
 }
 
 resource "helm_release" "kube_prometheus_stack" {
@@ -134,30 +90,20 @@ resource "helm_release" "kube_prometheus_stack" {
   values = [
     file("${path.module}/values.yaml"),
     # general vars
-    local.commonLabels,
-    local.prometheus_operator_node_selector,
-    local.prometheus_custom_rules,
-    local.prometheus_additional_rules,
+    yamlencode(local.global_helm_vars)
 
     # alertmanager
     yamlencode(local.alertmanager_config),
-    #local.alertmanager_config_route,
-    #local.alertmanager_config_receivers,
-    local.alertmanager_node_selector,
 
     # grafana
-    local.grafana_node_selector,
-    local.grafana_dashboards,
-    local.dashboard_provider,
+    yamlencode(local.grafana_helm_vars)
+    local.dashboard_default_provider,
 
     # prometheus
-    local.prometheus_node_selector,
-    local.prometheus_additional_scrape,
-    local.alertmanager_use_external,
+    yamlencode(local.prometheus_helm_vars)
 
     #thanos
-    #local.thanos_node_selector,
-
+    #yamlencode(local.thanos_helm_vars)
   ]
 
   dynamic "set" {
@@ -270,6 +216,7 @@ resource "helm_release" "kube_prometheus_stack" {
     name  = "prometheus.ingress.annotations.nginx\\.ingress\\.kubernetes\\.io/auth-secret-type"
     value = "auth-map"
   }
+
   # THANOS - disabled for now
   #  set {
   #    name  = "prometheus.thanosService.enabled"

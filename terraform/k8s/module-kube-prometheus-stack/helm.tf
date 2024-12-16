@@ -186,7 +186,7 @@ resource "helm_release" "kube_prometheus_stack" {
   # Disable specific Alert from rules
   # Usefull if alert not used or overrided
   dynamic "set" {
-    for_each = length(local.default_alerts_disabled) > 0 ? toset(local.default_alerts_disabled) : {}
+    for_each = length(local.default_alerts_disabled) > 0 ? toset(local.default_alerts_disabled) : toset([])
     content {
       name  = "defaultRules.disabled.${set.key}"
       value = true

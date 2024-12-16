@@ -705,7 +705,7 @@ use_cases:
           description: "Prometheus scraping extra config to use. TODO "
           key: module.kube-prometheus.prometheus_additional_scrape
           widget: text_area
-          type: map
+          type: array
         - name: "Prometheus default rules"
           description: "Customize the default enabled rules for and severity parameters. For more information about syntax and default rules check the k8s prometheus stack [chart default values](https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/values.yaml#L38)"
           key: module.kube-prometheus.prometheus_change_default_rules

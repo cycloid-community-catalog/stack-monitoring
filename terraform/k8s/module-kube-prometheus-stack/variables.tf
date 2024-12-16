@@ -38,26 +38,20 @@ variable "prometheus_basic_auth_password" {
   default = "pwdToChange"
 }
 variable "prometheus_additional_scrape" {
-    default = {}
+  default = []
 }
-
 variable "prometheus_blackbox_scrape" {
-  default = {}
+  default = []
 }
-
 variable "prometheus_change_default_rules" {
   default = {}
 }
-
 variable "prometheus_default_rules_disabled" {
   default = []
 }
-
 variable "prometheus_default_alerts_disabled" {
   default = {}
 }
-
-
 variable "prometheus_additional_rules" {
   default = {}
 }

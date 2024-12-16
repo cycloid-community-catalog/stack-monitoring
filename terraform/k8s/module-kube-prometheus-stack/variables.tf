@@ -58,7 +58,7 @@ variable "prometheus_default_alerts_disabled" {
 }
 
 
-variable "prometheus_additional_rules " {
+variable "prometheus_additional_rules" {
   default = {}
 }
 
@@ -151,6 +151,7 @@ EOL
         }
       ]
     }
+  }
 
   default_resource_labels = {
     env = "${var.env}"

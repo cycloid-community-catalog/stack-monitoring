@@ -23,7 +23,7 @@ locals {
     prometheus = {
       nodeSelector = var.stack_monitoring_node_selector
       prometheusSpec = {
-        additionalScrapeConfigs = merge(var.prometheus_additional_scrape, var.prometheus_blackbox_scrape)
+        additionalScrapeConfigs = concat(var.prometheus_additional_scrape, var.prometheus_blackbox_scrape)
         alertingEndpoints = var.alertmanager_use_external
         externalLabels = local.alert_labels
       }

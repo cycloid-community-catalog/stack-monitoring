@@ -763,7 +763,7 @@ use_cases:
 
         - name: "Prometheus blackbox scraping"
           description: "Blackbox scraping configuration to be added to prometheus, for more information please check the [official documentation](https://github.com/prometheus/blackbox_exporter/tree/master)"
-          key: prometheus_blackbox_scrape
+          key: module.kube-prometheus.prometheus_blackbox_scrape
           widget: text_area
           type: array
           default:

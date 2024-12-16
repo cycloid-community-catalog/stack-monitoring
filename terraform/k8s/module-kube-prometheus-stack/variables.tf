@@ -163,7 +163,7 @@ EOL
   }
   alert_labels = merge(local.default_alert_labels, var.extra_labels)
 
-  default_alerts_disabled = merge({}, var.prometheus_default_alerts_disabled)
+  default_alerts_disabled = var.prometheus_default_alerts_disabled != {} ? merge({}, var.prometheus_default_alerts_disabled) : {}
 
   default_rules_disabled = concat(["Watchdog"], var.prometheus_default_rules_disabled)
 

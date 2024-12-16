@@ -8,18 +8,13 @@
 # https://github.com/hashicorp/terraform-provider-helm/issues/669
 # all the map variables need to apply this little trick
 locals {
-  node_selector= <<EOL
----
-node_selector:
-    ${yamlencode(var.stack_monitoring_node_selector)}
-EOL
 
-  blackbox_exporter_modules= <<EOL
----
-config:
-  modules:
-    ${yamlencode(var.blackbox_exporter_modules)}
-EOL
+  blackbox_helm_vars = {
+    node_selector = var.stack_monitoring_node_selector
+    config = {
+      modules = var.blackbox_exporter_modules
+    }
+  }
 }
 
 resource "helm_release" "prometheus_blackbox" {
@@ -34,8 +29,7 @@ resource "helm_release" "prometheus_blackbox" {
 
   values = [
     file("${path.module}/values.yaml"),
-    local.node_selector,
-    local.blackbox_exporter_modules
+    yamlencode(local.blackbox_helm_vars),
   ]
 
   # Fix the service name

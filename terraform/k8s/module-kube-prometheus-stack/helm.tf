@@ -17,15 +17,13 @@ locals {
     }
   }
 
-  # prometheus
-  prometheus_helm_vars = {
-    additionalRuleLabels = local.alert_labels
-    customRules = var.prometheus_custom_rules
-    additionalPrometheusRulesMap = var.prometheus_additional_rules
+    prometheus_helm_vars = {
+    customRules = var.prometheus_change_default_rules
+    additionalPrometheusRulesMap = merge(var.prometheus_additional_rules, local.default_watchdog_rule_configured)
     prometheus = {
       nodeSelector = var.stack_monitoring_node_selector
       prometheusSpec = {
-        additionalScrapeConfigs = var.prometheus_additional_scrape
+        additionalScrapeConfigs = merge(var.prometheus_additional_scrape, var.prometheus_blackbox_scrape)
         alertingEndpoints = var.alertmanager_use_external
         externalLabels = local.alert_labels
       }
@@ -59,24 +57,6 @@ locals {
   #    nodeSelector = var.stack_monitoring_node_selector
   #  }
   #}
-}
-
-locals {
-# grafana
-  #https://github.com/grafana/helm-charts/issues/127#issuecomment-776311048
-  #issue with import dashboards
-  dashboard_default_provider= <<EOL
----
-grafana:
-  dashboardProviders:
-    dashboardproviders.yaml:
-      apiVersion: 1
-      providers:
-        - name: 'default'
-          folder: ''
-          options:
-            path: /var/lib/grafana/dashboards/default
-EOL
 }
 
 resource "helm_release" "kube_prometheus_stack" {
@@ -191,6 +171,26 @@ resource "helm_release" "kube_prometheus_stack" {
   set {
     name  = "prometheus.enabled"
     value = var.prometheus_install
+  }
+
+  # Disable monitoring rule
+  # https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack/templates/prometheus/rules-1.14
+  dynamic "set" {
+    for_each = toset(local.default_rules_disabled)
+    content {
+      name  = "defaultRules.rules.${set.key}"
+      value = false
+    }
+  }
+
+  # Disable specific Alert from rules
+  # Usefull if alert not used or overrided
+  dynamic "set" {
+    for_each = toset(local.default_alerts_disabled)
+    content {
+      name  = "defaultRules.disabled.${set.key}"
+      value = true
+    }
   }
 
   set {

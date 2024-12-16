@@ -672,6 +672,12 @@ use_cases:
           widget: switch
           type: boolean
           default: true
+        - name: "Opsgenie gateway install"
+          description: "Wheter to install [opsgenie gateway](https://hub.docker.com/r/cycloid/opsgenie-heartbeat-gw) on the k8s cluster."
+          key: module.opsgenie-heartbeat.opsgenie_heartbeat_install
+          widget: switch
+          type: boolean
+          default: true
         #- name: "Thanos install"
         #  description: "Wheter to skip install [Thanos](https://thanos.io/) on the k8s cluster."
         #  key: thanos_install
@@ -701,10 +707,20 @@ use_cases:
           widget: text_area
           type: map
         - name: "Prometheus default rules"
-          description: "Customize the default enabled rules. For more information about syntax and default rules check the k8s prometheus stack [chart default values](https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/values.yaml#L38)"
-          key: module.kube-prometheus.prometheus_custom_rules
+          description: "Customize the default enabled rules for and severity parameters. For more information about syntax and default rules check the k8s prometheus stack [chart default values](https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/values.yaml#L38)"
+          key: module.kube-prometheus.prometheus_change_default_rules
           widget: text_area
           type: map
+        - name: "Prometheus disable default rules"
+          description: "Customize the default rules to disable. For more information about syntax and default rules check the k8s prometheus stack [chart default rules](https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/values.yaml#L49C3-L49C8)"
+          key: module.kube-prometheus.prometheus_default_rules_disabled
+          widget: text_area
+          type: array
+        - name: "Prometheus disable default alerts"
+          description: "Customize the default alerts to disable. For more information about syntax check the k8s prometheus stack [here](https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/values.yaml#L181)"
+          key: module.kube-prometheus.prometheus_default_alerts_disabled
+          widget: text_area
+          type: array
         - name: "Prometheus aditional rules"
           description: "Provide custom rules to be deployed in the cluster. For more information about syntax and default rules check the k8s prometheus stack [chart default values](https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/values.yaml#L198)"
           key: module.kube-prometheus.prometheus_additional_rules
@@ -744,6 +760,30 @@ use_cases:
                 fail_if_not_ssl: true
                 no_follow_redirects: false
                 preferred_ip_protocol: ip4
+
+        - name: "Prometheus blackbox scraping"
+          description: "Blackbox scraping configuration to be added to prometheus, for more information please check the [official documentation](https://github.com/prometheus/blackbox_exporter/tree/master)"
+          key: prometheus_blackbox_scrape
+          widget: text_area
+          type: array
+          default:
+            - job_name: 'blackbox-targets'
+              params:
+                module: [http_2xx]
+              metrics_path: /probe
+              relabel_configs:
+                # Set the target URL to probe
+                - source_labels: [__param_target]
+                  target_label: __param_target
+                  replacement: "https://cycloid.io"  # Target URL to probe
+
+                # Save the target URL as 'instance'
+                - source_labels: [__param_target]
+                  target_label: instance
+
+                # Direct Prometheus to the Blackbox exporter
+                - target_label: __address__
+                  replacement: prometheus-blackbox-exporter:9115  # Blackbox exporter address
 
   - name: Alertmanager
     groups:
@@ -870,6 +910,16 @@ use_cases:
             #  revision: 1
             #  datasource: prometheus
 
+    - name: Opsgenie gateway configuration
+      condition: $module.opsgenie-heartbeat.opsgenie_heartbeat_install == true
+      technologies: [terraform]
+      vars:
+        - name: "Heartbeat Access Token"
+          description: "Opsgenie heartbeat access token"
+          key: module.opsgenie-heartbeat.opsgenie_token
+          widget: cy_cred
+          type: string
+
 #  - name: Thanos
 #    groups:
 #    - name: Thanos DNS
@@ -916,25 +966,9 @@ use_cases:
           widget: text_area
           type: map
           default: {}
-        - name: "Opsgenie gateway install"
-          description: "Wheter to install [opsgenie gateway](https://hub.docker.com/r/cycloid/opsgenie-heartbeat-gw) on the k8s cluster."
-          key: module.opsgenie-heartbeat.opsgenie_heartbeat_install
-          widget: switch
-          type: boolean
-          default: false
         - name: "K8s node selector"
           description: "The k8s node selector to be used to select in which node to deploy the different resources. More information in the [k8s official pages](https://kubernetes.io/docs/user-guide/node-selection/)"
           key: module.kube-prometheus.stack_monitoring_node_selector
           widget: text_area
           type: map
           default: {}
-
-    - name: Opsgenie gateway configuration
-      condition: $advanced_opt == true && $module.opsgenie-heartbeat.opsgenie_heartbeat_install == true
-      technologies: [terraform]
-      vars:
-        - name: "Heartbeat Access Token"
-          description: "Opsgenie heartbeat access token"
-          key: module.opsgenie-heartbeat.opsgenie_token
-          widget: cy_cred
-          type: string

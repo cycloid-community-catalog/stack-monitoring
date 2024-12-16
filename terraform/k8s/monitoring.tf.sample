@@ -16,7 +16,10 @@ module "kube-prometheus" {
   prometheus_install            = var.prometheus_install
   #prometheus_domain_name       = "prometheus.local"
   #prometheus_additional_scrape = {}
-  #prometheus_custom_rules      = {}
+  #prometheus_blackbox_scrape = {}
+  #prometheus_change_default_rules = {}
+  #prometheus_default_rules_disabled = []
+  #prometheus_default_alerts_disabled = {}
   #prometheus_additional_rules  = {}
 
   grafana_install                    = var.grafana_install

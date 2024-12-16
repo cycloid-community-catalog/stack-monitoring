@@ -37,11 +37,28 @@ variable "prometheus_basic_auth_username" {
 variable "prometheus_basic_auth_password" {
   default = "pwdToChange"
 }
-variable "prometheus_additional_scrape" {}
-variable "prometheus_custom_rules" {
+variable "prometheus_additional_scrape" {
     default = {}
 }
-variable "prometheus_additional_rules" {
+
+variable "prometheus_blackbox_scrape" {
+  default = {}
+}
+
+variable "prometheus_change_default_rules" {
+  default = {}
+}
+
+variable "prometheus_default_rules_disabled" {
+  default = []
+}
+
+variable "prometheus_default_alerts_disabled" {
+  default = {}
+}
+
+
+variable "prometheus_additional_rules " {
   default = {}
 }
 
@@ -92,12 +109,56 @@ variable "alertmanager_config_receivers" {}
 
 locals {
 
+# grafana
+  #https://github.com/grafana/helm-charts/issues/127#issuecomment-776311048
+  #issue with import dashboards
+  dashboard_default_provider= <<EOL
+---
+grafana:
+  dashboardProviders:
+    dashboardproviders.yaml:
+      apiVersion: 1
+      providers:
+        - name: 'default'
+          folder: ''
+          options:
+            path: /var/lib/grafana/dashboards/default
+EOL
+
+  # prometheus
+  # issue with no configuration for labels in defaults alerts.
+  # so we have to disable the default dashboard to then set it
+  default_watchdog_rule_configured = {
+    "watchdog.rules" = {
+      groups = [
+        {
+          name  = "watchdog.rules"
+          rules = [
+            {
+              alert       = "Watchdog"
+              annotations = {
+                description = "This is an alert meant to ensure that the entire alerting pipeline is functional."
+                runbook_url = "https://runbooks.prometheus-operator.dev/runbooks/general/watchdog"
+                summary     = "An alert that should always be firing to certify that Alertmanager is working properly."
+              }
+              expr   = "vector(1)"
+              labels = {
+                receiver = "opsgenie_heartbeat"
+                severity = "critical"
+              }
+            }
+          ]
+        }
+      ]
+    }
+
   default_resource_labels = {
     env = "${var.env}"
     project = "${var.project}"
     organization = "${var.organization}"
     stack = "stack-monitoring"
   }
+  resource_labels = merge(local.default_resource_labels, var.extra_labels)
 
   default_alert_labels = {
     env = "${var.env}"
@@ -105,9 +166,12 @@ locals {
     organization = "${var.organization}"
     receiver = "oncall"
   }
-
-  resource_labels = merge(local.default_resource_labels, var.extra_labels)
   alert_labels = merge(local.default_alert_labels, var.extra_labels)
+
+  default_alerts_disabled = concat([], var.default_alerts_disabled)
+
+  default_rules_disabled = concat(["Watchdog"], var.default_rules_disabled)
+
   #thanos_object_store_secret_name = "${var.project}-thanos-object-store-${var.env}"
 
   username = var.organization

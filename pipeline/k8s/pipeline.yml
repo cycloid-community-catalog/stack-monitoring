@@ -174,22 +174,22 @@ jobs:
                 export KUBECONFIG=./.kubeconfig
                 export GRAFANA_CMS_TO_REMOVE=$(jq -r .grafana_cms_to_remove tfstate/metadata)
                 NAMESPACE=$(jq -r .namespace tfstate/metadata)
-
                 if [ ${#GRAFANA_CMS_TO_REMOVE[@]} -gt 0 ]; then
-                  for configmap in "${GRAFANA_CMS_TO_REMOVE[@]}"; do
-
-                    # kubectl delete dashboards
-                    kubectl delete configmap "kube-prometheus-stack-${configmap}" -n $NAMESPACE
-
-                      echo "Configmap ${configmap} deleted"
-                  done
+                  # kubectl delete dashboards if they exist
+                  echo "$GRAFANA_CMS_TO_REMOVE" | jq -r '.[]' | while read -r configmap; do
+                  if kubectl get configmap "kube-prometheus-stack-${configmap}" -n "$NAMESPACE" >/dev/null 2>&1; then
+                    kubectl delete configmap "kube-prometheus-stack-${configmap}" -n $NAMESPACE >/dev/null 2>&1
+                    echo "Configmap $configmap deleted"
+                  else
+                      echo "Configmap $configmap non existent already."
+                  fi
+                done
                 else
                   echo "No default dashboard selected to delete!"
                 fi
               else
                   echo "Grafana not installed... No configmaps to delete!"
               fi
-
           inputs:
           - name: tfstate
           params:

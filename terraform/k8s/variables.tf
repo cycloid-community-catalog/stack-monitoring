@@ -22,7 +22,9 @@ variable "alertmanager_use_external" {
   default = []
 }
 variable "alertmanager_config_receivers" {
-  default = []
+  default = [
+    name = "null"
+  ]
 }
 
 # opsgenie

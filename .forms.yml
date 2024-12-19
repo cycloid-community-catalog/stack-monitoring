@@ -818,7 +818,7 @@ use_cases:
       condition: $alertmanager_install == true
       vars:
         - name: "Alertmanager receivers"
-          description: "Alertmanager receivers configuration. Note! The default value corresponds to the helm chart default value for the config of alertmanager. For more information about syntax check the [official alertmanager documentation](https://prometheus.io/docs/alerting/latest/configuration/#general-receiver-related-settings)"
+          description: "Alertmanager receivers configuration. Note! BY default it should always have a recevier -name: 'null' for example to be used as default. corresponds to the helm chart default value for the config of alertmanager. For more information about syntax check the [official alertmanager documentation](https://prometheus.io/docs/alerting/latest/configuration/#general-receiver-related-settings)"
           key: alertmanager_config_receivers
           widget: cy_cred
           type: string

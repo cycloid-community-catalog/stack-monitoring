@@ -23,7 +23,7 @@ variable "alertmanager_use_external" {
 }
 variable "alertmanager_config_receivers" {
   default = [
-    name = "null"
+    { name = "this" },
   ]
 }
 

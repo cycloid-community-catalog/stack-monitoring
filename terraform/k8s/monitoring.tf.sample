@@ -30,10 +30,10 @@ module "kube-prometheus" {
 
   alertmanager_install               = var.alertmanager_install
   alertmanager_use_external          = var.alertmanager_use_external
+  alertmanager_config_receivers      = var.alertmanager_config_receivers
   #alertmanager_domain_name          = "alertmanager.local"
   #alertmanager_config_inhibit_rules = []
   #alertmanager_config_route         = {}
-  #alertmanager_config_receivers     = []
 
   #thanos_install = var.thanos_install
 

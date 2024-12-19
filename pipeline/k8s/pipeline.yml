@@ -77,6 +77,7 @@ resources:
       alertmanager_install: ((alertmanager_install))
       #thanos_install: ((thanos_install))
       alertmanager_use_external: ((alertmanager_use_external))
+      alertmanager_config_receivers: ((alertmanager_config_receivers))
       opsgenie_token: ((opsgenie_token))
 
 - name: git_stack_terraform

@@ -776,18 +776,18 @@ use_cases:
           widget: text_area
           type: array
           default: []
-        - name: "Prometheus default rules"
-          description: "Customize the default enabled rules for and severity parameters. For more information about syntax and default rules check the k8s prometheus stack [chart default values](https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/values.yaml#L38)"
-          key: module.kube-prometheus.prometheus_change_default_rules
-          widget: text_area
-          type: map
-          default: {}
         - name: "Prometheus disable default rules"
           description: "Customize the default rules to disable. For more information about syntax and default rules check the k8s prometheus stack [chart default rules](https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/values.yaml#L49C3-L49C8)"
           key: module.kube-prometheus.prometheus_default_rules_disabled
           widget: text_area
           type: array
           default: []
+        - name: "Prometheus default rules customize"
+          description: "Customize the default enabled rules for and severity parameters. For more information about syntax and default rules check the k8s prometheus stack [chart default values](https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/values.yaml#L38)"
+          key: module.kube-prometheus.prometheus_change_default_rules
+          widget: text_area
+          type: map
+          default: {}
         - name: "Prometheus disable default alerts"
           description: "Customize the default alerts to disable. For more information about syntax check the k8s prometheus stack [here](https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/values.yaml#L181)"
           key: module.kube-prometheus.prometheus_default_alerts_disabled
@@ -813,6 +813,16 @@ use_cases:
           widget: simple_text
           type: string
           default: alertmanager.local
+    - name: Alertmanager Secret Configuration
+      technologies: [pipeline]
+      condition: $alertmanager_install == true
+      vars:
+        - name: "Alertmanager receivers"
+          description: "Alertmanager receivers configuration. Note! The default value corresponds to the helm chart default value for the config of alertmanager. For more information about syntax check the [official alertmanager documentation](https://prometheus.io/docs/alerting/latest/configuration/#general-receiver-related-settings)"
+          key: alertmanager_config_receivers
+          widget: cy_cred
+          type: string
+
     - name: Alertmanager Configuration
       technologies: [terraform]
       condition: $alertmanager_install == true

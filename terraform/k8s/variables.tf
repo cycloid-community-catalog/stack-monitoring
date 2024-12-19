@@ -21,6 +21,9 @@ variable "alertmanager_install" {}
 variable "alertmanager_use_external" {
   default = []
 }
+variable "alertmanager_config_receivers" {
+  default = []
+}
 
 # opsgenie
 variable "opsgenie_token" {}

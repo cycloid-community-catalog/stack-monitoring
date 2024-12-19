@@ -21,7 +21,8 @@ prometheus_install: true
 #thanos_install: true
 
 # alertmanager - external (not created with the stack)
-alertmanager_use_external: []
+alertmanager_use_external: ""
+alertmanager_config_receivers: ""
 
 #heartbeat
 opsgenie_token: ""

@@ -46,7 +46,7 @@ locals {
 alertmanager:
   config:
     receivers:
-      ${var.alertmanager_config_receivers}
+      ${${yamlencode(var.alertmanager_config_receivers)}
 EOL
 
   # grafana

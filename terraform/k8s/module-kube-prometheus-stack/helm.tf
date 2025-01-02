@@ -45,7 +45,7 @@ locals {
 ---
 alertmanager:
   config:
-    receivers: ${indent(6, yamlencode(var.alertmanager_config_receivers))}
+    receivers: ${join("\n", var.alertmanager_config_receivers)}
 
 EOL
 

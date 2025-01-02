@@ -37,10 +37,18 @@ locals {
       config = {
         route = var.alertmanager_config_route
         inhibit_rules = var.alertmanager_config_inhibit_rules
-        receivers = var.alertmanager_config_receivers
       }
     }
   }
+  # with credential gets always interpreted as string
+  alertmanager_config_receivers = <<EOL
+---
+alertmanager:
+  config:
+    receivers:
+      ${var.alertmanager_config_receivers}
+EOL
+
   # grafana
   grafana_helm_vars = {
     grafana = {
@@ -73,6 +81,7 @@ resource "helm_release" "kube_prometheus_stack" {
 
     # alertmanager
     yamlencode(local.alertmanager_helm_vars),
+    local.alertmanager_config_receivers,
 
     # grafana
     yamlencode(local.grafana_helm_vars),

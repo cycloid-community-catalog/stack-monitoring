@@ -92,9 +92,7 @@ variable "alertmanager_domain_name" {
 }
 variable "alertmanager_config_inhibit_rules" {}
 variable "alertmanager_config_route" {}
-variable "alertmanager_config_receivers" {
-  type = list(object({}))
-}
+variable "alertmanager_config_receivers" {}
 
 #
 # Thanos

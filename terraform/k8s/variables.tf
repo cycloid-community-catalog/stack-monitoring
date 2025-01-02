@@ -19,7 +19,9 @@ variable "alertmanager_install" {}
 #}
 
 variable "alertmanager_use_external" {}
-variable "alertmanager_config_receivers" {}
+variable "alertmanager_config_receivers" {
+  sensitive   = false
+}
 # opsgenie
 variable "opsgenie_token" {}
 

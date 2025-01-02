@@ -41,13 +41,14 @@ locals {
     }
   }
   # with credential gets always interpreted as string
-#  alertmanager_config_receivers = <<EOL
-#---
-#alertmanager:
-#  config:
-#    receivers:
-#    ${join("\n          - ", split("\n", var.alertmanager_config_receivers))}
-#EOL
+  alertmanager_config_receivers = <<EOL
+---
+alertmanager:
+  config:
+    receivers:
+     - ${join("\n      - ", split("\n", var.alertmanager_config_receivers))}
+
+EOL
 
   # grafana
   grafana_helm_vars = {
@@ -67,19 +68,6 @@ locals {
   #}
 }
 
-locals {
-  receivers_list = split("\n", var.alertmanager_config_receivers)
-  receivers_str  = join("\n      - ", local.receivers_list)
-}
-
-output "debug_receivers_list" {
-  value = local.receivers_list
-}
-
-output "debug_receivers_str" {
-  value = local.receivers_str
-}
-
 resource "helm_release" "kube_prometheus_stack" {
   name       = "kube-prometheus-stack"
   repository = "https://prometheus-community.github.io/helm-charts"
@@ -94,7 +82,7 @@ resource "helm_release" "kube_prometheus_stack" {
 
     # alertmanager
     yamlencode(local.alertmanager_helm_vars),
-    #local.alertmanager_config_receivers,
+    local.alertmanager_config_receivers,
 
     # grafana
     yamlencode(local.grafana_helm_vars),

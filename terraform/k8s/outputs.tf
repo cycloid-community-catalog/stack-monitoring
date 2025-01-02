@@ -69,13 +69,3 @@ output "grafana_basic_auth_cred_cannonical" {
 #output "thanos_basic_auth_password" {
 #  value = module.thanos.thanos_basic_auth_password
 #}
-
-
-# test to remove
-output "debug_receivers_list" {
-  value = module.kube-prometheus.debug_receivers_list
-}
-
-output "debug_receivers_str" {
-  value = module.kube-prometheus.debug_receivers_str
-}

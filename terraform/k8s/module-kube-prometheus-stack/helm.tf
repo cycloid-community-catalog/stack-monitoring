@@ -45,8 +45,8 @@ locals {
 ---
 alertmanager:
   config:
-    receivers:
-${indent(6, yamlencode(var.alertmanager_config_receivers))}
+    receivers: ${indent(6, yamlencode(var.alertmanager_config_receivers))}
+
 EOL
 
   # grafana

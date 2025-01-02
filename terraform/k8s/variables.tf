@@ -22,11 +22,8 @@ variable "alertmanager_use_external" {
   default = []
 }
 variable "alertmanager_config_receivers" {
-  default = [
-    { name = "this" },
-  ]
+  type = list(object({}))
 }
-
 # opsgenie
 variable "opsgenie_token" {}
 

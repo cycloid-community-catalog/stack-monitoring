@@ -30,7 +30,7 @@ module "kube-prometheus" {
 
   alertmanager_install               = var.alertmanager_install
   alertmanager_use_external          = var.alertmanager_use_external
-  alertmanager_config_receivers      = var.alertmanager_config_receivers
+  alertmanager_config_receivers      = yamlencode(var.alertmanager_config_receivers)
   #alertmanager_domain_name          = "alertmanager.local"
   #alertmanager_config_inhibit_rules = []
   #alertmanager_config_route         = {}
@@ -69,7 +69,7 @@ module "opsgenie-heartbeat" {
   extra_labels                   = module.kube-prometheus.extra_labels
   stack_monitoring_node_selector = module.kube-prometheus.stack_monitoring_node_selector
 
-  opsgenie_heartbeat_install = false
+  #opsgenie_heartbeat_install = true
   opsgenie_token            = var.opsgenie_token
 
 }

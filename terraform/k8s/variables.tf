@@ -18,15 +18,8 @@ variable "alertmanager_install" {}
 #  default = false
 #}
 
-variable "alertmanager_use_external" {
-  default = []
-}
-variable "alertmanager_config_receivers" {
-  default = [
-    { name = "this" },
-  ]
-}
-
+variable "alertmanager_use_external" {}
+variable "alertmanager_config_receivers" {}
 # opsgenie
 variable "opsgenie_token" {}
 

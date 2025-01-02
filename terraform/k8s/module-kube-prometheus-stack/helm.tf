@@ -45,7 +45,7 @@ locals {
 ---
 alertmanager:
   config:
-    receivers: ${join("\n", var.alertmanager_config_receivers)}
+    receivers: ${join("\n", split("\n", var.alertmanager_config_receivers))}
 
 EOL
 

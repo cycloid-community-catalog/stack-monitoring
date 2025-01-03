@@ -26,6 +26,8 @@ locals {
         additionalScrapeConfigs = concat(var.prometheus_additional_scrape, var.prometheus_blackbox_scrape)
         alertingEndpoints = var.alertmanager_use_external
         externalLabels = local.alert_labels
+        scrapeInterval = "30s"
+        evaluationInterval: "30s"
       }
     }
   }

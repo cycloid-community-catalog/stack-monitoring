@@ -672,12 +672,6 @@ use_cases:
           widget: switch
           type: boolean
           default: true
-        - name: "Opsgenie gateway install"
-          description: "Wheter to install [opsgenie gateway](https://hub.docker.com/r/cycloid/opsgenie-heartbeat-gw) on the k8s cluster."
-          key: module.opsgenie-heartbeat.opsgenie_heartbeat_install
-          widget: switch
-          type: boolean
-          default: true
         #- name: "Thanos install"
         #  description: "Wheter to skip install [Thanos](https://thanos.io/) on the k8s cluster."
         #  key: thanos_install
@@ -929,6 +923,18 @@ use_cases:
             #  gnetId: 14900
             #  revision: 1
             #  datasource: prometheus
+
+  - name: Opsgenie
+    groups:
+    - name: Opsgenie gateway install
+      technologies: [terraform]
+      vars:
+        - name: "Opsgenie gateway install"
+          description: "Wheter to install [opsgenie gateway](https://hub.docker.com/r/cycloid/opsgenie-heartbeat-gw) on the k8s cluster."
+          key: module.opsgenie-heartbeat.opsgenie_heartbeat_install
+          widget: switch
+          type: boolean
+          default: true
 
     - name: Opsgenie gateway configuration
       condition: $module.opsgenie-heartbeat.opsgenie_heartbeat_install == true

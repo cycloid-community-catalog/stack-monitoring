@@ -24,9 +24,7 @@ resource "kubernetes_deployment" "opsgenie_heartbeat_gw" {
 
     template {
       metadata {
-        labels = {
-          "app.kubernetes.io/name" = local.common_labels
-        }
+        labels = local.common_labels
       }
 
       spec {

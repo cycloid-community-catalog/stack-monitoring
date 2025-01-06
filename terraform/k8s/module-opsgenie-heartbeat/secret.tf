@@ -15,6 +15,6 @@ resource "kubernetes_secret" "opsgenie_heartbeat_gw" {
   type = "Opaque"
 
   data = {
-    OPSGENIE_TOKEN = base64encode(var.opsgenie_token)
+    OPSGENIE_TOKEN = var.opsgenie_token
   }
 }

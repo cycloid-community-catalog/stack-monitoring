@@ -938,11 +938,11 @@ use_cases:
 
     - name: Opsgenie gateway configuration
       condition: $module.opsgenie-heartbeat.opsgenie_heartbeat_install == true
-      technologies: [terraform]
+      technologies: [pipeline]
       vars:
         - name: "Heartbeat Access Token"
           description: "Opsgenie heartbeat access token"
-          key: module.opsgenie-heartbeat.opsgenie_token
+          key: opsgenie_token
           widget: cy_cred
           type: string
 

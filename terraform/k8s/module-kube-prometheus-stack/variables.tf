@@ -153,6 +153,7 @@ EOL
     env = "${var.env}"
     project = "${var.project}"
     organization = "${var.organization}"
+    customer = "${var.organization}"
     stack = "stack-monitoring"
   }
   resource_labels = merge(local.default_resource_labels, var.extra_labels)
@@ -161,6 +162,7 @@ EOL
     env = "${var.env}"
     project = "${var.project}"
     organization = "${var.organization}"
+    customer = "${var.organization}"
     receiver = "oncall"
   }
   alert_labels = merge(local.default_alert_labels, var.extra_labels)

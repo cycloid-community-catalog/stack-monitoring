@@ -9,8 +9,8 @@
 locals {
 
   #alertmanager
-  default_alertmanager_template = <<EOL
-default_template.tmpl: |-
+  default_alertmanager_template = {
+    "default_template.tmpl": <<EOL
 {{ define "__alertmanager" }}AlertManager{{ end }}
 {{ define "__alertmanagerURL" }}{{ .ExternalURL }}/#/alerts?receiver={{ .Receiver }}{{ end }}
 
@@ -231,5 +231,5 @@ Alerts Resolved:
 {{ end }}
 {{ define "pushover.default.url" }}{{ template "__alertmanagerURL" . }}{{ end }}
 EOL
-
+  }
 }

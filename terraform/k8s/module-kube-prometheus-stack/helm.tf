@@ -39,20 +39,18 @@ locals {
       config = {
         route = var.alertmanager_config_route
         inhibit_rules = var.alertmanager_config_inhibit_rules
-        recievers = join("\n      ", split("\n", var.alertmanager_config_receivers))
-        templateFiles = local.default_alertmanager_template
       }
+      templateFiles = local.default_alertmanager_template
     }
   }
   # with credential gets always interpreted as string
-  #       ${join("\n      ", split("\n", var.alertmanager_config_receivers))} old
-#  alertmanager_config_receivers = <<EOL
-#---
-#alertmanager:
-#  config:
-#    receivers:
-#      ${indent(6, alertmanager_config_receivers)}
-#EOL
+  alertmanager_config_receivers = <<EOL
+---
+alertmanager:
+  config:
+    receivers:
+      ${join("\n      ", split("\n", var.alertmanager_config_receivers))}
+EOL
 
   # grafana
   grafana_helm_vars = {
@@ -86,7 +84,7 @@ resource "helm_release" "kube_prometheus_stack" {
 
     # alertmanager
     yamlencode(local.alertmanager_helm_vars),
-    #local.alertmanager_config_receivers,
+    local.alertmanager_config_receivers,
 
     # grafana
     yamlencode(local.grafana_helm_vars),
@@ -98,12 +96,6 @@ resource "helm_release" "kube_prometheus_stack" {
     #thanos
     #yamlencode(local.thanos_helm_vars)
   ]
-
-  set {
-    name  = "nameOverride"
-    value = "stack-monitoring"
-  }
-
   dynamic "set" {
     for_each = toset(var.disable_component_scraping)
     content {

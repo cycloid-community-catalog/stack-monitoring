@@ -8,7 +8,7 @@ module "kube-prometheus" {
   #####################################
 
   #kube_prometheus_helm_version   = "59.0.0"
-  namespace                       = local.namespace
+  namespace                       = var.namespace
   #extra_labels                   = {}
   #disable_component_scraping     = [] #kubeApiServer kubelet kubeControllerManager coreDns kubeDns kubeEtcd kubeScheduler kubeProxy kubeStateMetrics
   #stack_monitoring_node_selector = {}
@@ -48,7 +48,7 @@ module "prometheus-blackbox-exporter" {
   organization = var.organization
   #####################################
 
-  namespace                      = local.namespace
+  namespace                      = var.namespace
   stack_monitoring_node_selector = module.kube-prometheus.stack_monitoring_node_selector
 
   #blackbox_exporter_install = "false"
@@ -65,7 +65,7 @@ module "opsgenie-heartbeat" {
   env          = var.env
   organization = var.organization
   #####################################
-  namespace                      = local.namespace
+  namespace                      = var.namespace
   extra_labels                   = module.kube-prometheus.extra_labels
   stack_monitoring_node_selector = module.kube-prometheus.stack_monitoring_node_selector
 
@@ -111,7 +111,7 @@ module "cycloid-credentials" {
 #  }
 
 #thanos_helm_version            = "15.7.7"
-#  namespace                       = local.namespace
+#  namespace                       = var.namespace
 #  extra_labels                    = module.kube-prometheus.extra_labels
 #  stack_monitoring_node_selector  = module.kube-prometheus.stack_monitoring_node_selector
 #  thanos_object_store_secret_name = module.kube-prometheus.thanos_object_store_secret_name

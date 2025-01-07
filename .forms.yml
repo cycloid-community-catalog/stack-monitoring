@@ -637,9 +637,9 @@ use_cases:
 - name: k8s
   sections:
   - *cycloid-api-key
-  - name: K8s Access
+  - name: K8s config
     groups:
-    - name: k8s Access
+    - name: k8s config
       technologies: [pipeline]
       vars:
       - name: "K8s config file"
@@ -648,6 +648,12 @@ use_cases:
         widget: cy_cred
         type: string
         required: true
+      - name: "K8s namespace"
+        description: "The name of the namespace to create, where the resources will be created. Defaults to 'stack-monitoring'"
+        key: namespace
+        widget: simple_text
+        type: string
+        default: "stack-monitoring"
 
   - name: Monitoring tools
     groups:
@@ -998,3 +1004,9 @@ use_cases:
           widget: text_area
           type: map
           default: {}
+
+
+todo
+variable "namespace "{
+  default = "stack-monitoring"
+}

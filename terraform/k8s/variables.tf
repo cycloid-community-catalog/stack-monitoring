@@ -34,8 +34,6 @@ variable "cycloid_api_key" {
   sensitive = true
 }
 
-locals {
-
-  namespace = "stack-monitoring"
-
+variable "namespace "{
+  default = "stack-monitoring"
 }

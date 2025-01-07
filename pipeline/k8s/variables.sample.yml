@@ -6,6 +6,7 @@
 ## kubeconfig to allow to connect to instance
 #kubeconfig_content
 kubeconfig_filename: "kubeconfig"
+namespace: "stack-monitoring"
 
 ## terraform version used to execute your code
 terraform_version: "1.6.3"

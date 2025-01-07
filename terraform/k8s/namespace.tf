@@ -4,6 +4,6 @@
 
 resource "kubernetes_namespace" "stack-monitoring" {
   metadata {
-    name = local.namespace
+    name = var.namespace
   }
 }

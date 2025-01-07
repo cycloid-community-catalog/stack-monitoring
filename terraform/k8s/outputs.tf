@@ -4,7 +4,7 @@
 
 # namespace
 output "namespace" {
-  value = local.namespace
+  value = var.namespace
 }
 
 # kube-prometheus-stack module

@@ -79,6 +79,7 @@ resources:
       alertmanager_use_external: ((alertmanager_use_external))
       alertmanager_config_receivers: ((alertmanager_config_receivers))
       opsgenie_token: ((opsgenie_token))
+      namespace: ((namespace))
 
 - name: git_stack_terraform
   type: git

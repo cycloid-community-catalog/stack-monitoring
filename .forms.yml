@@ -1004,9 +1004,3 @@ use_cases:
           widget: text_area
           type: map
           default: {}
-
-
-todo
-variable "namespace "{
-  default = "stack-monitoring"
-}

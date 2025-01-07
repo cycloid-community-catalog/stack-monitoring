@@ -37,6 +37,9 @@ module "kube-prometheus" {
 
   #thanos_install = var.thanos_install
 
+  depends_on = [
+    kubernetes_namespace.stack-monitoring
+  ]
 }
 
 module "prometheus-blackbox-exporter" {
@@ -55,6 +58,10 @@ module "prometheus-blackbox-exporter" {
   #blackbox_helm_version     = "8.17.0"
   #blackbox_exporter_modules = {}
 
+  depends_on = [
+    kubernetes_namespace.stack-monitoring
+  ]
+
 }
 
 module "opsgenie-heartbeat" {
@@ -71,6 +78,10 @@ module "opsgenie-heartbeat" {
 
   #opsgenie_heartbeat_install = true
   opsgenie_token            = var.opsgenie_token
+
+  depends_on = [
+    kubernetes_namespace.stack-monitoring
+  ]
 
 }
 
@@ -95,6 +106,11 @@ module "cycloid-credentials" {
   grafana_install  = var.grafana_install
   grafana_username = module.kube-prometheus.grafana_basic_auth_username
   grafana_password = module.kube-prometheus.grafana_basic_auth_password
+
+  depends_on = [
+    kubernetes_namespace.stack-monitoring
+  ]
+
 }
 
 #module "thanos" {
@@ -121,4 +137,8 @@ module "cycloid-credentials" {
   #thanos_retention_raw       = "30d"
   #thanos_retention_5m        = "120d"
   #thanos_retention_1h        = "1y"
+#
+#  depends_on = [
+#    kubernetes_namespace.stack-monitoring
+#  ]
 #}

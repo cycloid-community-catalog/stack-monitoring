@@ -39,7 +39,7 @@ locals {
       config = {
         route = var.alertmanager_config_route
         inhibit_rules = var.alertmanager_config_inhibit_rules
-        recievers = ${join("\n      ", split("\n", var.alertmanager_config_receivers))}
+        recievers = join("\n      ", split("\n", var.alertmanager_config_receivers))
         templateFiles = local.default_alertmanager_template
       }
     }

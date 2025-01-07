@@ -40,9 +40,7 @@ locals {
         route = var.alertmanager_config_route
         inhibit_rules = var.alertmanager_config_inhibit_rules
         recievers = indent(6, replace(var.alertmanager_config_receivers, "\\n", "\n"))
-        templateFiles = {
-           local.default_alertmanager_template
-        }
+        templateFiles = local.default_alertmanager_template
       }
     }
   }

@@ -34,6 +34,6 @@ variable "cycloid_api_key" {
   sensitive = true
 }
 
-variable "namespace "{
+variable "namespace"{
   default = "stack-monitoring"
 }

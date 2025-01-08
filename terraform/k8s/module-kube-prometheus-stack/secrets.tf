@@ -41,7 +41,8 @@ resource "kubernetes_secret" "alertmanager_basic_auth" {
   }
 
   data = {
-    "${each.key}" = random_password.alertmanager_basic_auth_password[each.key].bcrypt_hash
+    for user in local.alertmanager_users :
+      user => random_password.alertmanager_basic_auth_password[user].bcrypt_hash
   }
 }
 

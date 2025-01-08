@@ -19,15 +19,15 @@ resource "cycloid_credential" "prometheus_basic_auth" {
 
 # alertmanager basic auth
 resource "cycloid_credential" "alertmanager_basic_auth" {
-  count = var.alertmanager_install ? 1 : 0
-  name                   = "${var.project}-alertmanager-${var.env}"
+  for_each = var.alertmanager_install ? toset(var.alertmanager_users) : []
+  name                   = "${var.project}-alertmanager-${var.env}-${each.key}"
   organization_canonical = var.organization
-  path                   = "${var.project}_alertmanager_${var.env}"
-  canonical              = "${var.project}-alertmanager-${var.env}"
+  path                   = "${var.project}_alertmanager_${var.env}_${each.key}"
+  canonical              = "${var.project}-alertmanager-${var.env}-${each.key}"
   type                   = "basic_auth"
   body = {
-    username = var.alertmanager_username
-	  password = var.alertmanager_password
+    username = each.key
+    password = each.value
   }
 }
 

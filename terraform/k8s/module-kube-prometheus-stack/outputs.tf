@@ -43,14 +43,13 @@ output "prometheus_basic_auth_password" {
   value     = var.prometheus_install ? random_password.prometheus_basic_auth_password[0].result : ""
 }
 
-output "alertmanager_basic_auth_username" {
+output "alertmanager_basic_auth_users" {
+  value = var.alertmanager_install ? {
+    for user in var.alertmanager_users :
+    user => random_password.alertmanager_basic_auth_password[user].result
+  } : {}
+  description = "A map of alertmanager usernames to their passwords"
   sensitive = true
-  value     = var.alertmanager_install ? local.username : ""
-}
-
-output "alertmanager_basic_auth_password" {
-  sensitive = true
-  value     = var.alertmanager_install ? random_password.alertmanager_basic_auth_password[0].result : ""
 }
 
 output "grafana_basic_auth_username" {

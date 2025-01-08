@@ -50,12 +50,12 @@ output "extra_labels" {
 #}
 
 # credentials canonical
-output "prometheus_basic_auth_cred_cannonical" {
+output "prometheus_basic_auth_cred_cannonicals" {
   value = module.cycloid-credentials.prometheus_basic_auth_cred_cannonical
 }
 
 output "alertmanager_basic_auth_cred_cannonical" {
-  value = module.cycloid-credentials.alertmanager_basic_auth_cred_cannonical
+  value = module.cycloid-credentials.alertmanager_basic_auth_cred_cannonicals
 }
 
 output "grafana_basic_auth_cred_cannonical" {

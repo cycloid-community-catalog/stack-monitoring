@@ -119,6 +119,7 @@ variable "alertmanager_pvc_size" {
 variable "alertmanager_data_retention" {
   default = "120h"
 }
+variable "alertmanager_users" {}
 
 #
 # Thanos
@@ -198,4 +199,6 @@ EOL
   #thanos_object_store_secret_name = "${var.project}-thanos-object-store-${var.env}"
 
   username = var.organization
+
+  alertmanager_users = merge(local.username,var.alertmanager_users)
 }

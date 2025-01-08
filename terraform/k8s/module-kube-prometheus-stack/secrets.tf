@@ -26,14 +26,14 @@ resource "kubernetes_secret" "prometheus_basic_auth" {
 }
 
 resource "random_password" "alertmanager_basic_auth_password" {
-  count = var.alertmanager_install ? 1 : 0
+  for_each = var.alertmanager_install ? toset(local.alertmanager_users) : []
   length  = 32
   special = false
 }
 
 resource "kubernetes_secret" "alertmanager_basic_auth" {
 
-    count = var.alertmanager_install ? 1 : 0
+  for_each = var.alertmanager_install ? toset(local.alertmanager_users) : []
 
   metadata {
     name = "alertmanager-basic-auth-${var.project}-${var.env}"
@@ -41,7 +41,7 @@ resource "kubernetes_secret" "alertmanager_basic_auth" {
   }
 
   data = {
-    "${local.username}" = random_password.alertmanager_basic_auth_password[0].bcrypt_hash
+    "${each.key}" = random_password.alertmanager_basic_auth_password[each.key].bcrypt_hash
   }
 }
 

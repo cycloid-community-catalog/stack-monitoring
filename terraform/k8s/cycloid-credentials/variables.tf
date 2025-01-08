@@ -8,8 +8,7 @@ variable "prometheus_username" {}
 variable "prometheus_password" {}
 
 variable "alertmanager_install" {}
-variable "alertmanager_username" {}
-variable "alertmanager_password" {}
+variable "alertmanager_users" {}
 
 variable "grafana_install" {}
 variable "grafana_username" {}

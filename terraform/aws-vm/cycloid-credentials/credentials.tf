@@ -6,7 +6,7 @@
 
 # ssh key
 resource "cycloid_credential" "vm_ssh" {
-  name                   = "ssh-${var.project}-${var.env} "
+  name                   = "ssh-${var.project}-${var.env}"
   organization_canonical = var.organization
   path                   = "${var.project}_vm_ssh_${var.env}"
   canonical              = "${var.project}-vm-ssh-${var.env}"
@@ -19,7 +19,7 @@ resource "cycloid_credential" "vm_ssh" {
 # prometheus basic auth
 resource "cycloid_credential" "prometheus_basic_auth" {
   count = var.prometheus_install ? 1 : 0
-  name                   = "prometheus-${var.project}-${var.env} "
+  name                   = "prometheus-${var.project}-${var.env}"
   organization_canonical = var.organization
   path                   = "${var.project}_prometheus_${var.env}"
   canonical              = "${var.project}-prometheus-${var.env}"
@@ -33,7 +33,7 @@ resource "cycloid_credential" "prometheus_basic_auth" {
 # alertmanager basic auth
 resource "cycloid_credential" "alertmanager_basic_auth" {
   count = var.alertmanager_install ? 1 : 0
-  name                   = "${var.project}-${var.env} "
+  name                   = "${var.project}-${var.env}"
   organization_canonical = var.organization
   path                   = "${var.project}_alertmanager_${var.env}"
   canonical              = "${var.project}-alertmanager-${var.env}"

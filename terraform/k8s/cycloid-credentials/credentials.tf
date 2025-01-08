@@ -6,7 +6,7 @@
 # prometheus basic auth
 resource "cycloid_credential" "prometheus_basic_auth" {
   count = var.prometheus_install ? 1 : 0
-  name                   = "${var.project}-prometheus- ${var.env} "
+  name                   = "${var.project}-prometheus- ${var.env}"
   organization_canonical = var.organization
   path                   = "${var.project}_prometheus_${var.env}"
   canonical              = "${var.project}-prometheus-${var.env}"
@@ -20,7 +20,7 @@ resource "cycloid_credential" "prometheus_basic_auth" {
 # alertmanager basic auth
 resource "cycloid_credential" "alertmanager_basic_auth" {
   count = var.alertmanager_install ? 1 : 0
-  name                   = "${var.project}-alertmanager-${var.env} "
+  name                   = "${var.project}-alertmanager-${var.env}"
   organization_canonical = var.organization
   path                   = "${var.project}_alertmanager_${var.env}"
   canonical              = "${var.project}-alertmanager-${var.env}"
@@ -34,7 +34,7 @@ resource "cycloid_credential" "alertmanager_basic_auth" {
 # grafana basic auth
 resource "cycloid_credential" "grafana_basic_auth" {
   count = var.grafana_install ? 1 : 0
-  name                   = "${var.project}-grafana-${var.env} "
+  name                   = "${var.project}-grafana-${var.env}"
   organization_canonical = var.organization
   path                   = "${var.project}_grafana_${var.env}"
   canonical              = "${var.project}-grafana-${var.env}"

@@ -35,7 +35,7 @@ resource "helm_release" "prometheus_blackbox" {
   # Fix the service name
   set {
     name  = "fullnameOverride"
-    value = "stack-monitoring-blackbox-exporter"
+    value = "blackbox-exporter"
   }
 
   set {

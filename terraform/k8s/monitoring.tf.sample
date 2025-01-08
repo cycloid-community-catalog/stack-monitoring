@@ -108,8 +108,7 @@ module "cycloid-credentials" {
   prometheus_password = module.kube-prometheus.prometheus_basic_auth_password
 
   alertmanager_install  = var.alertmanager_install
-  alertmanager_username = module.kube-prometheus.alertmanager_basic_auth_username
-  alertmanager_password = module.kube-prometheus.alertmanager_basic_auth_password
+  alertmanager_users = module.kube-prometheus.alertmanager_basic_auth_users
 
   grafana_install  = var.grafana_install
   grafana_username = module.kube-prometheus.grafana_basic_auth_username

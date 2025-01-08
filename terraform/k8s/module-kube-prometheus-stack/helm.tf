@@ -141,7 +141,7 @@ resource "helm_release" "kube_prometheus_stack" {
   # Alertmanager data persistency
   set {
     name  = "alertmanager.alertmanagerSpec.storage.volumeClaimTemplate.spec.resources.requests.storage"
-    value = var.enable_alertmanager_persistence ? "${var.alertmanager_pvc_size}Gi" : null
+    value = var.enable_alertmanager_persistence ? "${var.alertmanager_pvc_size}Gi" : ""
   }
   #set {
   #  name  = "alertmanager.alertmanagerSpec.storage.volumeClaimTemplate.spec.storageClassName"
@@ -149,11 +149,11 @@ resource "helm_release" "kube_prometheus_stack" {
   #}
   set {
     name  = "alertmanager.alertmanagerSpec.storage.volumeClaimTemplate.spec.accessModes[0]"
-    value = var.enable_alertmanager_persistence ? "ReadWriteOnce" : null
+    value = "ReadWriteOnce"
   }
   set {
     name  = "alertmanager.alertmanagerSpec.retention"
-    value = var.enable_alertmanager_persistence ? var.alertmanager_data_retention : null
+    value = var.enable_alertmanager_persistence ? var.alertmanager_data_retention : "120h"
   }
 
   # GRAFANA
@@ -271,7 +271,7 @@ resource "helm_release" "kube_prometheus_stack" {
   # Prometheus data persistency
   set {
     name  = "prometheus.prometheusSpec.storageSpec.volumeClaimTemplate.spec.resources.requests.storage"
-    value = var.enable_prometheus_persistence ? "${var.prometheus_pvc_size}Gi" : null
+    value = var.enable_prometheus_persistence ? "${var.prometheus_pvc_size}Gi" : ""
   }
   #set {
   #  name  = "prometheus.prometheusSpec.storageSpec.volumeClaimTemplate.spec.storageClassName"
@@ -279,11 +279,11 @@ resource "helm_release" "kube_prometheus_stack" {
   #}
   set {
     name  = "prometheus.prometheusSpec.storageSpec.volumeClaimTemplate.spec.accessModes[0]"
-    value = var.enable_prometheus_persistence ? "ReadWriteOnce" : null
+    value = "ReadWriteOnce"
   }
   set {
     name  = "prometheus.prometheusSpec.retention"
-    value = var.enable_prometheus_persistence ? var.prometheus_data_retention : null
+    value = var.enable_prometheus_persistence ? var.prometheus_data_retention : "10d"
   }
 
   # THANOS - disabled for now

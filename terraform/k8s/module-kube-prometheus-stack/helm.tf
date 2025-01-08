@@ -28,6 +28,18 @@ locals {
         externalLabels = local.alert_labels
         scrapeInterval = "30s"
         evaluationInterval: "30s"
+        storageSpec = var.enable_prometheus_persistence ? {
+          volumeClaimTemplate = {
+            spec = {
+              resources = {
+                requests = {
+                  storage = "${var.prometheus_pvc_size}Gi"
+                }
+              }
+              accessModes = ["ReadWriteOnce"]
+            }
+          }
+        } : {}
       }
     }
   }
@@ -41,6 +53,20 @@ locals {
         inhibit_rules = var.alertmanager_config_inhibit_rules
       }
       templateFiles = local.default_alertmanager_template
+      alertmanagerSpec = {
+        storage = var.enable_alertmanager_persistence ? {
+          volumeClaimTemplate = {
+            spec = {
+              resources = {
+                requests = {
+                  storage = "${var.alertmanager_pvc_size}Gi"
+                }
+              }
+              accessModes = ["ReadWriteOnce"]
+            }
+          }
+        } : {}
+      }
     }
   }
   # with credential gets always interpreted as string
@@ -96,10 +122,6 @@ resource "helm_release" "kube_prometheus_stack" {
     #thanos
     #yamlencode(local.thanos_helm_vars)
   ]
-  set {
-    name  = "fullnameOverride"
-    value = "test"
-  }
 
   dynamic "set" {
     for_each = toset(var.disable_component_scraping)
@@ -138,24 +160,11 @@ resource "helm_release" "kube_prometheus_stack" {
     value = "auth-map"
   }
 
-  # Alertmanager data persistency
-  set {
-    name  = "alertmanager.alertmanagerSpec.storage.volumeClaimTemplate.spec.resources.requests.storage"
-    value = var.enable_alertmanager_persistence ? "${var.alertmanager_pvc_size}Gi" : ""
-  }
-  #set {
-  #  name  = "alertmanager.alertmanagerSpec.storage.volumeClaimTemplate.spec.storageClassName"
-  #  value = var.storage_class_name
-  #}
-  set {
-    name  = "alertmanager.alertmanagerSpec.storage.volumeClaimTemplate.spec.accessModes[0]"
-    value = "ReadWriteOnce"
-  }
+  # Prometheus data retention
   set {
     name  = "alertmanager.alertmanagerSpec.retention"
     value = var.enable_alertmanager_persistence ? var.alertmanager_data_retention : "120h"
   }
-
   # GRAFANA
   set {
     name  = "grafana.enabled"
@@ -273,19 +282,7 @@ resource "helm_release" "kube_prometheus_stack" {
     value = "auth-map"
   }
 
-  # Prometheus data persistency
-  set {
-    name  = "prometheus.prometheusSpec.storageSpec.volumeClaimTemplate.spec.resources.requests.storage"
-    value = var.enable_prometheus_persistence ? "${var.prometheus_pvc_size}Gi" : ""
-  }
-  #set {
-  #  name  = "prometheus.prometheusSpec.storageSpec.volumeClaimTemplate.spec.storageClassName"
-  #  value = var.enable_prometheus_persistence ? var.storage_class_name : null
-  #}
-  set {
-    name  = "prometheus.prometheusSpec.storageSpec.volumeClaimTemplate.spec.accessModes[0]"
-    value = "ReadWriteOnce"
-  }
+  # Prometheus data retention
   set {
     name  = "prometheus.prometheusSpec.retention"
     value = var.enable_prometheus_persistence ? var.prometheus_data_retention : "10d"

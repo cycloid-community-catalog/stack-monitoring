@@ -96,6 +96,11 @@ resource "helm_release" "kube_prometheus_stack" {
     #thanos
     #yamlencode(local.thanos_helm_vars)
   ]
+  set {
+    name  = "fullnameOverride"
+    value = "test"
+  }
+
   dynamic "set" {
     for_each = toset(var.disable_component_scraping)
     content {
@@ -133,6 +138,24 @@ resource "helm_release" "kube_prometheus_stack" {
     value = "auth-map"
   }
 
+  # Alertmanager data persistency
+  set {
+    name  = "alertmanager.alertmanagerSpec.storage.volumeClaimTemplate.spec.resources.requests.storage"
+    value = var.enable_alertmanager_persistence ? "${var.alertmanager_pvc_size}Gi" : null
+  }
+  #set {
+  #  name  = "alertmanager.alertmanagerSpec.storage.volumeClaimTemplate.spec.storageClassName"
+  #  value = var.storage_class_name
+  #}
+  set {
+    name  = "alertmanager.alertmanagerSpec.storage.volumeClaimTemplate.spec.accessModes[0]"
+    value = var.enable_alertmanager_persistence ? "ReadWriteOnce" : null
+  }
+  set {
+    name  = "alertmanager.alertmanagerSpec.retention"
+    value = var.enable_alertmanager_persistence ? var.alertmanager_data_retention : null
+  }
+
   # GRAFANA
   set {
     name  = "grafana.enabled"
@@ -162,6 +185,24 @@ resource "helm_release" "kube_prometheus_stack" {
   set {
     name  = "grafana.ingress.hosts[0]"
     value = var.grafana_domain_name
+  }
+
+  # Grafana data persistency
+  set {
+    name  = "grafana.persistence.enabled"
+    value = var.enable_grafana_persistence
+  }
+  set {
+    name  = "grafana.persistence.type"
+    value = "pvc"
+  }
+  set {
+    name  = "grafana.persistence.accessModes[0]"
+    value = "ReadWriteOnce"
+  }
+  set {
+    name  = "grafana.persistence.size"
+    value = "${var.grafana_pvc_size}Gi"
   }
 
   #set {
@@ -225,6 +266,24 @@ resource "helm_release" "kube_prometheus_stack" {
   set {
     name  = "prometheus.ingress.annotations.nginx\\.ingress\\.kubernetes\\.io/auth-secret-type"
     value = "auth-map"
+  }
+
+  # Prometheus data persistency
+  set {
+    name  = "prometheus.prometheusSpec.storageSpec.volumeClaimTemplate.spec.resources.requests.storage"
+    value = var.enable_prometheus_persistence ? "${var.prometheus_pvc_size}Gi" : null
+  }
+  #set {
+  #  name  = "prometheus.prometheusSpec.storageSpec.volumeClaimTemplate.spec.storageClassName"
+  #  value = var.enable_prometheus_persistence ? var.storage_class_name : null
+  #}
+  set {
+    name  = "prometheus.prometheusSpec.storageSpec.volumeClaimTemplate.spec.accessModes[0]"
+    value = var.enable_prometheus_persistence ? "ReadWriteOnce" : null
+  }
+  set {
+    name  = "prometheus.prometheusSpec.retention"
+    value = var.enable_prometheus_persistence ? var.prometheus_data_retention : null
   }
 
   # THANOS - disabled for now

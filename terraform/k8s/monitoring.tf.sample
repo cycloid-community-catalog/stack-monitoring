@@ -21,12 +21,17 @@ module "kube-prometheus" {
   #prometheus_default_rules_disabled = []
   #prometheus_default_alerts_disabled = []
   #prometheus_additional_rules  = {}
+  #enable_prometheus_persistence = false
+  #prometheus_pvc_size = "10"
+  #prometheus_data_retention = "10d"
 
   grafana_install                    = var.grafana_install
   #enable_default_grafana_dashboards = true
   #grafana_default_timezone          = "Europe/Paris"
   #grafana_domain_name               = "grafana.local"
   #grafana_cms_to_remove             = []
+  #enable_grafana_persistence = false
+  #grafana_pvc_size = "10"
 
   alertmanager_install               = var.alertmanager_install
   alertmanager_use_external          = var.alertmanager_use_external
@@ -34,6 +39,9 @@ module "kube-prometheus" {
   #alertmanager_domain_name          = "alertmanager.local"
   #alertmanager_config_inhibit_rules = []
   #alertmanager_config_route         = {}
+  #enable_alertmanager_persistence = false
+  #alertmanager_pvc_size = "10"
+  #alertmanager_data_retention = "10d"
 
   #thanos_install = var.thanos_install
 

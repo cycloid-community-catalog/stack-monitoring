@@ -55,6 +55,15 @@ variable "prometheus_default_alerts_disabled" {
 variable "prometheus_additional_rules" {
   default = {}
 }
+variable "enable_prometheus_persistence" {
+  default = false
+}
+variable "prometheus_pvc_size" {
+  default = "10"
+}
+variable "prometheus_data_retention" {
+  default = "10d"
+}
 
 #
 # GRAFANA
@@ -77,6 +86,12 @@ variable "grafana_domain_name" {
 variable "grafana_cms_to_remove" {
   default = []
 }
+variable "enable_grafana_persistence" {
+  default = false
+}
+variable "grafana_pvc_size" {
+  default = "10"
+}
 
 #
 # ALERTMANAGER
@@ -94,6 +109,15 @@ variable "alertmanager_config_inhibit_rules" {}
 variable "alertmanager_config_route" {}
 variable "alertmanager_config_receivers" {
   sensitive   = false
+}
+variable "enable_alertmanager_persistence" {
+  default = false
+}
+variable "alertmanager_pvc_size" {
+  default = "10"
+}
+variable "alertmanager_data_retention" {
+  default = "120h"
 }
 
 #

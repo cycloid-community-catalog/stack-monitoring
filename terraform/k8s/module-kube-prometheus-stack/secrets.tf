@@ -33,7 +33,7 @@ resource "random_password" "alertmanager_basic_auth_password" {
 
 resource "kubernetes_secret" "alertmanager_basic_auth" {
 
-  count = var.alertmanager_install
+  count = var.alertmanager_install ? 1 : 0
 
   metadata {
     name = "alertmanager-basic-auth-${var.project}-${var.env}"

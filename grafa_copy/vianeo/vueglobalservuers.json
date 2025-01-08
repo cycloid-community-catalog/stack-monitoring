@@ -1,0 +1,1541 @@
+{
+	"annotations": {
+		"list": [
+			{
+				"builtIn": 1,
+				"datasource": "-- Grafana --",
+				"enable": true,
+				"hide": true,
+				"iconColor": "rgba(0, 211, 255, 1)",
+				"name": "Annotations & Alerts",
+				"type": "dashboard"
+			}
+		]
+	},
+	"editable": true,
+	"gnetId": null,
+	"graphTooltip": 0,
+	"id": 224,
+	"links": [],
+	"panels": [
+		{
+			"collapsed": false,
+			"datasource": null,
+			"gridPos": {
+				"h": 1,
+				"w": 24,
+				"x": 0,
+				"y": 0
+			},
+			"id": 75,
+			"panels": [],
+			"title": "Santé Plateformes",
+			"type": "row"
+		},
+		{
+			"columns": [],
+			"datasource": null,
+			"fieldConfig": {
+				"defaults": {},
+				"overrides": []
+			},
+			"fontSize": "100%",
+			"gridPos": {
+				"h": 10,
+				"w": 7,
+				"x": 0,
+				"y": 1
+			},
+			"id": 78,
+			"links": [],
+			"pageSize": null,
+			"scroll": true,
+			"showHeader": true,
+			"sort": {
+				"col": 2,
+				"desc": true
+			},
+			"styles": [
+				{
+					"alias": "Time",
+					"align": "auto",
+					"dateFormat": "YYYY-MM-DD HH:mm:ss",
+					"pattern": "Time",
+					"type": "hidden"
+				},
+				{
+					"alias": "Plateforme",
+					"align": "auto",
+					"colors": [
+						"rgba(245, 54, 54, 0.9)",
+						"rgba(237, 129, 40, 0.89)",
+						"rgba(50, 172, 45, 0.97)"
+					],
+					"decimals": 2,
+					"pattern": "Metric",
+					"thresholds": [],
+					"type": "number",
+					"unit": "short"
+				},
+				{
+					"alias": "Temps de réponse",
+					"align": "auto",
+					"colorMode": "cell",
+					"colors": [
+						"rgba(50, 172, 45, 0.97)",
+						"rgba(237, 129, 40, 0.89)",
+						"rgba(245, 54, 54, 0.9)"
+					],
+					"dateFormat": "YYYY-MM-DD HH:mm:ss",
+					"decimals": 3,
+					"mappingType": 1,
+					"pattern": "Value",
+					"preserveFormat": false,
+					"sanitize": false,
+					"thresholds": [
+						"0.5cat var",
+						"1"
+					],
+					"type": "number",
+					"unit": "s",
+					"valueMaps": []
+				}
+			],
+			"targets": [
+				{
+					"expr": "vn_platform_proxy_max_request_duration{time_ago=\"60s\"}",
+					"format": "time_series",
+					"instant": true,
+					"interval": "",
+					"intervalFactor": 1,
+					"legendFormat": "{{ project }}",
+					"refId": "A"
+				}
+			],
+			"title": "PLATFORM - Temps de réponse moyen",
+			"transform": "timeseries_to_rows",
+			"type": "table-old"
+		},
+		{
+			"datasource": null,
+			"description": "",
+			"fieldConfig": {
+				"defaults": {
+					"color": {
+						"mode": "palette-classic"
+					},
+					"custom": {
+						"axisLabel": "",
+						"axisPlacement": "auto",
+						"barAlignment": 0,
+						"drawStyle": "line",
+						"fillOpacity": 0,
+						"gradientMode": "none",
+						"hideFrom": {
+							"graph": false,
+							"legend": false,
+							"tooltip": false,
+							"viz": false
+						},
+						"lineInterpolation": "linear",
+						"lineWidth": 1,
+						"pointSize": 5,
+						"scaleDistribution": {
+							"type": "linear"
+						},
+						"showPoints": "never",
+						"spanNulls": false
+					},
+					"links": [],
+					"mappings": [],
+					"max": 2,
+					"min": 0,
+					"thresholds": {
+						"mode": "absolute",
+						"steps": [
+							{
+								"color": "green",
+								"value": null
+							},
+							{
+								"color": "red",
+								"value": 80
+							}
+						]
+					},
+					"unit": "s"
+				},
+				"overrides": []
+			},
+			"gridPos": {
+				"h": 10,
+				"w": 10,
+				"x": 7,
+				"y": 1
+			},
+			"id": 51,
+			"links": [],
+			"options": {
+				"legend": {
+					"calcs": [],
+					"displayMode": "list",
+					"placement": "bottom",
+					"showLegend": true
+				},
+				"tooltip": {
+					"mode": "multi",
+					"sort": "desc"
+				},
+				"tooltipOptions": {
+					"mode": "single"
+				}
+			},
+			"pluginVersion": "8.5.5",
+			"targets": [
+				{
+					"expr": "vn_platform_proxy_max_request_duration{time_ago=\"60s\"}",
+					"format": "time_series",
+					"instant": false,
+					"interval": "60s",
+					"intervalFactor": 1,
+					"legendFormat": "{{ project }} ",
+					"refId": "A"
+				}
+			],
+			"title": "PLATFORM - Temps de réponse moyens",
+			"type": "timeseries"
+		},
+		{
+			"collapsed": false,
+			"datasource": null,
+			"gridPos": {
+				"h": 1,
+				"w": 24,
+				"x": 0,
+				"y": 11
+			},
+			"id": 71,
+			"panels": [],
+			"title": "Disques",
+			"type": "row"
+		},
+		{
+			"columns": [],
+			"datasource": null,
+			"fieldConfig": {
+				"defaults": {},
+				"overrides": []
+			},
+			"fontSize": "100%",
+			"gridPos": {
+				"h": 12,
+				"w": 7,
+				"x": 0,
+				"y": 12
+			},
+			"id": 65,
+			"links": [],
+			"pageSize": null,
+			"scroll": true,
+			"showHeader": true,
+			"sort": {
+				"col": 2,
+				"desc": true
+			},
+			"styles": [
+				{
+					"$$hashKey": "object:22",
+					"alias": "Time",
+					"align": "auto",
+					"dateFormat": "YYYY-MM-DD HH:mm:ss",
+					"pattern": "Time",
+					"type": "hidden"
+				},
+				{
+					"$$hashKey": "object:23",
+					"alias": "Espace",
+					"align": "auto",
+					"colors": [
+						"rgba(245, 54, 54, 0.9)",
+						"rgba(237, 129, 40, 0.89)",
+						"rgba(50, 172, 45, 0.97)"
+					],
+					"decimals": 0,
+					"link": false,
+					"pattern": "Value",
+					"thresholds": [],
+					"type": "number",
+					"unit": "decbytes"
+				},
+				{
+					"$$hashKey": "object:24",
+					"alias": "Serveur",
+					"align": "auto",
+					"colors": [
+						"rgba(245, 54, 54, 0.9)",
+						"rgba(237, 129, 40, 0.89)",
+						"rgba(50, 172, 45, 0.97)"
+					],
+					"dateFormat": "YYYY-MM-DD HH:mm:ss",
+					"decimals": 2,
+					"mappingType": 1,
+					"pattern": "Metric",
+					"thresholds": [],
+					"type": "number",
+					"unit": "short"
+				}
+			],
+			"targets": [
+				{
+					"expr": "vn_filesystem_size{mount=\"/\"}",
+					"format": "time_series",
+					"instant": true,
+					"interval": "",
+					"intervalFactor": 1,
+					"legendFormat": "{{ project }}",
+					"refId": "A"
+				}
+			],
+			"title": "Taille du disque Système",
+			"transform": "timeseries_to_rows",
+			"type": "table-old"
+		},
+		{
+			"datasource": null,
+			"description": "",
+			"fieldConfig": {
+				"defaults": {
+					"color": {
+						"mode": "thresholds"
+					},
+					"links": [],
+					"mappings": [],
+					"max": 100,
+					"min": 0,
+					"thresholds": {
+						"mode": "absolute",
+						"steps": [
+							{
+								"color": "green",
+								"value": null
+							},
+							{
+								"color": "red",
+								"value": 75
+							}
+						]
+					},
+					"unit": "percent"
+				},
+				"overrides": []
+			},
+			"gridPos": {
+				"h": 12,
+				"w": 9,
+				"x": 7,
+				"y": 12
+			},
+			"id": 90,
+			"links": [],
+			"options": {
+				"displayMode": "lcd",
+				"minVizHeight": 10,
+				"minVizWidth": 0,
+				"orientation": "horizontal",
+				"reduceOptions": {
+					"calcs": [
+						"mean"
+					],
+					"fields": "",
+					"values": false
+				},
+				"showUnfilled": true,
+				"text": {}
+			},
+			"pluginVersion": "7.5.4",
+			"targets": [
+				{
+					"exemplar": true,
+					"expr": "vn_filesystem_percent{mount=\"/\"}",
+					"format": "time_series",
+					"instant": true,
+					"interval": "",
+					"legendFormat": "{{ project }}",
+					"refId": "B"
+				}
+			],
+			"title": "Espace disque Système",
+			"transformations": [],
+			"type": "bargauge"
+		},
+		{
+			"datasource": null,
+			"description": "",
+			"fieldConfig": {
+				"defaults": {
+					"color": {
+						"mode": "palette-classic"
+					},
+					"custom": {
+						"axisLabel": "",
+						"axisPlacement": "auto",
+						"barAlignment": 0,
+						"drawStyle": "line",
+						"fillOpacity": 0,
+						"gradientMode": "none",
+						"hideFrom": {
+							"graph": false,
+							"legend": false,
+							"tooltip": false,
+							"viz": false
+						},
+						"lineInterpolation": "linear",
+						"lineWidth": 1,
+						"pointSize": 5,
+						"scaleDistribution": {
+							"type": "linear"
+						},
+						"showPoints": "never",
+						"spanNulls": false
+					},
+					"links": [],
+					"mappings": [],
+					"max": 100,
+					"min": 0,
+					"thresholds": {
+						"mode": "absolute",
+						"steps": [
+							{
+								"color": "green",
+								"value": null
+							},
+							{
+								"color": "red",
+								"value": 80
+							}
+						]
+					},
+					"unit": "percent"
+				},
+				"overrides": []
+			},
+			"gridPos": {
+				"h": 12,
+				"w": 8,
+				"x": 16,
+				"y": 12
+			},
+			"id": 86,
+			"links": [],
+			"options": {
+				"legend": {
+					"calcs": [],
+					"displayMode": "list",
+					"placement": "bottom",
+					"showLegend": true
+				},
+				"tooltip": {
+					"mode": "multi",
+					"sort": "desc"
+				},
+				"tooltipOptions": {
+					"mode": "single"
+				}
+			},
+			"pluginVersion": "8.5.5",
+			"targets": [
+				{
+					"exemplar": true,
+					"expr": "vn_filesystem_percent{mount=\"/\"}",
+					"format": "time_series",
+					"hide": false,
+					"instant": false,
+					"interval": "",
+					"intervalFactor": 1,
+					"legendFormat": "{{ project }} ",
+					"refId": "A"
+				}
+			],
+			"title": "Espace disque Système",
+			"type": "timeseries"
+		},
+		{
+			"columns": [],
+			"datasource": null,
+			"fieldConfig": {
+				"defaults": {},
+				"overrides": []
+			},
+			"fontSize": "100%",
+			"gridPos": {
+				"h": 12,
+				"w": 7,
+				"x": 0,
+				"y": 24
+			},
+			"id": 87,
+			"links": [],
+			"pageSize": null,
+			"scroll": true,
+			"showHeader": true,
+			"sort": {
+				"col": 2,
+				"desc": true
+			},
+			"styles": [
+				{
+					"$$hashKey": "object:22",
+					"alias": "Time",
+					"align": "auto",
+					"dateFormat": "YYYY-MM-DD HH:mm:ss",
+					"pattern": "Time",
+					"type": "hidden"
+				},
+				{
+					"$$hashKey": "object:23",
+					"alias": "Espace",
+					"align": "auto",
+					"colors": [
+						"rgba(245, 54, 54, 0.9)",
+						"rgba(237, 129, 40, 0.89)",
+						"rgba(50, 172, 45, 0.97)"
+					],
+					"decimals": 0,
+					"link": false,
+					"pattern": "Value",
+					"thresholds": [],
+					"type": "number",
+					"unit": "decbytes"
+				},
+				{
+					"$$hashKey": "object:24",
+					"alias": "Serveur",
+					"align": "auto",
+					"colors": [
+						"rgba(245, 54, 54, 0.9)",
+						"rgba(237, 129, 40, 0.89)",
+						"rgba(50, 172, 45, 0.97)"
+					],
+					"dateFormat": "YYYY-MM-DD HH:mm:ss",
+					"decimals": 2,
+					"mappingType": 1,
+					"pattern": "Metric",
+					"thresholds": [],
+					"type": "number",
+					"unit": "short"
+				}
+			],
+			"targets": [
+				{
+					"expr": "vn_filesystem_size{mount=\"/data\"}",
+					"format": "time_series",
+					"instant": true,
+					"interval": "",
+					"intervalFactor": 1,
+					"legendFormat": "{{ project }}",
+					"refId": "A"
+				}
+			],
+			"title": "Taille du disque DATA",
+			"transform": "timeseries_to_rows",
+			"type": "table-old"
+		},
+		{
+			"datasource": null,
+			"fieldConfig": {
+				"defaults": {
+					"mappings": [],
+					"max": 100,
+					"min": 0,
+					"thresholds": {
+						"mode": "absolute",
+						"steps": [
+							{
+								"color": "green",
+								"value": null
+							},
+							{
+								"color": "red",
+								"value": 75
+							}
+						]
+					},
+					"unit": "percent"
+				},
+				"overrides": []
+			},
+			"gridPos": {
+				"h": 12,
+				"w": 9,
+				"x": 7,
+				"y": 24
+			},
+			"id": 92,
+			"links": [],
+			"options": {
+				"displayMode": "lcd",
+				"minVizHeight": 10,
+				"minVizWidth": 0,
+				"orientation": "horizontal",
+				"reduceOptions": {
+					"calcs": [
+						"mean"
+					],
+					"fields": "",
+					"values": false
+				},
+				"showUnfilled": true,
+				"text": {}
+			},
+			"pluginVersion": "7.5.4",
+			"targets": [
+				{
+					"exemplar": true,
+					"expr": "vn_filesystem_percent{mount=\"/data/apps\"}",
+					"format": "time_series",
+					"instant": true,
+					"interval": "",
+					"intervalFactor": 1,
+					"legendFormat": "{{ project }}",
+					"refId": "A"
+				}
+			],
+			"title": "Espace disque DATA",
+			"type": "bargauge"
+		},
+		{
+			"datasource": null,
+			"description": "",
+			"fieldConfig": {
+				"defaults": {
+					"color": {
+						"mode": "palette-classic"
+					},
+					"custom": {
+						"axisLabel": "",
+						"axisPlacement": "auto",
+						"barAlignment": 0,
+						"drawStyle": "line",
+						"fillOpacity": 0,
+						"gradientMode": "none",
+						"hideFrom": {
+							"graph": false,
+							"legend": false,
+							"tooltip": false,
+							"viz": false
+						},
+						"lineInterpolation": "linear",
+						"lineWidth": 1,
+						"pointSize": 5,
+						"scaleDistribution": {
+							"type": "linear"
+						},
+						"showPoints": "never",
+						"spanNulls": false
+					},
+					"links": [],
+					"mappings": [],
+					"max": 100,
+					"min": 0,
+					"thresholds": {
+						"mode": "absolute",
+						"steps": [
+							{
+								"color": "green",
+								"value": null
+							},
+							{
+								"color": "red",
+								"value": 80
+							}
+						]
+					},
+					"unit": "percent"
+				},
+				"overrides": []
+			},
+			"gridPos": {
+				"h": 12,
+				"w": 8,
+				"x": 16,
+				"y": 24
+			},
+			"id": 88,
+			"links": [],
+			"options": {
+				"legend": {
+					"calcs": [],
+					"displayMode": "list",
+					"placement": "bottom",
+					"showLegend": true
+				},
+				"tooltip": {
+					"mode": "multi",
+					"sort": "desc"
+				},
+				"tooltipOptions": {
+					"mode": "single"
+				}
+			},
+			"pluginVersion": "8.5.5",
+			"targets": [
+				{
+					"exemplar": true,
+					"expr": "vn_filesystem_percent{mount=\"/data/apps\"}",
+					"format": "time_series",
+					"hide": false,
+					"instant": false,
+					"interval": "",
+					"intervalFactor": 1,
+					"legendFormat": "{{ project }} ",
+					"refId": "A"
+				}
+			],
+			"title": "Espace disque DATA",
+			"type": "timeseries"
+		},
+		{
+			"datasource": null,
+			"description": "",
+			"fieldConfig": {
+				"defaults": {
+					"color": {
+						"mode": "palette-classic"
+					},
+					"custom": {
+						"axisLabel": "",
+						"axisPlacement": "auto",
+						"barAlignment": 0,
+						"drawStyle": "line",
+						"fillOpacity": 0,
+						"gradientMode": "none",
+						"hideFrom": {
+							"graph": false,
+							"legend": false,
+							"tooltip": false,
+							"viz": false
+						},
+						"lineInterpolation": "linear",
+						"lineWidth": 1,
+						"pointSize": 5,
+						"scaleDistribution": {
+							"type": "linear"
+						},
+						"showPoints": "never",
+						"spanNulls": false
+					},
+					"links": [],
+					"mappings": [],
+					"min": 0,
+					"thresholds": {
+						"mode": "absolute",
+						"steps": [
+							{
+								"color": "green",
+								"value": null
+							},
+							{
+								"color": "red",
+								"value": 80
+							}
+						]
+					},
+					"unit": "bytes"
+				},
+				"overrides": []
+			},
+			"gridPos": {
+				"h": 11,
+				"w": 12,
+				"x": 0,
+				"y": 36
+			},
+			"id": 53,
+			"links": [],
+			"options": {
+				"legend": {
+					"calcs": [],
+					"displayMode": "list",
+					"placement": "bottom",
+					"showLegend": true
+				},
+				"tooltip": {
+					"mode": "multi",
+					"sort": "desc"
+				},
+				"tooltipOptions": {
+					"mode": "single"
+				}
+			},
+			"pluginVersion": "8.5.5",
+			"targets": [
+				{
+					"expr": "rate(node_disk_read_bytes_total{group=\"platform_production\"}[5m])",
+					"format": "time_series",
+					"interval": "5m",
+					"intervalFactor": 1,
+					"legendFormat": "{{ project }}",
+					"refId": "B"
+				}
+			],
+			"title": "Activité du disque - Lecture",
+			"type": "timeseries"
+		},
+		{
+			"datasource": null,
+			"description": "",
+			"fieldConfig": {
+				"defaults": {
+					"color": {
+						"mode": "palette-classic"
+					},
+					"custom": {
+						"axisLabel": "",
+						"axisPlacement": "auto",
+						"barAlignment": 0,
+						"drawStyle": "line",
+						"fillOpacity": 0,
+						"gradientMode": "none",
+						"hideFrom": {
+							"graph": false,
+							"legend": false,
+							"tooltip": false,
+							"viz": false
+						},
+						"lineInterpolation": "linear",
+						"lineWidth": 1,
+						"pointSize": 5,
+						"scaleDistribution": {
+							"type": "linear"
+						},
+						"showPoints": "never",
+						"spanNulls": false
+					},
+					"links": [],
+					"mappings": [],
+					"min": 0,
+					"thresholds": {
+						"mode": "absolute",
+						"steps": [
+							{
+								"color": "green",
+								"value": null
+							},
+							{
+								"color": "red",
+								"value": 80
+							}
+						]
+					},
+					"unit": "bytes"
+				},
+				"overrides": []
+			},
+			"gridPos": {
+				"h": 11,
+				"w": 12,
+				"x": 12,
+				"y": 36
+			},
+			"id": 54,
+			"links": [],
+			"options": {
+				"legend": {
+					"calcs": [],
+					"displayMode": "list",
+					"placement": "bottom",
+					"showLegend": true
+				},
+				"tooltip": {
+					"mode": "multi",
+					"sort": "desc"
+				},
+				"tooltipOptions": {
+					"mode": "single"
+				}
+			},
+			"pluginVersion": "8.5.5",
+			"targets": [
+				{
+					"expr": "rate(node_disk_written_bytes_total{group=\"platform_production\"}[5m])",
+					"format": "time_series",
+					"instant": false,
+					"interval": "5m",
+					"intervalFactor": 1,
+					"legendFormat": "{{ project }}",
+					"refId": "A"
+				}
+			],
+			"title": "Activité du disque - Ecriture",
+			"type": "timeseries"
+		},
+		{
+			"collapsed": false,
+			"datasource": null,
+			"gridPos": {
+				"h": 1,
+				"w": 24,
+				"x": 0,
+				"y": 47
+			},
+			"id": 69,
+			"panels": [],
+			"title": "CPU - RAM",
+			"type": "row"
+		},
+		{
+			"datasource": null,
+			"description": "",
+			"fieldConfig": {
+				"defaults": {
+					"color": {
+						"mode": "palette-classic"
+					},
+					"custom": {
+						"axisLabel": "",
+						"axisPlacement": "auto",
+						"barAlignment": 0,
+						"drawStyle": "line",
+						"fillOpacity": 0,
+						"gradientMode": "none",
+						"hideFrom": {
+							"graph": false,
+							"legend": false,
+							"tooltip": false,
+							"viz": false
+						},
+						"lineInterpolation": "linear",
+						"lineWidth": 1,
+						"pointSize": 5,
+						"scaleDistribution": {
+							"type": "linear"
+						},
+						"showPoints": "never",
+						"spanNulls": false
+					},
+					"links": [],
+					"mappings": [],
+					"max": 100,
+					"min": 0,
+					"thresholds": {
+						"mode": "absolute",
+						"steps": [
+							{
+								"color": "green",
+								"value": null
+							},
+							{
+								"color": "red",
+								"value": 80
+							}
+						]
+					},
+					"unit": "percent"
+				},
+				"overrides": []
+			},
+			"gridPos": {
+				"h": 12,
+				"w": 8,
+				"x": 0,
+				"y": 48
+			},
+			"id": 45,
+			"interval": "",
+			"links": [],
+			"options": {
+				"legend": {
+					"calcs": [],
+					"displayMode": "list",
+					"placement": "bottom",
+					"showLegend": true
+				},
+				"tooltip": {
+					"mode": "multi",
+					"sort": "desc"
+				},
+				"tooltipOptions": {
+					"mode": "single"
+				}
+			},
+			"pluginVersion": "8.5.5",
+			"targets": [
+				{
+					"expr": "100 - (avg by (job) (rate(node_cpu_seconds_total{mode=\"idle\"}[5m])) * 100)",
+					"format": "time_series",
+					"hide": false,
+					"instant": false,
+					"interval": "5m",
+					"intervalFactor": 1,
+					"legendFormat": "{{ project }}",
+					"refId": "C",
+					"step": 20
+				}
+			],
+			"title": "CPU",
+			"type": "timeseries"
+		},
+		{
+			"datasource": null,
+			"description": "",
+			"fieldConfig": {
+				"defaults": {
+					"color": {
+						"mode": "palette-classic"
+					},
+					"custom": {
+						"axisLabel": "",
+						"axisPlacement": "auto",
+						"barAlignment": 0,
+						"drawStyle": "line",
+						"fillOpacity": 0,
+						"gradientMode": "none",
+						"hideFrom": {
+							"graph": false,
+							"legend": false,
+							"tooltip": false,
+							"viz": false
+						},
+						"lineInterpolation": "linear",
+						"lineWidth": 1,
+						"pointSize": 5,
+						"scaleDistribution": {
+							"type": "linear"
+						},
+						"showPoints": "never",
+						"spanNulls": false
+					},
+					"links": [],
+					"mappings": [],
+					"max": 100,
+					"min": 0,
+					"thresholds": {
+						"mode": "absolute",
+						"steps": [
+							{
+								"color": "green",
+								"value": null
+							},
+							{
+								"color": "red",
+								"value": 80
+							}
+						]
+					},
+					"unit": "percent"
+				},
+				"overrides": []
+			},
+			"gridPos": {
+				"h": 12,
+				"w": 16,
+				"x": 8,
+				"y": 48
+			},
+			"id": 42,
+			"links": [],
+			"options": {
+				"legend": {
+					"calcs": [],
+					"displayMode": "list",
+					"placement": "bottom",
+					"showLegend": true
+				},
+				"tooltip": {
+					"mode": "multi",
+					"sort": "desc"
+				},
+				"tooltipOptions": {
+					"mode": "single"
+				}
+			},
+			"pluginVersion": "8.5.5",
+			"targets": [
+				{
+					"expr": "((node_memory_MemTotal_bytes - node_memory_MemFree_bytes - node_memory_Cached_bytes)/(node_memory_MemTotal_bytes)*100)",
+					"format": "time_series",
+					"intervalFactor": 1,
+					"legendFormat": "{{ project }}",
+					"refId": "A"
+				}
+			],
+			"title": "RAM",
+			"type": "timeseries"
+		},
+		{
+			"collapsed": false,
+			"datasource": null,
+			"gridPos": {
+				"h": 1,
+				"w": 24,
+				"x": 0,
+				"y": 60
+			},
+			"id": 73,
+			"panels": [],
+			"title": "Conteneurs",
+			"type": "row"
+		},
+		{
+			"datasource": null,
+			"description": "",
+			"fieldConfig": {
+				"defaults": {
+					"color": {
+						"mode": "palette-classic"
+					},
+					"custom": {
+						"axisLabel": "",
+						"axisPlacement": "auto",
+						"barAlignment": 0,
+						"drawStyle": "line",
+						"fillOpacity": 0,
+						"gradientMode": "none",
+						"hideFrom": {
+							"graph": false,
+							"legend": false,
+							"tooltip": false,
+							"viz": false
+						},
+						"lineInterpolation": "linear",
+						"lineWidth": 1,
+						"pointSize": 5,
+						"scaleDistribution": {
+							"type": "linear"
+						},
+						"showPoints": "never",
+						"spanNulls": false
+					},
+					"links": [],
+					"mappings": [],
+					"min": 0,
+					"thresholds": {
+						"mode": "absolute",
+						"steps": [
+							{
+								"color": "green",
+								"value": null
+							},
+							{
+								"color": "red",
+								"value": 80
+							}
+						]
+					},
+					"unit": "bytes"
+				},
+				"overrides": []
+			},
+			"gridPos": {
+				"h": 7,
+				"w": 10,
+				"x": 0,
+				"y": 61
+			},
+			"id": 57,
+			"links": [],
+			"options": {
+				"legend": {
+					"calcs": [],
+					"displayMode": "list",
+					"placement": "bottom",
+					"showLegend": true
+				},
+				"tooltip": {
+					"mode": "multi",
+					"sort": "desc"
+				},
+				"tooltipOptions": {
+					"mode": "single"
+				}
+			},
+			"pluginVersion": "8.5.5",
+			"targets": [
+				{
+					"exemplar": true,
+					"expr": "container_memory{project=\"vianeo-gitlab\"}",
+					"format": "time_series",
+					"instant": false,
+					"interval": "",
+					"intervalFactor": 1,
+					"legendFormat": "{{ name }}",
+					"refId": "A"
+				}
+			],
+			"title": "Conteneurs - Gitlab",
+			"type": "timeseries"
+		},
+		{
+			"datasource": null,
+			"fieldConfig": {
+				"defaults": {
+					"color": {
+						"mode": "palette-classic"
+					},
+					"custom": {
+						"axisLabel": "",
+						"axisPlacement": "auto",
+						"barAlignment": 0,
+						"drawStyle": "line",
+						"fillOpacity": 0,
+						"gradientMode": "none",
+						"hideFrom": {
+							"graph": false,
+							"legend": false,
+							"tooltip": false,
+							"viz": false
+						},
+						"lineInterpolation": "linear",
+						"lineWidth": 1,
+						"pointSize": 5,
+						"scaleDistribution": {
+							"type": "linear"
+						},
+						"showPoints": "never",
+						"spanNulls": true
+					},
+					"links": [],
+					"mappings": [],
+					"thresholds": {
+						"mode": "absolute",
+						"steps": [
+							{
+								"color": "green",
+								"value": null
+							},
+							{
+								"color": "red",
+								"value": 80
+							}
+						]
+					},
+					"unit": "s"
+				},
+				"overrides": []
+			},
+			"gridPos": {
+				"h": 7,
+				"w": 6,
+				"x": 18,
+				"y": 61
+			},
+			"id": 82,
+			"links": [],
+			"options": {
+				"legend": {
+					"calcs": [],
+					"displayMode": "list",
+					"placement": "bottom",
+					"showLegend": true
+				},
+				"tooltip": {
+					"mode": "multi",
+					"sort": "none"
+				},
+				"tooltipOptions": {
+					"mode": "single"
+				}
+			},
+			"pluginVersion": "8.5.5",
+			"targets": [
+				{
+					"expr": "topk(5, max(scrape_duration_seconds) by (job))",
+					"format": "time_series",
+					"interval": "",
+					"intervalFactor": 2,
+					"legendFormat": "{{ project }}",
+					"metric": "",
+					"refId": "A",
+					"step": 20
+				}
+			],
+			"title": "Scrape Duration",
+			"type": "timeseries"
+		},
+		{
+			"datasource": null,
+			"fieldConfig": {
+				"defaults": {
+					"color": {
+						"mode": "thresholds"
+					},
+					"custom": {
+						"align": "auto",
+						"displayMode": "auto",
+						"filterable": false
+					},
+					"mappings": [],
+					"thresholds": {
+						"mode": "absolute",
+						"steps": [
+							{
+								"color": "green",
+								"value": null
+							},
+							{
+								"color": "red",
+								"value": 80
+							}
+						]
+					},
+					"unit": "bool"
+				},
+				"overrides": [
+					{
+						"matcher": {
+							"id": "byName",
+							"options": "URL"
+						},
+						"properties": [
+							{
+								"id": "custom.width",
+								"value": 276
+							}
+						]
+					}
+				]
+			},
+			"gridPos": {
+				"h": 46,
+				"w": 9,
+				"x": 0,
+				"y": 68
+			},
+			"id": 84,
+			"links": [],
+			"options": {
+				"footer": {
+					"fields": "",
+					"reducer": [
+						"sum"
+					],
+					"show": false
+				},
+				"showHeader": true,
+				"sortBy": [
+					{
+						"desc": true,
+						"displayName": "Reboot en attente"
+					}
+				]
+			},
+			"pluginVersion": "7.5.4",
+			"targets": [
+				{
+					"datasource": null,
+					"expr": "vn_system_reboot_required",
+					"format": "table",
+					"hide": false,
+					"instant": true,
+					"interval": "",
+					"intervalFactor": 1,
+					"legendFormat": "{{ project }}",
+					"refId": "A"
+				}
+			],
+			"title": "Reboot Required",
+			"transformations": [
+				{
+					"id": "organize",
+					"options": {
+						"excludeByName": {
+							"Name": true,
+							"Time": true,
+							"Value": false,
+							"__name__": true,
+							"availability_zone": true,
+							"cloud": true,
+							"customer": true,
+							"env": true,
+							"group": true,
+							"instance": true,
+							"instance_id": true,
+							"job": true,
+							"provider_service": true,
+							"region": true,
+							"result": false,
+							"role": true,
+							"stream": true
+						},
+						"indexByName": {},
+						"renameByName": {
+							"Time": "",
+							"Value": "Reboot en attente",
+							"instance": "",
+							"job": "",
+							"region": "",
+							"result": "Command",
+							"stream": "",
+							"time": "Temps"
+						}
+					}
+				}
+			],
+			"type": "table"
+		},
+		{
+			"datasource": null,
+			"fieldConfig": {
+				"defaults": {
+					"color": {
+						"mode": "thresholds"
+					},
+					"custom": {
+						"align": "auto",
+						"displayMode": "auto",
+						"filterable": false
+					},
+					"mappings": [],
+					"thresholds": {
+						"mode": "absolute",
+						"steps": [
+							{
+								"color": "green",
+								"value": null
+							},
+							{
+								"color": "red",
+								"value": 80
+							}
+						]
+					},
+					"unit": "m"
+				},
+				"overrides": [
+					{
+						"matcher": {
+							"id": "byName",
+							"options": "Temps"
+						},
+						"properties": [
+							{
+								"id": "custom.width",
+								"value": 113
+							}
+						]
+					},
+					{
+						"matcher": {
+							"id": "byName",
+							"options": "Valeur"
+						},
+						"properties": [
+							{
+								"id": "custom.width",
+								"value": 95
+							}
+						]
+					}
+				]
+			},
+			"gridPos": {
+				"h": 46,
+				"w": 15,
+				"x": 9,
+				"y": 68
+			},
+			"id": 93,
+			"links": [],
+			"options": {
+				"footer": {
+					"fields": "",
+					"reducer": [
+						"sum"
+					],
+					"show": false
+				},
+				"showHeader": true,
+				"sortBy": [
+					{
+						"desc": true,
+						"displayName": "Valeur"
+					}
+				]
+			},
+			"pluginVersion": "7.5.4",
+			"targets": [
+				{
+					"expr": "uptime",
+					"format": "table",
+					"hide": false,
+					"instant": true,
+					"interval": "",
+					"intervalFactor": 1,
+					"legendFormat": "{{ project }}",
+					"refId": "A"
+				}
+			],
+			"title": "Serveur UpTime",
+			"transformations": [
+				{
+					"id": "organize",
+					"options": {
+						"excludeByName": {
+							"Name": true,
+							"Time": true,
+							"Value": false,
+							"__name__": true,
+							"availability_zone": true,
+							"cloud": true,
+							"customer": true,
+							"env": true,
+							"group": true,
+							"instance": true,
+							"instance_id": true,
+							"job": true,
+							"project": false,
+							"provider_service": true,
+							"region": true,
+							"result": false,
+							"role": true,
+							"stream": true
+						},
+						"indexByName": {},
+						"renameByName": {
+							"Time": "",
+							"Value": "Valeur",
+							"instance": "URL",
+							"job": "",
+							"project": "Serveur",
+							"region": "",
+							"result": "Command",
+							"stream": "",
+							"time": "Temps"
+						}
+					}
+				}
+			],
+			"type": "table"
+		},
+		{
+			"collapsed": false,
+			"datasource": null,
+			"gridPos": {
+				"h": 1,
+				"w": 24,
+				"x": 0,
+				"y": 114
+			},
+			"id": 80,
+			"panels": [],
+			"title": "Autre",
+			"type": "row"
+		}
+	],
+	"refresh": "5s",
+	"schemaVersion": 27,
+	"style": "dark",
+	"tags": [],
+	"templating": {
+		"list": []
+	},
+	"time": {
+		"from": "now-6h",
+		"to": "now"
+	},
+	"timepicker": {},
+	"timezone": "",
+	"title": "Vue globale des Serveurs",
+	"uid": "y52S2t1Vz",
+	"version": 8
+}

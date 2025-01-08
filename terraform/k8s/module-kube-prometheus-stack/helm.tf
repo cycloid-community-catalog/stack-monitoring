@@ -178,6 +178,11 @@ resource "helm_release" "kube_prometheus_stack" {
   }
 
   set {
+    name  = "grafana.adminUser"
+    value = local.username
+  }
+
+  set {
     name  = "grafana.ingress.enabled"
     value = var.grafana_install
   }

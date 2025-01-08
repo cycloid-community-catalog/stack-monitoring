@@ -823,7 +823,7 @@ use_cases:
           default: "10"
         - name: "Prometheus Data retention"
           description: "The time prometheus will retain data before deletion. Must match the regular expression [0-9]+(ms|s|m|h) (milliseconds seconds minutes hours)."
-          key: module.kube-prometheus.prometheus_pvc_size
+          key: module.kube-prometheus.prometheus_data_retention
           widget: simple_text
           type: string
           default: "10d"
@@ -921,7 +921,7 @@ use_cases:
           default: "10"
         - name: "Alertmanager Data retention"
           description: "The time alertmanager will retain data before deletion. Must match the regular expression [0-9]+(ms|s|m|h) (milliseconds seconds minutes hours)."
-          key: module.kube-prometheus.alertmanager_pvc_size
+          key: module.kube-prometheus.alertmanager_data_retention
           widget: simple_text
           type: string
           default: "10d"

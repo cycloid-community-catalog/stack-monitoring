@@ -45,7 +45,7 @@ output "prometheus_basic_auth_password" {
 
 output "alertmanager_basic_auth_users" {
   value = var.alertmanager_install ? {
-    for user in var.alertmanager_users :
+    for user in local.alertmanager_users :
     user => random_password.alertmanager_basic_auth_password[user].result
   } : {}
   description = "A map of alertmanager usernames to their passwords"

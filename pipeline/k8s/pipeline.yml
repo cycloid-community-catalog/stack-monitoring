@@ -233,7 +233,10 @@ jobs:
               if [ "$ALERTMANAGER_INSTALL" = "true" ]; then
                 echo -e "\n"
                 echo -n "Alertmanager available at "; pwarning "$(jq -r .alertmanager_domain_name tfstate/metadata)"
-                echo -n "Basic credential : "; pwarning  "$(jq -r .alertmanager_basic_auth_cred_cannonical tfstate/metadata)"
+                echo -n "Basic credential : ";
+                jq -r '.alertmanager_basic_auth_cred_cannonicals[]' tfstate/metadata | while read -r credential; do
+                    pwarning "$credential"
+                done
               fi
 
               if [ "$GRAFANA_INSTALL" = "true" ]; then

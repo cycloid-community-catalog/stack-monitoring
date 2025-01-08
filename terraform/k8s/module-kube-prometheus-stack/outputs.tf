@@ -49,7 +49,6 @@ output "alertmanager_basic_auth_users" {
     user => random_password.alertmanager_basic_auth_password[user].result
   } : {}
   description = "A map of alertmanager usernames to their passwords"
-  sensitive = true
 }
 
 output "grafana_basic_auth_username" {

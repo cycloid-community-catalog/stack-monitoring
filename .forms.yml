@@ -899,6 +899,17 @@ use_cases:
               - target_matchers:
                   - 'alertname = InfoInhibitor'
 
+    - name: Basic Auth users
+      condition: $alertmanager_install == true
+      technologies: [terraform]
+      vars:
+        - name: "Basic Auth extra users"
+          description: "By default a admin user is created to access alertmanager but you can specify an array of usernames to create also accesses."
+          key: module.kube-prometheus.alertmanager_users
+          widget: text_area
+          type: map
+          default: []
+
     - name: Data persistency
       condition: $alertmanager_install == true
       technologies: [terraform]

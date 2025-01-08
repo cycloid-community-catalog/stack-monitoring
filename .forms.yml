@@ -812,7 +812,7 @@ use_cases:
           type: boolean
           default: false
     - name: PVC Configuration
-      condition: $prometheus_install == true && module.kube-prometheus.enable_prometheus_persistence == true
+      condition: $prometheus_install == true && $module.kube-prometheus.enable_prometheus_persistence == true
       technologies: [terraform]
       vars:
         - name: "Prometheus PVC size"
@@ -910,7 +910,7 @@ use_cases:
           type: boolean
           default: false
     - name: PVC Configuration
-      condition: $alertmanager_install == true && module.kube-prometheus.enable_alertmanager_persistence == true
+      condition: $alertmanager_install == true && $module.kube-prometheus.enable_alertmanager_persistence == true
       technologies: [terraform]
       vars:
         - name: "Alertmanager PVC size"
@@ -995,7 +995,7 @@ use_cases:
           type: boolean
           default: false
     - name: PVC Configuration
-      condition: $grafana_install == true && module.kube-prometheus.enable_grafana_persistence == true
+      condition: $grafana_install == true && $module.kube-prometheus.enable_grafana_persistence == true
       technologies: [terraform]
       vars:
         - name: "Grafana PVC size"

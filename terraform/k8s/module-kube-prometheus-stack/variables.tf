@@ -200,5 +200,5 @@ EOL
 
   username = var.organization
 
-  alertmanager_users = concat([local.username], var.alertmanager_users))
+  alertmanager_users = concat([local.username], var.alertmanager_users)
 }

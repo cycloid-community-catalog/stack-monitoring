@@ -649,7 +649,7 @@ use_cases:
         type: string
         required: true
       - name: "K8s namespace"
-        description: "The name of the namespace to create, where the resources will be created. Defaults to 'stack-monitoring'"
+        description: "The name of the namespace to create, where the resources will be created. Defaults to 'stack-monitoring'. Beware that changing this value may destroy previously deployed elements."
         key: namespace
         widget: simple_text
         type: string
@@ -801,6 +801,33 @@ use_cases:
           type: map
           default: {}
 
+    - name: Data persistency
+      condition: $prometheus_install == true
+      technologies: [terraform]
+      vars:
+        - name: "Persist data"
+          description: "Wheter to persist prometheus data on the k8s cluster, by creating a PVC."
+          key: module.kube-prometheus.enable_prometheus_persistence
+          widget: switch
+          type: boolean
+          default: false
+    - name: PVC Configuration
+      condition: $prometheus_install == true && module.kube-prometheus.enable_prometheus_persistence == true
+      technologies: [terraform]
+      vars:
+        - name: "Prometheus PVC size"
+          description: "The size of the persisent volume claim to create in Gb."
+          key: module.kube-prometheus.prometheus_pvc_size
+          widget: simple_text
+          type: string
+          default: "10"
+        - name: "Prometheus Data retention"
+          description: "The time prometheus will retain data before deletion. Must match the regular expression [0-9]+(ms|s|m|h) (milliseconds seconds minutes hours)."
+          key: module.kube-prometheus.prometheus_pvc_size
+          widget: simple_text
+          type: string
+          default: "10d"
+
   - name: Alertmanager
     groups:
     - name: Alertmanager DNS
@@ -872,6 +899,34 @@ use_cases:
               - target_matchers:
                   - 'alertname = InfoInhibitor'
 
+    - name: Data persistency
+      condition: $alertmanager_install == true
+      technologies: [terraform]
+      vars:
+        - name: "Persist data"
+          description: "Wheter to persist alertmanager data on the k8s cluster, by creating a PVC."
+          key: module.kube-prometheus.enable_alertmanager_persistence
+          widget: switch
+          type: boolean
+          default: false
+    - name: PVC Configuration
+      condition: $alertmanager_install == true && module.kube-prometheus.enable_alertmanager_persistence == true
+      technologies: [terraform]
+      vars:
+        - name: "Alertmanager PVC size"
+          description: "The size of the persisent volume claim to create in Gb."
+          key: module.kube-prometheus.alertmanager_pvc_size
+          widget: simple_text
+          type: string
+          default: "10"
+        - name: "Alertmanager Data retention"
+          description: "The time alertmanager will retain data before deletion. Must match the regular expression [0-9]+(ms|s|m|h) (milliseconds seconds minutes hours)."
+          key: module.kube-prometheus.alertmanager_pvc_size
+          widget: simple_text
+          type: string
+          default: "10d"
+
+
     - name: External Alertmanager (not deployed in k8s cluster)
       technologies: [pipeline]
       condition: $alertmanager_install == false && $prometheus_install == true
@@ -929,6 +984,26 @@ use_cases:
             #  gnetId: 14900
             #  revision: 1
             #  datasource: prometheus
+    - name: Data persistency
+      condition: $grafana_install == true
+      technologies: [terraform]
+      vars:
+        - name: "Persist data"
+          description: "Wheter to persist grafana data on the k8s cluster, by creating a PVC."
+          key: module.kube-prometheus.enable_grafana_persistence
+          widget: switch
+          type: boolean
+          default: false
+    - name: PVC Configuration
+      condition: $grafana_install == true && module.kube-prometheus.enable_grafana_persistence == true
+      technologies: [terraform]
+      vars:
+        - name: "Grafana PVC size"
+          description: "The size of the persisent volume claim to create in Gb."
+          key: module.kube-prometheus.grafana_pvc_size
+          widget: simple_text
+          type: string
+          default: "10"
 
   - name: Opsgenie
     groups:

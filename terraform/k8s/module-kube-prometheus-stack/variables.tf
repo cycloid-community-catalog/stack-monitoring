@@ -106,6 +106,7 @@ variable "alertmanager_domain_name" {
   default = "alertmanager.local"
 }
 variable "alertmanager_config_inhibit_rules" {}
+variable "alertmanager_time_intervals" {}
 variable "alertmanager_config_route" {}
 variable "alertmanager_config_receivers" {
   sensitive   = false

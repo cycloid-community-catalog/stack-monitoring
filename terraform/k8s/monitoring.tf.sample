@@ -38,6 +38,7 @@ module "kube-prometheus" {
   alertmanager_config_receivers      = var.alertmanager_config_receivers
   #alertmanager_domain_name          = "alertmanager.local"
   #alertmanager_config_inhibit_rules = []
+  #alertmanager_time_intervals       = {}
   #alertmanager_config_route         = {}
   #enable_alertmanager_persistence = false
   #alertmanager_pvc_size = "10"

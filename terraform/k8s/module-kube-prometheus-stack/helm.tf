@@ -51,6 +51,7 @@ locals {
       config = {
         route = var.alertmanager_config_route
         inhibit_rules = var.alertmanager_config_inhibit_rules
+        time_intervals = var.alertmanager_time_intervals
       }
       templateFiles = local.default_alertmanager_template
       alertmanagerSpec = {

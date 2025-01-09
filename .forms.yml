@@ -856,7 +856,7 @@ use_cases:
       vars:
         - name: "Alertmanager intervals"
           description: "Alertmanager intervals configuration. For more information about syntax check the [official alertmanager documentation](https://prometheus.io/docs/alerting/latest/configuration/#time_interval)"
-          key: module.kube-prometheus.alertmanager_config_route
+          key: module.kube-prometheus.alertmanager_time_intervals
           widget: text_area
           type: map
 

@@ -9,8 +9,8 @@ output "grafana_basic_auth_cred_cannonical" {
 
 output "alertmanager_basic_auth_cred_canonicals" {
   value = var.alertmanager_install ? [
-    for cred in cycloid_credential.alertmanager_basic_auth :
-    cred.canonical
+    for key in keys(cycloid_credential.alertmanager_basic_auth) :
+    cycloid_credential.alertmanager_basic_auth[key].canonical
   ] : []
   description = "A list of canonical names for alertmanager credentials"
 }

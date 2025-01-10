@@ -223,7 +223,7 @@ jobs:
             - |
               source /usr/bin/cecho-utils
               # Display connection credentials
-              echo -n "Here are your connection credentials for VM at "; perror "$(jq -r .machine_ip_public_address tfstate/metadata):"
+              echo -n "Here are your connection credentials for monitoring in k8s:"
 
               if [ "$PROMETHEUS_INSTALL" = "true" ]; then
                 echo -n "Prometheus available at "; pwarning "$(jq -r .prometheus_domain_name tfstate/metadata)"
@@ -247,13 +247,11 @@ jobs:
 
               # Display tips
               pwarning "Here are some tips to help debug issues"
+              pwarning "k8s namespace: $(jq -r .namespace tfstate/metadata)"
               echo -e "Remote connect to the cluster using the kubeconfig context."
               echo -e "Copy the kubeconfig in /tmp for example and export the as env var KUBECONFIG=/tmp/kubeconfig.yaml kubectl <cmd> <obj>"
-              echo -e "kubeconfig: \n ${KUBECONFIG_CONTENT}"
-
-              pwarning "k8s namespace: $(jq -r .namespace tfstate/metadata)"
-
-              echo -e "For local tests add an entry in the /etc/hosts file, as follows <DNS> <k8s NODE IP>"
+              # todo echo -e "You should find the kubeconfig used for this project at credential: "
+              echo -e "Remember! For local tests add an entry in the /etc/hosts file, as follows <DNS_FOR_TEST> <k8s NODE IP>"
 
           inputs:
           - name: tfstate

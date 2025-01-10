@@ -859,6 +859,7 @@ use_cases:
           key: module.kube-prometheus.alertmanager_time_intervals
           widget: text_area
           type: array
+          default: []
 
         - name: "Alertmanager routes"
           description: "Alertmanager route configuration. Note! The default value corresponds to the helm chart default value for the config of alertmanager. For more information about syntax check the [official alertmanager documentation](https://prometheus.io/docs/alerting/latest/configuration/#route-related-settings)"

@@ -11,7 +11,7 @@
 locals {
   # general variables
   global_helm_vars = {
-    commonLabels = local.resource_labels
+    #commonLabels = local.resource_labels
     prometheusOperator = {
       nodeSelector = var.stack_monitoring_node_selector
     }

@@ -11,12 +11,13 @@ locals {
   #alertmanager
   default_alertmanager_template = {
     "default_template.tmpl": <<EOL
-{{ define "__alertmanager" }}AlertManager{{ end }}
-{{ define "__alertmanagerURL" }}{{ .ExternalURL }}/#/alerts?receiver={{ .Receiver }}{{ end }}
+{{ define "__alertmanager" }}Alertmanager{{ end }}
+{{ define "__alertmanagerURL" }}{{ .ExternalURL }}/#/alerts?receiver={{ .Receiver | urlquery }}{{ end }}
 
 {{ define "__subject" }}[{{ .Status | toUpper }}{{ if eq .Status "firing" }}:{{ .Alerts.Firing | len }}{{ end }}]{{ end }}
 {{ define "__commonwithoutgrouplabels" }}{{ if gt (len .CommonLabels) (len .GroupLabels) }}({{ with .CommonLabels.Remove .GroupLabels.Names }}{{ .Values | join " " }}{{ end }}){{ end }}{{ end }}
 {{ define "__grouplabels" }}{{ .GroupLabels.SortedPairs.Values | join " " }}{{ end }}
+{{ define "__commonlabels" }}{{ .CommonLabels.SortedPairs.Values | join "," }}{{ end }}
 
 {{ define "__description" }}{{ end }}
 
@@ -27,43 +28,75 @@ locals {
 {{ end }}Source: {{ .GeneratorURL }}
 {{ end }}{{ end }}
 
-
-{{ define "__slacktext" }}{{ template "__commonwithoutgrouplabels" . }}
-
-{{ range .Alerts }}{{ .Annotations.description }}
-
-{{ end }}{{ end }}
-
-
 {{ define "__alertname" }}{{ range .CommonLabels.SortedPairs }}{{ if eq .Name "alertname" }}{{ .Value }}{{ end }}{{ end }}{{ end }}
 {{ define "__customerlabel" }}{{ range .CommonLabels.SortedPairs }}{{ if eq .Name "customer" }}{{ .Value | toUpper }}{{ end }}{{ end }}{{ end }}
 {{ define "__projectlabel" }}{{ range .CommonLabels.SortedPairs }}{{ if eq .Name "project" }}{{ .Value }}{{ end }}{{ end }}{{ end }}
 {{ define "__envlabel" }}{{ range .CommonLabels.SortedPairs }}{{ if eq .Name "env" }}{{ .Value | toUpper }}{{ end }}{{ end }}{{ end }}
 {{ define "__severitylabel" }}{{ range .CommonLabels.SortedPairs }}{{ if eq .Name "severity" }}{{ .Value | toUpper }}{{ end }}{{ end }}{{ end }}
 
+
+{{ define "__slacktext" }}{{ template "__commonwithoutgrouplabels" . }}
+
+{{ range .Alerts }}{{ .Annotations.description }}
+
+{{ end }}{{ end }}
 {{ define "slack.default.title" }}{{ template "__subject" . }} {{ template "__alertname" . }} - Customer: {{ template "__customerlabel" . }} Project: {{ template "__projectlabel" . }} Env: {{ template "__envlabel" . }} Severity: {{ template "__severitylabel" . }}{{ end }}
 {{ define "slack.default.username" }}{{ template "__alertmanager" . }}{{ end }}
 {{ define "slack.default.fallback" }}{{ template "slack.default.title" . }} | {{ template "slack.default.titlelink" . }}{{ end }}
+{{ define "slack.default.callbackid" }}{{ end }}
 {{ define "slack.default.pretext" }}{{ end }}
 {{ define "slack.default.titlelink" }}{{ template "__alertmanagerURL" . }}{{ end }}
 {{ define "slack.default.iconemoji" }}{{ end }}
 {{ define "slack.default.iconurl" }}{{ end }}
 {{ define "slack.default.text" }}{{ template "__slacktext" . }}{{ end }}
 {{ define "slack.default.color" }}{{ if eq .Status "firing" }}{{ range .CommonLabels.SortedPairs }}{{ if eq .Name "severity" }}{{ if eq .Value "warning" }}warning{{ else }}danger{{ end }}{{ end }}{{ end }}{{ else }}good{{ end }}{{ end }}
+{{ define "slack.default.footer" }}{{ end }}
 
+{{ define "slack.custom.title" }}[{{ .Status | toUpper }}{{ if eq .Status "firing" }}:{{ .Alerts.Firing | len }}{{ end }}] {{ .CommonLabels.alertname }} for {{ .CommonLabels.job }}
+{{- if gt (len .CommonLabels) (len .GroupLabels) -}}
+  {{" "}}(
+  {{- with .CommonLabels.Remove .GroupLabels.Names }}
+    {{- range $index, $label := .SortedPairs -}}
+      {{ if $index }}, {{ end }}
+      {{- $label.Name }}="{{ $label.Value -}}"
+    {{- end }}
+  {{- end -}}
+  )
+{{- end }}
+{{ end }}
+{{ define "slack.custom.text" }}{{ with index .Alerts 0 -}}
+  :bar_chart: *<{{ .GeneratorURL }}|Graph>*
+  {{- if .Annotations.runbook_url }}   :notebook: *<{{ .Annotations.runbook_url }}|Runbook>*{{ end }}
+{{ end }}
 
+{{ if gt (len .Alerts.Firing) 0 -}}
+:alert: *Alert Firing*:
+{{ range .Alerts.Firing }}
+■ {{ .Labels.alertname }}{{ if .Labels.severity }} - `{{ .Labels.severity }}`{{ end }}
+*Description:* {{ if .Annotations.description }}{{ .Annotations.description }}{{ else }}{{ .Annotations.message }}{{ end }}
+*Details:*
+  {{ range .Labels.SortedPairs }} • *{{ .Name }}:* `{{ .Value }}`
+  {{ end }}
+{{ end }}{{ end }}
 
-{{ define "hipchat.default.from" }}{{ template "__alertmanager" . }}{{ end }}
-{{ define "hipchat.default.message" }}{{ template "__subject" . }}{{ end }}
-
+{{ if gt (len .Alerts.Resolved) 0 -}}
+:squared_ok: *Alerts Resolved:*
+{{ range .Alerts.Resolved }}
+■ {{ .Labels.alertname }}{{ if .Labels.severity }} - `{{ .Labels.severity }}`{{ end }}
+*Description:* {{ if .Annotations.description }}{{ .Annotations.description }}{{ else }}{{ .Annotations.message }}{{ end }}
+*Details:*
+  {{ range .Labels.SortedPairs }} • *{{ .Name }}:* `{{ .Value }}`
+  {{ end }}
+{{ end }}{{ end }}
+{{ end }}
 
 {{ define "pagerduty.default.description" }}{{ template "__subject" . }}{{ end }}
 {{ define "pagerduty.default.client" }}{{ template "__alertmanager" . }}{{ end }}
 {{ define "pagerduty.default.clientURL" }}{{ template "__alertmanagerURL" . }}{{ end }}
-{{ define "pagerduty.default.instances" }}{{ . }}{{ end }}
+{{ define "pagerduty.default.instances" }}{{ template "__text_alert_list" . }}{{ end }}
 
 {{ define "opsgenie.default.message" }}{{ template "__subject" . }} {{ template "__alertname" . }} - Customer: {{ template "__customerlabel" . }} Project: {{ template "__projectlabel" . }} Env: {{ template "__envlabel" . }}{{ end }}
-{{ define "opsgenie.default.tags" }}{{ .CommonLabels.SortedPairs.Values | join "," }}{{ end }}
+{{ define "opsgenie.default.tags" }}{{ template "__commonlabels" . }}{{ end }}
 {{ define "opsgenie.default.description" }}{{ .CommonAnnotations.SortedPairs.Values | join " " }}
 {{ if gt (len .Alerts.Firing) 0 -}}
 Alerts Firing:
@@ -75,6 +108,26 @@ Alerts Resolved:
 {{- end }}
 {{- end }}
 {{ define "opsgenie.default.source" }}{{ template "__alertmanagerURL" . }}{{ end }}
+
+
+{{ define "wechat.default.message" }}{{ template "__subject" . }}
+{{ .CommonAnnotations.SortedPairs.Values | join " " }}
+{{ if gt (len .Alerts.Firing) 0 -}}
+Alerts Firing:
+{{ template "__text_alert_list" .Alerts.Firing }}
+{{- end }}
+{{ if gt (len .Alerts.Resolved) 0 -}}
+Alerts Resolved:
+{{ template "__text_alert_list" .Alerts.Resolved }}
+{{- end }}
+AlertmanagerUrl:
+{{ template "__alertmanagerURL" . }}
+{{- end }}
+{{ define "wechat.default.to_user" }}{{ end }}
+{{ define "wechat.default.to_party" }}{{ end }}
+{{ define "wechat.default.to_tag" }}{{ end }}
+{{ define "wechat.default.agent_id" }}{{ end }}
+
 
 
 {{ define "victorops.default.state_message" }}{{ .CommonAnnotations.SortedPairs.Values | join " " }}

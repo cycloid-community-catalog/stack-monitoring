@@ -91,12 +91,12 @@ resources:
   source:
     uri: ($ .cr_url $)
     branch: ($ .cr_branch $)
-#($- if eq .cr_cred_type "basic_auth" $)
-#    username: ((($ .cr_cred_path $).username))
-#    password: ((($ .cr_cred_path $).password))
-#($- else $)
+    ($- if eq .cr_cred_type "basic_auth" $)
+    username: ((($ .cr_cred_path $).username))
+    password: ((($ .cr_cred_path $).password))
+    ($- else $)
     private_key: ((($ .cr_cred_path $).ssh_key))
-#($- end $)
+    ($- end $)
     paths:
 #($- if eq .use_case "aws-vm" $)
       - ($ .project $)/ansible/environments/($ .environment $)_aws_vm_monitoring.yml
@@ -124,12 +124,12 @@ resources:
   source:
     uri: ($ .cr_url $)
     branch: ($ .cr_branch $)
-#($- if eq .cr_cred_type "basic_auth" $)
-#    username: ((($ .cr_cred_path $).username))
-#    password: ((($ .cr_cred_path $).password))
-#($- else $)
+    ($- if eq .cr_cred_type "basic_auth" $)
+    username: ((($ .cr_cred_path $).username))
+    password: ((($ .cr_cred_path $).password))
+    ($- else $)
     private_key: ((($ .cr_cred_path $).ssh_key))
-#($- end $)
+    ($- end $)
     # Include only the Terraform files in the specified directory.
     paths:
       - ($ .project $)/terraform/($ .environment $)/*

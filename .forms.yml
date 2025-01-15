@@ -155,15 +155,20 @@ use_cases:
           widget: switch
           default: true
 
-    - name: Bastion URL
+    - name: Bastion Access
       condition: $use_bastion == true
       technologies: [pipeline]
       vars:
         - name: "Bastion URL"
-          description: "The URL to be used to connect to the bastion, in the format {USER}@{INSTANCE"
+          description: "The URL to be used to connect to the bastion, in the format {USER}@{INSTANCE}"
           key: bastion_url
           type: string
           widget: simple_text
+        - name: "Bastion SSH key"
+          description: "The SSH key to use to connect to the bastion"
+          key: bastion_ssh_key
+          widget: cy_cred
+          type: string
 
     - name: Optional VM parameters
       condition: $advanced_opt == true

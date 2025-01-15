@@ -254,7 +254,10 @@ jobs:
                 #https://stackoverflow.com/questions/54377305/tar-not-found-in-archive-error-when-using-docker-alpine
                 apk add --no-cache tar > /dev/null 2>&1
 
-                export SSH_PRIVATE_KEY=$(jq -r '.ssh_private_key' terraform/metadata)
+                if [ "$SSH_PRIVATE_KEY" = "" ]; then
+                  # ansible connects directly to the machine without using the bastion ssh key for that
+                  export SSH_PRIVATE_KEY=$(jq -r '.ssh_private_key' terraform/metadata)
+                fi
 
                 # Static inventory
                 ansible-inventory -i ansible-playbook/inventory --graph
@@ -270,7 +273,8 @@ jobs:
         params:
           ANSIBLE_PLAYBOOK_PATH: ansible-playbook
           ANSIBLE_PLAYBOOK_NAME: main.yml
-          BASTION_URL: ((bastion_url))
+          SSH_JUMP_URL: ((bastion_url))
+          SSH_PRIVATE_KEY: ((bastion_ssh_key))
           ANSIBLE_INVENTORY: inventory
           EXTRA_ANSIBLE_ARGS: "-i inventory"
           ANSIBLE_FORCE_GALAXY: false

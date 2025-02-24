@@ -193,7 +193,7 @@ use_cases:
           default: true
 
     - name: SSL certificate import
-      condition: $enable_tls == true && $create_self_signed_certificate == false
+      condition: $advanced_opt == true && $enable_tls == true && $create_self_signed_certificate == false
       technologies: [pipeline]
       vars:
         - name: "Certificate"

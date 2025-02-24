@@ -13,5 +13,5 @@ output "grafana_basic_auth_cred_cannonical" {
 
 # ssh key
 output "ssh_private_key_cred_cannonical" {
-  value = cycloid_credential.vm_ssh.canonical
+  value = cycloid_credential.vm_ssh[0].canonical
 }

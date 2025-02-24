@@ -219,9 +219,9 @@ use_cases:
       technologies: [terraform]
       condition: $module.aws-vm.create_dns == true
       vars:
-        - name: "AWS Route53 Zone"
-          description: "AWS Route53 Zone name to use for creating the different monitoring records."
-          key: module.aws-vm.aws_dns_zone_name
+        - name: "AWS Route53 Zone ID"
+          description: "AWS Route53 Zone ID to use for creating the different monitoring records."
+          key: module.aws-vm.aws_dns_zone_id
           widget: simple_text
           type: string
           default: ""

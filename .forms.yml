@@ -193,7 +193,7 @@ use_cases:
           default: true
 
     - name: SSL certificate import
-      condition: $module.aws-vm.enable_tls == true && $module.aws-vm.create_self_signed_certificate == false
+      condition: $enable_tls == true && $create_self_signed_certificate == false
       technologies: [pipeline]
       vars:
         - name: "Certificate"

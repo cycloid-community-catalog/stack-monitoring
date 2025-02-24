@@ -261,11 +261,6 @@ jobs:
                 if [ "$SSH_PRIVATE_KEY" = "" ]; then
                   # ansible connects directly to the machine without using the bastion ssh key for that
                   export SSH_PRIVATE_KEY=$(jq -r '.ssh_private_key' terraform/metadata)
-                else
-                  # add also the private key of the machine and bastion so that both can be passed to the ssh-agent
-                  echo -e "$(jq -r '.ssh_private_key' terraform/metadata)" > /root/.ssh/id_rsa_machine
-                  chmod 600 /root/.ssh/id_rsa_machine
-                  #ssh-add /root/.ssh/id_rsa_machine
                 fi
 
                 # Static inventory

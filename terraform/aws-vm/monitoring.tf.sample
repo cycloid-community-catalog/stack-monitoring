@@ -20,7 +20,8 @@ module "aws-vm" {
   #subnet_id    = ""
   #vpc_id       = ""
   #ssh_to_allow = {}
-  use_bastion  = var.use_bastion
+  use_bastion            = var.use_bastion
+  public_bastion_ssh_key = var.bastion_public_ssh_key
 
   # tls variables
   #enable_tls                     = true

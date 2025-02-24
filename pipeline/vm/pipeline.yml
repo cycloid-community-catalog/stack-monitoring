@@ -68,6 +68,7 @@ resources:
       aws_region: ((aws_default_region))
       aws_extra_tags: ((aws_extra_tags))
       use_bastion: ((use_bastion))
+      bastion_public_ssh_key : ((bastion_public_ssh_key))
       tls_crt: ((tls_crt))
       tls_key: ((tls_key))
       cycloid_api_key: ((cycloid_api_key))
@@ -261,7 +262,7 @@ jobs:
                   # add also the private key of the machine and bastion so that both can be passed to the ssh-agent
                   echo -e "$(jq -r '.ssh_private_key' terraform/metadata)" > /root/.ssh/id_rsa_machine
                   chmod 600 /root/.ssh/id_rsa_machine
-                  ssh-add /root/.ssh/id_rsa_machine
+                  #ssh-add /root/.ssh/id_rsa_machine
                 fi
 
                 # Static inventory
@@ -279,7 +280,7 @@ jobs:
           ANSIBLE_PLAYBOOK_PATH: ansible-playbook
           ANSIBLE_PLAYBOOK_NAME: main.yml
           SSH_JUMP_URL: ((bastion_url))
-          SSH_PRIVATE_KEY: ((bastion_ssh_key))
+          SSH_PRIVATE_KEY: ((bastion_private_ssh_key))
           ANSIBLE_INVENTORY: inventory
           EXTRA_ANSIBLE_ARGS: "-i inventory"
           ANSIBLE_FORCE_GALAXY: false
@@ -362,7 +363,7 @@ jobs:
 
               # Display tips
               echo -e "Here are some tips to help debug issues\n"
-
+# todo add template for the usecase of bastion
               echo -e "Remote connect to the vm:"
               echo -e "Private ssh key available at the credential : $(jq -r .ssh_private_key_cred_cannonical tfstate/metadata)"
               echo -e "Copy the key into a local file"

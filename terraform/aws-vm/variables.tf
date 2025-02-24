@@ -22,6 +22,7 @@ variable "aws_region" {
 variable "aws_extra_tags" {}
 
 variable "use_bastion" {}
+variable "bastion_public_ssh_key" {}
 
 variable "tls_crt" {}
 variable "tls_key" {}

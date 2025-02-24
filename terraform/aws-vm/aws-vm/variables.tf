@@ -33,6 +33,9 @@ variable "ssh_to_allow" {
 variable "use_bastion" {
   default = false
 }
+variable "bastion_public_ssh_key" {
+  default = ""
+}
 
 # ssl
 variable "tls_crt" {

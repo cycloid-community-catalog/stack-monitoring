@@ -21,7 +21,7 @@ module "aws-vm" {
   #vpc_id       = ""
   #ssh_to_allow = {}
   use_bastion            = var.use_bastion
-  public_bastion_ssh_key = var.bastion_public_ssh_key
+  bastion_public_ssh_key = var.bastion_public_ssh_key
 
   # tls variables
   enable_tls                     = var.enable_tls

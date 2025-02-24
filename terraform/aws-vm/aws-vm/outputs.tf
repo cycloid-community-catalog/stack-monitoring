@@ -85,10 +85,10 @@ output "nginx_cert_key" {
 # ssh key
 
 output "ssh_private_key" {
-  value     = tls_private_key.ssh_key.private_key_openssh
+  value     = var.use_bastion ? "" : tls_private_key.ssh_key.private_key_openssh
   sensitive = true
 }
 
 output "ssh_public_key" {
-  value = tls_private_key.ssh_key.public_key_openssh
+  value = var.use_bastion ? var.bastion_public_ssh_key : tls_private_key.ssh_key.public_key_openssh
 }

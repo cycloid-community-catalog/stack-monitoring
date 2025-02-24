@@ -209,7 +209,7 @@ jobs:
               - '-exc'
               - |
                 # temporary hack because of issue with \n in merge-stack-and-config
-                jq '.ssh_private_key = "" | .ssh_public_key = ""' terraform/metadata > terraform/metadata.tmp && mv terraform/metadata.tmp terraform/metadata
+                jq '.ssh_private_key = "" | .ssh_public_key = "" | .nginx_cert = "" | .nginx_cert_key = ""' terraform/metadata > terraform/metadata.tmp && mv terraform/metadata.tmp terraform/metadata
                 /usr/bin/merge-stack-and-config
 
                 # create inventory file
@@ -262,6 +262,10 @@ jobs:
                   # ansible connects directly to the machine without using the bastion ssh key for that
                   export SSH_PRIVATE_KEY=$(jq -r '.ssh_private_key' terraform/metadata)
                 fi
+
+                # temporary fix because of \n issue in merge-stack-and-config
+                export nginx_cert=$(jq '.nginx_cert' terraform/metadata)
+                export nginx_cert_key=$(jq '.nginx_cert' terraform/metadata)
 
                 # Static inventory
                 ansible-inventory -i ansible-playbook/inventory --graph

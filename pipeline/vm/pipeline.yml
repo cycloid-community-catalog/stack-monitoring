@@ -91,12 +91,12 @@ resources:
   source:
     uri: ($ .cr_url $)
     branch: ($ .cr_branch $)
-    ($- if eq .cr_cred_type "basic_auth" $)
+$- if eq .cr_cred_type "basic_auth" $)
     username: ((($ .cr_cred_path $).username))
     password: ((($ .cr_cred_path $).password))
-    ($- else $)
+($- else $)
     private_key: ((($ .cr_cred_path $).ssh_key))
-    ($- end $)
+($- end $)
     paths:
 #($- if eq .use_case "aws-vm" $)
       - ($ .project $)/ansible/environments/($ .environment $)_aws_vm_monitoring.yml
@@ -124,12 +124,12 @@ resources:
   source:
     uri: ($ .cr_url $)
     branch: ($ .cr_branch $)
-    ($- if eq .cr_cred_type "basic_auth" $)
+($- if eq .cr_cred_type "basic_auth" $)
     username: ((($ .cr_cred_path $).username))
     password: ((($ .cr_cred_path $).password))
-    ($- else $)
+($- else $)
     private_key: ((($ .cr_cred_path $).ssh_key))
-    ($- end $)
+($- end $)
     # Include only the Terraform files in the specified directory.
     paths:
       - ($ .project $)/terraform/($ .environment $)/*
@@ -259,10 +259,9 @@ jobs:
                   export SSH_PRIVATE_KEY=$(jq -r '.ssh_private_key' terraform/metadata)
                 else
                   # add also the private key of the machine and bastion so that both can be passed to the ssh-agent
-                  export SSH_PRIVATE_KEYS='[
-                    SSH_PRIVATE_KEY,
-                    $(jq -r '.ssh_private_key' terraform/metadata)
-                  ]'
+                  echo -e "$(jq -r '.ssh_private_key' terraform/metadata)" > /root/.ssh/id_rsa_machine
+                  chmod 600 /root/.ssh/id_rsa_machine
+                  ssh-add /root/.ssh/id_rsa_machine
                 fi
 
                 # Static inventory

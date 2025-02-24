@@ -14,7 +14,6 @@ resource "tls_private_key" "ssh_key" {
 ## create keypair
 # import bastion key
 resource "aws_key_pair" "vm" {
-  count      = var.enable_tls ? 1 : 0v
   key_name   = "${var.organization}-vm-monitoring-${var.env}"
   public_key = var.use_bastion ? var.bastion_public_ssh_key : tls_private_key.ssh_key.public_key_openssh
 }

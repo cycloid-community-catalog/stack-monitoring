@@ -24,8 +24,8 @@ module "aws-vm" {
   public_bastion_ssh_key = var.bastion_public_ssh_key
 
   # tls variables
-  #enable_tls                     = true
-  #create_self_signed_certificate = true
+  enable_tls                     = var.enable_tls
+  create_self_signed_certificate = var.create_self_signed_certificate
   tls_crt                        = var.tls_crt
   tls_key                        = var.tls_key
 

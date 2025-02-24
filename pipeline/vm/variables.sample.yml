@@ -24,6 +24,8 @@ bastion_private_ssh_key: ""
 bastion_public_ssh_key: ""
 
 ## nginx certificates
+enable_tls: true
+create_self_signed_certificate: true
 tls_crt: ""
 tls_key: ""
 

@@ -69,6 +69,8 @@ resources:
       aws_extra_tags: ((aws_extra_tags))
       use_bastion: ((use_bastion))
       bastion_public_ssh_key : ((bastion_public_ssh_key))
+      enable_tls: ((enable_tls))
+      create_self_signed_certificate: ((create_self_signed_certificate))
       tls_crt: ((tls_crt))
       tls_key: ((tls_key))
       cycloid_api_key: ((cycloid_api_key))

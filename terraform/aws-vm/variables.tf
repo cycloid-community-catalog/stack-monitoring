@@ -24,6 +24,8 @@ variable "aws_extra_tags" {}
 variable "use_bastion" {}
 variable "bastion_public_ssh_key" {}
 
+variable "enable_tls" {}
+variable "create_self_signed_certificate" {}
 variable "tls_crt" {}
 variable "tls_key" {}
 

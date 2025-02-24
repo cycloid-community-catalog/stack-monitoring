@@ -176,17 +176,18 @@ use_cases:
           type: string
 
     - name: Enable SSL
-      technologies: [terraform]
+      condition: $advanced_opt == true
+      technologies: [pipeline]
       vars:
         - name: "Enable HTTPs"
           description: "Select wheter to enable HTTPs traffic and use SSL certificates."
-          key: module.aws-vm.enable_tls
+          key: enable_tls
           type: boolean
           widget: switch
           default: true
         - name: "Create self signed certificate"
           description: "Wheter to create a self signed certificate automatically. Otherwise a certificate needs to be imported"
-          key: module.aws-vm.create_self_signed_certificate
+          key: create_self_signed_certificate
           type: boolean
           widget: switch
           default: true

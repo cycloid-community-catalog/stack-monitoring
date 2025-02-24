@@ -192,7 +192,7 @@ use_cases:
           default: true
 
     - name: SSL certificate import
-      condition: $enable_tls == true && create_self_signed_certificate == false
+      condition: $module.aws-vm.enable_tls == true && module.aws-vm.create_self_signed_certificate == false
       technologies: [pipeline]
       vars:
         - name: "Certificate"
@@ -217,7 +217,7 @@ use_cases:
           default: false
     - name: DNS Zone
       technologies: [terraform]
-      condition: $create_dns == true
+      condition: $module.aws-vm.create_dns == true
       vars:
         - name: "AWS Route53 Zone"
           description: "AWS Route53 Zone name to use for creating the different monitoring records."

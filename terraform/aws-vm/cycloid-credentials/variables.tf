@@ -3,6 +3,7 @@ variable "organization" {}
 variable "project" {}
 variable "env" {}
 
+variable "use_bastion" {}
 variable "vm_private_ssh_key" {}
 
 variable "prometheus_install" {}

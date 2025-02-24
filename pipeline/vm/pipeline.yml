@@ -1,5 +1,6 @@
 
 definitions:
+  # todo add template for the usecase of bastion
   tasks:
     # The task producing a configured stack, merging stack and config.
     - &task-merge-stack-and-config
@@ -365,7 +366,7 @@ jobs:
 
               # Display tips
               echo -e "Here are some tips to help debug issues\n"
-# todo add template for the usecase of bastion
+
               echo -e "Remote connect to the vm:"
               echo -e "Private ssh key available at the credential : $(jq -r .ssh_private_key_cred_cannonical tfstate/metadata)"
               echo -e "Copy the key into a local file"

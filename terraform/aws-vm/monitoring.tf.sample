@@ -51,9 +51,10 @@ module "cycloid-credentials" {
   organization = var.organization
   #####################################
 
+  use_bastion        = var.use_bastion
   vm_private_ssh_key = module.aws-vm.ssh_private_key
 
-  #prometheus_install  = true
+  #prometheus_install = true
   prometheus_username = module.aws-vm.prometheus_basic_auth_username
   prometheus_password = module.aws-vm.prometheus_basic_auth_password
 

@@ -33,6 +33,7 @@ tls_key: ""
 external_alertmanager_password: ""
 external_alertmanager_username: ""
 external_alertmanager_targets: ""
+alertmanager_receivers: ""
 
 # postgres exporter
 postgres_db_user: ""

@@ -22,7 +22,6 @@
 ## Alertmanager
 # alertmanager_install: false
 # alertmanager_route: {}
-# alertmanager_receivers: []
 # alertmanager_inhibit_rules: []
 # alertmanager_smtp: {}
 

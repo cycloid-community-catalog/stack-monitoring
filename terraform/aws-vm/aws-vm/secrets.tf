@@ -8,7 +8,7 @@
 
 # SSH KEY
 resource "tls_private_key" "ssh_key" {
-  algorithm = "ED25519"
+  algorithm = "RSA"
 }
 
 ## create keypair
@@ -21,7 +21,7 @@ resource "aws_key_pair" "vm" {
 # self signed certificate
 resource "tls_private_key" "cert" {
   count = (var.enable_tls && var.create_self_signed_certificate) ? 1 : 0
-  algorithm = "ED25519"
+  algorithm = "RSA"
 }
 
 resource "tls_self_signed_cert" "cert" {

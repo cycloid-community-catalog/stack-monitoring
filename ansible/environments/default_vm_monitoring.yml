@@ -203,8 +203,6 @@ prometheus_default_rules_predefined:
     name: BlackboxSslCertificateWillExpireSoon
   BlackboxSslCertificateExpired:
     name: BlackboxSslCertificateExpired
-  BlackboxProbeSlowHttp:
-    name: BlackboxProbeSlowHttp
 
 prometheus_default_rules_custom: {}
 # Alertmanager role

@@ -82,18 +82,3 @@ groups:
         summary: "Blackbox SSL certificate has expired"
         description: "SSL certificate has expired\n  LABELS = {{ joined_config['labels'] }}"
   {% endfor %}
-
-  {% for custom_config in prometheus_default_rules_custom.get('BlackboxProbeSlowHttp', [{}]) %}
-    {% set joined_config = custom_config |
-                           combine(prometheus_default_rules_predefined['BlackboxProbeSlowHttp']) |
-                           combine(prometheus_default_rules_global) %}
-
-    - alert: "{{ joined_config['name'] }}"
-      expr: avg_over_time(probe_http_duration_seconds{ {{ joined_config['selector'] }} }["{{ joined_config['for'] }}"]) > {{ joined_config['threshold'] }}
-      for: "{{ joined_config['for'] }}"
-      labels:
-        {{ joined_config['labels'] | combine({'severity': joined_config['severity']}) | to_nice_yaml | indent(8) | trim }}
-      annotations:
-        summary: "Blackbox probe slow HTTP"
-        description: "HTTP request took more than {{ joined_config['threshold'] }}\n  LABELS = {{ joined_config['labels'] }}"
-  {% endfor %}

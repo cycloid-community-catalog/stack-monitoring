@@ -568,21 +568,15 @@ use_cases:
                 - project
                 - env
                 - alertname
+    - name: Alertmanager Secret Configuration
+      technologies: [pipeline]
+      condition: $alertmanager_install == true
+      vars:
         - name: "Alertmanager receivers"
-          description: "A list of notification receivers., as specified in the oficial documentation [here](TODO)."
+          description: "A cycloid credential containing a list of notification receivers.For more information about syntax check the [official alertmanager documentation](https://prometheus.io/docs/alerting/latest/configuration/#general-receiver-related-settings). Note! BY default it should always have a reciever -name: 'null'"
           key: alertmanager_receivers
-          widget: text_area
-          type: array
-          default:
-            - name: 'default'
-              email_configs:
-              - to: 'test@example.com'  # Placeholder email address for testing
-                from: 'alertmanager@example.com'  # Sender email (can be a dummy address)
-                smarthost: 'localhost:25'
-                send_resolved: true  # Send notifications for resolved alerts
-
-            - name: 'dev_null'
-              # Deliberately left empty to not deliver anywhere.
+          widget: cy_cred
+          type: string
     - name: External Alertmanager (not deployed in machine)
       technologies: [pipeline]
       condition: $alertmanager_install == false && $prometheus_install == true

@@ -16,7 +16,7 @@ resource "tls_private_key" "ssh_key" {
 # import bastion key
 resource "aws_key_pair" "vm" {
   key_name   = "${var.organization}-vm-monitoring-${var.env}"
-  public_key = var.use_bastion ? var.bastion_public_ssh_key : tls_private_key.ssh_key.public_key_openssh
+  public_key = var.use_bastion ? var.bastion_public_ssh_key : tls_private_key.ssh_key[0].public_key_openssh
 }
 
 # self signed certificate

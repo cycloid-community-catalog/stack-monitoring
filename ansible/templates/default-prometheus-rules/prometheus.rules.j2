@@ -1,0 +1,57 @@
+# Defines the set of alerts to check the status of prometheus
+# Checks if:
+# - Prometheus is down
+# - Prometheus target down
+# - There's an issue in the config reload
+# - Prometheus rule evaluation failure
+
+groups:
+- name: prometheus-default.rules
+  rules:
+  {% for custom_config in prometheus_default_rules_custom.get('PrometheusIsDown', [{}]) %}
+    {% set joined_config = custom_config |
+                           combine(prometheus_default_rules_predefined['PrometheusIsDown']) |
+                           combine(prometheus_default_rules_global) %}
+    {% if not joined_config['disable'] %}
+
+    - alert: "Prometheus is down"
+      expr: absent(up{job="prometheus", {{ joined_config['selector'] }} })
+      for: "{{ joined_config['for'] }}"
+      labels:
+        {% raw -%}
+        organization: '{{ $labels.organization }}'
+        project: '{{ $labels.project }}'
+        role: '{{ $labels.role }}'
+        env: '{{ $labels.env }}'
+        {% endraw -%}
+        severity: "{{ joined_config['severity'] }}"
+        receiver: "{{ joined_config['receiver'] }}"
+      annotations:
+        summary: "{%- raw %}{{$labels.instance}}{% endraw %}: Prometheus is down"
+        description: "{%- raw %}{{$labels.instance}}{% endraw %}: The Prometheus job has disappeared"
+    {% endif %}
+  {% endfor %}
+
+  {% for custom_config in prometheus_default_rules_custom.get('PrometheusTargetDown', [{}]) %}
+    {% set joined_config = custom_config |
+                           combine(prometheus_default_rules_predefined['PrometheusTargetDown']) |
+                           combine(prometheus_default_rules_global) %}
+    {% if not joined_config['disable'] %}
+
+    - alert: "Prometheus Target Down"
+      expr: absent(up{ {{ joined_config['selector'] }} })
+      for: "{{ joined_config['for'] }}"
+      labels:
+        {% raw -%}
+        organization: '{{ $labels.organization }}'
+        project: '{{ $labels.project }}'
+        role: '{{ $labels.role }}'
+        env: '{{ $labels.env }}'
+        {% endraw -%}
+        severity: "{{ joined_config['severity'] }}"
+        receiver: "{{ joined_config['receiver'] }}"
+      annotations:
+        summary: "{%- raw %}{{$labels.instance}}{% endraw %}: Prometheus target missing"
+        description: "{%- raw %}{{$labels.instance}}{% endraw %}: A Prometheus target has disappeared. An exporter might be crashed"
+    {% endif %}
+  {% endfor %}

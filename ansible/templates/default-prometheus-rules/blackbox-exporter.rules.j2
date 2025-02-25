@@ -14,7 +14,7 @@ groups:
                            combine(prometheus_default_rules_global) %}
     {% if not joined_config['disable'] %}
 
-    - alert: "BlackboxProbeFailed"
+    - alert: "Blackbox Probe Failed"
       expr: probe_success{ {{ joined_config['selector'] }} } == 0
       for: "{{ joined_config['for'] }}"
       labels:
@@ -38,7 +38,7 @@ groups:
                            combine(prometheus_default_rules_global) %}
     {% if not joined_config['disable'] %}
 
-    - alert: "BlackboxProbeHttpFailure"
+    - alert: "Blackbox Probe HTTP Failure"
       expr: probe_http_status_code{ {{ joined_config['selector'] }} } <= 199 OR probe_http_status_code { {{ joined_config['selector'] }} } >= 400
       for: "{{ joined_config['for'] }}"
       labels:
@@ -62,7 +62,7 @@ groups:
                            combine(prometheus_default_rules_global) %}
     {% if not joined_config['disable'] %}
 
-    - alert: "BlackboxSslCertificateWillExpireWithin30Days"
+    - alert: "SSL Certificate Will Expire Within 30 Days"
       expr: round(
         (last_over_time(probe_ssl_earliest_cert_expiry{ {{ joined_config['selector'] }} }[{{ joined_config['for'] }}]) - time()) / 86400, 0.1) < 30
       for: "{{ joined_config['for'] }}"
@@ -87,7 +87,7 @@ groups:
                            combine(prometheus_default_rules_global) %}
     {% if not joined_config['disable'] %}
 
-    - alert: "BlackboxSslCertificateExpired"
+    - alert: "SSL Certificate is expired"
       expr: round((last_over_time(probe_ssl_earliest_cert_expiry{ {{ joined_config['selector'] }} }[{{ joined_config['for'] }}]) - time()) / 86400, 0.1) < 0
       for: "{{ joined_config['for'] }}"
       labels:

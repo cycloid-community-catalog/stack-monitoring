@@ -181,7 +181,7 @@ prometheus_alert_rules: []
 # default rule files should be copied here {{ prometheus_config_dir }}/rules/
 
 prometheus_default_rules_global:
-  for: 5m
+  for: 15m
   receiver: on_call
   selector: ""
   severity: critical
@@ -189,26 +189,35 @@ prometheus_default_rules_global:
     organization: "{{ organization }}"
     project: "{{ project }}"
     env: "{{ env }}"
+  disable: false #to disable alert
 
 prometheus_default_rules_predefined:
-  AlertmanagerIsDown:
-    name: AlertmanagerIsDown
+  # - alertmanager.rules
+  # AlertmanagerIsDown:
+  # - blackbox-exporter.rules
+  # BlackboxProbeFailed:
+  # BlackboxProbeHttpFailure:
+  # BlackboxSslCertificateWillExpireWithin30Days:
+  # BlackboxSslCertificateExpired:
+  # - cadvisor.rules
+  ContainerHighCpuUtilization:
+    threshold: 80
+  ContainerHighMemoryUsage:
+    threshold: 80
+  ContainerHighVolumeUsage:
+    threshold: 80
+  # - node-exporter.rules
+  HighCpuUsage:
+    threshold: 80
+  HighDiskUsage:
+    threshold: 80
+  # - prometheus.rules
+  PrometheusIsDown:
     disable: false
-  BlackboxProbeFailed:
-    name: BlackboxProbeFailed
+  PrometheusTargetDown:
     disable: false
-  BlackboxProbeHttpFailure:
-    name: BlackboxProbeHttpFailure
-    disable: false
-  BlackboxSslCertificateWillExpireWithin30Days:
-    name: BlackboxSslCertificateWillExpireWithin30Days
-    disable: false
-  BlackboxSslCertificateWillExpireSoon:
-    name: BlackboxSslCertificateWillExpireSoon
-    disable: false
-  BlackboxSslCertificateExpired:
-    name: BlackboxSslCertificateExpired
-    disable: false
+  # - watchdog.rules
+  # Watchdog:
 
 prometheus_default_rules_custom: {}
 # Alertmanager role

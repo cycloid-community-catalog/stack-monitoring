@@ -1,0 +1,54 @@
+# Defines the set of alerts to check the metrics of node-exporter
+# Checks:
+# - High CPU usage
+# - High Disk Space usage
+
+groups:
+- name: node-exporter-default.rules
+  rules:
+  {% for custom_config in prometheus_default_rules_custom.get('HighCpuUsage', [{}]) %}
+    {% set joined_config = custom_config |
+                           combine(prometheus_default_rules_predefined['HighCpuUsage']) |
+                           combine(prometheus_default_rules_global) %}
+    {% if not joined_config['disable'] %}
+
+    - alert: "High CPU Usage"
+      expr: (sum by (instance) (rate(node_cpu_seconds_total{mode!="idle", {{ joined_config['selector'] }} }[{{ joined_config['for'] }}])) * 100) > {{ joined_config['threshold'] }}
+      for: "{{ joined_config['for'] }}"
+      labels:
+        {% raw -%}
+        organization: '{{ $labels.organization }}'
+        project: '{{ $labels.project }}'
+        role: '{{ $labels.role }}'
+        env: '{{ $labels.env }}'
+        {% endraw -%}
+        severity: "{{ joined_config['severity'] }}"
+        receiver: "{{ joined_config['receiver'] }}"
+      annotations:
+        summary: "{%- raw %}{{$labels.instance}}{% endraw %}: CPU usage is above {{ joined_config['threshold'] }}% (current value is: {%- raw %}{{ $value }}{% endraw %})"
+        description: "{%- raw %}{{$labels.instance}}{% endraw %}: High CPU usage detected"
+    {% endif %}
+  {% endfor %}
+
+  {% for custom_config in prometheus_default_rules_custom.get('HighDiskUsage', [{}]) %}
+    {% set joined_config = custom_config |
+                           combine(prometheus_default_rules_predefined['HighDiskUsage']) |
+                           combine(prometheus_default_rules_global) %}
+    {% if not joined_config['disable'] %}
+    - alert: "High Disk Usage"
+      expr: avg_over_time((node_filesystem_size_bytes{ {{ joined_config['selector'] }} } - node_filesystem_avail_bytes{ {{ joined_config['selector'] }} }) / node_filesystem_size_bytes{ {{ joined_config['selector'] }}}[{{ joined_config['for'] }}]) > {{ joined_config['threshold'] }}
+      for: "{{ joined_config['for'] }}"
+      labels:
+        {% raw -%}
+        organization: '{{ $labels.organization }}'
+        project: '{{ $labels.project }}'
+        role: '{{ $labels.role }}'
+        env: '{{ $labels.env }}'
+        {% endraw -%}
+        severity: "{{ joined_config['severity'] }}"
+        receiver: "{{ joined_config['receiver'] }}"
+      annotations:
+        summary: "{%- raw %}{{$labels.instance}}{% endraw %}: Disk usage is above {{ joined_config['threshold'] }}% (current value is: {%- raw %}{{ $value }}{% endraw %})"
+        description: "{%- raw %}{{$labels.instance}}{% endraw %}: High Disk usage detected"
+    {% endif %}
+  {% endfor %}

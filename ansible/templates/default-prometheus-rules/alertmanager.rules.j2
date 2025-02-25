@@ -1,20 +1,30 @@
-# defines the set of alerts to check the status of alertmanager
-# this rules are always enabled by default if alertmanager is enabled
+# Defines the set of alerts to check the status of alertmanager
+# Checks if:
+# - Alertmanager is down
 
 groups:
-- name: alertmanager.rules
+- name: alertmanager-default.rules
   rules:
   {% for custom_config in prometheus_default_rules_custom.get('AlertmanagerIsDown', [{}]) %}
-    {% set joined_config = prometheus_default_rules_global |
+    {% set joined_config = custom_config |
                            combine(prometheus_default_rules_predefined['AlertmanagerIsDown']) |
-                           combine(custom_config) %}
+                           combine(prometheus_default_rules_global) %}
+    {% if not joined_config['disable'] %}
 
-    - alert: "{{ joined_config['name'] }}"
-      expr: absent(up{job="alertmanager" {% if joined_config['selector'] != "" %}, {{ joined_config['selector'] }}{% endif %}})
+    - alert: "Alertmanager is down"
+      expr: absent(up{job="alertmanager", {{ joined_config['selector'] }}})
       for: "{{ joined_config['for'] }}"
       labels:
-        {{ joined_config['labels'] | combine({'severity': joined_config['severity']}) | to_nice_yaml | indent(8) | trim }}
+        {% raw -%}
+        organization: '{{ $labels.organization }}'
+        project: '{{ $labels.project }}'
+        role: '{{ $labels.role }}'
+        env: '{{ $labels.env }}'
+        {% endraw -%}
+        severity: "{{ joined_config['severity'] }}"
+        receiver: "{{ joined_config['receiver'] }}"
       annotations:
-        summary: "Alertmanager is down"
-        description: "The Alertmanager job has disappeared"
+        summary: "{%- raw %}{{$labels.instance}}{% endraw %}: Alertmanager is down"
+        description: "{%- raw %}{{$labels.instance}}{% endraw %}: The Alertmanager job has disappeared"
+    {% endif %}
   {% endfor %}

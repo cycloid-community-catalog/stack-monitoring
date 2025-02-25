@@ -1,0 +1,30 @@
+# Defines the set of alerts to check the status of prometheus
+# Checks:
+# - Watchdog (creates constant alert to check if monitoring is working)
+
+groups:
+- name: watchdog.rules
+  rules:
+  {% for custom_config in prometheus_default_rules_custom.get('Watchdog', [{}]) %}
+    {% set joined_config = custom_config |
+                           combine(prometheus_default_rules_predefined['Watchdog']) |
+                           combine(prometheus_default_rules_global) %}
+    {% if not joined_config['disable'] %}
+
+    - alert: "Watchdog Alert"
+      expr: vector(1)  # This expression always evaluates to true
+      for: "{{ joined_config['for'] }}"
+      labels:
+        {% raw -%}
+        organization: '{{ $labels.organization }}'
+        project: '{{ $labels.project }}'
+        role: '{{ $labels.role }}'
+        env: '{{ $labels.env }}'
+        {% endraw -%}
+        severity: "{{ joined_config['severity'] }}"
+        receiver: "{{ joined_config['receiver'] }}"
+      annotations:
+        summary: "Watchdog alert is active"
+        description: "This is a watchdog alert to ensure the alerting pipeline is functional."
+    {% endif %}
+  {% endfor %}

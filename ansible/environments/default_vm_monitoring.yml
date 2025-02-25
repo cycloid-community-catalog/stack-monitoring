@@ -193,6 +193,18 @@ prometheus_default_rules_global:
 prometheus_default_rules_predefined:
   AlertmanagerIsDown:
     name: AlertmanagerIsDown
+  BlackboxProbeFailed:
+    name: BlackboxProbeFailed
+  BlackboxProbeHttpFailure:
+    name: BlackboxProbeHttpFailure
+  BlackboxSslCertificateWillExpireWithin30Days:
+    name: BlackboxSslCertificateWillExpireWithin30Days
+  BlackboxSslCertificateWillExpireSoon:
+    name: BlackboxSslCertificateWillExpireSoon
+  BlackboxSslCertificateExpired:
+    name: BlackboxSslCertificateExpired
+  BlackboxProbeSlowHttp:
+    name: BlackboxProbeSlowHttp
 
 prometheus_default_rules_custom: {}
 # Alertmanager role

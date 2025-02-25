@@ -19,7 +19,7 @@ groups:
       labels:
         {{ joined_config['labels'] | combine({'severity': joined_config['severity']}) | to_nice_yaml | indent(8) | trim }}
       annotations:
-        summary: "Blackbox probe failed (instance {{ joined_config['labels'].instance }})"
+        summary: "Blackbox probe failed"
         description: "Probe failed\n  VALUE = {{ joined_config['value'] }}\n  LABELS = {{ joined_config['labels'] }}"
   {% endfor %}
 
@@ -34,7 +34,7 @@ groups:
       labels:
         {{ joined_config['labels'] | combine({'severity': joined_config['severity']}) | to_nice_yaml | indent(8) | trim }}
       annotations:
-        summary: "Blackbox probe HTTP failure (instance {{ joined_config['labels'].instance }})"
+        summary: "Blackbox probe HTTP failure"
         description: "HTTP status code is not 200-399\n  VALUE = {{ joined_config['value'] }}\n  LABELS = {{ joined_config['labels'] }}"
   {% endfor %}
 
@@ -49,7 +49,7 @@ groups:
       labels:
         {{ joined_config['labels'] | combine({'severity': joined_config['severity']}) | to_nice_yaml | indent(8) | trim }}
       annotations:
-        summary: "Blackbox SSL certificate will expire in less than 30 days (instance {{ joined_config['labels'].instance }})"
+        summary: "Blackbox SSL certificate will expire in less than 30 days"
         description: "SSL certificate expires in less than 30 days\n  VALUE = {{ joined_config['value'] }}\n  LABELS = {{ joined_config['labels'] }}"
   {% endfor %}
 
@@ -64,7 +64,7 @@ groups:
       labels:
         {{ joined_config['labels'] | combine({'severity': joined_config['severity']}) | to_nice_yaml | indent(8) | trim }}
       annotations:
-        summary: "Blackbox SSL certificate will expire in less than 3 days (instance {{ joined_config['labels'].instance }})"
+        summary: "Blackbox SSL certificate will expire in less than 3 days"
         description: "SSL certificate expires in less than 3 days\n  VALUE = {{ joined_config['value'] }}\n  LABELS = {{ joined_config['labels'] }}"
   {% endfor %}
 
@@ -79,7 +79,7 @@ groups:
       labels:
         {{ joined_config['labels'] | combine({'severity': joined_config['severity']}) | to_nice_yaml | indent(8) | trim }}
       annotations:
-        summary: "Blackbox SSL certificate has expired (instance {{ joined_config['labels'].instance }})"
+        summary: "Blackbox SSL certificate has expired"
         description: "SSL certificate has expired\n  VALUE = {{ joined_config['value'] }}\n  LABELS = {{ joined_config['labels'] }}"
   {% endfor %}
 
@@ -94,6 +94,6 @@ groups:
       labels:
         {{ joined_config['labels'] | combine({'severity': joined_config['severity']}) | to_nice_yaml | indent(8) | trim }}
       annotations:
-        summary: "Blackbox probe slow HTTP (instance {{ joined_config['labels'].instance }})"
+        summary: "Blackbox probe slow HTTP"
         description: "HTTP request took more than {{ joined_config['threshold'] }}\n  VALUE = {{ joined_config['value'] }}\n  LABELS = {{ joined_config['labels'] }}"
   {% endfor %}

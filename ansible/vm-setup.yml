@@ -102,12 +102,12 @@
 
   - name: "Install SSL certificates"
     copy:
-      content: "{{ item }}"
-      dest: "{{ certificates_dest }}"
-      mode: 0600
-    with_fileglob:
-      - "{{nginx_cert | default('')}}"
-      - "{{nginx_cert_key | default('')}}"
+      src: "{{ item }}"
+      dest: "{{ certificates_dest }}/{{ item | basename }}"
+      mode: '0600'
+    with_items:
+      - "{{ cert.pem }}"
+      - "{{ cert.key }}"
     when: enable_tls | bool
     tags: nginx
 

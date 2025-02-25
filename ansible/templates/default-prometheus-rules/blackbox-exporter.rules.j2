@@ -18,7 +18,7 @@ groups:
       for: "{{ joined_config['for'] }}"
       labels:
         {% raw -%}
-        customer: '{{ $labels.customer }}'
+        organization: '{{ $labels.organization }}'
         project: '{{ $labels.project }}'
         role: '{{ $labels.role }}'
         env: '{{ $labels.env }}'
@@ -41,7 +41,7 @@ groups:
       for: "{{ joined_config['for'] }}"
       labels:
         {% raw -%}
-        customer: '{{ $labels.customer }}'
+        organization: '{{ $labels.organization }}'
         project: '{{ $labels.project }}'
         role: '{{ $labels.role }}'
         env: '{{ $labels.env }}'
@@ -64,7 +64,7 @@ groups:
       for: "{{ joined_config['for'] }}"
       labels:
         {% raw -%}
-        customer: '{{ $labels.customer }}'
+        organization: '{{ $labels.organization }}'
         project: '{{ $labels.project }}'
         role: '{{ $labels.role }}'
         env: '{{ $labels.env }}'
@@ -87,7 +87,7 @@ groups:
       for: "{{ joined_config['for'] }}"
       labels:
         {% raw -%}
-        customer: '{{ $labels.customer }}'
+        organization: '{{ $labels.organization }}'
         project: '{{ $labels.project }}'
         role: '{{ $labels.role }}'
         env: '{{ $labels.env }}'

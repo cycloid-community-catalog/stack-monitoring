@@ -13,15 +13,22 @@ groups:
                            combine(prometheus_default_rules_predefined['BlackboxProbeFailed']) |
                            combine(prometheus_default_rules_global) %}
     {% if not joined_config['disable'] %}
-    - alert: "{{ joined_config['name'] }}"
+    - alert: "BlackboxProbeFailed"
       expr: probe_success{ {{ joined_config['selector'] }} } == 0
       for: "{{ joined_config['for'] }}"
       labels:
-        {{ joined_config['labels'] | combine({'severity': joined_config['severity']}) | to_nice_yaml | indent(8) | trim }}
+        {% raw -%}
+        customer: '{{ $labels.customer }}'
+        project: '{{ $labels.project }}'
+        role: '{{ $labels.role }}'
+        env: '{{ $labels.env }}'
+        {% endraw -%}
+        severity: "{{ joined_config['severity'] }}"
+        receiver: "{{ joined_config['receiver'] }}"
       annotations:
-        summary: "Blackbox probe failed"
-        description: "Probe failed\n  LABELS = {{ joined_config['labels'] }}"
-    {% endif%}
+        summary: "{%- raw %}{{$labels.instance}}{% endraw %}: Blackbox probe failed"
+        description: "{%- raw %}{{$labels.instance}}{% endraw %}: Probe failed"
+    {% endif %}
   {% endfor %}
 
   {% for custom_config in prometheus_default_rules_custom.get('BlackboxProbeHttpFailure', [{}]) %}
@@ -29,16 +36,22 @@ groups:
                            combine(prometheus_default_rules_predefined['BlackboxProbeHttpFailure']) |
                            combine(prometheus_default_rules_global) %}
     {% if not joined_config['disable'] %}
-    - alert: "{{ joined_config['name'] }}"
+    - alert: "BlackboxProbeHttpFailure"
       expr: probe_http_status_code{ {{ joined_config['selector'] }} } <= 199 OR probe_http_status_code { {{ joined_config['selector'] }} } >= 400
       for: "{{ joined_config['for'] }}"
       labels:
-        {{ joined_config['labels'] | combine({'severity': joined_config['severity']}) | to_nice_yaml | indent(8) | trim }}
+        {% raw -%}
+        customer: '{{ $labels.customer }}'
+        project: '{{ $labels.project }}'
+        role: '{{ $labels.role }}'
+        env: '{{ $labels.env }}'
+        {% endraw -%}
+        severity: "{{ joined_config['severity'] }}"
+        receiver: "{{ joined_config['receiver'] }}"
       annotations:
-        summary: "Blackbox probe HTTP failure"
-        description: "HTTP status code is not 200-399\n  LABELS = {{ joined_config['labels'] }}"
-
-    {% endif%}
+        summary: "{%- raw %}{{$labels.instance}}{% endraw %}: Blackbox probe HTTP failure"
+        description: "{%- raw %}{{$labels.instance}}{% endraw %}: HTTP status code is not 200-399"
+    {% endif %}
   {% endfor %}
 
   {% for custom_config in prometheus_default_rules_custom.get('BlackboxSslCertificateWillExpireWithin30Days', [{}]) %}
@@ -46,31 +59,22 @@ groups:
                            combine(prometheus_default_rules_predefined['BlackboxSslCertificateWillExpireWithin30Days']) |
                            combine(prometheus_default_rules_global) %}
     {% if not joined_config['disable'] %}
-    - alert: "{{ joined_config['name'] }}"
+    - alert: "BlackboxSslCertificateWillExpireWithin30Days"
       expr: 3 <= round((last_over_time(probe_ssl_earliest_cert_expiry{ {{ joined_config['selector'] }} }[{{ joined_config['for'] }}])) - time()) / 86400, 0.1) < 30
       for: "{{ joined_config['for'] }}"
       labels:
-        {{ joined_config['labels'] | combine({'severity': joined_config['severity']}) | to_nice_yaml | indent(8) | trim }}
+        {% raw -%}
+        customer: '{{ $labels.customer }}'
+        project: '{{ $labels.project }}'
+        role: '{{ $labels.role }}'
+        env: '{{ $labels.env }}'
+        {% endraw -%}
+        severity: "{{ joined_config['severity'] }}"
+        receiver: "{{ joined_config['receiver'] }}"
       annotations:
-        summary: "Blackbox SSL certificate will expire in less than 30 days"
-        description: "SSL certificate expires in less than 30 days\n  LABELS = {{ joined_config['labels'] }}"
-    {% endif%}
-  {% endfor %}
-
-  {% for custom_config in prometheus_default_rules_custom.get('BlackboxSslCertificateWillExpireSoon', [{}]) %}
-    {% set joined_config = custom_config |
-                           combine(prometheus_default_rules_predefined['BlackboxSslCertificateWillExpireSoon']) |
-                           combine(prometheus_default_rules_global) %}
-    {% if not joined_config['disable'] %}
-    - alert: "{{ joined_config['name'] }}"
-      expr: 0 <= round((last_over_time(probe_ssl_earliest_cert_expiry{ {{ joined_config['selector'] }} }[{{ joined_config['for'] }}])) - time()) / 86400, 0.1) < 3
-      for: "{{ joined_config['for'] }}"
-      labels:
-        {{ joined_config['labels'] | combine({'severity': joined_config['severity']}) | to_nice_yaml | indent(8) | trim }}
-      annotations:
-        summary: "Blackbox SSL certificate will expire in less than 3 days"
-        description: "SSL certificate expires in less than 3 days\n  LABELS = {{ joined_config['labels'] }}"
-    {% endif%}
+        summary: "{%- raw %}{{$labels.instance}}{% endraw %}: Blackbox SSL certificate will expire in less than 30 days"
+        description: "{%- raw %}{{$labels.instance}}{% endraw %}: SSL certificate expires in less than 30 days"
+    {% endif %}
   {% endfor %}
 
   {% for custom_config in prometheus_default_rules_custom.get('BlackboxSslCertificateExpired', [{}]) %}
@@ -78,13 +82,20 @@ groups:
                            combine(prometheus_default_rules_predefined['BlackboxSslCertificateExpired']) |
                            combine(prometheus_default_rules_global) %}
     {% if not joined_config['disable'] %}
-    - alert: "{{ joined_config['name'] }}"
+    - alert: "BlackboxSslCertificateExpired"
       expr: round((last_over_time(probe_ssl_earliest_cert_expiry{ {{ joined_config['selector'] }} }[{{ joined_config['for'] }}])) - time()) / 86400, 0.1) < 0
       for: "{{ joined_config['for'] }}"
       labels:
-        {{ joined_config['labels'] | combine({'severity': joined_config['severity']}) | to_nice_yaml | indent(8) | trim }}
+        {% raw -%}
+        customer: '{{ $labels.customer }}'
+        project: '{{ $labels.project }}'
+        role: '{{ $labels.role }}'
+        env: '{{ $labels.env }}'
+        {% endraw -%}
+        severity: "{{ joined_config['severity'] }}"
+        receiver: "{{ joined_config['receiver'] }}"
       annotations:
-        summary: "Blackbox SSL certificate has expired"
-        description: "SSL certificate has expired\n  LABELS = {{ joined_config['labels'] }}"
-    {% endif%}
+        summary: "{%- raw %}{{$labels.instance}}{% endraw %}: Blackbox SSL certificate has expired"
+        description: "{%- raw %}{{$labels.instance}}{% endraw %}: SSL certificate has expired"
+    {% endif %}
   {% endfor %}

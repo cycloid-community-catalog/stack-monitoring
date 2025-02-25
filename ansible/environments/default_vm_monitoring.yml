@@ -243,6 +243,7 @@ nginx_status_https:
   00-status:
     - listen 80
     - server_name 127.0.0.1
+    - ssl_protocols TLSv1.2 TLSv1.3
     - location / {
        deny all;
       }
@@ -267,6 +268,7 @@ nginx_grafana_https:
   07-grafana-443:
     - listen 443 ssl
     - server_name {{ grafana_domain_name }}
+    - ssl_protocols TLSv1.2 TLSv1.3
     - ssl_certificate  {{ certificates_dest }}/{{ grafana_certificate_name }}
     - ssl_certificate_key {{ certificates_dest }}/{{ grafana_certificate_key_name }}
     - location / {
@@ -291,6 +293,7 @@ nginx_prometheus_https:
   12-prometheus-443:
      - listen 443 ssl default_server
      - server_name {{ prometheus_domain_name }}
+     - ssl_protocols TLSv1.2 TLSv1.3
      - ssl_certificate  {{ certificates_dest }}/{{ prometheus_certificate_name }}
      - ssl_certificate_key {{ certificates_dest }}/{{ prometheus_certificate_key_name }}
      - auth_basic            "Restricted"
@@ -316,6 +319,7 @@ nginx_alertmanager_https:
   13-alertmanager-443:
      - listen 443 ssl
      - server_name {{ alertmanager_domain_name }}
+     - ssl_protocols TLSv1.2 TLSv1.3
      - ssl_certificate  {{ certificates_dest }}/{{ alertmanager_certificate_name }}
      - ssl_certificate_key {{ certificates_dest }}/{{ alertmanager_certificate_key_name }}
      - auth_basic            "Restricted"

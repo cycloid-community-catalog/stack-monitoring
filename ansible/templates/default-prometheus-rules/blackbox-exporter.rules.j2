@@ -1,0 +1,117 @@
+# Defines the set of alerts to check the status of blackbox exporter targets
+# Checks if:
+# - Probe fails
+# - Probe HTTP result is not between 200-399
+# - Certificate expiration time is nearby
+# - Probe is slow
+
+groups:
+- name: blackbox-exporter-default.rules
+  rules:
+  {% for custom_config in prometheus_default_rules_custom.get('BlackboxProbeFailed', [{}]) %}
+    {% set joined_config = custom_config |
+                           combine(prometheus_default_rules_predefined['BlackboxProbeFailed']) |
+                           combine(prometheus_default_rules_global) %}
+
+    - alert: "{{ joined_config['name'] }}"
+      expr: probe_success{ {{ joined_config['selector'] }} } == 0
+      for: "{{ joined_config['for'] }}"
+      labels:
+        {{ joined_config['labels'] | combine({'severity': joined_config['severity']}) | to_nice_yaml | indent(8) | trim }}
+      annotations:
+        summary: "Blackbox probe failed (instance {{ $labels.instance }})"
+        description: "Probe failed\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+  {% endfor %}
+
+  {% for custom_config in prometheus_default_rules_custom.get('BlackboxProbeHttpFailure', [{}]) %}
+    {% set joined_config = custom_config |
+                           combine(prometheus_default_rules_predefined['BlackboxProbeHttpFailure']) |
+                           combine(prometheus_default_rules_global) %}
+
+    - alert: "{{ joined_config['name'] }}"
+      expr: probe_http_status_code{ {{ joined_config['selector'] }} } <= 199 OR probe_http_status_code { {{ joined_config['selector'] }} } >= 400
+      for: "{{ joined_config['for'] }}"
+      labels:
+        {{ joined_config['labels'] | combine({'severity': joined_config['severity']}) | to_nice_yaml | indent(8) | trim }}
+      annotations:
+        summary: "Blackbox probe HTTP failure (instance {{ $labels.instance }})"
+        description: "HTTP status code is not 200-399\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+  {% endfor %}
+
+  {% for custom_config in prometheus_default_rules_custom.get('BlackboxSslCertificateWillExpireWithin30Days', [{}]) %}
+    {% set joined_config = custom_config |
+                           combine(prometheus_default_rules_predefined['BlackboxSslCertificateWillExpireWithin30Days']) |
+                           combine(prometheus_default_rules_global) %}
+
+    - alert: "{{ joined_config['name'] }}"
+      expr: 3 <= round((last_over_time(probe_ssl_earliest_cert_expiry{ {{ joined_config['selector'] }} }["{{ joined_config['for'] }}"]) - time()) / 86400, 0.1) < 30
+      for: "{{ joined_config['for'] }}"
+      labels:
+        {{ joined_config['labels'] | combine({'severity': joined_config['severity']}) | to_nice_yaml | indent(8) | trim }}
+      annotations:
+        summary: "Blackbox SSL certificate will expire in less then 30 days (instance {{ $labels.instance }})"
+        description: "SSL certificate expires in less than 30 days\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+  {% endfor %}
+
+  {% for custom_config in prometheus_default_rules_custom.get('BlackboxSslCertificateWillExpireSoon', [{}]) %}
+    {% set joined_config = custom_config |
+                           combine(prometheus_default_rules_predefined['BlackboxSslCertificateWillExpireSoon']) |
+                           combine(prometheus_default_rules_global) %}
+
+    - alert: "{{ joined_config['name'] }}"
+      expr: 0 <= round((last_over_time(probe_ssl_earliest_cert_expiry{ {{ joined_config['selector'] }} }["{{ joined_config['for'] }}"]) - time()) / 86400, 0.1) < 3
+      for: "{{ joined_config['for'] }}"
+      labels:
+        {{ joined_config['labels'] | combine({'severity': joined_config['severity']}) | to_nice_yaml | indent(8) | trim }}
+      annotations:
+        summary: "Blackbox SSL certificate will expire in less then 3 days (instance {{ $labels.instance }})"
+        description: "SSL certificate expires in less than 3 days\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+  {% endfor %}
+
+  # For probe_ssl_earliest_cert_expiry to be exposed after expiration, you
+  # need to enable insecure_skip_verify. Note that this will disable
+  # certificate validation.
+  {% for custom_config in prometheus_default_rules_custom.get('BlackboxSslCertificateExpired', [{}]) %}
+    {% set joined_config = custom_config |
+                           combine(prometheus_default_rules_predefined['BlackboxSslCertificateExpired']) |
+                           combine(prometheus_default_rules_global) %}
+
+    - alert: "{{ joined_config['name'] }}"
+      expr: round((last_over_time(probe_ssl_earliest_cert_expiry{ {{ joined_config['selector'] }} }["{{ joined_config['for'] }}"]) - time()) / 86400, 0.1) < 0
+      for: "{{ joined_config['for'] }}"
+      labels:
+        {{ joined_config['labels'] | combine({'severity': joined_config['severity']}) | to_nice_yaml | indent(8) | trim }}
+      annotations:
+        summary: "Blackbox SSL certificate will expire in less then 3 days (instance {{ $labels.instance }})"
+        description: "SSL certificate expires in less than 3 days\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+  {% endfor %}
+
+  {% for custom_config in prometheus_default_rules_custom.get('BlackboxSslCertificateExpired', [{}]) %}
+    {% set joined_config = custom_config |
+                           combine(prometheus_default_rules_predefined['BlackboxSslCertificateExpired']) |
+                           combine(prometheus_default_rules_global) %}
+
+    - alert: "{{ joined_config['name'] }}"
+      expr: round((last_over_time(probe_ssl_earliest_cert_expiry{ {{ joined_config['selector'] }} }["{{ joined_config['for'] }}"]) - time()) / 86400, 0.1) < 0
+      for: "{{ joined_config['for'] }}"
+      labels:
+        {{ joined_config['labels'] | combine({'severity': joined_config['severity']}) | to_nice_yaml | indent(8) | trim }}
+      annotations:
+        summary: "Blackbox SSL certificate will expire in less then 3 days (instance {{ $labels.instance }})"
+        description: "SSL certificate expires in less than 3 days\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+  {% endfor %}
+
+  {% for custom_config in prometheus_default_rules_custom.get('BlackboxProbeSlowHttp', [{}]) %}
+    {% set joined_config = custom_config |
+                           combine(prometheus_default_rules_predefined['BlackboxProbeSlowHttp']) |
+                           combine(prometheus_default_rules_global) %}
+
+    - alert: "{{ joined_config['name'] }}"
+      expr: avg_over_time(probe_http_duration_seconds{ {{ joined_config['selector'] }} }["{{ joined_config['for'] }}"]) >  "{{ joined_config['threshold'] }}"
+      for: "{{ joined_config['for'] }}"
+      labels:
+        {{ joined_config['labels'] | combine({'severity': joined_config['severity']}) | to_nice_yaml | indent(8) | trim }}
+      annotations:
+        summary: "Blackbox probe slow HTTP (instance {{ $labels.instance }})"
+        description: "HTTP request took more than {{ joined_config['threshold'] }}\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+  {% endfor %}

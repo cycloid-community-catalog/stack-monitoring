@@ -264,8 +264,8 @@ jobs:
                 fi
 
                 # temporary fix because of \n issue in merge-stack-and-config
-                jq '.nginx_cert' terraform/metadata > ansible-playbook/certificate.pem
-                jq '.nginx_cert_key' terraform/metadata > ansible-playbook/certificate.key
+                jq '.nginx_cert' terraform/metadata > ansible-playbook/tls.crt
+                jq '.nginx_cert_key' terraform/metadata > ansible-playbook/tls.key
 
                 # Static inventory
                 ansible-inventory -i ansible-playbook/inventory --graph

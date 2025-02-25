@@ -106,8 +106,8 @@
       dest: "{{ certificates_dest }}/{{ item | basename }}"
       mode: '0600'
     with_items:
-      - "{{ cert.pem }}"
-      - "{{ cert.key }}"
+      - "tls.crt"
+      - "tls.key"
     when: enable_tls | bool
     tags: nginx
 

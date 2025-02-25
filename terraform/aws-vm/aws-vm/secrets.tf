@@ -8,6 +8,7 @@
 
 # SSH KEY
 resource "tls_private_key" "ssh_key" {
+  count = var.use_bastion ? 0 : 1
   algorithm = "RSA"
 }
 

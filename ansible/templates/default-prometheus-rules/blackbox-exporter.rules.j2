@@ -13,6 +13,7 @@ groups:
                            combine(prometheus_default_rules_predefined['BlackboxProbeFailed']) |
                            combine(prometheus_default_rules_global) %}
     {% if not joined_config['disable'] %}
+
     - alert: "BlackboxProbeFailed"
       expr: probe_success{ {{ joined_config['selector'] }} } == 0
       for: "{{ joined_config['for'] }}"
@@ -36,6 +37,7 @@ groups:
                            combine(prometheus_default_rules_predefined['BlackboxProbeHttpFailure']) |
                            combine(prometheus_default_rules_global) %}
     {% if not joined_config['disable'] %}
+
     - alert: "BlackboxProbeHttpFailure"
       expr: probe_http_status_code{ {{ joined_config['selector'] }} } <= 199 OR probe_http_status_code { {{ joined_config['selector'] }} } >= 400
       for: "{{ joined_config['for'] }}"
@@ -59,8 +61,10 @@ groups:
                            combine(prometheus_default_rules_predefined['BlackboxSslCertificateWillExpireWithin30Days']) |
                            combine(prometheus_default_rules_global) %}
     {% if not joined_config['disable'] %}
+
     - alert: "BlackboxSslCertificateWillExpireWithin30Days"
-      expr: 3 <= round((last_over_time(probe_ssl_earliest_cert_expiry{ {{ joined_config['selector'] }} }[{{ joined_config['for'] }}])) - time()) / 86400, 0.1) < 30
+      expr: round(
+        (last_over_time(probe_ssl_earliest_cert_expiry{ {{ joined_config['selector'] }} }[{{ joined_config['for'] }}]) - time()) / 86400, 0.1) < 30
       for: "{{ joined_config['for'] }}"
       labels:
         {% raw -%}
@@ -82,8 +86,9 @@ groups:
                            combine(prometheus_default_rules_predefined['BlackboxSslCertificateExpired']) |
                            combine(prometheus_default_rules_global) %}
     {% if not joined_config['disable'] %}
+
     - alert: "BlackboxSslCertificateExpired"
-      expr: round((last_over_time(probe_ssl_earliest_cert_expiry{ {{ joined_config['selector'] }} }[{{ joined_config['for'] }}])) - time()) / 86400, 0.1) < 0
+      expr: round((last_over_time(probe_ssl_earliest_cert_expiry{ {{ joined_config['selector'] }} }[{{ joined_config['for'] }}]) - time()) / 86400, 0.1) < 0
       for: "{{ joined_config['for'] }}"
       labels:
         {% raw -%}

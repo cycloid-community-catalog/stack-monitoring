@@ -22,7 +22,8 @@ grafana_admin_pwd: "{{grafana_basic_auth_password}}"
 #external_alertmanager_password: ((external_alertmanager_password))
 #external_alertmanager_username: ((external_alertmanager_username))
 #external_alertmanager_targets: ((external_alertmanager_targets))
-#alertmanager_receivers: ((alertmanager_receivers))
+#alertmanager_receivers_raw: ((alertmanager_receivers_yaml))
+alertmanager_receivers: "{{alertmanager_receivers_raw| from_yaml}}"
 
 #postgres_db_user: ((postgres_db_user))
 #postgres_db_password: ((postgres_db_password))

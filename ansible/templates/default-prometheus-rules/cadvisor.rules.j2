@@ -56,7 +56,7 @@ groups:
 
   {% for custom_config in prometheus_default_rules_custom.get('ContainerHighVolumeUsage', [{}]) %}
     {% set joined_config = custom_config |
-                           combine(prometheus_default_rules_predefined['ContainerVolumeUsage']) |
+                           combine(prometheus_default_rules_predefined['ContainerHighVolumeUsage']) |
                            combine(prometheus_default_rules_global) %}
     {% if not joined_config['disable'] %}
     - alert: "Container High Volume Usage"

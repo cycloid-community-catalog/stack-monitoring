@@ -35,6 +35,7 @@ groups:
                            combine(prometheus_default_rules_predefined['HighDiskUsage']) |
                            combine(prometheus_default_rules_global) %}
     {% if not joined_config['disable'] %}
+
     - alert: "High Disk Usage"
       expr: avg_over_time((node_filesystem_size_bytes{ {{ joined_config['selector'] }} } - node_filesystem_avail_bytes{ {{ joined_config['selector'] }} }) / node_filesystem_size_bytes{ {{ joined_config['selector'] }}}[{{ joined_config['for'] }}]) > {{ joined_config['threshold'] }}
       for: "{{ joined_config['for'] }}"

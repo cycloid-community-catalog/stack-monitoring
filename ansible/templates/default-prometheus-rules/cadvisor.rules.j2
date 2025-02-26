@@ -13,6 +13,7 @@ groups:
                            combine(prometheus_default_rules_predefined['ContainerHighCpuUtilization']) |
                            combine(prometheus_default_rules_global) %}
     {% if not joined_config['disable'] %}
+
     - alert: "Container High CPU Utilization"
       expr: (sum(rate(container_cpu_usage_seconds_total{container!=""}[5m])) by (pod, container) / sum(container_spec_cpu_quota{container!=""}/container_spec_cpu_period{container!=""}) by (pod, container) * 100) > {{ joined_config['threshold'] }}
       for: "{{ joined_config['for'] }}"
@@ -36,6 +37,7 @@ groups:
                            combine(prometheus_default_rules_predefined['ContainerHighMemoryUsage']) |
                            combine(prometheus_default_rules_global) %}
     {% if not joined_config['disable'] %}
+
     - alert: "Container High Memory Usage"
       expr: (sum(container_memory_working_set_bytes{name!=""}) BY (instance, name) / sum(container_spec_memory_limit_bytes > 0) BY (instance, name) * 100) > {{ joined_config['threshold'] }}
       for: "{{ joined_config['for'] }}"
@@ -59,6 +61,7 @@ groups:
                            combine(prometheus_default_rules_predefined['ContainerHighVolumeUsage']) |
                            combine(prometheus_default_rules_global) %}
     {% if not joined_config['disable'] %}
+
     - alert: "Container High Volume Usage"
       expr: (1 - (sum(container_fs_inodes_free{name!=""}) BY (instance) / sum(container_fs_inodes_total) BY (instance))) * 100 > {{ joined_config['threshold'] }}
       for: "{{ joined_config['for'] }}"

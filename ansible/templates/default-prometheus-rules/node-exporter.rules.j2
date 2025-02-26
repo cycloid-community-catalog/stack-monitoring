@@ -37,7 +37,7 @@ groups:
     {% if not joined_config['disable'] %}
 
     - alert: "High Disk Usage"
-      expr: (1 - (sum(node_filesystem_avail_bytes{ {{ joined_config['selector'] }} }) / sum(node_filesystem_size_bytes{ {{ joined_config['selector'] }} })) * 100) > {{ joined_config['threshold'] }}
+      expr: (1 - (sum(node_filesystem_avail_bytes{{ joined_config['selector'] }}) / sum(node_filesystem_size_bytes{{ joined_config['selector'] }})) * 100) > {{ joined_config['threshold'] }}
       for: "{{ joined_config['for'] }}"
       labels:
         {% raw -%}

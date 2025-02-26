@@ -6,7 +6,16 @@ groups:
 {% if rule_group.rules is defined and rule_group.rules|length > 0 %}
     rules:
 {% for rule in rule_group.rules %}
-      - {{ rule | to_nice_yaml(indent=6) | trim }}
+      - alert: {{ rule.alert }}
+        expr: {{ rule.expr }}
+        for: {{ rule.for }}
+        labels:
+{% for label_key, label_value in rule.labels.items() %}
+          {{ label_key }}: {{ label_value }}
+{% endfor %}
+        annotations:
+          summary: {{ rule.annotations.summary }}
+          description: {{ rule.annotations.description }}
 {% endfor %}
 {% else %}
     rules: []

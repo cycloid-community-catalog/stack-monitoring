@@ -371,7 +371,7 @@ jobs:
               if [ "$USE_BASTION" = "true" ]; then
                 echo -e "Connect to the bastion:
                 pinfo "ssh -A $BASTION_URL"
-                echo -e "Once inside connect to the machine using its private inputs:
+                echo -e "Once inside connect to the machine using its private inputs:"
                 pinfo "ssh admin@$(jq -r .machine_ip_private_address tfstate/metadata)"
               else
                 echo -e "Private ssh key available at the credential : $(jq -r .ssh_private_key_cred_cannonical tfstate/metadata)"

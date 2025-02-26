@@ -25,8 +25,8 @@ groups:
         severity: "{{ joined_config['severity'] }}"
         receiver: "{{ joined_config['receiver'] }}"
       annotations:
-        summary: "{%- raw %}{{$labels.instance}}{% endraw %}: CPU usage is above {{ joined_config['threshold'] }}% (current value is: {%- raw %}{{ $value }}{% endraw %})"
-        description: "{%- raw %}{{$labels.instance}}{% endraw %}: High CPU usage detected"
+        summary: "{%- raw %}{{ $labels.instance }}{% endraw %}: CPU usage is above {{ joined_config['threshold'] }}% (current value is: {%- raw %}{{ $value }}{% endraw %})"
+        description: "{%- raw %}{{ $labels.instance }}{% endraw %}: High CPU usage detected"
     {% endif %}
   {% endfor %}
 
@@ -37,7 +37,7 @@ groups:
     {% if not joined_config['disable'] %}
 
     - alert: "High Disk Usage"
-      expr: avg_over_time((node_filesystem_size_bytes{ {{ joined_config['selector'] }} } - node_filesystem_avail_bytes{ {{ joined_config['selector'] }} }) / node_filesystem_size_bytes{ {{ joined_config['selector'] }}}[{{ joined_config['for'] }}]) > {{ joined_config['threshold'] }}
+      expr: (1 - (sum(node_filesystem_avail_bytes{ {{ joined_config['selector'] }} }) / sum(node_filesystem_size_bytes{ {{ joined_config['selector'] }} })) * 100) > {{ joined_config['threshold'] }}
       for: "{{ joined_config['for'] }}"
       labels:
         {% raw -%}
@@ -49,7 +49,7 @@ groups:
         severity: "{{ joined_config['severity'] }}"
         receiver: "{{ joined_config['receiver'] }}"
       annotations:
-        summary: "{%- raw %}{{$labels.instance}}{% endraw %}: Disk usage is above {{ joined_config['threshold'] }}% (current value is: {%- raw %}{{ $value }}{% endraw %})"
-        description: "{%- raw %}{{$labels.instance}}{% endraw %}: High Disk usage detected"
+        summary: "{%- raw %}{{ $labels.instance }}{% endraw %}: Disk usage is above {{ joined_config['threshold'] }}% (current value is: {%- raw %}{{ $value }}{% endraw %})"
+        description: "{%- raw %}{{ $labels.instance }}{% endraw %}: High Disk usage detected"
     {% endif %}
   {% endfor %}

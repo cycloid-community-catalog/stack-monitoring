@@ -7,7 +7,7 @@ groups:
   rules:
   {% for custom_config in prometheus_default_rules_custom.get('AlertmanagerIsDown', [{}]) %}
     {% set joined_config = custom_config |
-                           combine(prometheus_default_rules_predefined['AlertmanagerIsDown',{}]) |
+                           combine(prometheus_default_rules_predefined['AlertmanagerIsDown']) |
                            combine(prometheus_default_rules_global) %}
     {% if not joined_config['disable'] %}
 

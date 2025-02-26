@@ -10,7 +10,7 @@ groups:
   rules:
   {% for custom_config in prometheus_default_rules_custom.get('ContainerHighCpuUtilization', [{}]) %}
     {% set joined_config = custom_config |
-                           combine(prometheus_default_rules_predefined['ContainerHighCpuUtilization',{}]) |
+                           combine(prometheus_default_rules_predefined['ContainerHighCpuUtilization']) |
                            combine(prometheus_default_rules_global) %}
     {% if not joined_config['disable'] %}
     - alert: "Container High CPU Utilization"
@@ -33,7 +33,7 @@ groups:
 
   {% for custom_config in prometheus_default_rules_custom.get('ContainerHighMemoryUsage', [{}]) %}
     {% set joined_config = custom_config |
-                           combine(prometheus_default_rules_predefined['ContainerHighMemoryUsage',{}]) |
+                           combine(prometheus_default_rules_predefined['ContainerHighMemoryUsage']) |
                            combine(prometheus_default_rules_global) %}
     {% if not joined_config['disable'] %}
     - alert: "Container High Memory Usage"
@@ -56,7 +56,7 @@ groups:
 
   {% for custom_config in prometheus_default_rules_custom.get('ContainerHighVolumeUsage', [{}]) %}
     {% set joined_config = custom_config |
-                           combine(prometheus_default_rules_predefined['ContainerVolumeUsage',{}]) |
+                           combine(prometheus_default_rules_predefined['ContainerVolumeUsage']) |
                            combine(prometheus_default_rules_global) %}
     {% if not joined_config['disable'] %}
     - alert: "Container High Volume Usage"

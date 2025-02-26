@@ -8,7 +8,7 @@ groups:
   rules:
   {% for custom_config in prometheus_default_rules_custom.get('HighCpuUsage', [{}]) %}
     {% set joined_config = custom_config |
-                           combine(prometheus_default_rules_predefined['HighCpuUsage',{}]) |
+                           combine(prometheus_default_rules_predefined['HighCpuUsage']) |
                            combine(prometheus_default_rules_global) %}
     {% if not joined_config['disable'] %}
 
@@ -32,7 +32,7 @@ groups:
 
   {% for custom_config in prometheus_default_rules_custom.get('HighDiskUsage', [{}]) %}
     {% set joined_config = custom_config |
-                           combine(prometheus_default_rules_predefined['HighDiskUsage',{}]) |
+                           combine(prometheus_default_rules_predefined['HighDiskUsage']) |
                            combine(prometheus_default_rules_global) %}
     {% if not joined_config['disable'] %}
     - alert: "High Disk Usage"

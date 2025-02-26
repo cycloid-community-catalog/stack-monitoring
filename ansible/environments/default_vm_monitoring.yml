@@ -193,12 +193,12 @@ prometheus_default_rules_global:
 
 prometheus_default_rules_predefined:
   # - alertmanager.rules
-  # AlertmanagerIsDown:
+  AlertmanagerIsDown:
   # - blackbox-exporter.rules
-  # BlackboxProbeFailed:
-  # BlackboxProbeHttpFailure:
-  # BlackboxSslCertificateWillExpireWithin30Days:
-  # BlackboxSslCertificateExpired:
+  BlackboxProbeFailed:
+  BlackboxProbeHttpFailure:
+  BlackboxSslCertificateWillExpireWithin30Days:
+  BlackboxSslCertificateExpired:
   # - cadvisor.rules
   ContainerHighCpuUtilization:
     threshold: 80
@@ -217,7 +217,7 @@ prometheus_default_rules_predefined:
   PrometheusTargetDown:
     disable: false
   # - watchdog.rules
-  # Watchdog:
+  Watchdog:
 
 prometheus_default_rules_custom: {}
 # Alertmanager role

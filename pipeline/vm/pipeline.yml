@@ -369,7 +369,7 @@ jobs:
               echo -e "Here are some tips to help debug issues\n"
               echo -e "Remote connect to the vm:"
               if [ "$USE_BASTION" = "true" ]; then
-                echo -e "Connect to the bastion:
+                echo -e "Connect to the bastion:"
                 pinfo "ssh -A $BASTION_URL"
                 echo -e "Once inside connect to the machine using its private inputs:"
                 pinfo "ssh admin@$(jq -r .machine_ip_private_address tfstate/metadata)"

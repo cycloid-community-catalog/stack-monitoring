@@ -10,7 +10,7 @@ groups:
   rules:
   {% for custom_config in prometheus_default_rules_custom.get('PrometheusIsDown', [{}]) %}
     {% set joined_config = custom_config |
-                           combine(prometheus_default_rules_predefined['PrometheusIsDown']) |
+                           combine(prometheus_default_rules_predefined['PrometheusIsDown',{}]) |
                            combine(prometheus_default_rules_global) %}
     {% if not joined_config['disable'] %}
 
@@ -34,7 +34,7 @@ groups:
 
   {% for custom_config in prometheus_default_rules_custom.get('PrometheusTargetDown', [{}]) %}
     {% set joined_config = custom_config |
-                           combine(prometheus_default_rules_predefined['PrometheusTargetDown']) |
+                           combine(prometheus_default_rules_predefined['PrometheusTargetDown',{}]) |
                            combine(prometheus_default_rules_global) %}
     {% if not joined_config['disable'] %}
 

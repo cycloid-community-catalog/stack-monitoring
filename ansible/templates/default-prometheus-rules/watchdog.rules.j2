@@ -7,7 +7,7 @@ groups:
   rules:
   {% for custom_config in prometheus_default_rules_custom.get('Watchdog', [{}]) %}
     {% set joined_config = custom_config |
-                           combine(prometheus_default_rules_predefined['Watchdog']) |
+                           combine(prometheus_default_rules_predefined['Watchdog',{}]) |
                            combine(prometheus_default_rules_global) %}
     {% if not joined_config['disable'] %}
 

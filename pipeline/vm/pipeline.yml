@@ -367,11 +367,17 @@ jobs:
 
               # Display tips
               echo -e "Here are some tips to help debug issues\n"
-
               echo -e "Remote connect to the vm:"
-              echo -e "Private ssh key available at the credential : $(jq -r .ssh_private_key_cred_cannonical tfstate/metadata)"
-              echo -e "Copy the key into a local file"
-              pinfo "ssh -i .SSH_FILE admin@$(jq -r .machine_ip_public_address tfstate/metadata)"
+              if [ "$USE_BASTION" = "true" ]; then
+                echo -e "Connect to the bastion:
+                pinfo "ssh -A $BASTION_URL"
+                echo -e "Once inside connect to the machine using its private inputs:
+                pinfo "ssh admin@$(jq -r .machine_ip_private_address tfstate/metadata)"
+              else
+                echo -e "Private ssh key available at the credential : $(jq -r .ssh_private_key_cred_cannonical tfstate/metadata)"
+                echo -e "Copy the key into a local file"
+                pinfo "ssh -i .SSH_FILE admin@$(jq -r .machine_ip_public_address tfstate/metadata)"
+              fi
 
           inputs:
           - name: tfstate
@@ -383,6 +389,8 @@ jobs:
             GRAFANA_INSTALL: ((grafana_install))
             PROMETHEUS_INSTALL: ((prometheus_install))
             ALERTMANAGER_INSTALL: ((alertmanager_install))
+            USE_BASTION: ((use_bastion))
+            BASTION_URL: ((bastion_url))
 
   - name: terraform-destroy
     serial: true

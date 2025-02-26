@@ -2,7 +2,6 @@
 # Alertmanager template:
 # Stores the default alertmanager template as defined before the creation of stack-monitoring
 # here: https://github.com/cycloidio/ansible-prometheus/tree/master/files/alertmanager/templates
-# TODO: simplify in the future
 ################################################################################
 
 

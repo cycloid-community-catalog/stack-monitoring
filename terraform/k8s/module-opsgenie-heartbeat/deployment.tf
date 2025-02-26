@@ -2,7 +2,6 @@
 # Deployment of opsgenie-heartbeat-gw
 # based on cycloid docker image https://hub.docker.com/r/cycloid/opsgenie-heartbeat-gw
 # Requires secret with Opsgenie token
-# TODO: cleans folder at https://github.com/cycloidio/cycloid-stacks/tree/config/k8s-manifests/k8s/infra/monitoring/opsgenie-heartbeat-gw
 ################################################################################
 
 resource "kubernetes_deployment" "opsgenie_heartbeat_gw" {

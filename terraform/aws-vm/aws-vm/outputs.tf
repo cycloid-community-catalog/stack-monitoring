@@ -1,4 +1,4 @@
-# machine IPs
+# machine IPs e SGs
 
 output "machine_ip_private_address" {
   value = aws_eip.vm.private_ip
@@ -6,6 +6,10 @@ output "machine_ip_private_address" {
 
 output "machine_ip_public_address" {
   value = aws_eip.vm.public_ip
+}
+
+output "machine_sg_id" {
+  value = aws_security_group.vm.id
 }
 
 # dns

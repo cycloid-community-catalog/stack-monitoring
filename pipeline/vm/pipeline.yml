@@ -104,6 +104,7 @@ resources:
     paths:
 #($- if eq .use_case "aws-vm" $)
       - ($ .project $)/ansible/environments/($ .environment $)_aws_vm_monitoring.yml
+      - ($ .project $)/ansible/files/*
 #($- else if eq .use_case "azure-vm" $)
 #      - ($ .project $)/ansible/environments/($ .environment $)_azure_vm_monitoring.yml
 #($- end $)

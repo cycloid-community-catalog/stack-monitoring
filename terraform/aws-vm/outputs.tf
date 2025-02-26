@@ -8,6 +8,10 @@ output "machine_ip_public_address" {
   value = module.aws-vm.machine_ip_public_address
 }
 
+output "machine_sg_id" {
+  value = module.aws-vm.machine_sg_id
+}
+
 # DNS
 output "prometheus_domain_name" {
   value = module.aws-vm.prometheus_domain_name

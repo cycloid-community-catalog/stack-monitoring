@@ -796,7 +796,7 @@ use_cases:
           description: "Provide custom rules to be deployed in the cluster. For more information about syntax and default rules check the k8s prometheus stack [chart default values](https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/values.yaml#L198)"
           key: module.kube-prometheus.prometheus_additional_rules
           widget: text_area
-          type: array
+          type: map
           default: []
 
     - name: Data persistency

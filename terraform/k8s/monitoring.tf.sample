@@ -20,7 +20,7 @@ module "kube-prometheus" {
   #prometheus_change_default_rules = {}
   #prometheus_default_rules_disabled = []
   #prometheus_default_alerts_disabled = []
-  #prometheus_additional_rules  = {}
+  #prometheus_additional_rules  = []
   #enable_prometheus_persistence = false
   #prometheus_pvc_size = "10"
   #prometheus_data_retention = "10d"

@@ -53,7 +53,7 @@ variable "prometheus_default_alerts_disabled" {
   default = []
 }
 variable "prometheus_additional_rules" {
-  default = {}
+  default = []
 }
 variable "enable_prometheus_persistence" {
   default = false

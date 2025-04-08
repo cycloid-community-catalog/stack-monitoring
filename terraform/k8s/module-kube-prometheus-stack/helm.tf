@@ -224,38 +224,38 @@ resource "helm_release" "kube_prometheus_stack" {
     name  = "grafana.persistence.size"
     value = var.grafana_install ? "${var.grafana_pvc_size}Gi"
   }
-
-  grafana.ini:
-    auth.google:
-      enabled = true
-      client_id = CLIENT_ID
-      client_secret = CLIENT_SECRET
-      scopes = https://www.googleapis.com/auth/userinfo.profile
-      https://www.googleapis.com/auth/userinfo.email
-      auth_url = https://accounts.google.com/o/oauth2/auth
-      token_url = https://accounts.google.com/o/oauth2/token
-      allowed_domains = mycompany.com mycompany.org
-      allow_sign_up = true
-
-
-    nginx.ingress.kubernetes.io/auth-request-redirect: $scheme://$host$request_uri
-    nginx.ingress.kubernetes.io/auth-signin: https://oauth2-proxy.infra.cycloid.io/oauth2/start
-    nginx.ingress.kubernetes.io/auth-url: https://oauth2-proxy.infra.cycloid.io/oauth2/auth
-
-
-
-grafana.ini:
-  [auth.generic_oauth]
-  enabled = true
-  client_id = $__file{/etc/secrets/auth_generic_oauth/client_id}
-  client_secret = $__file{/etc/secrets/auth_generic_oauth/client_secret}
-
-extraSecretMounts:
-  - name: auth-generic-oauth-secret-mount
-    secretName: auth-generic-oauth-secret
-    defaultMode: 0440
-    mountPath: /etc/secrets/auth_generic_oauth
-    readOnly: true
+#
+#  grafana.ini:
+#    auth.google:
+#      enabled = true
+#      client_id = CLIENT_ID
+#      client_secret = CLIENT_SECRET
+#      scopes = https://www.googleapis.com/auth/userinfo.profile
+#      https://www.googleapis.com/auth/userinfo.email
+#      auth_url = https://accounts.google.com/o/oauth2/auth
+#      token_url = https://accounts.google.com/o/oauth2/token
+#      allowed_domains = mycompany.com mycompany.org
+#      allow_sign_up = true
+#
+#
+#    nginx.ingress.kubernetes.io/auth-request-redirect: $scheme://$host$request_uri
+#    nginx.ingress.kubernetes.io/auth-signin: https://oauth2-proxy.infra.cycloid.io/oauth2/start
+#    nginx.ingress.kubernetes.io/auth-url: https://oauth2-proxy.infra.cycloid.io/oauth2/auth
+#
+#
+#
+#grafana.ini:
+#  [auth.generic_oauth]
+#  enabled = true
+#  client_id = $__file{/etc/secrets/auth_generic_oauth/client_id}
+#  client_secret = $__file{/etc/secrets/auth_generic_oauth/client_secret}
+#
+#extraSecretMounts:
+#  - name: auth-generic-oauth-secret-mount
+#    secretName: auth-generic-oauth-secret
+#    defaultMode: 0440
+#    mountPath: /etc/secrets/auth_generic_oauth
+#    readOnly: true
 
   #set {
   #  name  = "grafana.ingress.annotations.nginx\\.ingress\\.kubernetes\\.io/auth-type"

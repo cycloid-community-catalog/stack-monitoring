@@ -19,7 +19,7 @@ locals {
 
     prometheus_helm_vars = {
     customRules = var.prometheus_change_default_rules
-    additionalPrometheusRulesMap = concat(var.prometheus_additional_rules, local.default_watchdog_rule_configured)
+    additionalPrometheusRulesMap = merge(var.prometheus_additional_rules, local.default_watchdog_rule_configured)
     prometheus = {
       nodeSelector = var.stack_monitoring_node_selector
       prometheusSpec = {

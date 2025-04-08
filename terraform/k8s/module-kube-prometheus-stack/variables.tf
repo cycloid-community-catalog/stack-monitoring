@@ -150,30 +150,27 @@ EOL
   # prometheus
   # issue with no configuration for labels in defaults alerts.
   # so we have to disable the default dashboard to then set it
-  default_watchdog_rule_configured = {
-    "watchdog.rules" = {
-      groups = [
+  default_watchdog_rule_configured =[
+    {
+      name  = "watchdog.rules"
+      rules = [
         {
-          name  = "watchdog.rules"
-          rules = [
-            {
-              alert       = "Watchdog"
-              annotations = {
-                description = "This is an alert meant to ensure that the entire alerting pipeline is functional."
-                runbook_url = "https://runbooks.prometheus-operator.dev/runbooks/general/watchdog"
-                summary     = "An alert that should always be firing to certify that Alertmanager is working properly."
-              }
-              expr   = "vector(1)"
-              labels = {
-                receiver = "opsgenie_heartbeat"
-                severity = "critical"
-              }
-            }
-          ]
+          alert       = "Watchdog"
+          annotations = {
+            description = "This is an alert meant to ensure that the entire alerting pipeline is functional."
+            runbook_url = "https://runbooks.prometheus-operator.dev/runbooks/general/watchdog"
+            summary     = "An alert that should always be firing to certify that Alertmanager is working properly."
+          }
+          expr   = "vector(1)"
+          labels = {
+            receiver = "opsgenie_heartbeat"
+            severity = "critical"
+          }
         }
       ]
     }
-  }
+  ]
+
 
   default_resource_labels = {
     env = "${var.env}"

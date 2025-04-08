@@ -220,10 +220,10 @@ resource "helm_release" "kube_prometheus_stack" {
     value = "${var.grafana_pvc_size}Gi"
   }
 
-  set {
-    name  = "grafana.persistence.size"
-    value = var.grafana_install ? "${var.grafana_pvc_size}Gi"
-  }
+  #set {
+  #  name  = "grafana.persistence.size"
+  #  value = var.grafana_install ? "${var.grafana_pvc_size}Gi"
+  #}
 #
 #  grafana.ini:
 #    auth.google:

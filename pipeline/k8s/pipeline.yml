@@ -7,7 +7,7 @@ definitions:
       config:
         platform: linux
         image_resource:
-          type: docker-image
+          type: registry-image
           source:
             repository: cycloid/cycloid-toolkit
             tag: latest
@@ -39,7 +39,7 @@ definitions:
 
 resource_types:
 - name: terraform
-  type: docker-image
+  type: registry-image
   source:
     repository: cycloid/terraform-resource
     tag: ((terraform_version))

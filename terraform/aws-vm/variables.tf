@@ -21,7 +21,9 @@ variable "aws_region" {
 }
 variable "aws_extra_tags" {}
 
-variable "use_bastion" {}
+variable "use_ssm_agent"{
+  default = true
+}
 variable "bastion_public_ssh_key" {}
 
 variable "enable_tls" {}

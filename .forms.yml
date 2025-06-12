@@ -131,9 +131,19 @@ use_cases:
               "cloudwatch:ListMetrics",
               "cloudwatch:GetMetricData",
             ]
+    - name: VM remote access
+      technologies: [pipeline, terraform]
+      vars:
+        - name: "Use SSM agent"
+          description: "Connect to the machine using AWS SSM agent. Check the [page](TODO) for more information"
+          key: use_ssm_agent
+          type: boolean
+          widget: switch
+          default: true
 
     - name: SSH access
       technologies: [terraform]
+      condition: use_ssm_agent == false
       vars:
         - name: "SSH CIDR and CIDR to allow"
           description: "Map containing the CIDR and security groups IDs to allow SSH access to the monitoring VM, use the map keys cidr and sg. Default CIDR:0.0.0.0/0"
@@ -146,6 +156,7 @@ use_cases:
             sg: []
 
     - name: Bastion enable
+      condition: $use_ssm_agent == false
       technologies: [pipeline]
       vars:
         - name: "Use Bastion"
@@ -156,7 +167,7 @@ use_cases:
           default: true
 
     - name: Bastion Access
-      condition: $use_bastion == true
+      condition: $use_ssm_agent == false && $use_bastion == true
       technologies: [pipeline]
       vars:
         - name: "Bastion URL"
@@ -400,7 +411,7 @@ use_cases:
               rules: []
 
         - name: "Default prometheus rules"
-          description: "Default prometheus rules to use. You can see all the values available [here](TODO)."
+          description: "Default prometheus rules to use. You can see all the values available [here](https://github.com/cycloid-community-catalog/stack-monitoring/tree/master/ansible/templates/default-prometheus-rules)."
           key: prometheus_default_rule_files
           widget: text_area
           type: array
@@ -408,10 +419,16 @@ use_cases:
             - alertmanager.rules
 
         - name: "Default prometheus rules configuration"
-          description: "Change the default prometheus values that are defined. You can see all the values available [here](TODO)."
+          description: "Change the default prometheus values that are defined. You can see all the values available [here](https://github.com/cycloid-community-catalog/stack-monitoring/blob/master/ansible/environments/default_vm_monitoring.yml#L183)."
           key: prometheus_default_rules_custom
           widget: text_area
           type: map
+        - name: "Prometheus Data retention"
+          description: "The time prometheus will retain data before deletion. Must match the regular expression [0-9]+(ms|s|m|h) (milliseconds seconds minutes hours)."
+          key: prometheus_storage_retention
+          widget: simple_text
+          type: string
+          default: "30d"
 
   - name: Blackbox Exporter
     groups:
@@ -536,7 +553,7 @@ use_cases:
           widget: text_area
           type: map
           default:
-            receiver: default
+            receiver: on_call
             group_by:
               - organization
               - project
@@ -548,10 +565,10 @@ use_cases:
             routes:
             - match: # Send "critical" alerts to the default receiver
                 severity: critical
-              receiver: default
+              receiver: on_call
             - match: # Send other alerts to a dummy receiver (no action)
                 receiver: 'null'
-              receiver: dev_null
+              receiver: null
         - name: "Alertmanager inhibition rules"
           description: "A list of inhibition rules to mute existing alerts. More info about the syntax can be found in the [oficial documentation](https://prometheus.io/docs/alerting/latest/configuration/#inhibit_rule)."
           key: alertmanager_inhibit_rules
@@ -796,8 +813,8 @@ use_cases:
           description: "Provide custom rules to be deployed in the cluster. For more information about syntax and default rules check the k8s prometheus stack [chart default values](https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/values.yaml#L198)"
           key: module.kube-prometheus.prometheus_additional_rules
           widget: text_area
-          type: map
-          default: {}
+          type: array
+          default: []
 
     - name: Data persistency
       condition: $prometheus_install == true

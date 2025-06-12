@@ -98,6 +98,10 @@ output "ssh_public_key" {
   value = module.aws-vm.ssh_public_key
 }
 
+output "ssh_private_key_cred_cannonical" {
+  value = module.cycloid-credentials.ssh_private_key_cred_cannonical
+}
+
 # credentials canonical
 output "prometheus_basic_auth_cred_cannonical" {
   value = module.cycloid-credentials.prometheus_basic_auth_cred_cannonical
@@ -111,7 +115,8 @@ output "grafana_basic_auth_cred_cannonical" {
   value = module.cycloid-credentials.grafana_basic_auth_cred_cannonical
 }
 
-# ssh key
-output "ssh_private_key_cred_cannonical" {
-  value = module.cycloid-credentials.ssh_private_key_cred_cannonical
+# ssm agent
+
+output "s3_bucket_ansible" {
+  value = module.aws-vm.s3_bucket_ansible
 }

@@ -96,3 +96,12 @@ output "ssh_private_key" {
 output "ssh_public_key" {
   value = var.use_bastion ? var.bastion_public_ssh_key : tls_private_key.ssh_key[0].public_key_openssh
 }
+
+# ssm agent
+
+output "s3_bucket_ansible" {
+  value = var.use_ssm_agent ? {
+    "name"   = aws_s3_bucket.ansible.id
+    "region" = aws_s3_bucket.ansible.region
+  } : {}
+}

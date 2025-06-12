@@ -37,6 +37,8 @@ resource "aws_instance" "vm" {
   instance_type        = var.vm_size
   key_name             = "${var.organization}-vm-monitoring-${var.env}"
 
+  user_data_base64 = var.use_ssm_agent ? base64encode(templatefile("${path.module}/userdata.sh.tpl", {})) : null
+
   vpc_security_group_ids = [aws_security_group.vm.id]
   subnet_id              = var.subnet_id
 

@@ -18,6 +18,7 @@
 # prometheus_custom_configs: []
 # prometheus_default_rules_custom: {}
 # prometheus_default_rule_files: {}
+#prometheus_storage_retention: "30d"
 
 ## Alertmanager
 # alertmanager_install: false

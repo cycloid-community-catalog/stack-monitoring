@@ -28,14 +28,13 @@
     tags: node_exporter
     when: node_exporter_install
 
-  - name: Install Node exporter
+  - name: Install Cadvisor exporter
     include_role:
       name: prometheus.prometheus.cadvisor
     tags: cadvisor
     when: cadvisor_install
 
   # Install Prometheus
-
   - name: Install Prometheus
     include_role:
       name: prometheus.prometheus.prometheus

@@ -1,55 +1,51 @@
+##
 # Variables defined as outputs in terraform
-#prometheus_domain_name: "prometheus.local"
+##
 prometheus_web_login: "{{prometheus_basic_auth_httpwd}}"
 prometheus_user: "{{prometheus_basic_auth_username}}"
 prometheus_password: "{{prometheus_basic_auth_password}}"
-
-#alertmanager_domain_name: "alertmanager.local"
 alertmanager_web_login: "{{alertmanager_basic_auth_httpwd}}"
 alertmanager_user: "{{alertmanager_basic_auth_username}}"
 alertmanager_password: "{{alertmanager_basic_auth_password}}"
-
-#grafana_domain_name: "alertmanager.local"
 grafana_admin_user: "{{grafana_basic_auth_username}}"
 grafana_admin_pwd: "{{grafana_basic_auth_password}}"
-#
-#enable_tls: "true"
-#nginx_cert: ""
-#nginx_cert_key: ""
 
+##
 # variables passed in pipeline (cycloid-credentials)
-
+##
 #external_alertmanager_password: ((external_alertmanager_password))
 #external_alertmanager_username: ((external_alertmanager_username))
 #external_alertmanager_targets: ((external_alertmanager_targets))
 #alertmanager_receivers_raw: ((alertmanager_receivers_yaml))
 alertmanager_receivers: "{{alertmanager_receivers_raw| from_yaml}}"
-
 #postgres_db_user: ((postgres_db_user))
 #postgres_db_password: ((postgres_db_password))
 #postgres_db_host: ((postgres_db_host))
 #postgres_db_port: ((postgres_db_port))
-
 #mysql_db_user: ((mysql_db_user))
 #mysql_db_password: ((mysql_db_password))
 #mysql_db_host: ((mysql_db_host))
 #mysql_db_port: ((mysql_db_port))
-
 #aws_default_region: ((aws_default_region))
 
+##
 # General variables
+##
 external_url_schema: "{% if enable_tls %}https{% else %}http{% endif %}"
 use_ssl: "{{enable_tls}}"
 create_self_signed_certificate: true
 
+##
 # Blackbox exporter role
-# all defaults here: https://github.com/prometheus-community/ansible/blob/main/roles/blackbox_exporter/defaults/main.yml
+# Defaults here: https://github.com/prometheus-community/ansible/blob/main/roles/blackbox_exporter/defaults/main.yml
+##
 blackbox_exporter_web_listen_address: "0.0.0.0:9115"
 blackbox_exporter_config_dir: /etc/blackbox_exporter
 
-
+##
 # Mysql exporter role
-# # defaults at https://github.com/prometheus-community/ansible/blob/main/roles/mysqld_exporter/defaults/main.yml
+# Defaults at https://github.com/prometheus-community/ansible/blob/main/roles/mysqld_exporter/defaults/main.yml
+##
 mysqld_exporter_web_listen_address: "0.0.0.0:9104"
 mysqld_exporter_config_dir: "/etc/mysqld_exporter"
 mysqld_exporter_username: "{{mysql_db_user}}"
@@ -57,8 +53,10 @@ mysqld_exporter_password: "{{mysql_db_password}}"
 mysqld_exporter_host: "{{mysql_db_host}}"
 mysqld_exporter_port: "{{mysql_db_port}}"
 
+##
 # Postgresql exporter role
-# defaults at https://github.com/prometheus-community/ansible/blob/main/roles/postgres_exporter/defaults/main.yml
+# Defaults at https://github.com/prometheus-community/ansible/blob/main/roles/postgres_exporter/defaults/main.yml
+##
 postgres_exporter_web_listen_address: "0.0.0.0:9187"
 postgres_exporter_config_dir: "/etc/postgres_exporter"
 postgres_exporter_username: "{{postgres_db_user}}"
@@ -66,17 +64,24 @@ postgres_exporter_password: "{{postgres_db_password}}"
 postgres_exporter_host: "{{postgres_db_host}}"
 postgres_exporter_port: "{{postgres_db_port}}"
 
+##
 # Node-exporter role
-# defaults at https://github.com/prometheus-community/ansible/blob/main/roles/node_exporter/defaults/main.yml
+# Defaults at https://github.com/prometheus-community/ansible/blob/main/roles/node_exporter/defaults/main.yml
+##
 node_exporter_web_listen_address: "0.0.0.0:9100"
 
+##
+# cAdvisor role
+## Defaults at https://github.com/prometheus-community/ansible/blob/main/roles/cadvisor/defaults/main.yml
+##
 cadvisor_listen_ip: "0.0.0.0"
 cadvisor_port: "8080"
 cadvisor_docker_only: true
 
+##
 # Prometheus role
-# all defaults here: https://github.com/prometheus-community/ansible/blob/main/roles/prometheus/defaults/main.yml
-prometheus_storage_retention: "60d"
+# Defaults here: https://github.com/prometheus-community/ansible/blob/main/roles/prometheus/defaults/main.yml
+##
 prometheus_config_dir: /etc/prometheus
 prometheus_db_dir: /var/lib/prometheus
 prometheus_web_listen_address: "0.0.0.0:9090"
@@ -86,7 +91,6 @@ prometheus_global:
   scrape_interval: 15s
   scrape_timeout: 10s
   evaluation_interval: 15s
-
 prometheus_scrape_configs_global:
   ## Prometheus
   - job_name: 'prometheus'
@@ -104,7 +108,6 @@ prometheus_scrape_configs_global:
     - source_labels: [__name__]
       action: drop
       regex: go_(.*)
-
 prometheus_scrape_config_alertmanager:
   - job_name: 'alertmanager'
     static_configs:
@@ -115,7 +118,6 @@ prometheus_scrape_config_alertmanager:
     - source_labels: [__name__]
       action: drop
       regex: go_(.*)
-
 prometheus_mysql_exporter_config:
   - job_name: 'mysqld-exporter'
     static_configs:
@@ -126,7 +128,6 @@ prometheus_mysql_exporter_config:
     - source_labels: [__name__]
       action: drop
       regex: go_(.*)
-
 prometheus_postgres_exporter_config:
   - job_name: 'postgres-exporter'
     static_configs:
@@ -137,7 +138,6 @@ prometheus_postgres_exporter_config:
     - source_labels: [__name__]
       action: drop
       regex: go_(.*)
-
 prometheus_local_cadvisor_config:
   ## Prometheus
   - job_name: 'cadvisor'
@@ -155,17 +155,13 @@ prometheus_local_cadvisor_config:
     - source_labels: [__name__]
       action: drop
       regex: go_(.*)
-
-
 # merge default scrapings with custom ones
 prometheus_scrape_configs: "{{ prometheus_scrape_configs_global + prometheus_custom_configs + (prometheus_scrape_config_alertmanager if  alertmanager_install else []) + (prometheus_blackbox_config if blackbox_exporter_install else []) + (prometheus_mysql_exporter_config if mysqld_exporter_install else []) + (prometheus_postgres_exporter_config if postgres_exporter_install else [])+ (prometheus_local_cadvisor_config if cadvisor_install else [])}}"
-
 prometheus_alerting_local:
   - scheme: http
     static_configs:
     - targets:
       - "localhost:9093"
-
 prometheus_alerting_external:
   -   basic_auth:
           password: "{{external_alertmanager_password}}"
@@ -173,13 +169,10 @@ prometheus_alerting_external:
       scheme: https
       static_configs:
       - targets:"{{external_alertmanager_targets}}"
-
 prometheus_alertmanager_config: "{{ prometheus_alerting_local if alertmanager_install else prometheus_alerting_external }}"
-
 # disable default prometheus rules https://github.com/prometheus-community/ansible/blob/main/roles/prometheus/defaults/main.yml#L105C1-L105C23
 prometheus_alert_rules: []
 # default rule files should be copied here {{ prometheus_config_dir }}/rules/
-
 prometheus_default_rules_global:
   for: 15m
   receiver: on_call
@@ -190,7 +183,6 @@ prometheus_default_rules_global:
     project: "{{ project }}"
     env: "{{ env }}"
   disable: false #to disable alert
-
 prometheus_default_rules_predefined:
   # - alertmanager.rules
   AlertmanagerIsDown:
@@ -218,24 +210,26 @@ prometheus_default_rules_predefined:
     disable: false
   # - watchdog.rules
   Watchdog:
-
 prometheus_default_rules_custom: {}
+
+##
 # Alertmanager role
-# default values: https://github.com/prometheus-community/ansible/blob/main/roles/alertmanager/defaults/main.yml
+# Default values: https://github.com/prometheus-community/ansible/blob/main/roles/alertmanager/defaults/main.yml
+##
 alertmanager_web_external_url: "{{ external_url_schema }}://{{ alertmanager_domain_name }}"
 alertmanager_web_listen_address: '0.0.0.0:9093'
 
-# NGINX
-
+##
+# NGINX role
+# Default values: https://github.com/jdauphant/ansible-role-nginx/blob/master/defaults/main.yml
+##
 prometheus_certificate_name: tls.crt
 prometheus_certificate_key_name: tls.key
 alertmanager_certificate_name: "{{ prometheus_certificate_name }}"
 alertmanager_certificate_key_name: "{{ prometheus_certificate_key_name }}"
 grafana_certificate_name: "{{ prometheus_certificate_name }}"
 grafana_certificate_key_name: "{{ prometheus_certificate_key_name }}"
-
 certificates_dest: "/etc/nginx/ssl"
-
 nginx_configs:
   proxy:
     - proxy_set_header X-Real-IP  $remote_addr
@@ -248,10 +242,8 @@ nginx_configs:
   misc:
     - server_names_hash_max_size 512
     - server_names_hash_bucket_size 128
-
 nginx_remove_sites:
   - default
-
 nginx_status_http:
   00-status:
     - listen 80
@@ -265,7 +257,6 @@ nginx_status_http:
         allow 127.0.0.1;
         deny all;
       }
-
 nginx_status_https:
   00-status:
     - listen 80
@@ -280,7 +271,6 @@ nginx_status_https:
         allow 127.0.0.1;
         deny all;
       }
-
 nginx_grafana_http:
   07-grafana-80:
     - listen 80
@@ -304,7 +294,6 @@ nginx_grafana_https:
         proxy_set_header   X-FORWARDED_PROTO http;
         proxy_set_header   X-FORWARDED_PORT 80;
       }
-
 nginx_prometheus_http:
   08-prometheus-80:
     - listen 80
@@ -330,7 +319,6 @@ nginx_prometheus_https:
          proxy_set_header   X-FORWARDED_PROTO https;
          proxy_set_header   X-FORWARDED_PORT 443;
        }
-
 nginx_alertmanager_http:
   09-alertmanager-80:
     - listen 80
@@ -356,12 +344,10 @@ nginx_alertmanager_https:
          proxy_set_header   X-FORWARDED_PROTO https;
          proxy_set_header   X-FORWARDED_PORT 443;
        }
-
 nginx_force_https:
   10-force-https:
      - listen 80 default_server
      - return 301 https://$host$request_uri
-
 nginx_sites_default: "{{
           nginx_status_http
           | combine(nginx_grafana_http if (grafana_install| default(true)) else {})
@@ -375,9 +361,7 @@ nginx_sites_default_https: "{{
           | combine(nginx_prometheus_https if (prometheus_install| default(false)) else {})
           | combine(nginx_alertmanager_https if (alertmanager_install| default(true)) else {})
         }}"
-
 nginx_sites: "{% if not enable_tls %}{{ nginx_sites_default }}{% else %}{{ nginx_sites_default_https }}{% endif %}"
-
 nginx_auth_basic_files:
   prometheus:
     - "{{ prometheus_web_login | default('') }}"
@@ -385,7 +369,10 @@ nginx_auth_basic_files:
     - "{{ alertmanager_web_login | default('') }}"
 
 
+##
 # Grafana
+# Default here: https://github.com/grafana/grafana-ansible-collection/blob/main/roles/grafana/defaults/main.yml
+##
 grafana_logs_dir: "/var/log/grafana"
 grafana_data_dir: "/var/lib/grafana"
 grafana_database:

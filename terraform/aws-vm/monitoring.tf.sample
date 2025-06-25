@@ -20,8 +20,8 @@ module "aws-vm" {
   #subnet_id    = ""
   #vpc_id       = ""
   #ssh_to_allow = {}
-  use_ssm_agent          = "true"
-  use_bastion            = "false"
+  #use_ssm_agent          = "true"
+  use_bastion            = var.use_bastion
   bastion_public_ssh_key = var.bastion_public_ssh_key
 
   # tls variables
@@ -52,6 +52,7 @@ module "cycloid-credentials" {
   organization = var.organization
   #####################################
 
+  #use_ssm_agent     = true
   use_bastion        = var.use_bastion
   vm_private_ssh_key = module.aws-vm.ssh_private_key
 

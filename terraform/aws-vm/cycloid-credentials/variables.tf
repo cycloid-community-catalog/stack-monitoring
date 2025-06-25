@@ -17,3 +17,5 @@ variable "alertmanager_password" {}
 variable "grafana_install" {}
 variable "grafana_username" {}
 variable "grafana_password" {}
+
+variable "use_ssm_agent"{}

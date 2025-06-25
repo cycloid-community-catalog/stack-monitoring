@@ -50,7 +50,7 @@ resource "aws_vpc_security_group_ingress_rule" "allow_https" {
 
 # allow SSH - to a list of CIDR and SGs
 resource "aws_vpc_security_group_ingress_rule" "allow_ssh_cidr" {
-  count = var.use_ssm_agent ? 0 : length(var.ssh_to_allow.cidr):
+  count = var.use_ssm_agent ? 0 : length(var.ssh_to_allow.cidr)
 
   security_group_id = aws_security_group.vm.id
   from_port         = 22

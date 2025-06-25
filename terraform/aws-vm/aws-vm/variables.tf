@@ -33,6 +33,9 @@ variable "ssh_to_allow" {
 variable "use_bastion" {
   default = false
 }
+variable "use_ssm_agent"{
+  default = true
+}
 variable "bastion_public_ssh_key" {
   default = ""
 }

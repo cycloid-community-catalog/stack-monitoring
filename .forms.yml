@@ -157,7 +157,7 @@ use_cases:
 
     - name: Bastion enable
       condition: $use_ssm_agent == false
-      technologies: [pipeline]
+      technologies: [pipeline,terraform]
       vars:
         - name: "Use Bastion"
           description: "Select wheter to use a Bastion to SSH instance.The bastion CIDR or SG should be added in the SSH allowed above"

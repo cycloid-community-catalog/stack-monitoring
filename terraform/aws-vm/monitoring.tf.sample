@@ -53,7 +53,7 @@ module "cycloid-credentials" {
   #####################################
 
   #use_ssm_agent     = true
-  use_bastion        = var.use_bastion
+  #use_bastion        = true
   vm_private_ssh_key = module.aws-vm.ssh_private_key
 
   #prometheus_install = true

@@ -136,14 +136,14 @@ use_cases:
       vars:
         - name: "Use SSM agent"
           description: "Connect to the machine using AWS SSM agent. Check the [page](TODO) for more information"
-          key: use_ssm_agent
+          key: module.aws-vm.use_ssm_agent
           type: boolean
           widget: switch
           default: true
 
     - name: SSH access
       technologies: [terraform]
-      condition: use_ssm_agent == false
+      condition: module.aws-vm.use_ssm_agent == false
       vars:
         - name: "SSH CIDR and CIDR to allow"
           description: "Map containing the CIDR and security groups IDs to allow SSH access to the monitoring VM, use the map keys cidr and sg. Default CIDR:0.0.0.0/0"

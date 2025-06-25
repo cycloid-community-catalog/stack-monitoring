@@ -3,7 +3,9 @@ variable "organization" {}
 variable "project" {}
 variable "env" {}
 
-variable "use_bastion" {}
+variable "use_bastion" {
+	default = false
+}
 variable "vm_private_ssh_key" {}
 
 variable "prometheus_install" {}
@@ -18,4 +20,6 @@ variable "grafana_install" {}
 variable "grafana_username" {}
 variable "grafana_password" {}
 
-variable "use_ssm_agent"{}
+variable "use_ssm_agent"{
+	default = true
+}

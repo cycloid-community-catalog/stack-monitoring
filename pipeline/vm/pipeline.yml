@@ -398,7 +398,7 @@ jobs:
               if [ "$USE_SSM_AGENT" = "true" ]; then
                 pinfo "export AWS_ACCESS_KEY_ID=..."
                 pinfo "export AWS_SECRET_ACCESS_KEY=..."
-                pinfo "export AWS_DEFAULT_REGION=...""
+                pinfo "export AWS_DEFAULT_REGION=..."
                 pinfo "aws_connect ${ORG}-vm-monitoring-${ENV} connect"
 
               else

@@ -8,7 +8,7 @@ terraform {
     }
 
     helm = {
-      version = ">= 2.6.0"
+      version = "= 2.17.0"
     }
     cycloid = {
       source = "registry.terraform.io/cycloidio/cycloid"

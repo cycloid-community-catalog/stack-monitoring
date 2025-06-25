@@ -20,8 +20,8 @@ module "aws-vm" {
   #subnet_id    = ""
   #vpc_id       = ""
   #ssh_to_allow = {}
-  #use_ssm_agent          = "true"
-  use_bastion            = var.use_bastion
+  #use_ssm_agent         = "true"
+  #use_bastion            = "false"
   bastion_public_ssh_key = var.bastion_public_ssh_key
 
   # tls variables
@@ -53,7 +53,7 @@ module "cycloid-credentials" {
   #####################################
 
   #use_ssm_agent     = true
-  #use_bastion        = true
+  #use_bastion       = true
   vm_private_ssh_key = module.aws-vm.ssh_private_key
 
   #prometheus_install = true

@@ -101,7 +101,7 @@ output "ssh_public_key" {
 
 output "s3_bucket_ansible" {
   value = var.use_ssm_agent ? {
-    "name"   = aws_s3_bucket.ansible.id
-    "region" = aws_s3_bucket.ansible.region
+    "name"   = aws_s3_bucket.ansible[0].id
+    "region" = aws_s3_bucket.ansible[0].region
   } : {}
 }

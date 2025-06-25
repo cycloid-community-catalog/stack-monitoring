@@ -53,7 +53,6 @@ resource "aws_iam_instance_profile" "vm" {
 
 ## 2- Attach policy to EC2 instances
 resource "aws_iam_role_policy_attachment" "vm" {
-  name       = "${var.organization}--vm-monitoring-iam-${var.env}"
   role       = aws_iam_role.vm.name
   policy_arn = aws_iam_policy.vm.arn
 }

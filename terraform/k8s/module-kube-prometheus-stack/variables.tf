@@ -122,12 +122,6 @@ variable "alertmanager_data_retention" {
 }
 variable "alertmanager_users" {}
 
-#
-# Thanos
-#
-#variable "thanos_install" {
-#  default = false
-#}
 
 locals {
 
@@ -189,15 +183,13 @@ EOL
     project = "${var.project}"
     organization = "${var.organization}"
     customer = "${var.organization}"
-    receiver = "oncall"
+    receiver = "on_call"
   }
   alert_labels = merge(local.default_alert_labels, var.extra_labels)
 
   default_alerts_disabled = concat(["Watchdog"],var.prometheus_default_alerts_disabled)
 
   default_rules_disabled = concat([], var.prometheus_default_rules_disabled)
-
-  #thanos_object_store_secret_name = "${var.project}-thanos-object-store-${var.env}"
 
   username = var.organization
 

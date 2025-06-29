@@ -14,9 +14,17 @@ variable "kubeconfig_filename" {}
 variable "prometheus_install" {}
 variable "grafana_install" {}
 variable "alertmanager_install" {}
-#variable "thanos_install" {
-#  default = false
-#}
+
+# grafana oauth tools
+variable "grafana_sso_enabled" {}
+variable "grafana_sso_client_id" {}
+variable "grafana_sso_client_secret" {}
+variable "grafana_sso_provider_name" {}
+variable "grafana_sso_allowed_domains" {}
+variable "grafana_sso_api_url" {}
+variable "grafana_sso_auth_url" {}
+variable "grafana_sso_token_url" {}
+variable "grafana_sso_scopes" {}
 
 variable "alertmanager_use_external" {}
 variable "alertmanager_config_receivers" {

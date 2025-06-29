@@ -693,12 +693,6 @@ use_cases:
           widget: switch
           type: boolean
           default: true
-        #- name: "Thanos install"
-        #  description: "Wheter to skip install [Thanos](https://thanos.io/) on the k8s cluster."
-        #  key: thanos_install
-        #  widget: switch
-        #  type: boolean
-        #  default: false
 
   - name: Blackbox Exporter
     groups:
@@ -983,7 +977,75 @@ use_cases:
           type: string
           default: grafana.local
 
-    - name: Grafana Configuration
+    - name: Grafana Oauth SSO
+      condition: $grafana_install == true
+      technologies: [pipeline]
+      vars:
+        - name: Grafana SSO
+          description: "Enable Grafana Oauth SSO."
+          key: grafana_sso_enabled
+          widget: switch
+          type: boolean
+          default: false
+
+    - name: Grafana OAuth SSO configuration
+      condition: $sso_enabled == true && $grafana_install == true
+      technologies: [pipeline]
+      vars:
+        - name: "Grafana SSO provider name"
+          description: "The SSO provider to use for Grafana."
+          key: grafana_sso_provider_name
+          widget: dropdown
+          type: "string"
+          default: "google"
+          values:
+            - "google"
+            - "github"
+            - "gitlab"
+            - "azuread"
+            - "okta"
+            - "generic_oauth"
+        - name: "Grafana SSO allowed domains"
+          description: "List of comma- or space-separated domains. The user should belong to at least one domain to log in, e.g.: 'example.com, example.org'"
+          key: grafana_sso_allowed_domains
+          widget: simple_text
+          type: string
+        - name: "Grafana SSO client ID"
+          description: "The client ID to use for the SSO provider."
+          key: grafana_sso_client_id
+          widget: cy_cred
+          type: string
+        - name: "Grafana SSO client secret"
+          description: "The client secret to use for the SSO provider."
+          key: grafana_sso_client_secret
+          widget: cy_cred
+          type: string
+        - name: "Grafana SSO API URL"
+          description: "The API URL to use for the SSO provider."
+          key: grafana_sso_api_url
+          widget: simple_text
+          type: string
+          default: "https://www.googleapis.com/oauth2/v1/userinfo"
+        - name: "Grafana SSO Auth URL"
+          description: "The Auth URL to use for the SSO provider."
+          key: grafana_sso_auth_url
+          widget: simple_text
+          type: string
+          default: "https://accounts.google.com/o/oauth2/auth"
+        - name: "Grafana SSO Token URL"
+          description: "The Token URL to use for the SSO provider."
+          key: grafana_sso_token_url
+          widget: simple_text
+          type: string
+          default: "https://accounts.google.com/o/oauth2/token"
+        - name: "Grafana SSO Scopes"
+          description: "The scopes to use for the SSO provider. In the format of a list with comma or space separated values"
+          key: grafana_sso_scopes
+          widget: simple_text
+          type: string
+          default: "https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth"
+
+    - name: Grafana Dashboard Configuration
       technologies: [terraform]
       condition: $grafana_install == true
       vars:
@@ -1011,12 +1073,7 @@ use_cases:
           widget: text_area
           type: map
           default: {}
-          #default:
-            #prometheus-stats:
-            #  # Ref: https://grafana.com/dashboards/14900
-            #  gnetId: 14900
-            #  revision: 1
-            #  datasource: prometheus
+
     - name: Data persistency
       condition: $grafana_install == true
       technologies: [terraform]
@@ -1060,38 +1117,6 @@ use_cases:
           widget: cy_cred
           type: string
 
-#  - name: Thanos
-#    groups:
-#    - name: Thanos DNS
-#      condition: $thanos_install == true
-#      technologies: [terraform]
-#      vars:
-#        - name: "Thanos DNS"
-#          description: "DNS to use for Thanos."
-#          key: module.thanos.thanos_domain_name
-#          widget: simple_text
-#          type: string
-#          default: thanos.local
-#
-#    - name: Thanos Configuration
-#      technologies: [terraform]
-#      condition: $thanos_install == true
-#      vars:
-#        - name: Raw retention
-#          description: "Retention amount for data at the same ingestion rate as scraping interval. The value should be in the format 1d, 1w, 1m, 1y"
-#          key: module.thanos.retentionResolutionRaw
-#          widget: simple_text
-#          type: string
-#        - name: 5min retention
-#          description: "Retention amount for data at 5 min intervals. The value should be in the format 1d, 1w, 1m, 1y"
-#          key: module.thanos.retentionResolution5m
-#          widget: simple_text
-#          type: string
-#        - name: 1h retention
-#          description: "Retention amount for data at 1 hour intervals. The value should be in the format 1d, 1w, 1m, 1y"
-#          key: module.thanos.retentionResolution1h
-#          widget: simple_text
-#          type: string
   - *advanced
 
   - name: Optional parameters

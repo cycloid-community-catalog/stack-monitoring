@@ -75,11 +75,19 @@ resources:
       prometheus_install: ((prometheus_install))
       grafana_install: ((grafana_install))
       alertmanager_install: ((alertmanager_install))
-      #thanos_install: ((thanos_install))
       alertmanager_use_external: ((alertmanager_use_external))
       alertmanager_config_receivers: ((alertmanager_config_receivers))
       opsgenie_token: ((opsgenie_token))
       namespace: ((namespace))
+      grafana_sso_enabled: ((grafana_sso_enabled))
+      grafana_sso_provider_name: ((grafana_sso_provider_name))
+      grafana_sso_allowed_domains: ((grafana_sso_allowed_domains))
+      grafana_sso_client_id: ((grafana_sso_client_id))
+      grafana_sso_client_secret: ((grafana_sso_client_secret))
+      grafana_sso_api_url: ((grafana_sso_api_url))
+      grafana_sso_auth_url: ((grafana_sso_auth_url))
+      grafana_sso_token_url: ((grafana_sso_token_url))
+      grafana_sso_scopes: ((grafana_sso_scopes))
 
 - name: git_stack_terraform
   type: git
@@ -263,7 +271,6 @@ jobs:
             KUBECONFIG_CONTENT: ((kubeconfig_content))
             GRAFANA_INSTALL: ((grafana_install))
             PROMETHEUS_INSTALL: ((prometheus_install))
-            #THANOS_INSTALL: ((thanos_install))
             ALERTMANAGER_INSTALL: ((alertmanager_install))
 
   - name: terraform-destroy

@@ -1,7 +1,6 @@
 ################################################################################
 # Secrets required by helm chart:
 # - Basic auth secret: used to login in the different apps
-# - Object storage: to be used by thanos to store the monitoring data
 ################################################################################
 # basic auth
 

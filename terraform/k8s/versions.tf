@@ -13,5 +13,8 @@ terraform {
     cycloid = {
       source = "registry.terraform.io/cycloidio/cycloid"
     }
+    grafana = {
+      source = "registry.terraform.io/grafana/grafana"
+    }
   }
 }

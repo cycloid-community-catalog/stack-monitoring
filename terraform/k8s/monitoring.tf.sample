@@ -37,6 +37,7 @@ module "kube-prometheus" {
   alertmanager_use_external          = var.alertmanager_use_external
   alertmanager_config_receivers      = var.alertmanager_config_receivers
   #alertmanager_domain_name          = "alertmanager.local"
+  #alertmanager_users                = []
   #alertmanager_config_inhibit_rules = []
   #alertmanager_time_intervals       = []
   #alertmanager_config_route         = {}
@@ -44,11 +45,6 @@ module "kube-prometheus" {
   #alertmanager_pvc_size = "10"
   #alertmanager_data_retention = "10d"
 
-  #thanos_install = var.thanos_install
-
-  #depends_on = [
-  #  kubernetes_namespace.stack-monitoring
-  #]
 }
 
 module "prometheus-blackbox-exporter" {
@@ -67,10 +63,6 @@ module "prometheus-blackbox-exporter" {
   #blackbox_helm_version     = "8.17.0"
   #blackbox_exporter_modules = {}
 
-  #depends_on = [
-  #  kubernetes_namespace.stack-monitoring
-  #]
-
 }
 
 module "opsgenie-heartbeat" {
@@ -81,28 +73,23 @@ module "opsgenie-heartbeat" {
   env          = var.env
   organization = var.organization
   #####################################
+
   namespace                      = var.namespace
   extra_labels                   = module.kube-prometheus.extra_labels
   stack_monitoring_node_selector = module.kube-prometheus.stack_monitoring_node_selector
 
   #opsgenie_heartbeat_install = true
   opsgenie_token            = var.opsgenie_token
-
-  #depends_on = [
-  #  kubernetes_namespace.stack-monitoring
-  #]
-
 }
 
 module "cycloid-credentials" {
   #####################################
   # Do not modify the following lines #
-  source       = "./cycloid-credentials"
+  source       = "./module-cycloid-credentials"
   project      = var.project
   env          = var.env
   organization = var.organization
   #####################################
-
 
   prometheus_install  = var.prometheus_install
   prometheus_username = module.kube-prometheus.prometheus_basic_auth_username
@@ -115,38 +102,27 @@ module "cycloid-credentials" {
   grafana_username = module.kube-prometheus.grafana_basic_auth_username
   grafana_password = module.kube-prometheus.grafana_basic_auth_password
 
-  #depends_on = [
-  #  kubernetes_namespace.stack-monitoring
-  #]
-
 }
 
-#module "thanos" {
+module "grafana-management" {
   #####################################
   # Do not modify the following lines #
-#  source       = "./module-thanos"
-#  project      = var.project
-#  env          = var.env
-#  organization = var.organization
+  source       = "./module-grafana-management"
+  project      = var.project
+  env          = var.env
+  organization = var.organization
   #####################################
 
-#  providers = {
-#    aws = aws.module-thanos
-#  }
+  depends_on = [module.kube-prometheus]
 
-#thanos_helm_version            = "15.7.7"
-#  namespace                       = var.namespace
-#  extra_labels                    = module.kube-prometheus.extra_labels
-#  stack_monitoring_node_selector  = module.kube-prometheus.stack_monitoring_node_selector
-#  thanos_object_store_secret_name = module.kube-prometheus.thanos_object_store_secret_name
-
-  #thanos_install             = module.kube-prometheus.thanos_install
-  #thanos_domain_name         = "thanos.local"
-  #thanos_retention_raw       = "30d"
-  #thanos_retention_5m        = "120d"
-  #thanos_retention_1h        = "1y"
-#
-#  depends_on = [
-#    kubernetes_namespace.stack-monitoring
-#  ]
-#}
+  # Grafana OAuth SSO configuration
+  sso_provider_name = var.grafana_sso_provider_name
+  sso_enabled = var.grafana_sso_enabled
+  sso_allowed_domains = var.grafana_sso_provider_name
+  sso_client_id = var.grafana_sso_client_id
+  sso_client_secret = var.grafana_sso_client_secret
+  sso_api_url = var.grafana_sso_api_url
+  sso_auth_url = var.grafana_sso_auth_url
+  sso_token_url = var.grafana_sso_token_url
+  sso_scopes = var.grafana_sso_scopes
+}

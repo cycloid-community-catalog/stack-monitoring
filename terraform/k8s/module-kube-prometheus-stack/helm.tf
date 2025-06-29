@@ -89,12 +89,6 @@ EOL
     }
   }
 
-  ## thanos
-  #thanos_helm_vars = {
-  #  thanos = {
-  #    nodeSelector = var.stack_monitoring_node_selector
-  #  }
-  #}
 }
 
 resource "helm_release" "kube_prometheus_stack" {
@@ -120,8 +114,6 @@ resource "helm_release" "kube_prometheus_stack" {
     # prometheus
     yamlencode(local.prometheus_helm_vars)
 
-    #thanos
-    #yamlencode(local.thanos_helm_vars)
   ]
 
   dynamic "set" {
@@ -220,56 +212,51 @@ resource "helm_release" "kube_prometheus_stack" {
     value = "${var.grafana_pvc_size}Gi"
   }
 
-  #set {
-  #  name  = "grafana.persistence.size"
-  #  value = var.grafana_install ? "${var.grafana_pvc_size}Gi"
-  #}
-#
+##
+##  grafana.ini:
+##    auth.google:
+##      enabled = true
+##      client_id = CLIENT_ID
+##      client_secret = CLIENT_SECRET
+##      scopes = https://www.googleapis.com/auth/userinfo.profile
+##      https://www.googleapis.com/auth/userinfo.email
+##      auth_url = https://accounts.google.com/o/oauth2/auth
+##      token_url = https://accounts.google.com/o/oauth2/token
+##      allowed_domains = mycompany.com mycompany.org
+##      allow_sign_up = true
+##
+##
+#grafana:
 #  grafana.ini:
 #    auth.google:
-#      enabled = true
-#      client_id = CLIENT_ID
-#      client_secret = CLIENT_SECRET
-#      scopes = https://www.googleapis.com/auth/userinfo.profile
-#      https://www.googleapis.com/auth/userinfo.email
-#      auth_url = https://accounts.google.com/o/oauth2/auth
-#      token_url = https://accounts.google.com/o/oauth2/token
-#      allowed_domains = mycompany.com mycompany.org
-#      allow_sign_up = true
+#      enabled: true
+#      client_id: CLIENT_ID
+#      client_secret: CLIENT_SECRET
+#      scopes: https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email
+#      auth_url: https://accounts.google.com/o/oauth2/auth
+#      token_url: https://accounts.google.com/o/oauth2/token
+#      allowed_domains: mycompany.com mycompany.org
+#      allow_sign_up: true
 #
 #
-#    nginx.ingress.kubernetes.io/auth-request-redirect: $scheme://$host$request_uri
-#    nginx.ingress.kubernetes.io/auth-signin: https://oauth2-proxy.infra.cycloid.io/oauth2/start
-#    nginx.ingress.kubernetes.io/auth-url: https://oauth2-proxy.infra.cycloid.io/oauth2/auth
-#
-#
-#
-#grafana.ini:
-#  [auth.generic_oauth]
-#  enabled = true
-#  client_id = $__file{/etc/secrets/auth_generic_oauth/client_id}
-#  client_secret = $__file{/etc/secrets/auth_generic_oauth/client_secret}
-#
-#extraSecretMounts:
-#  - name: auth-generic-oauth-secret-mount
-#    secretName: auth-generic-oauth-secret
-#    defaultMode: 0440
-#    mountPath: /etc/secrets/auth_generic_oauth
-#    readOnly: true
-
-  #set {
-  #  name  = "grafana.ingress.annotations.nginx\\.ingress\\.kubernetes\\.io/auth-type"
-  #  value = "basic"
-  #}
-  #set {
-  #  name  = "grafana.ingress.annotations.nginx\\.ingress\\.kubernetes\\.io/auth-secret"
-  #  value = "grafana-basic-auth-${var.project}-${var.env}"
-  #}
-  #set {
-  #  name  = "grafana.ingress.annotations.nginx\\.ingress\\.kubernetes\\.io/auth-secret-type"
-  #  value = "auth-map"
-  #}
-
+##    nginx.ingress.kubernetes.io/auth-request-redirect: $scheme://$host$request_uri
+##    nginx.ingress.kubernetes.io/auth-signin: https://oauth2-proxy.infra.cycloid.io/oauth2/start
+##    nginx.ingress.kubernetes.io/auth-url: https://oauth2-proxy.infra.cycloid.io/oauth2/auth
+##
+##
+##
+##grafana.ini:
+##  [auth.generic_oauth]
+##  enabled = true
+##  client_id = $__file{/etc/secrets/auth_generic_oauth/client_id}
+##  client_secret = $__file{/etc/secrets/auth_generic_oauth/client_secret}
+##
+##extraSecretMounts:
+##  - name: auth-generic-oauth-secret-mount
+##    secretName: auth-generic-oauth-secret
+##    defaultMode: 0440
+##    mountPath: /etc/secrets/auth_generic_oauth
+##    readOnly: true
 
   # PROMETHEUS
   set {
@@ -326,24 +313,4 @@ resource "helm_release" "kube_prometheus_stack" {
     value = var.enable_prometheus_persistence ? var.prometheus_data_retention : "10d"
   }
 
-  # THANOS - disabled for now
-  #  set {
-  #    name  = "prometheus.thanosService.enabled"
-  #    value = var.thanos_install
-  #  }
-  #
-  #  set {
-  #    name  = "prometheus.thanosService.thanosServiceMonitor.enabled"
-  #    value = var.thanos_install
-  #  }
-  #
-  #  set {
-  #    name  = "objectStorageConfig.existingSecret.name"
-  #    value = local.thanos_object_store_secret_name
-  #  }
-  #
-  #  set {
-  #    name  = "objectStorageConfig.existingSecret.key"
-  #    value = "data"
-  #  }
 }

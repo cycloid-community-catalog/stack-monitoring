@@ -96,7 +96,6 @@ variable "grafana_feature_toggles"{
   default = "ssoSettingsApi"
 }
 
-
 #
 # ALERTMANAGER
 #

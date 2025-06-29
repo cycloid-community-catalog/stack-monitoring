@@ -99,6 +99,7 @@ EOL
         feature_toggles = {
           enable = var.grafana_feature_toggles
         }
+        root_url = "https://${var.grafana_domain_name}"
       }
     }
   }

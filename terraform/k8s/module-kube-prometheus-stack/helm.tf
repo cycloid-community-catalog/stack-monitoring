@@ -80,13 +80,13 @@ alertmanager:
 EOL
 
   # grafana
-  grafana_ini = <<EOL
-----
-grafana:
-  grafana.ini:
-    feature_toggles:
-      enable: ${var.grafana_feature_toggles}
-EOL
+#  grafana_ini = <<EOL
+#----
+#grafana:
+#  grafana.ini:
+#    feature_toggles:
+#      enable: ${var.grafana_feature_toggles}
+#EOL
 
 
   grafana_helm_vars = {
@@ -94,6 +94,11 @@ EOL
       nodeSelector = var.stack_monitoring_node_selector
       dashboards = {
         default = var.grafana_dashboard_import
+      }
+      grafana.ini = {
+        feature_toggles = {
+          enable = var.grafana_feature_toggles
+        }
       }
     }
   }
@@ -119,7 +124,7 @@ resource "helm_release" "kube_prometheus_stack" {
     # grafana
     yamlencode(local.grafana_helm_vars),
     local.dashboard_default_provider,
-    yamlencode(local.grafana_ini),
+    #yamlencode(local.grafana_ini),
 
     # prometheus
     yamlencode(local.prometheus_helm_vars)

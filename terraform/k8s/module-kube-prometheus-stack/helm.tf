@@ -82,9 +82,10 @@ EOL
   # grafana
   grafana_ini = <<EOL
 ----
-grafana.ini:
-  feature_toggles:
-    enable: ${var.grafana_feature_toggles}
+grafana
+  grafana.ini:
+    feature_toggles:
+      enable: ${var.grafana_feature_toggles}
 EOL
 
 

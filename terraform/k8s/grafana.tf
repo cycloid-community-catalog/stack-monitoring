@@ -14,7 +14,7 @@ module "grafana-management" {
   # Grafana OAuth SSO configuration
   sso_provider_name = var.grafana_sso_provider_name
   sso_enabled = var.grafana_sso_enabled
-  sso_allowed_domains = var.grafana_sso_provider_name
+  sso_allowed_domains = var.grafana_sso_allowed_domains
   sso_client_id = var.grafana_sso_client_id
   sso_client_secret = var.grafana_sso_client_secret
   sso_api_url = var.grafana_sso_api_url

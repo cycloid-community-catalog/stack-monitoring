@@ -13,6 +13,7 @@ resource "grafana_sso_settings" "github_sso_settings" {
     name    = "grafana-sso-${var.project}-${var.env}"
     allow_sign_up = true
     auto_login    = true
+    use_pkce      = true
 
     allowed_domains = var.sso_allowed_domains
     api_url         = var.sso_api_url

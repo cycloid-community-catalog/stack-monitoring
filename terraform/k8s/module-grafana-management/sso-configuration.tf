@@ -10,9 +10,9 @@ resource "grafana_sso_settings" "github_sso_settings" {
   provider_name = var.sso_provider_name
 
   oauth2_settings {
-    name    = "grafana-sso-${var.project}-${var.env}"
+    name    = var.sso_provider_name
     allow_sign_up = true
-    auto_login    = true
+    auto_login    = false
     use_pkce      = true
 
     allowed_domains = var.sso_allowed_domains

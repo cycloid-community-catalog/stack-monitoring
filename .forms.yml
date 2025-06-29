@@ -989,7 +989,7 @@ use_cases:
           default: false
 
     - name: Grafana OAuth SSO configuration
-      condition: $sso_enabled == true && $grafana_install == true
+      condition: $grafana_sso_enabled == true && $grafana_install == true
       technologies: [pipeline]
       vars:
         - name: "Grafana SSO provider name"

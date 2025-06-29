@@ -119,7 +119,7 @@ resource "helm_release" "kube_prometheus_stack" {
     # grafana
     yamlencode(local.grafana_helm_vars),
     local.dashboard_default_provider,
-    local.grafana_ini,
+    yamlencode(local.grafana_ini),
 
     # prometheus
     yamlencode(local.prometheus_helm_vars)

@@ -32,6 +32,7 @@ module "kube-prometheus" {
   #grafana_cms_to_remove             = []
   #enable_grafana_persistence = false
   #grafana_pvc_size = "10"
+  #grafana_feature_toggles = ""
 
   alertmanager_install               = var.alertmanager_install
   alertmanager_use_external          = var.alertmanager_use_external

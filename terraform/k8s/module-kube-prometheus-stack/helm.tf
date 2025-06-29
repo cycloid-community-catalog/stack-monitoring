@@ -211,9 +211,17 @@ resource "helm_release" "kube_prometheus_stack" {
     name  = "grafana.persistence.size"
     value = "${var.grafana_pvc_size}Gi"
   }
+  set {
+    name  = "grafana.persistence.size"
+    value = "${var.grafana_pvc_size}Gi"
+  }
 
+  set {
+    name  = "grafana.ini.feature_toggles.enable"
+    value = "var.grafana_feature_toggles"
+  }
 ##
-##  grafana.ini:
+##  grafana.ini.feature_toggle.ssoSettingsApi
 ##    auth.google:
 ##      enabled = true
 ##      client_id = CLIENT_ID

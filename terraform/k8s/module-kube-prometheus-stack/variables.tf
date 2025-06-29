@@ -92,6 +92,10 @@ variable "enable_grafana_persistence" {
 variable "grafana_pvc_size" {
   default = "10"
 }
+variable "grafana_feature_toggles"{
+  default = "ssoSettingsApi"
+}
+
 
 #
 # ALERTMANAGER

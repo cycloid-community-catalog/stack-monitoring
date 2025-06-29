@@ -977,6 +977,16 @@ use_cases:
           type: string
           default: grafana.local
 
+    - name: Grafana Parameters
+      condition: $grafana_install == true
+      technologies: [terraform]
+      vars:
+        - name: Grafana Feature togle
+          description: "Define a list of grafana features togles to activate, e.g.: "panelTitleSearch nestedFolders". Full list of features available to activate [here](https://grafana.com/docs/grafana/latest/setup-grafana/configure-grafana/feature-toggles/)"
+          key: grafana_feature_toggles
+          widget: simple_text
+          type: string
+
     - name: Grafana Oauth SSO
       condition: $grafana_install == true
       technologies: [pipeline]

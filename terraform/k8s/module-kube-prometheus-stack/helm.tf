@@ -95,7 +95,7 @@ EOL
       dashboards = {
         default = var.grafana_dashboard_import
       }
-      grafana.ini = {
+      "grafana.ini" = {
         feature_toggles = {
           enable = var.grafana_feature_toggles
         }

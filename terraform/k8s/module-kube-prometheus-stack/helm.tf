@@ -80,6 +80,14 @@ alertmanager:
 EOL
 
   # grafana
+  grafana_ini = <<EOL
+----
+grafana.ini:
+  feature_toggles:
+    enable: ${var.grafana_feature_toggles}
+EOL
+
+
   grafana_helm_vars = {
     grafana = {
       nodeSelector = var.stack_monitoring_node_selector
@@ -110,6 +118,7 @@ resource "helm_release" "kube_prometheus_stack" {
     # grafana
     yamlencode(local.grafana_helm_vars),
     local.dashboard_default_provider,
+    local.grafana_ini,
 
     # prometheus
     yamlencode(local.prometheus_helm_vars)
@@ -216,10 +225,10 @@ resource "helm_release" "kube_prometheus_stack" {
     value = "${var.grafana_pvc_size}Gi"
   }
 
-  set {
-    name  = "grafana.ini.feature_toggles.enable"
-    value = "var.grafana_feature_toggles"
-  }
+  #set {
+  #  name  = "grafana.ini.feature_toggles.enable"
+  #  value = "var.grafana_feature_toggles"
+  #}
 ##
 ##  grafana.ini.feature_toggle.ssoSettingsApi
 ##    auth.google:

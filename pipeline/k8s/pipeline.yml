@@ -88,6 +88,7 @@ resources:
       grafana_sso_auth_url: ((grafana_sso_auth_url))
       grafana_sso_token_url: ((grafana_sso_token_url))
       grafana_sso_scopes: ((grafana_sso_scopes))
+      grafana_sso_role_atribute_path: ((grafana_sso_role_atribute_path))
 
 - name: git_stack_terraform
   type: git

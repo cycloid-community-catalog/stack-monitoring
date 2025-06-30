@@ -22,5 +22,10 @@ resource "grafana_sso_settings" "github_sso_settings" {
     client_secret   = var.sso_client_secret
     token_url       = var.sso_token_url
     scopes          = var.sso_scopes
+
+    // roles
+    allow_assign_grafana_admin = true
+    skip_org_role_sync         = false
+    role_attribute_path        = var.sso_role_atribute_path
   }
 }

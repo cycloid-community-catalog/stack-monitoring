@@ -13,3 +13,4 @@ variable "sso_client_id" {}
 variable "sso_client_secret" {}
 variable "sso_token_url" {}
 variable "sso_scopes" {}
+variable "sso_role_atribute_path" {}

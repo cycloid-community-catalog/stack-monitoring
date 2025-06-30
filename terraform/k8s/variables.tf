@@ -25,6 +25,7 @@ variable "grafana_sso_api_url" {}
 variable "grafana_sso_auth_url" {}
 variable "grafana_sso_token_url" {}
 variable "grafana_sso_scopes" {}
+variable "grafana_sso_role_atribute_path" {}
 
 variable "alertmanager_use_external" {}
 variable "alertmanager_config_receivers" {

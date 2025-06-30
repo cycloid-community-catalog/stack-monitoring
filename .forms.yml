@@ -1035,25 +1035,27 @@ use_cases:
           key: grafana_sso_api_url
           widget: simple_text
           type: string
-          default: "https://www.googleapis.com/oauth2/v1/userinfo"
         - name: "Grafana SSO Auth URL"
           description: "The Auth URL to use for the SSO provider."
           key: grafana_sso_auth_url
           widget: simple_text
           type: string
-          default: "https://accounts.google.com/o/oauth2/auth"
         - name: "Grafana SSO Token URL"
           description: "The Token URL to use for the SSO provider."
           key: grafana_sso_token_url
           widget: simple_text
           type: string
-          default: "https://accounts.google.com/o/oauth2/token"
         - name: "Grafana SSO Scopes"
           description: "The scopes to use for the SSO provider. In the format of a list with comma or space separated values"
           key: grafana_sso_scopes
           widget: simple_text
           type: string
-          default: "https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth"
+          default: "openid email profile https://www.googleapis.com/auth/cloud-identity.groups.readonly"
+        - name: "Grafana Role Mapping"
+          description: "JMESPath expression to use for Grafana role lookup. More information [here](https://grafana.com/docs/grafana/latest/setup-grafana/configure-security/configure-authentication/google/#configure-role-mapping)"
+          key: grafana_sso_role_atribute_path
+          widget: simple_text
+          type: string
 
     - name: Grafana Dashboard Configuration
       technologies: [terraform]

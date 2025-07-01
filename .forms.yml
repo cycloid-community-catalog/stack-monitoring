@@ -811,7 +811,7 @@ use_cases:
           default: {}
         - name: "Prometheus Namespace scope"
           description: "Regex to reduce the namespace scope to which the prometheus rules will apply"
-          key: prometheus_rules_namespaces
+          key: module.kube-prometheus.prometheus_rules_namespaces
           widget: simple_text
           type: string
           default: ".*"

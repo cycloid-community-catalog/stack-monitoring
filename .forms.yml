@@ -809,6 +809,12 @@ use_cases:
           widget: text_area
           type: map
           default: {}
+        - name: "Prometheus Namespace scope"
+          description: "Regex to reduce the namespace scope to which the prometheus rules will apply"
+          key: prometheus_rules_namespaces
+          widget: simple_text
+          type: string
+          default: ".*"
 
     - name: Data persistency
       condition: $prometheus_install == true

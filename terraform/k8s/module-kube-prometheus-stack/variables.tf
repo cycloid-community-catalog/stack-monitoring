@@ -43,6 +43,9 @@ variable "prometheus_additional_scrape" {
 variable "prometheus_blackbox_scrape" {
   default = []
 }
+variable "prometheus_rules_namespaces" {
+  default = ".*"
+}
 variable "prometheus_change_default_rules" {
   default = {}
 }

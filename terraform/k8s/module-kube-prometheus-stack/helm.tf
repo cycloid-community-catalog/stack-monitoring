@@ -225,6 +225,11 @@ resource "helm_release" "kube_prometheus_stack" {
     value = var.prometheus_install
   }
 
+  set {
+    name  = "defaultRules.appNamespacesTarget"
+    value = var.prometheus_rules_namespaces
+  }
+
   # Disable monitoring rule
   # https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack/templates/prometheus/rules-1.14
   dynamic "set" {
@@ -272,6 +277,14 @@ resource "helm_release" "kube_prometheus_stack" {
   set {
     name  = "prometheus.prometheusSpec.retention"
     value = var.enable_prometheus_persistence ? var.prometheus_data_retention : "10d"
+  }
+
+  # kube-state-metrics
+  # In order to get annotations on kube_namespace_annotations metrics, we need to allow it on kube-state-metrics
+  # https://github.com/kubernetes/kube-state-metrics/issues/1582
+  set {
+    name  = "kube-state-metrics.metricAnnotationsAllowList[0]"
+    value = "namespaces=[*]"
   }
 
 }

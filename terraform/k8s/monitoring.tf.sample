@@ -17,6 +17,7 @@ module "kube-prometheus" {
   #prometheus_domain_name       = "prometheus.local"
   #prometheus_additional_scrape = {}
   #prometheus_blackbox_scrape = {}
+  #prometheus_rules_namespaces =  ".*"
   #prometheus_change_default_rules = {}
   #prometheus_default_rules_disabled = []
   #prometheus_default_alerts_disabled = []

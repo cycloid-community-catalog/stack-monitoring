@@ -273,6 +273,11 @@ resource "helm_release" "kube_prometheus_stack" {
     value = "auth-map"
   }
 
+  set {
+    name  = "prometheus.prometheusSpec.serviceMonitorSelectorNilUsesHelmValues"
+    value = "false"
+  }
+
   # Prometheus data retention
   set {
     name  = "prometheus.prometheusSpec.retention"

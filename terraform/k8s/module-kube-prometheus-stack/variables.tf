@@ -142,7 +142,7 @@ grafana:
       apiVersion: 1
       providers:
         - name: 'default'
-          folder: ''
+          folder: 'Kubernetes'
           options:
             path: /var/lib/grafana/dashboards/default
 EOL

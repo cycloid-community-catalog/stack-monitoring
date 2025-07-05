@@ -218,6 +218,10 @@ resource "helm_release" "kube_prometheus_stack" {
     name  = "grafana.persistence.size"
     value = "${var.grafana_pvc_size}Gi"
   }
+  set {
+    name  = "grafana.operator.folder"
+    value = "Kubernetes"
+  }
 
   # PROMETHEUS
   set {

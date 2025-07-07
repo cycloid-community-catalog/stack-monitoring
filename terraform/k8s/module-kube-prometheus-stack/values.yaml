@@ -1322,6 +1322,11 @@ kubelet:
     ##
     honorTimestamps: true
 
+    ## If true, defines whether Prometheus tracks staleness of the metrics that have an explicit timestamp present in scraped data. Has no effect if `honorTimestamps` is false.
+    ## We recommend enabling this if you want the best possible accuracy for container_ metrics scraped from cadvisor.
+    ##
+    trackTimestampsStaleness: true
+
     ## SampleLimit defines per-scrape limit on number of scraped samples that will be accepted.
     ##
     sampleLimit: 0
@@ -2271,6 +2276,12 @@ prometheus-node-exporter:
       #   targetLabel: nodename
       #   replacement: $1
       #   action: replace
+
+      ## Attach node metadata to discovered targets. Requires Prometheus v2.35.0 and above.
+      ##
+      # attachMetadata:
+      #   node: false
+
   rbac:
     ## If true, create PSPs for node-exporter
     ##
@@ -2993,7 +3004,7 @@ prometheusOperator:
   thanosImage:
     registry: quay.io
     repository: thanos/thanos
-    tag: v0.36.1
+    tag: v0.37.2
     sha: ""
 
   ## Set a Label Selector to filter watched prometheus and prometheusAgent
@@ -3619,7 +3630,7 @@ prometheus:
     image:
       registry: quay.io
       repository: prometheus/prometheus
-      tag: v2.55.0
+      tag: v3.0.1
       sha: ""
 
     ## Tolerations for use with node taints
@@ -4675,7 +4686,7 @@ thanosRuler:
     image:
       registry: quay.io
       repository: thanos/thanos
-      tag: v0.36.1
+      tag: v0.37.2
       sha: ""
 
     ## Namespaces to be selected for PrometheusRules discovery.

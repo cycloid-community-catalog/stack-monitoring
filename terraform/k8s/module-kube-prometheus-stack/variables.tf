@@ -8,9 +8,7 @@ variable "organization" {}
 #
 # GENERAL VARIABLES
 #
-variable "kube_prometheus_helm_version" {
-  default = "66.0.0"
-}
+
 variable "namespace" {}
 variable "extra_labels" {
   default = {}

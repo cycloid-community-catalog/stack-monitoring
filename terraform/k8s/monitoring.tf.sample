@@ -7,7 +7,6 @@ module "kube-prometheus" {
   organization = var.organization
   #####################################
 
-  #kube_prometheus_helm_version   = "75.9.0"
   namespace                       = var.namespace
   #extra_labels                   = {}
   #disable_component_scraping     = [] #kubeApiServer kubelet kubeControllerManager coreDns kubeDns kubeEtcd kubeScheduler kubeProxy kubeStateMetrics

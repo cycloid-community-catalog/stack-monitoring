@@ -102,7 +102,7 @@ EOL
 ---
 grafana:
   additionalDataSources:
-    ${join("\n      ", split("\n", var.grafana_additional_datasources))}
+    ${join("\n    ", split("\n", var.grafana_additional_datasources))}
 EOL
 
 }

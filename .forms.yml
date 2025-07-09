@@ -1072,7 +1072,6 @@ use_cases:
           key: module.kube-prometheus.grafana_additional_datasources
           widget: cy_cred
           type: string
-          default: []
 
     - name: Grafana Dashboard Configuration
       technologies: [terraform]

@@ -1063,6 +1063,17 @@ use_cases:
           widget: simple_text
           type: string
 
+    - name: Grafana extra datasources
+      technologies: [pipeline]
+      condition: $grafana_install == true
+      vars:
+        - name: Extra datasource list to use
+          description: "Array of extra datasources to use. TODO doc of all"
+          key: module.kube-prometheus.grafana_additional_datasources
+          widget: text_area
+          type: array
+          default: []
+
     - name: Grafana Dashboard Configuration
       technologies: [terraform]
       condition: $grafana_install == true
@@ -1091,6 +1102,13 @@ use_cases:
           widget: text_area
           type: map
           default: {}
+        - name: Grafana alert list
+          description: "Defines a list of alerts to implement. TODO add link in doc on how to add"
+          key: module.kube-prometheus.grafana_alerts
+          widget: text_area
+          type: map
+          default: {}
+
 
     - name: Data persistency
       condition: $grafana_install == true

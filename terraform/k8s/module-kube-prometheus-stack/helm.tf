@@ -93,6 +93,8 @@ EOL
           root_url = "https://${var.grafana_domain_name}"
         }
       }
+      additionalDataSources = var.grafana_additional_datasources
+      alerting = var.grafana_alerts
     }
   }
 
@@ -199,6 +201,11 @@ resource "helm_release" "kube_prometheus_stack" {
   set {
     name  = "grafana.ingress.hosts[0]"
     value = var.grafana_domain_name
+  }
+
+  set {
+    name  = "grafana.sidecar.datasources.alertmanager.handleGrafanaManagedAlerts"
+    value = true
   }
 
   # Grafana data persistency

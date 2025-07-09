@@ -30,7 +30,8 @@ grafana_sso_api_url: "https://www.googleapis.com/oauth2/v1/userinfo"
 grafana_sso_auth_url: "https://accounts.google.com/o/oauth2/auth"
 grafana_sso_token_url: "https://accounts.google.com/o/oauth2/token"
 grafana_sso_scopes: "https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth"
-grafana_sso_role_atribute_path : ""
+grafana_sso_role_atribute_path: ""
+grafana_additional_datasources: []
 
 # alertmanager - external (not created with the stack)
 alertmanager_use_external: ""

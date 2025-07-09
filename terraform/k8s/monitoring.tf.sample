@@ -34,6 +34,8 @@ module "kube-prometheus" {
   #enable_grafana_persistence        = false
   #grafana_pvc_size                  = "10"
   #grafana_feature_toggles           = ""
+  grafana_additional_datasources     = var.grafana_additional_datasources
+  #grafana_alerts                    = {}
 
   alertmanager_install               = var.alertmanager_install
   alertmanager_use_external          = var.alertmanager_use_external

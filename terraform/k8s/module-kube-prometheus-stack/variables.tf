@@ -96,6 +96,12 @@ variable "grafana_pvc_size" {
 variable "grafana_feature_toggles"{
   default = "ssoSettingsApi"
 }
+variable "grafana_additional_datasources"{
+  default = []
+}
+variable "grafana_alerts"{
+  default = {}
+}
 
 #
 # ALERTMANAGER

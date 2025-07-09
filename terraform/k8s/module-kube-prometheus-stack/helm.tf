@@ -93,10 +93,17 @@ EOL
           root_url = "https://${var.grafana_domain_name}"
         }
       }
-      additionalDataSources = var.grafana_additional_datasources
       alerting = var.grafana_alerts
     }
   }
+
+    # with credential gets always interpreted as string
+  grafana_additional_datasources = <<EOL
+---
+grafana:
+  additionalDataSources:
+    ${join("\n      ", split("\n", var.grafana_additional_datasources))}
+EOL
 
 }
 
@@ -121,8 +128,8 @@ resource "helm_release" "kube_prometheus_stack" {
     local.dashboard_default_provider,
 
     # prometheus
-    yamlencode(local.prometheus_helm_vars)
-
+    yamlencode(local.prometheus_helm_vars),
+    local.grafana_additional_datasources
   ]
 
   dynamic "set" {

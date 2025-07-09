@@ -1070,8 +1070,8 @@ use_cases:
         - name: Extra datasource list to use
           description: "Array of extra datasources to use. TODO doc of all"
           key: module.kube-prometheus.grafana_additional_datasources
-          widget: text_area
-          type: array
+          widget: cy_cred
+          type: string
           default: []
 
     - name: Grafana Dashboard Configuration

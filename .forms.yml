@@ -1069,7 +1069,7 @@ use_cases:
       vars:
         - name: Extra datasource list to use
           description: "Array of extra datasources to use. TODO doc of all"
-          key: module.kube-prometheus.grafana_additional_datasources
+          key: grafana_additional_datasources
           widget: cy_cred
           type: string
 

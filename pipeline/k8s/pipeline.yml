@@ -23,6 +23,8 @@ definitions:
             path: "config"
           - name: git_stack_terraform
             path: "stack"
+          - name: git_stack_grafana_dashboards
+            path: stack/terraform/k8s/grafana-dashboards
         outputs:
           - name: merged-stack
             path: "merged-stack"
@@ -100,6 +102,16 @@ resources:
     # Include only the Terraform files in the specified directory.
     paths:
       - terraform/k8s/*
+
+- name: git_stack_grafana_dashboards
+  type: git
+  icon: github-circle
+  source:
+    uri: https://github.com/cycloid-community-catalog/stack-monitoring.git
+    branch: ($ .scs_branch $)
+    # Include only the Terraform files in the specified directory.
+    paths:
+      - grafana-dashboards*
 
 - name: git_config_terraform
   type: git

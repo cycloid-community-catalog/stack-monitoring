@@ -6,7 +6,7 @@
 
 # ssh key
 resource "cycloid_credential" "vm_ssh" {
-  count = var.use_bastion ? 0 : 1
+  count                  = var.enable_ssh ? 0 : 1
   name                   = "ssh-${var.project}-${var.env}"
   organization_canonical = var.organization
   path                   = "${var.project}_vm_ssh_${var.env}"
@@ -19,7 +19,7 @@ resource "cycloid_credential" "vm_ssh" {
 
 # prometheus basic auth
 resource "cycloid_credential" "prometheus_basic_auth" {
-  count = var.prometheus_install ? 1 : 0
+  count                  = var.prometheus_install ? 1 : 0
   name                   = "prometheus-${var.project}-${var.env}"
   organization_canonical = var.organization
   path                   = "${var.project}_prometheus_${var.env}"
@@ -27,13 +27,13 @@ resource "cycloid_credential" "prometheus_basic_auth" {
   type                   = "basic_auth"
   body = {
     username = var.prometheus_username
-	  password = var.prometheus_password
+    password = var.prometheus_password
   }
 }
 
 # alertmanager basic auth
 resource "cycloid_credential" "alertmanager_basic_auth" {
-  count = var.alertmanager_install ? 1 : 0
+  count                  = var.alertmanager_install ? 1 : 0
   name                   = "${var.project}-${var.env}"
   organization_canonical = var.organization
   path                   = "${var.project}_alertmanager_${var.env}"
@@ -41,13 +41,13 @@ resource "cycloid_credential" "alertmanager_basic_auth" {
   type                   = "basic_auth"
   body = {
     username = var.alertmanager_username
-	  password = var.alertmanager_password
+    password = var.alertmanager_password
   }
 }
 
 # grafana basic auth
 resource "cycloid_credential" "grafana_basic_auth" {
-  count = var.grafana_install ? 1 : 0
+  count                  = var.grafana_install ? 1 : 0
   name                   = "Grafana Basic Auth : ${var.project} - ${var.env} "
   organization_canonical = var.organization
   path                   = "${var.project}_grafana_${var.env}"
@@ -55,6 +55,6 @@ resource "cycloid_credential" "grafana_basic_auth" {
   type                   = "basic_auth"
   body = {
     username = var.grafana_username
-	  password = var.grafana_password
+    password = var.grafana_password
   }
 }

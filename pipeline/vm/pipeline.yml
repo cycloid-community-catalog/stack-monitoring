@@ -67,7 +67,6 @@ resources:
       aws_access_cred: ((aws_access_cred))
       aws_region: ((aws_default_region))
       aws_extra_tags: ((aws_extra_tags))
-      bastion_public_ssh_key : ((bastion_public_ssh_key))
       enable_tls: ((enable_tls))
       create_self_signed_certificate: ((create_self_signed_certificate))
       tls_crt: ((tls_crt))
@@ -208,40 +207,22 @@ jobs:
               - '-exc'
               - |
                 # temporary hack because of issue with \n in merge-stack-and-config
-                jq '.ssh_private_key = "" | .ssh_public_key = "" | .nginx_cert = "" | .nginx_cert_key = ""' terraform/metadata > terraform/metadata.tmp && mv terraform/metadata.tmp terraform/metadata
+                jq '.nginx_cert = "" | .nginx_cert_key = ""' terraform/metadata > terraform/metadata.tmp && mv terraform/metadata.tmp terraform/metadata
                 /usr/bin/merge-stack-and-config
 
-                if ["$USE_SSM_AGENT" = true]; then
+                # ansible SSM parameter
+                ANSIBLE_AWS_SSM_BUCKET_NAME=$(jq -r  .s3_bucket_ansible.name ${DIR}/tfstate/metadata)
+                ANSIBLE_AWS_SSM_REGION=$(jq -r  .s3_bucket_ansible.region ${DIR}/tfstate/metadata)
 
-                  # ansible SSM parameter
-                  ANSIBLE_AWS_SSM_BUCKET_NAME=$(jq -r  .s3_bucket_ansible.name ${DIR}/tfstate/metadata)
-                  ANSIBLE_AWS_SSM_REGION=$(jq -r  .s3_bucket_ansible.region ${DIR}/tfstate/metadata)
-
-                  cat >> merged-stack/inventory <<EOF
-                  [all:vars]
-                  ansible_connection=aws_ssm
-                  ansible_aws_ssm_bucket_name=$ANSIBLE_AWS_SSM_BUCKET_NAME
-                  ansible_aws_ssm_region=$ANSIBLE_AWS_SSM_REGION
-                  ansible_aws_ssm_s3_addressing_style=virtual
-                  ansible_aws_ssm_access_key_id=$AWS_ACCESS_KEY_ID
-                  ansible_aws_ssm_secret_access_key=$AWS_SECRET_ACCESS_KEY
-                  EOF
-
-                else
-
-                  # create inventory file
-                  #($- if eq .use_case "aws-vm" $)
-                  echo -e "[tag_vm_aws]" >> merged-stack/inventory
-                  #($- else if eq .use_case "azure-vm" $)
-                  # echo -e "[tag_vm_azure]" >> merged-stack/inventory
-                  #($- end $)
-
-                  if [ "$USE_BASTION" = true ]; then
-                    jq -r '.machine_ip_private_address' terraform/metadata >> merged-stack/inventory
-                  else
-                    jq -r '.machine_ip_public_address' terraform/metadata >> merged-stack/inventory
-                  fi
-                fi
+                cat >> merged-stack/inventory <<EOF
+                [all:vars]
+                ansible_connection=aws_ssm
+                ansible_aws_ssm_bucket_name=$ANSIBLE_AWS_SSM_BUCKET_NAME
+                ansible_aws_ssm_region=$ANSIBLE_AWS_SSM_REGION
+                ansible_aws_ssm_s3_addressing_style=virtual
+                ansible_aws_ssm_access_key_id=$AWS_ACCESS_KEY_ID
+                ansible_aws_ssm_secret_access_key=$AWS_SECRET_ACCESS_KEY
+                EOF
 
                 cat merged-stack/inventory
 
@@ -258,8 +239,6 @@ jobs:
         params:
           CONFIG_PATH: ($ .project $)/ansible
           STACK_PATH: ansible
-          USE_BASTION: ((use_bastion))
-          USE_SSM_AGENT: ((use_ssm_agent))
 
       - task: run-ansible
         config:
@@ -278,23 +257,16 @@ jobs:
                 #https://stackoverflow.com/questions/54377305/tar-not-found-in-archive-error-when-using-docker-alpine
                 apk add --no-cache tar > /dev/null 2>&1
 
-                if [ "$SSH_PRIVATE_KEY" = "" ]; then
-                  # ansible connects directly to the machine without using the bastion ssh key for that
-                  export SSH_PRIVATE_KEY=$(jq -r '.ssh_private_key' terraform/metadata)
-                fi
-
                 # temporary fix because of \n issue in merge-stack-and-config
                 jq -r '.nginx_cert' terraform/metadata > ansible-playbook/tls.crt
                 jq -r '.nginx_cert_key' terraform/metadata > ansible-playbook/tls.key
 
                 # Static inventory
                 ansible-inventory -i ansible-playbook/inventory --graph
-                if ["$USE_SSM_AGENT" = true]; then
-                  # unset AWS var to not trigger the ansible aws dynamic inventory
-                  unset AWS_ACCESS_KEY_ID
-                  unset AWS_DEFAULT_REGION
-                  unset AWS_SECRET_ACCESS_KEY
-                fi
+                # unset AWS var to not trigger the ansible aws dynamic inventory
+                unset AWS_ACCESS_KEY_ID
+                unset AWS_DEFAULT_REGION
+                unset AWS_SECRET_ACCESS_KEY
 
                 /usr/bin/ansible-runner
           caches:
@@ -308,13 +280,10 @@ jobs:
         params:
           ANSIBLE_PLAYBOOK_PATH: ansible-playbook
           ANSIBLE_PLAYBOOK_NAME: main.yml
-          SSH_JUMP_URL: ((bastion_url))
-          SSH_PRIVATE_KEY: ((bastion_private_ssh_key))
           ANSIBLE_INVENTORY: inventory
           EXTRA_ANSIBLE_ARGS: "-i inventory"
           ANSIBLE_FORCE_GALAXY: false
           ANSIBLE_REMOTE_USER:  admin
-          USE_SSM_AGENT: ((use_ssm_agent))
 #($- if eq .use_case "aws-vm" $)
           EXTRA_ARGS: "--limit tag_vm_aws"
 #($- else if eq .use_case "azure-vm" $)
@@ -394,25 +363,17 @@ jobs:
 
               # Display tips
               echo -e "Here are some tips to help debug issues\n"
-              echo -e "Remote connect to the vm:"
-              if [ "$USE_SSM_AGENT" = "true" ]; then
-                pinfo "export AWS_ACCESS_KEY_ID=..."
-                pinfo "export AWS_SECRET_ACCESS_KEY=..."
-                pinfo "export AWS_DEFAULT_REGION=..."
-                pinfo "aws_connect ${ORG}-vm-monitoring-${ENV} connect"
+              echo -e "Connect to the VM using AWS SSM:"
+              pinfo "export AWS_ACCESS_KEY_ID=..."
+              pinfo "export AWS_SECRET_ACCESS_KEY=..."
+              pinfo "export AWS_DEFAULT_REGION=..."
+              pinfo "aws_connect ${ORG}-vm-monitoring-${ENV} connect"
 
-              else
-
-                if [ "$USE_BASTION" = "true" ]; then
-                  echo -e "Connect to the bastion:"
-                  pinfo "ssh -A $BASTION_URL"
-                  echo -e "Once inside connect to the machine using its private inputs:"
-                  pinfo "ssh admin@$(jq -r .machine_ip_private_address tfstate/metadata)"
-                else
-                  echo -e "Private ssh key available at the credential : $(jq -r .ssh_private_key_cred_cannonical tfstate/metadata)"
-                  echo -e "Copy the key into a local file"
-                  pinfo "ssh -i .SSH_FILE admin@$(jq -r .machine_ip_public_address tfstate/metadata)"
-                fi
+              if [ "$ENABLE_SSH" = "true" ]; then
+                echo -e "Connect to the VM using SSH:"
+                echo -e "Private ssh key available at the credential : $(jq -r .ssh_private_key_cred_cannonical tfstate/metadata)"
+                echo -e "Copy the key into a local file"
+                pinfo "ssh -i .SSH_FILE admin@$(jq -r .machine_ip_public_address tfstate/metadata)"
               fi
 
           inputs:
@@ -425,9 +386,7 @@ jobs:
             GRAFANA_INSTALL: ((grafana_install))
             PROMETHEUS_INSTALL: ((prometheus_install))
             ALERTMANAGER_INSTALL: ((alertmanager_install))
-            USE_BASTION: ((use_bastion))
-            BASTION_URL: ((bastion_url))
-            USE_SSM_AGENT: ((use_ssm_agent))
+            ENABLE_SSH: ((enable_ssh))
 
   - name: terraform-destroy
     serial: true

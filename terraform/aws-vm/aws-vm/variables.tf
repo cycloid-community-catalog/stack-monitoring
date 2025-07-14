@@ -22,22 +22,17 @@ variable "vm_iam_policies" {
 # vm network variables
 variable "subnet_id" {}
 variable "vpc_id" {}
+
+variable "enable_ssh" {
+  default = false
+}
 variable "ssh_to_allow" {
   type = map(list(string))
 
   default = {
     cidr = ["0.0.0.0/0"]
-    sgs = []
+    sgs  = []
   }
-}
-variable "use_bastion" {
-  default = false
-}
-variable "use_ssm_agent"{
-  default = true
-}
-variable "bastion_public_ssh_key" {
-  default = ""
 }
 
 # ssl
@@ -83,6 +78,6 @@ variable "grafana_domain_name" {
 # required for cloudwatch recovery
 variable "aws_region" {}
 
-locals{
+locals {
   username = var.organization
 }

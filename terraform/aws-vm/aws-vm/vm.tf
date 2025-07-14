@@ -32,12 +32,12 @@ data "aws_ami" "debian" {
 
 # vm instance
 resource "aws_instance" "vm" {
-  ami = data.aws_ami.debian.id
+  ami                  = data.aws_ami.debian.id
   iam_instance_profile = aws_iam_instance_profile.vm.name
   instance_type        = var.vm_size
   key_name             = "${var.organization}-vm-monitoring-${var.env}"
 
-  user_data_base64 = var.use_ssm_agent ? base64encode(templatefile("${path.module}/userdata.sh.tpl", {})) : null
+  user_data_base64 = base64encode(templatefile("${path.module}/userdata.sh.tpl", {}))
 
   vpc_security_group_ids = [aws_security_group.vm.id]
   subnet_id              = var.subnet_id

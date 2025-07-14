@@ -18,11 +18,7 @@ terraform_version: "1.6.3"
 ansible_version: "10.1"
 
 ## SSH key to acess instance
-use_ssh_agent: true
-use_bastion: false
-bastion_url: ""
-bastion_private_ssh_key: ""
-bastion_public_ssh_key: ""
+enable_ssh:  false
 
 ## nginx certificates
 enable_tls: true

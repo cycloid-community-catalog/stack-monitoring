@@ -3,8 +3,8 @@ variable "organization" {}
 variable "project" {}
 variable "env" {}
 
-variable "use_bastion" {
-	default = false
+variable "enable_ssh" {
+  default = false
 }
 variable "vm_private_ssh_key" {}
 
@@ -20,6 +20,6 @@ variable "grafana_install" {}
 variable "grafana_username" {}
 variable "grafana_password" {}
 
-variable "use_ssm_agent"{
-	default = true
+variable "use_ssm_agent" {
+  default = true
 }

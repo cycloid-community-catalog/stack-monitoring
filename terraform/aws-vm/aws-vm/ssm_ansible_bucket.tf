@@ -6,7 +6,6 @@
 ###
 
 resource "aws_s3_bucket" "ansible" {
-  count = var.use_ssm_agent ? 1 : 0
 
   bucket = "${var.organization}-${var.project}-${var.env}-ansible"
 

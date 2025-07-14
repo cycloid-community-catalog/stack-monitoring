@@ -134,16 +134,16 @@ use_cases:
     - name: VM remote access
       technologies: [pipeline, terraform]
       vars:
-        - name: "Use SSM agent"
-          description: "Connect to the machine using AWS SSM agent. Check the [page](TODO) for more information"
-          key: use_ssm_agent
+        - name: "Enable SSH access"
+          description: "Wheter to enable ssh access to machine"
+          key: enable_ssh
           type: boolean
           widget: switch
           default: true
 
     - name: SSH access
       technologies: [terraform]
-      condition: use_ssm_agent == false
+      condition: enable_ssh == false
       vars:
         - name: "SSH CIDR and CIDR to allow"
           description: "Map containing the CIDR and security groups IDs to allow SSH access to the monitoring VM, use the map keys cidr and sg. Default CIDR:0.0.0.0/0"
@@ -154,37 +154,6 @@ use_cases:
             cidr:
               - 0.0.0.0/0
             sg: []
-
-    - name: Bastion enable
-      condition: $use_ssm_agent == false
-      technologies: [pipeline,terraform]
-      vars:
-        - name: "Use Bastion"
-          description: "Select wheter to use a Bastion to SSH instance.The bastion CIDR or SG should be added in the SSH allowed above"
-          key: use_bastion
-          type: boolean
-          widget: switch
-          default: true
-
-    - name: Bastion Access
-      condition: $use_ssm_agent == false && $use_bastion == true
-      technologies: [pipeline]
-      vars:
-        - name: "Bastion URL"
-          description: "The URL to be used to connect to the bastion, in the format {USER}@{INSTANCE}"
-          key: bastion_url
-          type: string
-          widget: simple_text
-        - name: "Bastion Private SSH key"
-          description: "The private SSH key to use to connect to the bastion"
-          key: bastion_private_ssh_key
-          widget: cy_cred
-          type: string
-        - name: "Bastion Public SSH key"
-          description: "The public SSH key to use to connect to the bastion"
-          key: bastion_public_ssh_key
-          widget: cy_cred
-          type: string
 
     - name: Enable SSL
       condition: $advanced_opt == true

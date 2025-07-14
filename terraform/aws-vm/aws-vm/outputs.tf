@@ -73,35 +73,35 @@ output "grafana_basic_auth_httpwd" {
 
 # certs
 
-output "enable_tls"{
+output "enable_tls" {
   value = var.enable_tls
 }
 
 output "nginx_cert" {
-  value     = var.tls_crt != "" ? var.tls_crt : tls_self_signed_cert.cert[0].cert_pem
+  value = var.tls_crt != "" ? var.tls_crt : tls_self_signed_cert.cert[0].cert_pem
 }
 
 output "nginx_cert_key" {
-  value     = var.tls_key != "" ? var.tls_key : tls_private_key.cert[0].private_key_pem
+  value = var.tls_key != "" ? var.tls_key : tls_private_key.cert[0].private_key_pem
 }
 
 
 # ssh key
 
 output "ssh_private_key" {
-  value     = var.use_bastion ? "" : tls_private_key.ssh_key[0].private_key_openssh
+  value     = var.enable_ssh ? "" : tls_private_key.ssh_key[0].private_key_openssh
   sensitive = true
 }
 
 output "ssh_public_key" {
-  value = var.use_bastion ? var.bastion_public_ssh_key : tls_private_key.ssh_key[0].public_key_openssh
+  value = var.enable_ssh ? "" : tls_private_key.ssh_key[0].public_key_openssh
 }
 
 # ssm agent
 
 output "s3_bucket_ansible" {
-  value = var.use_ssm_agent ? {
-    "name"   = aws_s3_bucket.ansible[0].id
-    "region" = aws_s3_bucket.ansible[0].region
-  } : {}
+  value = {
+    "name"   = aws_s3_bucket.ansible.id
+    "region" = aws_s3_bucket.ansible.region
+  }
 }

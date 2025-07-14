@@ -7,7 +7,7 @@
 # optional policies to check
 data "aws_iam_policy_document" "vm" {
   statement {
-    actions = var.vm_iam_policies
+    actions   = var.vm_iam_policies
     effect    = "Allow"
     resources = ["*"]
   }
@@ -58,7 +58,6 @@ resource "aws_iam_role_policy_attachment" "vm" {
 }
 
 resource "aws_iam_role_policy_attachment" "ssm" {
-  count      = var.use_ssm_agent ? 1 : 0
   role       = aws_iam_role.vm.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
 }

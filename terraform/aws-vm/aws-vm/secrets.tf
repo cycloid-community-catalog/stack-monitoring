@@ -8,25 +8,25 @@
 
 # SSH KEY
 resource "tls_private_key" "ssh_key" {
-  count = var.use_bastion ? 0 : 1
+  count     = var.enable_ssh ? 0 : 1
   algorithm = "RSA"
 }
 
 ## create keypair
-# import bastion key
 resource "aws_key_pair" "vm" {
+  count      = var.enable_ssh ? 0 : 1
   key_name   = "${var.organization}-vm-monitoring-${var.env}"
-  public_key = var.use_bastion ? var.bastion_public_ssh_key : tls_private_key.ssh_key[0].public_key_openssh
+  public_key = tls_private_key.ssh_key[0].public_key_openssh
 }
 
 # self signed certificate
 resource "tls_private_key" "cert" {
-  count = (var.enable_tls && var.create_self_signed_certificate) ? 1 : 0
+  count     = (var.enable_tls && var.create_self_signed_certificate) ? 1 : 0
   algorithm = "RSA"
 }
 
 resource "tls_self_signed_cert" "cert" {
-  count = (var.enable_tls && var.create_self_signed_certificate) ? 1 : 0
+  count           = (var.enable_tls && var.create_self_signed_certificate) ? 1 : 0
   private_key_pem = tls_private_key.cert[0].private_key_pem
 
   # Certificate expires after 1 year (365×24)
@@ -45,19 +45,19 @@ resource "tls_self_signed_cert" "cert" {
 # basic auth
 
 resource "random_password" "prometheus_basic_auth_password" {
-  count = var.prometheus_install ? 1 : 0
+  count   = var.prometheus_install ? 1 : 0
   length  = 32
   special = false
 }
 
 resource "random_password" "alertmanager_basic_auth_password" {
-  count = var.alertmanager_install ? 1 : 0
+  count   = var.alertmanager_install ? 1 : 0
   length  = 32
   special = false
 }
 
 resource "random_password" "grafana_basic_auth_password" {
-  count = var.grafana_install ? 1 : 0
+  count   = var.grafana_install ? 1 : 0
   length  = 32
   special = false
 }

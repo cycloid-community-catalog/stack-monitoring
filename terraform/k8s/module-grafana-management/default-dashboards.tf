@@ -26,5 +26,5 @@ resource "grafana_dashboard" "dashboards" {
   config_json = file("${path.module}/../grafana-dashboards/${each.key}")
   uid         = replace(basename(each.key), ".json", "")
   overwrite   = true
-  folder      = if local.dashboard_paths[each.key] ! = "." : grafana_folder.folders[local.dashboard_paths[each.key]].id : "dashboard-tests"
+  folder      = local.dashboard_paths[each.key] != "." ? grafana_folder.folders[local.dashboard_paths[each.key]].id : "dashboard-tests"
 }

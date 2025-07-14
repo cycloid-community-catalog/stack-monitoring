@@ -211,8 +211,8 @@ jobs:
                 /usr/bin/merge-stack-and-config
 
                 # ansible SSM parameter
-                ANSIBLE_AWS_SSM_BUCKET_NAME=$(jq -r  .s3_bucket_ansible.name ${DIR}/tfstate/metadata)
-                ANSIBLE_AWS_SSM_REGION=$(jq -r  .s3_bucket_ansible.region ${DIR}/tfstate/metadata)
+                ANSIBLE_AWS_SSM_BUCKET_NAME=$(jq -r  .s3_bucket_ansible.name terraform/metadata)
+                ANSIBLE_AWS_SSM_REGION=$(jq -r  .s3_bucket_ansible.region terraform/metadata)
 
                 cat >> merged-stack/inventory <<EOF
                 [all:vars]
@@ -239,6 +239,8 @@ jobs:
         params:
           CONFIG_PATH: ($ .project $)/ansible
           STACK_PATH: ansible
+          AWS_ACCESS_KEY_ID: ((aws_access_cred.access_key))
+          AWS_SECRET_ACCESS_KEY: ((aws_access_cred.secret_key))
 
       - task: run-ansible
         config:

@@ -239,8 +239,8 @@ jobs:
         params:
           CONFIG_PATH: ($ .project $)/ansible
           STACK_PATH: ansible
-          AWS_ACCESS_KEY_ID: ((aws_access_cred.access_key))
-          AWS_SECRET_ACCESS_KEY: ((aws_access_cred.secret_key))
+          AWS_ACCESS_KEY_ID: ((((aws_access_cred)).access_key))
+          AWS_SECRET_ACCESS_KEY: ((((aws_access_cred)).secret_key))
 
       - task: run-ansible
         config:

@@ -143,7 +143,7 @@ use_cases:
 
     - name: SSH access
       technologies: [terraform]
-      condition: enable_ssh == false
+      condition: enable_ssh == true
       vars:
         - name: "SSH CIDR and CIDR to allow"
           description: "Map containing the CIDR and security groups IDs to allow SSH access to the monitoring VM, use the map keys cidr and sg. Default CIDR:0.0.0.0/0"

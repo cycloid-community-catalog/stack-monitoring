@@ -17,14 +17,13 @@ definitions:
           - '-ec'
           - |
             echo -e "${KUBECONFIG_CONTENT}" > stack/terraform/k8s/${KUBECONFIG_FILENAME}
+            cp -r stack/grafana-dashboards/ stack/terraform/k8s/grafana-dashboards/
             /usr/bin/merge-stack-and-config
         inputs:
           - name: git_config_terraform
             path: "config"
           - name: git_stack_terraform
             path: "stack"
-          - name: git_stack_default_grafana_dashboards
-            path: stack/terraform/k8s/grafana-dashboards
         outputs:
           - name: merged-stack
             path: "merged-stack"
@@ -102,16 +101,8 @@ resources:
     # Include only the Terraform files in the specified directory.
     paths:
       - terraform/k8s/*
+      - grafana-dashboards/*
 
-- name: git_stack_default_grafana_dashboards
-  type: git
-  icon: github-circle
-  source:
-    uri: https://github.com/cycloid-community-catalog/stack-monitoring.git
-    branch: ($ .scs_branch $)
-    # Include only the Terraform files in the specified directory.
-    paths:
-      - grafana-dashboards*
 
 - name: git_config_terraform
   type: git
@@ -141,7 +132,6 @@ jobs:
           trigger: true
         - get: git_config_terraform
           trigger: true
-        - get: git_stack_default_grafana_dashboards
         - *task-merge-stack-and-config
         - put: tfstate
           params:
@@ -164,9 +154,6 @@ jobs:
             - terraform-plan
         - get: tfstate
           trigger: false
-          passed:
-            - terraform-plan
-        - get: git_stack_default_grafana_dashboards
           passed:
             - terraform-plan
         - *task-merge-stack-and-config
@@ -300,8 +287,6 @@ jobs:
           - get: git_stack_terraform
             trigger: false
           - get: git_config_terraform
-            trigger: false
-          - get: git_stack_default_grafana_dashboards
             trigger: false
           - *task-merge-stack-and-config
           - put: tfstate

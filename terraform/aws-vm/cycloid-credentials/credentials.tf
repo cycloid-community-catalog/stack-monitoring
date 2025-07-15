@@ -6,7 +6,7 @@
 
 # ssh key
 resource "cycloid_credential" "vm_ssh" {
-  count                  = var.enable_ssh ? 0 : 1
+  count                  = var.enable_ssh ? 1 : 0
   name                   = "ssh-${var.project}-${var.env}"
   organization_canonical = var.organization
   path                   = "${var.project}_vm_ssh_${var.env}"

@@ -220,10 +220,13 @@ jobs:
                 ansible_aws_ssm_bucket_name=$ANSIBLE_AWS_SSM_BUCKET_NAME
                 ansible_aws_ssm_region=$ANSIBLE_AWS_SSM_REGION
                 ansible_aws_ssm_s3_addressing_style=virtual
-                ansible_aws_ssm_access_key_id=$AWS_ACCESS_KEY_ID
-                ansible_aws_ssm_secret_access_key=$AWS_SECRET_ACCESS_KEY
-                EOF
+                ansible_aws_ssm_access_key_id=$(echo "$AWS_SECRET" | jq -r '.secret_key')
+                ansible_aws_ssm_secret_access_key=$(echo "$AWS_SECRET" | jq -r '.access_key')
+                [tag_vm_aws]
+                $(jq -r  .machine_id terraform/metadata)
 
+                EOF
+                add instance id in inventory instead of ip
                 cat merged-stack/inventory
 
           inputs:
@@ -239,8 +242,7 @@ jobs:
         params:
           CONFIG_PATH: ($ .project $)/ansible
           STACK_PATH: ansible
-          AWS_ACCESS_KEY_ID: ((((aws_access_cred)).access_key))
-          AWS_SECRET_ACCESS_KEY: ((((aws_access_cred)).secret_key))
+          AWS_SECRET: ((aws_access_cred))
 
       - task: run-ansible
         config:
@@ -269,7 +271,6 @@ jobs:
                 unset AWS_ACCESS_KEY_ID
                 unset AWS_DEFAULT_REGION
                 unset AWS_SECRET_ACCESS_KEY
-
                 /usr/bin/ansible-runner
           caches:
             - path: ansible-playbook/roles
@@ -282,10 +283,11 @@ jobs:
         params:
           ANSIBLE_PLAYBOOK_PATH: ansible-playbook
           ANSIBLE_PLAYBOOK_NAME: main.yml
-          ANSIBLE_INVENTORY: inventory
-          EXTRA_ANSIBLE_ARGS: "-i inventory"
+          #ANSIBLE_INVENTORY: inventory
+          EXTRA_ANSIBLE_ARGS: "-b -i inventory"
           ANSIBLE_FORCE_GALAXY: false
-          ANSIBLE_REMOTE_USER:  admin
+          # empty: disable the ssh user since we use ssm
+          ANSIBLE_REMOTE_USER:  empty
 #($- if eq .use_case "aws-vm" $)
           EXTRA_ARGS: "--limit tag_vm_aws"
 #($- else if eq .use_case "azure-vm" $)

@@ -8,6 +8,10 @@ output "machine_ip_public_address" {
   value = module.aws-vm.machine_ip_public_address
 }
 
+output "machine_id" {
+  value = module.aws-vm.machine_id
+}
+
 output "machine_sg_id" {
   value = module.aws-vm.machine_sg_id
 }

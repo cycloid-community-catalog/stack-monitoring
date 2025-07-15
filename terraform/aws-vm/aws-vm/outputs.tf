@@ -8,6 +8,10 @@ output "machine_ip_public_address" {
   value = aws_eip.vm.public_ip
 }
 
+output "machine_id" {
+  value = aws_instance.vm.id
+}
+
 output "machine_sg_id" {
   value = aws_security_group.vm.id
 }

@@ -93,12 +93,12 @@ output "nginx_cert_key" {
 # ssh key
 
 output "ssh_private_key" {
-  value     = var.enable_ssh ? "" : tls_private_key.ssh_key[0].private_key_openssh
+  value     = var.enable_ssh ? tls_private_key.ssh_key[0].private_key_openssh : ""
   sensitive = true
 }
 
 output "ssh_public_key" {
-  value = var.enable_ssh ? "" : tls_private_key.ssh_key[0].public_key_openssh
+  value = var.enable_ssh ? tls_private_key.ssh_key[0].public_key_openssh : ""
 }
 
 # ssm agent

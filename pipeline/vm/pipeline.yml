@@ -224,9 +224,8 @@ jobs:
                 ansible_aws_ssm_secret_access_key=$(echo "$AWS_SECRET" | jq -r '.access_key')
                 [tag_vm_aws]
                 $(jq -r  .machine_id terraform/metadata)
-
                 EOF
-                add instance id in inventory instead of ip
+
                 cat merged-stack/inventory
 
           inputs:

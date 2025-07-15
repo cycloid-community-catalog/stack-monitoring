@@ -8,13 +8,13 @@
 
 # SSH KEY
 resource "tls_private_key" "ssh_key" {
-  count     = var.enable_ssh ? 0 : 1
+  count     = var.enable_ssh ? 1 : 0
   algorithm = "RSA"
 }
 
 ## create keypair
 resource "aws_key_pair" "vm" {
-  count      = var.enable_ssh ? 0 : 1
+  count      = var.enable_ssh ? 1 : 0
   key_name   = "${var.organization}-vm-monitoring-${var.env}"
   public_key = tls_private_key.ssh_key[0].public_key_openssh
 }

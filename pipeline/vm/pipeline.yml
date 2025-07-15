@@ -220,8 +220,8 @@ jobs:
                 ansible_aws_ssm_bucket_name=$ANSIBLE_AWS_SSM_BUCKET_NAME
                 ansible_aws_ssm_region=$ANSIBLE_AWS_SSM_REGION
                 ansible_aws_ssm_s3_addressing_style=virtual
-                ansible_aws_ssm_access_key_id=$(echo "$AWS_SECRET" | jq -r '.secret_key')
-                ansible_aws_ssm_secret_access_key=$(echo "$AWS_SECRET" | jq -r '.access_key')
+                ansible_aws_ssm_access_key_id=$(echo "$AWS_SECRET" | jq -r '.access_key')
+                ansible_aws_ssm_secret_access_key=$(echo "$AWS_SECRET" | jq -r '.secret_key')
                 [tag_vm_aws]
                 $(jq -r  .machine_id terraform/metadata)
                 EOF

@@ -207,7 +207,7 @@ jobs:
               - '-exc'
               - |
                 # temporary hack because of issue with \n in merge-stack-and-config
-                jq '.nginx_cert = "" | .nginx_cert_key = ""' terraform/metadata > terraform/metadata.tmp && mv terraform/metadata.tmp terraform/metadata
+                jq '.ssh_private_key = "" | .ssh_public_key = "" | .nginx_cert = "" | .nginx_cert_key = ""' terraform/metadata > terraform/metadata.tmp && mv terraform/metadata.tmp terraform/metadata
                 /usr/bin/merge-stack-and-config
 
                 # ansible SSM parameter

@@ -109,3 +109,17 @@ output "s3_bucket_ansible" {
     "region" = aws_s3_bucket.ansible.region
   }
 }
+
+# enable vars
+output "enable_ssh" {
+  value = var.enable_ssh
+}
+output "prometheus_install" {
+  value = var.prometheus_install
+}
+output "alertmanager_install" {
+  value = var.alertmanager_install
+}
+output "grafana_install" {
+  value = var.grafana_install
+}

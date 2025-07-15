@@ -41,28 +41,3 @@ module "aws-vm" {
   #alertmanager_install = false
   #grafana_install      = false
 }
-
-module "cycloid-credentials" {
-  #####################################
-  # Do not modify the following lines #
-  source       = "./cycloid-credentials"
-  project      = var.project
-  env          = var.env
-  organization = var.organization
-  #####################################
-
-  #enable_ssh         = false
-  vm_private_ssh_key = module.aws-vm.ssh_private_key
-
-  #prometheus_install  = true
-  prometheus_username = module.aws-vm.prometheus_basic_auth_username
-  prometheus_password = module.aws-vm.prometheus_basic_auth_password
-
-  #alertmanager_install  = false
-  alertmanager_username = module.aws-vm.alertmanager_basic_auth_username
-  alertmanager_password = module.aws-vm.alertmanager_basic_auth_password
-
-  #grafana_install  = false
-  grafana_username = module.aws-vm.grafana_basic_auth_username
-  grafana_password = module.aws-vm.grafana_basic_auth_password
-}

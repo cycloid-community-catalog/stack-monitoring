@@ -1,4 +1,3 @@
-
 definitions:
   tasks:
     # The task producing a configured stack, merging stack and config.
@@ -86,6 +85,7 @@ resources:
     branch: ($ .scs_branch $)
     paths:
       - ansible/*
+      - grafana-dashboards/*
 
 - name: git_config_ansible
   type: git
@@ -227,6 +227,8 @@ jobs:
                 EOF
 
                 cat merged-stack/inventory
+
+                cp -r stack/grafana-dashboards/ merged-stack/files/grafana/
 
           inputs:
             - name: git_config_ansible

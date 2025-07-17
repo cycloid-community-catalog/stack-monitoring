@@ -90,6 +90,16 @@
     when: grafana_install
     tags: grafana
 
+  - name: Reload grafana
+    become: true
+    ansible.builtin.systemd:
+      daemon_reload: true
+      name: grafana
+      state: restarted
+      enabled: true
+    tags:
+      - grafana
+
   # Install NGINX
   # Install SSL certificates for nginx
   - name: "Create SSL directory"

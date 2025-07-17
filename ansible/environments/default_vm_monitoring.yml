@@ -397,3 +397,4 @@ grafana_datasources: "{{
   }}"
 grafana_dashboards_dir: "dashboards"
 grafana_dashboards_dir_to_copy: "{{ playbook_dir }}/files/grafana"
+grafana_provisioning_dashboards_from_file_structure: true

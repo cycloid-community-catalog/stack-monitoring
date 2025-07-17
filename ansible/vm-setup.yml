@@ -94,7 +94,7 @@
     service:
       name: grafana-server
       state: restarted
-    listen: "restart_grafana"
+    when: grafana_install
     tags:
       - grafana
 

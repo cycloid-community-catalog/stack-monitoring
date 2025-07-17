@@ -373,16 +373,11 @@ nginx_auth_basic_files:
 # Grafana
 # Default here: https://github.com/grafana/grafana-ansible-collection/blob/main/roles/grafana/defaults/main.yml
 ##
-grafana_logs_dir: "/var/log/grafana"
-grafana_data_dir: "/var/lib/grafana"
-grafana_database:
-  type: sqlite3
-grafana_address: "0.0.0.0"
-grafana_port: 3000
-grafana_user: "{{organization}}"
-grafana_security:
-  admin_user: "{{grafana_admin_user | default('admin') }}"
-  admin_password: "{{grafana_admin_pwd}}"
+grafana_ini:
+  security:
+    admin_user: "{{grafana_admin_user | default('admin') }}"
+    admin_password: "{{grafana_admin_pwd}}"
+
 grafana_default_prometheus_datasource:
   - name: prometheus
     type: prometheus
@@ -392,9 +387,10 @@ grafana_default_prometheus_datasource:
     isDefault: true
     version: 1
 grafana_datasources: "{{
-    (grafana_extra_datasources | default([]))
-    + (grafana_default_prometheus_datasource if (prometheus_install | default(true)) else [])
-  }}"
+      (grafana_extra_datasources | default([]))
+      + (grafana_default_prometheus_datasource if (prometheus_install | default(true)) else [])
+    }}"
 grafana_dashboards_dir: "dashboards"
 grafana_dashboards_dir_to_copy: "{{ playbook_dir }}/files/grafana"
 grafana_provisioning_dashboards_from_file_structure: true
+grafana_provisioning_synced: true

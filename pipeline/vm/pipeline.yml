@@ -1,3 +1,4 @@
+
 definitions:
   tasks:
     # The task producing a configured stack, merging stack and config.
@@ -228,7 +229,7 @@ jobs:
 
                 cat merged-stack/inventory
 
-                cp -r stack/grafana-dashboards/ merged-stack/files/grafana/
+                cp -r stack/grafana-dashboards/ merged-stack/ansible/files/grafana/
 
           inputs:
             - name: git_config_ansible

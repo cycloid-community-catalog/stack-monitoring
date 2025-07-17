@@ -90,13 +90,12 @@
     when: grafana_install
     tags: grafana
 
-  - name: Reload grafana
+  - name: "Restart grafana"
     become: true
-    ansible.builtin.systemd:
-      daemon_reload: true
-      name: grafana
+    service:
+      name: grafana-server
       state: restarted
-      enabled: true
+    listen: "restart_grafana"
     tags:
       - grafana
 

@@ -390,7 +390,7 @@ grafana_datasources: "{{
       (grafana_extra_datasources | default([]))
       + (grafana_default_prometheus_datasource if (prometheus_install | default(true)) else [])
     }}"
-grafana_dashboards_dir: "dashboards"
+grafana_dashboards_dir: "/var/lib/grafana/dashboards"
 grafana_dashboards_dir_to_copy: "{{ playbook_dir }}/files/grafana"
 grafana_provisioning_dashboards_from_file_structure: true
-grafana_provisioning_synced: true
+grafana_provisioning_synced: false

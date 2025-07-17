@@ -90,7 +90,7 @@
 
   - name: Ensure destination directory structure exists
     file:
-      path: "{{ grafana_ini.paths.data }}/{{ grafana_dashboards_dir }}/{{ item.path | dirname | relpath(grafana_dashboards_dir_to_copy) }}"
+      path: "{{ grafana_dashboards_dir }}/{{ item.path | dirname | relpath(grafana_dashboards_dir_to_copy) }}"
       state: directory
       mode: '0755'
     loop: "{{ dashboard_files_to_copy.files }}"
@@ -100,7 +100,7 @@
   - name: Copy grafana dashboards JSON files to the target directory
     copy:
       src: "{{ item.path }}"
-      dest: "{{ grafana_ini.paths.data }}/{{ grafana_dashboards_dir }}/{{ item.path | relpath(grafana_dashboards_dir_to_copy) }}"
+      dest: "{{ grafana_dashboards_dir }}/{{ item.path | relpath(grafana_dashboards_dir_to_copy) }}"
       mode: '0644'
     loop: "{{ dashboard_files_to_copy.files }}"
     when: grafana_install

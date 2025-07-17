@@ -80,13 +80,14 @@
     when: grafana_install
     tags: grafana
 
-  - name: Copy stack grafana dashboards JSON files to the target directory
-    copy:
-      src: "{{ item }}"
+  - name: Copy grafana dashboards JSON files to the target directory
+    synchronize:
+      src: "{{ playbook_dir }}/files/grafana"
       dest: "{{ grafana_data_dir }}/{{ grafana_dashboards_dir }}"
-      mode: '0644'
-    with_fileglob:
-      - "{{ grafana_dashboards_files}}"
+      mode: 'pull'  # Use 'push' if copying from local to remote
+      recursive: yes
+      rsync_opts:
+        - "--chmod=0644"
     when: grafana_install
     tags: grafana
 

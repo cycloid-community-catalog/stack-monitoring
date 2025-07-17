@@ -396,3 +396,4 @@ grafana_datasources: "{{
     + (grafana_default_prometheus_datasource if (prometheus_install | default(true)) else [])
   }}"
 grafana_dashboards_dir: "dashboards"
+grafana_dashboards_dir_to_copy: "{{ playbook_dir }}/files/grafana"

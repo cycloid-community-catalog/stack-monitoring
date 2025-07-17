@@ -80,14 +80,20 @@
     when: grafana_install
     tags: grafana
 
+  - name: Find all grafana dashboard files to copy
+    find:
+      paths: "{{grafana_dashboards_dir_to_copy}}"
+      recurse: yes
+      file_type: file
+    register: dashboard_files_to_copy
+    delegate_to: localhost
+
   - name: Copy grafana dashboards JSON files to the target directory
-    synchronize:
-      src: "{{ playbook_dir }}/files/grafana"
-      dest: "{{ grafana_data_dir }}/{{ grafana_dashboards_dir }}"
-      mode: 'pull'  # Use 'push' if copying from local to remote
-      recursive: yes
-      rsync_opts:
-        - "--chmod=0644"
+    copy:
+      src: "{{ item.path }}"
+      dest: "{{ grafana_data_dir }}/{{ grafana_dashboards_dir }}/{{ item.path | relpath(grafana_dashboards_to_copy) }}"
+      mode: '0644'
+    loop: "{{ dashboard_files_to_copy.files }}"
     when: grafana_install
     tags: grafana
 

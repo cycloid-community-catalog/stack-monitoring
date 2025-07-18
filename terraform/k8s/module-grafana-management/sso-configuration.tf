@@ -5,12 +5,12 @@
 ################################################################################
 
 resource "grafana_sso_settings" "github_sso_settings" {
-  count   = var.sso_enabled ? 1 : 0
+  count = var.sso_enabled ? 1 : 0
 
   provider_name = var.sso_provider_name
 
   oauth2_settings {
-    name    = var.sso_provider_name
+    name          = var.sso_provider_name
     allow_sign_up = true
     auto_login    = false
     use_pkce      = true

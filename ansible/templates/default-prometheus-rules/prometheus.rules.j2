@@ -23,6 +23,7 @@ groups:
         project: '{{ $labels.project }}'
         role: '{{ $labels.role }}'
         env: '{{ $labels.env }}'
+        component: '{{ $labels.component }}'
         {% endraw -%}
         severity: "{{ joined_config['severity'] }}"
         receiver: "{{ joined_config['receiver'] }}"
@@ -47,6 +48,7 @@ groups:
         project: '{{ $labels.project }}'
         role: '{{ $labels.role }}'
         env: '{{ $labels.env }}'
+        component: '{{ $labels.component }}'
         {% endraw -%}
         severity: "{{ joined_config['severity'] }}"
         receiver: "{{ joined_config['receiver'] }}"

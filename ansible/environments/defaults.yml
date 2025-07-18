@@ -102,6 +102,7 @@ prometheus_scrape_configs_global:
           env: "{{ env }}"
           role: "{{ role }}"
           organization: "{{ organization }}"
+          component: "{{ component }}"
 
     metric_relabel_configs:
     # Not store unwanted metrics
@@ -149,6 +150,7 @@ prometheus_local_cadvisor_config:
           env: "{{ env }}"
           role: "{{ role }}"
           organization: "{{ organization }}"
+          component: "{{ component }}"
 
     metric_relabel_configs:
     # Not store unwanted metrics
@@ -182,6 +184,7 @@ prometheus_default_rules_global:
     organization: "{{ organization }}"
     project: "{{ project }}"
     env: "{{ env }}"
+    component: "{{ component }}"
   disable: false #to disable alert
 prometheus_default_rules_predefined:
   # - alertmanager.rules

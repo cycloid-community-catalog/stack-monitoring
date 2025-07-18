@@ -2,6 +2,7 @@
 variable "organization" {}
 variable "project" {}
 variable "env" {}
+variable "component" {}
 
 variable "enable_ssh" {
   default = false
@@ -22,4 +23,8 @@ variable "grafana_password" {}
 
 variable "use_ssm_agent" {
   default = true
+}
+
+locals {
+  name_prefix = "${var.project}_${var.env}_${var.component}"
 }

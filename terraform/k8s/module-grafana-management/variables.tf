@@ -2,6 +2,7 @@
 variable "organization" {}
 variable "project" {}
 variable "env" {}
+variable "component" {}
 
 # Grafana SSO configuration
 variable "sso_provider_name" {}

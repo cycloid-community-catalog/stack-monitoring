@@ -26,9 +26,11 @@
 {{ define "__customerlabel" }}{{ range .CommonLabels.SortedPairs }}{{ if eq .Name "customer" }}{{ .Value | toUpper }}{{ end }}{{ end }}{{ end }}
 {{ define "__projectlabel" }}{{ range .CommonLabels.SortedPairs }}{{ if eq .Name "project" }}{{ .Value }}{{ end }}{{ end }}{{ end }}
 {{ define "__envlabel" }}{{ range .CommonLabels.SortedPairs }}{{ if eq .Name "env" }}{{ .Value | toUpper }}{{ end }}{{ end }}{{ end }}
+{{ define "__componentlabel" }}{{ range .CommonLabels.SortedPairs }}{{ if eq .Name "component" }}{{ .Value | toUpper }}{{ end }}{{ end }}{{ end }}
+
 {{ define "__severitylabel" }}{{ range .CommonLabels.SortedPairs }}{{ if eq .Name "severity" }}{{ .Value | toUpper }}{{ end }}{{ end }}{{ end }}
 
-{{ define "slack.default.title" }}{{ template "__subject" . }} {{ template "__alertname" . }} - Customer: {{ template "__customerlabel" . }} Project: {{ template "__projectlabel" . }} Env: {{ template "__envlabel" . }} Severity: {{ template "__severitylabel" . }}{{ end }}
+{{ define "slack.default.title" }}{{ template "__subject" . }} {{ template "__alertname" . }} - Customer: {{ template "__customerlabel" . }} Project: {{ template "__projectlabel" . }} Env: {{ template "__envlabel" . }} Component: {{ template "__componentlabel" . }} Severity: {{ template "__severitylabel" . }}{{ end }}
 {{ define "slack.default.username" }}{{ template "__alertmanager" . }}{{ end }}
 {{ define "slack.default.fallback" }}{{ template "slack.default.title" . }} | {{ template "slack.default.titlelink" . }}{{ end }}
 {{ define "slack.default.pretext" }}{{ end }}
@@ -49,7 +51,7 @@
 {{ define "pagerduty.default.clientURL" }}{{ template "__alertmanagerURL" . }}{{ end }}
 {{ define "pagerduty.default.instances" }}{{ . }}{{ end }}
 
-{{ define "opsgenie.default.message" }}{{ template "__subject" . }} {{ template "__alertname" . }} - Customer: {{ template "__customerlabel" . }} Project: {{ template "__projectlabel" . }} Env: {{ template "__envlabel" . }}{{ end }}
+{{ define "opsgenie.default.message" }}{{ template "__subject" . }} {{ template "__alertname" . }} - Customer: {{ template "__customerlabel" . }} Project: {{ template "__projectlabel" . }} Env: {{ template "__envlabel" . }} Component: {{ template "__componentlabel" . }}{{ end }}
 {{ define "opsgenie.default.tags" }}{{ .CommonLabels.SortedPairs.Values | join "," }}{{ end }}
 {{ define "opsgenie.default.description" }}{{ .CommonAnnotations.SortedPairs.Values | join " " }}
 {{ if gt (len .Alerts.Firing) 0 -}}

@@ -2,6 +2,7 @@
 variable "organization" {}
 variable "project" {}
 variable "env" {}
+variable "component" {}
 
 # vm configuration variables
 variable "vm_size" {}
@@ -79,5 +80,6 @@ variable "grafana_domain_name" {
 variable "aws_region" {}
 
 locals {
-  username = var.organization
+  username    = var.organization
+  name_prefix = "${var.organization}-${var.project}-${var.env}-${var.component}"
 }

@@ -9,7 +9,7 @@ resource "kubernetes_service" "opsgenie_heartbeat_gw" {
   metadata {
     name      = "opsgenie-heartbeat-gw"
     namespace = var.namespace
-    labels = local.common_labels
+    labels    = local.common_labels
   }
 
   spec {

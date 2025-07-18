@@ -9,7 +9,7 @@ resource "kubernetes_manifest" "opsgenie_heartbeat_gw_servicemonitor" {
     metadata = {
       name      = "opsgenie-heartbeat-gw"
       namespace = var.namespace
-      labels = local.common_labels
+      labels    = local.common_labels
     }
     spec = {
       endpoints = [{

@@ -1,11 +1,11 @@
 # Stack-monitoring
 
-This stack provides a way to deploy a monitoring server based on either a specific cloud provider solution or Prometheus.
+This stack provides a way to deploy a monitoring solution based on the default Prometheus stack by deploying [Prometheus](https://prometheus.io/docs/introduction/overview/), [Alertmanager](https://prometheus.io/docs/alerting/latest/alertmanager/) and [Grafana](https://grafana.com/).
 
-There's 3 possible ways to deploy the monitoring solution:
+There's 2 possible ways to deploy the monitoring solution:
 
-- using a VM with docker (AWS and Azure)
-- using the k8s prometheus stack (k8s only).
+- using a VM with prometheus stack installed as services
+- using the k8s prometheus stack.
 
 You should choose the corresponding usecase for the provider that you require
 
@@ -21,22 +21,3 @@ This stack allows to install:
 
 - **Metrics Exporters**: Set of metrics exporters compatible with Prometheus
 
-
-## Requirements
-
-- Debian 12 (default OS to be used in the machines)
-
-- Kubernetes cluster version >= 1.19
-
-# How does it work
-
-TODO
-
-
-## Scraping
-
-TODO
-
-## Example configuration
-
-TODO

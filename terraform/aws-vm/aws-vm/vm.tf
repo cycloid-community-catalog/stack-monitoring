@@ -35,7 +35,7 @@ resource "aws_instance" "vm" {
   ami                  = data.aws_ami.debian.id
   iam_instance_profile = aws_iam_instance_profile.vm.name
   instance_type        = var.vm_size
-  key_name             = "${var.organization}-vm-monitoring-${var.env}"
+  key_name             = local.name_prefix
 
   user_data_base64 = base64encode(templatefile("${path.module}/userdata.sh.tpl", {}))
 

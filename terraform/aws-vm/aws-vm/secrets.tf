@@ -15,7 +15,7 @@ resource "tls_private_key" "ssh_key" {
 ## create keypair
 resource "aws_key_pair" "vm" {
   count      = var.enable_ssh ? 1 : 0
-  key_name   = "${var.organization}-vm-monitoring-${var.env}"
+  key_name   = local.name_prefix
   public_key = tls_private_key.ssh_key[0].public_key_openssh
 }
 

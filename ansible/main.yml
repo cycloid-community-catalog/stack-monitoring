@@ -10,8 +10,8 @@
     ansible_python_interpreter: /usr/bin/python3
 
   vars_files:
-    - ["environments/{{env}}_aws_vm_monitoring.yml","environments/empty.yml"]
-    - "environments/default_vm_monitoring.yml"
+    - ["environments/stackforms.yml","environments/stackforms.sample.yml"]
+    - "environments/defaults.yml"
 
   tasks:
     - name: Setup AWS VM
@@ -21,7 +21,6 @@
 #
 # Install in Azure VM
 #
-# TODO to find another way to integrate the other 2 usecases when host group is empty
 #- hosts: tag_vm_azure
 #  become: yes
 #  ignore_unreachable: true

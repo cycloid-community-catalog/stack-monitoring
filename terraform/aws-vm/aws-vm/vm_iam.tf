@@ -14,7 +14,7 @@ data "aws_iam_policy_document" "vm" {
 }
 
 resource "aws_iam_policy" "vm" {
-  name        = "${var.organization}-vm-monitoring-iam-${var.env}"
+  name        = local.name_prefix
   path        = "/"
   description = "EC2 Prometheus IAM policies"
   policy      = data.aws_iam_policy_document.vm.json
@@ -40,14 +40,14 @@ data "aws_iam_policy_document" "assume_role" {
 
 # Create IAM Role for instance
 resource "aws_iam_role" "vm" {
-  name               = "${var.organization}-vm-monitoring-role-${var.env}"
+  name               = local.name_prefix
   assume_role_policy = data.aws_iam_policy_document.assume_role.json
   path               = "/${var.project}/"
 }
 
 # Create instance profile
 resource "aws_iam_instance_profile" "vm" {
-  name = "${var.organization}-vm-monitoring-iam-profile-${var.env}"
+  name = local.name_prefix
   role = aws_iam_role.vm.name
 }
 

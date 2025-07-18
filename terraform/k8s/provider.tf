@@ -14,7 +14,7 @@ provider "cycloid" {
   # The Cycloid API key to use.
   jwt = var.cycloid_api_key
 
-  organization_canonical = "cycloid-io"
+  organization_canonical = var.organization
 }
 
 # provider declared here since the variables are defined in another module

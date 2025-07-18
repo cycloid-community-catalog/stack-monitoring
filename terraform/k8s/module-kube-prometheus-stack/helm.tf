@@ -17,17 +17,17 @@ locals {
     }
   }
 
-    prometheus_helm_vars = {
-    customRules = var.prometheus_change_default_rules
+  prometheus_helm_vars = {
+    customRules                  = var.prometheus_change_default_rules
     additionalPrometheusRulesMap = merge(var.prometheus_additional_rules, local.default_watchdog_rule_configured)
     prometheus = {
       nodeSelector = var.stack_monitoring_node_selector
       prometheusSpec = {
         additionalScrapeConfigs = concat(var.prometheus_additional_scrape, var.prometheus_blackbox_scrape)
-        alertingEndpoints = var.alertmanager_use_external
-        externalLabels = local.alert_labels
-        scrapeInterval = "30s"
-        evaluationInterval: "30s"
+        alertingEndpoints       = var.alertmanager_use_external
+        externalLabels          = local.alert_labels
+        scrapeInterval          = "30s"
+        evaluationInterval : "30s"
         storageSpec = var.enable_prometheus_persistence ? {
           volumeClaimTemplate = {
             spec = {
@@ -49,8 +49,8 @@ locals {
     nodeSelector = var.stack_monitoring_node_selector
     alertmanager = {
       config = {
-        route = var.alertmanager_config_route
-        inhibit_rules = var.alertmanager_config_inhibit_rules
+        route          = var.alertmanager_config_route
+        inhibit_rules  = var.alertmanager_config_inhibit_rules
         time_intervals = var.alertmanager_time_intervals
       }
       templateFiles = local.default_alertmanager_template
@@ -97,7 +97,7 @@ EOL
     }
   }
 
-    # with credential gets always interpreted as string
+  # with credential gets always interpreted as string
   grafana_additional_datasources = <<EOL
 ---
 grafana:

@@ -8,15 +8,15 @@
 
 resource "grafana_folder" "dashboard-test" {
   title = "Dashboard Tests"
-  uid = "dashboard-tests"
+  uid   = "dashboard-tests"
 }
 
 # Create Grafana folders based on the directory structure, escpect basis directory
 resource "grafana_folder" "folders" {
-  for_each = toset([for file, dir in local.dashboard_paths : dir if dir != "." ])
+  for_each = toset([for file, dir in local.dashboard_paths : dir if dir != "."])
 
   title = each.key
-  uid = each.key
+  uid   = each.key
 }
 
 # Create Grafana dashboards in the respective folders
@@ -25,5 +25,6 @@ resource "grafana_dashboard" "dashboards" {
 
   config_json = file("${path.module}/../grafana-dashboards/${each.key}")
   overwrite   = true
-  folder      = local.dashboard_paths[each.key] != "." ? grafana_folder.folders[local.dashboard_paths[each.key]].id : "dashboard-tests"
+  # Conditionally set the folder attribute based on the directory structure
+  folder = local.dashboard_paths[each.key] != "." ? grafana_folder.folders[local.dashboard_paths[each.key]].id : ""
 }

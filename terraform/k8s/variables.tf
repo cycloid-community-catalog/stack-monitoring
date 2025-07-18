@@ -6,6 +6,7 @@
 variable "project" {}
 variable "env" {}
 variable "organization" {}
+variable "component" {}
 
 # kubeconfig to use
 variable "kubeconfig_filename" {}
@@ -30,7 +31,7 @@ variable "grafana_additional_datasources" {}
 
 variable "alertmanager_use_external" {}
 variable "alertmanager_config_receivers" {
-  sensitive   = false
+  sensitive = false
 }
 # opsgenie
 variable "opsgenie_token" {}
@@ -44,6 +45,6 @@ variable "cycloid_api_key" {
   sensitive = true
 }
 
-variable "namespace"{
+variable "namespace" {
   default = "stack-monitoring"
 }

@@ -7,6 +7,7 @@ module "grafana-management" {
   project      = var.project
   env          = var.env
   organization = var.organization
+  component    = var.component
   #####################################
 
   depends_on = [module.kube-prometheus]

@@ -16,8 +16,8 @@ definitions:
           args:
           - '-ec'
           - |
-            echo -e "${KUBECONFIG_CONTENT}" > stack/terraform/k8s/${KUBECONFIG_FILENAME}
-            cp -r stack/grafana-dashboards/ stack/terraform/k8s/grafana-dashboards/
+            echo -e "${KUBECONFIG_CONTENT}" > stack/${STACK_PATH}/${KUBECONFIG_FILENAME}
+            cp -r stack/grafana-dashboards/ stack/${STACK_PATH}/grafana-dashboards/
             /usr/bin/merge-stack-and-config
         inputs:
           - name: git_config_terraform
@@ -28,8 +28,8 @@ definitions:
           - name: merged-stack
             path: "merged-stack"
       params:
-        CONFIG_PATH: ($ .project $)/terraform/($ .environment $)
-        STACK_PATH: terraform/k8s
+        CONFIG_PATH: ($ .config_root $)/terraform/($ .environment $)
+        STACK_PATH: terraform/($ .use_case $)
         KUBECONFIG_CONTENT: ((kubeconfig_content))
         KUBECONFIG_FILENAME: ((kubeconfig_filename))
         #($- if eq .use_case "aws-vm" $)
@@ -70,7 +70,8 @@ resources:
     vars:
       env: ($ .environment $)
       project: ($ .project $)
-      organization: ($ .organization_canonical $)
+      organization: ($ .organization $)
+      component: ($ .component $)
       cycloid_api_key: ((cycloid_api_key))
       kubeconfig_filename: ((kubeconfig_filename))
       prometheus_install: ((prometheus_install))
@@ -94,10 +95,9 @@ resources:
 
 - name: git_stack_terraform
   type: git
-  icon: github-circle
   source:
-    uri: https://github.com/cycloid-community-catalog/stack-monitoring.git
-    branch: ($ .scs_branch $)
+    uri: ($ .catalog_repository_url $)
+    branch: ($ .catalog_repository_branch $)
     # Include only the Terraform files in the specified directory.
     paths:
       - terraform/k8s/*
@@ -106,19 +106,18 @@ resources:
 
 - name: git_config_terraform
   type: git
-  icon: github-circle
   source:
-    uri: ($ .cr_url $)
-    branch: ($ .cr_branch $)
-#($- if eq .cr_cred_type "basic_auth" $)
-#    username: ((($ .cr_cred_path $).username))
-#    password: ((($ .cr_cred_path $).password))
-#($- else $)
-    private_key: ((($ .cr_cred_path $).ssh_key))
-#($- end $)
+    uri: ($ .config_repository_url $)
+    branch: ($ .config_repository_branch $)
+    ($- if eq .config_repository_credential_type "basic_auth" $)
+    username: ((($ .config_repository_credential_path $).username))
+    password: ((($ .config_repository_credential_path $).password))
+    ($- else $)
+    private_key: ((($ .config_repository_credential_path $).ssh_key))
+    ($- end $)
     # Include only the Terraform files in the specified directory.
     paths:
-      - ($ .project $)/terraform/($ .environment $)/*
+      - ($ .config_root $)/terraform/*
 
 jobs:
   - name: terraform-plan
@@ -270,9 +269,6 @@ jobs:
           - name: tfstate
 
           params:
-            ORG: ($ .organization_canonical $)
-            ENV: ($ .environment $)
-            PROJECT: ($ .project $)
             KUBECONFIG_CONTENT: ((kubeconfig_content))
             GRAFANA_INSTALL: ((grafana_install))
             PROMETHEUS_INSTALL: ((prometheus_install))

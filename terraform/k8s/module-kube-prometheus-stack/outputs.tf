@@ -55,5 +55,5 @@ output "grafana_basic_auth_password" {
 }
 
 output "grafana_cms_to_remove" {
-  value     = var.grafana_install ? var.grafana_cms_to_remove : []
+  value = var.grafana_install ? var.grafana_cms_to_remove : []
 }

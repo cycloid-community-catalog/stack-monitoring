@@ -9,7 +9,7 @@ locals {
 
   #alertmanager
   default_alertmanager_template = {
-    "default_template.tmpl": <<EOL
+    "default_template.tmpl" : <<EOL
 {{ define "__alertmanager" }}Alertmanager{{ end }}
 {{ define "__alertmanagerURL" }}{{ .ExternalURL }}/#/alerts?receiver={{ .Receiver | urlquery }}{{ end }}
 
@@ -31,6 +31,7 @@ locals {
 {{ define "__customerlabel" }}{{ range .CommonLabels.SortedPairs }}{{ if eq .Name "customer" }}{{ .Value | toUpper }}{{ end }}{{ end }}{{ end }}
 {{ define "__projectlabel" }}{{ range .CommonLabels.SortedPairs }}{{ if eq .Name "project" }}{{ .Value }}{{ end }}{{ end }}{{ end }}
 {{ define "__envlabel" }}{{ range .CommonLabels.SortedPairs }}{{ if eq .Name "env" }}{{ .Value | toUpper }}{{ end }}{{ end }}{{ end }}
+{{ define "__componentlabel" }}{{ range .CommonLabels.SortedPairs }}{{ if eq .Name "component" }}{{ .Value }}{{ end }}{{ end }}{{ end }}
 {{ define "__severitylabel" }}{{ range .CommonLabels.SortedPairs }}{{ if eq .Name "severity" }}{{ .Value | toUpper }}{{ end }}{{ end }}{{ end }}
 
 
@@ -39,7 +40,7 @@ locals {
 {{ range .Alerts }}{{ .Annotations.description }}
 
 {{ end }}{{ end }}
-{{ define "slack.default.title" }}{{ template "__subject" . }} {{ template "__alertname" . }} - Customer: {{ template "__customerlabel" . }} Project: {{ template "__projectlabel" . }} Env: {{ template "__envlabel" . }} Severity: {{ template "__severitylabel" . }}{{ end }}
+{{ define "slack.default.title" }}{{ template "__subject" . }} {{ template "__alertname" . }} - Customer: {{ template "__customerlabel" . }} Project: {{ template "__projectlabel" . }} Env: {{ template "__envlabel" . }} Component: {{ template "__componentlabel" . }} Severity: {{ template "__severitylabel" . }}{{ end }}
 {{ define "slack.default.username" }}{{ template "__alertmanager" . }}{{ end }}
 {{ define "slack.default.fallback" }}{{ template "slack.default.title" . }} | {{ template "slack.default.titlelink" . }}{{ end }}
 {{ define "slack.default.callbackid" }}{{ end }}
@@ -94,7 +95,7 @@ locals {
 {{ define "pagerduty.default.clientURL" }}{{ template "__alertmanagerURL" . }}{{ end }}
 {{ define "pagerduty.default.instances" }}{{ template "__text_alert_list" . }}{{ end }}
 
-{{ define "opsgenie.default.message" }}{{ template "__subject" . }} {{ template "__alertname" . }} - Customer: {{ template "__customerlabel" . }} Project: {{ template "__projectlabel" . }} Env: {{ template "__envlabel" . }}{{ end }}
+{{ define "opsgenie.default.message" }}{{ template "__subject" . }} {{ template "__alertname" . }} - Customer: {{ template "__customerlabel" . }} Project: {{ template "__projectlabel" . }} Env: {{ template "__envlabel" . }} Component: {{ template "__componentlabel" . }}{{ end }}
 {{ define "opsgenie.default.tags" }}{{ template "__commonlabels" . }}{{ end }}
 {{ define "opsgenie.default.description" }}{{ .CommonAnnotations.SortedPairs.Values | join " " }}
 {{ if gt (len .Alerts.Firing) 0 -}}

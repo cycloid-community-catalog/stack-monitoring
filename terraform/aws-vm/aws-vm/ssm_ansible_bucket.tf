@@ -7,7 +7,7 @@
 
 resource "aws_s3_bucket" "ansible" {
 
-  bucket = "${var.organization}-${var.project}-${var.env}-ansible"
+  bucket = local.name_prefix
 
   tags = {
     Role = "ansible"

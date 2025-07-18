@@ -2,6 +2,7 @@
 variable "organization" {}
 variable "project" {}
 variable "env" {}
+variable "component" {}
 
 # provider cycloid
 variable "cycloid_api_url" {
@@ -33,7 +34,8 @@ locals {
     env          = var.env
     project      = var.project
     organization = var.organization
-    Name         = "${var.organization}-vm-monitoring-${var.env}"
+    component    = var.component
+    Name         = "${var.organization}-${var.project}-${var.env}-${var.component}"
   }
   tags = merge(local.standard_tags, var.aws_extra_tags)
 }

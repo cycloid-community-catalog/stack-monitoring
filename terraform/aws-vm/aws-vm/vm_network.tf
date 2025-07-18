@@ -13,7 +13,7 @@ resource "aws_eip" "vm" {
 ###
 
 resource "aws_security_group" "vm" {
-  name        = "${var.organization}-vm-monitoring-sg-${var.env}"
+  name        = local.name_prefix
   description = "monitoring ${var.env} for ${var.organization}"
   vpc_id      = var.vpc_id
 }

@@ -6,12 +6,10 @@
 
 # ssh key
 resource "cycloid_credential" "vm_ssh" {
-  count                  = var.enable_ssh ? 1 : 0
-  name                   = "ssh-${var.project}-${var.env}"
-  organization_canonical = var.organization
-  path                   = "${var.project}_vm_ssh_${var.env}"
-  canonical              = "${var.project}-vm-ssh-${var.env}"
-  type                   = "ssh"
+  count = var.enable_ssh ? 1 : 0
+  name  = "ssh_${local.name_prefix}"
+  path  = "ssh_${local.name_prefix}"
+  type  = "ssh"
   body = {
     ssh_key = chomp(var.vm_private_ssh_key)
   }
@@ -19,12 +17,10 @@ resource "cycloid_credential" "vm_ssh" {
 
 # prometheus basic auth
 resource "cycloid_credential" "prometheus_basic_auth" {
-  count                  = var.prometheus_install ? 1 : 0
-  name                   = "prometheus-${var.project}-${var.env}"
-  organization_canonical = var.organization
-  path                   = "${var.project}_prometheus_${var.env}"
-  canonical              = "${var.project}-prometheus-${var.env}"
-  type                   = "basic_auth"
+  count = var.prometheus_install ? 1 : 0
+  name  = "prometheus_${local.name_prefix}"
+  path  = "prometheus_${local.name_prefix}"
+  type  = "basic_auth"
   body = {
     username = var.prometheus_username
     password = var.prometheus_password
@@ -33,12 +29,10 @@ resource "cycloid_credential" "prometheus_basic_auth" {
 
 # alertmanager basic auth
 resource "cycloid_credential" "alertmanager_basic_auth" {
-  count                  = var.alertmanager_install ? 1 : 0
-  name                   = "${var.project}-${var.env}"
-  organization_canonical = var.organization
-  path                   = "${var.project}_alertmanager_${var.env}"
-  canonical              = "${var.project}-alertmanager-${var.env}"
-  type                   = "basic_auth"
+  count = var.alertmanager_install ? 1 : 0
+  name  = "alertmanager_${local.name_prefix}"
+  path  = "alertmanager_${local.name_prefix}"
+  type  = "basic_auth"
   body = {
     username = var.alertmanager_username
     password = var.alertmanager_password
@@ -47,12 +41,10 @@ resource "cycloid_credential" "alertmanager_basic_auth" {
 
 # grafana basic auth
 resource "cycloid_credential" "grafana_basic_auth" {
-  count                  = var.grafana_install ? 1 : 0
-  name                   = "Grafana Basic Auth : ${var.project} - ${var.env} "
-  organization_canonical = var.organization
-  path                   = "${var.project}_grafana_${var.env}"
-  canonical              = "${var.project}-grafana-${var.env}"
-  type                   = "basic_auth"
+  count = var.grafana_install ? 1 : 0
+  name  = "grafana_${local.name_prefix}"
+  path  = "grafana_${local.name_prefix}"
+  type  = "basic_auth"
   body = {
     username = var.grafana_username
     password = var.grafana_password

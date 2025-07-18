@@ -23,8 +23,8 @@ definitions:
             path: "merged-stack"
       params:
 #($- if eq .use_case "aws-vm" $)
-        CONFIG_PATH: ($ .project $)/terraform/($ .environment $)
-        STACK_PATH: terraform/aws-vm
+        CONFIG_PATH: ($ .config_root $)/terraform
+        STACK_PATH: terraform/($ .use_case $)
 #($- else if eq .use_case "azure-vm" $)
 #        CONFIG_PATH: ((project))/terraform/((env))
 #        STACK_PATH: terraform/azure-vm
@@ -62,7 +62,8 @@ resources:
     vars:
       env: ($ .environment $)
       project: ($ .project $)
-      organization: ($ .organization_canonical $)
+      organization: ($ .organization $)
+      component: ($ .component $)
 #($- if eq .use_case "aws-vm" $)
       aws_access_cred: ((aws_access_cred))
       aws_region: ((aws_default_region))
@@ -80,10 +81,9 @@ resources:
 
 - name: git_stack_ansible
   type: git
-  icon: github-circle
   source:
-    uri: https://github.com/cycloid-community-catalog/stack-monitoring.git
-    branch: ($ .scs_branch $)
+    uri: ($ .catalog_repository_url $)
+    branch: ($ .catalog_repository_branch $)
     paths:
       - ansible/*
       - grafana-dashboards/*
@@ -91,18 +91,18 @@ resources:
 - name: git_config_ansible
   type: git
   source:
-    uri: ($ .cr_url $)
-    branch: ($ .cr_branch $)
-($- if eq .cr_cred_type "basic_auth" $)
-    username: ((($ .cr_cred_path $).username))
-    password: ((($ .cr_cred_path $).password))
-($- else $)
-    private_key: ((($ .cr_cred_path $).ssh_key))
-($- end $)
+    uri: ($ .config_repository_url $)
+    branch: ($ .config_repository_branch $)
+    ($- if eq .config_repository_credential_type "basic_auth" $)
+    username: ((($ .config_repository_credential_path $).username))
+    password: ((($ .config_repository_credential_path $).password))
+    ($- else $)
+    private_key: ((($ .config_repository_credential_path $).ssh_key))
+    ($- end $)
     paths:
 #($- if eq .use_case "aws-vm" $)
-      - ($ .project $)/ansible/environments/($ .environment $)_aws_vm_monitoring.yml
-      - ($ .project $)/ansible/files/*
+      - ($ .config_root $)/ansible/environments/stackforms.yml
+      - ($ .config_root $)/ansible/files/*
 #($- else if eq .use_case "azure-vm" $)
 #      - ($ .project $)/ansible/environments/($ .environment $)_azure_vm_monitoring.yml
 #($- end $)
@@ -111,8 +111,8 @@ resources:
   type: git
   icon: github-circle
   source:
-    uri: https://github.com/cycloid-community-catalog/stack-monitoring.git
-    branch: ($ .scs_branch $)
+    uri: ($ .catalog_repository_url $)
+    branch: ($ .catalog_repository_branch $)
     # Include only the Terraform files in the specified directory.
     paths:
 #($- if eq .use_case "aws-vm" $)
@@ -125,17 +125,17 @@ resources:
   type: git
   icon: github-circle
   source:
-    uri: ($ .cr_url $)
-    branch: ($ .cr_branch $)
-($- if eq .cr_cred_type "basic_auth" $)
-    username: ((($ .cr_cred_path $).username))
-    password: ((($ .cr_cred_path $).password))
-($- else $)
-    private_key: ((($ .cr_cred_path $).ssh_key))
-($- end $)
+    uri: ($ .config_repository_url $)
+    branch: ($ .config_repository_branch $)
+    ($- if eq .config_repository_credential_type "basic_auth" $)
+    username: ((($ .config_repository_credential_path $).username))
+    password: ((($ .config_repository_credential_path $).password))
+    ($- else $)
+    private_key: ((($ .config_repository_credential_path $).ssh_key))
+    ($- end $)
     # Include only the Terraform files in the specified directory.
     paths:
-      - ($ .project $)/terraform/($ .environment $)/*
+      - ($ .config_root $)/terraform/*
 
 jobs:
   - name: terraform-plan
@@ -229,7 +229,7 @@ jobs:
 
                 cat merged-stack/inventory
 
-                cp -r stack/grafana-dashboards/ merged-stack/ansible/files/grafana/
+                cp -r stack/grafana-dashboards/* merged-stack/ansible/files/grafana/
 
           inputs:
             - name: git_config_ansible
@@ -242,7 +242,7 @@ jobs:
             - name: merged-stack
               path: "merged-stack"
         params:
-          CONFIG_PATH: ($ .project $)/ansible
+          CONFIG_PATH: ($ .config_root $)/ansible
           STACK_PATH: ansible
           AWS_SECRET: ((aws_access_cred))
 
@@ -298,7 +298,8 @@ jobs:
           EXTRA_ANSIBLE_VARS:
             env: ($ .environment $)
             project: ($ .project $)
-            organization: ($ .organization_canonical $)
+            organization: ($ .organization $)
+            component: ($ .component $)
             role: "monitoring"
             external_alertmanager_password: ((external_alertmanager_password))
             external_alertmanager_username: ((external_alertmanager_username))
@@ -373,7 +374,7 @@ jobs:
               pinfo "export AWS_ACCESS_KEY_ID=..."
               pinfo "export AWS_SECRET_ACCESS_KEY=..."
               pinfo "export AWS_DEFAULT_REGION=..."
-              pinfo "aws_connect ${ORG}-vm-monitoring-${ENV} connect"
+              pinfo "aws ssm start-session --target (jq -r .machine_id tfstate/metadata)"
 
               if [ "$ENABLE_SSH" = "true" ]; then
                 echo -e "Connect to the VM using SSH:"
@@ -386,9 +387,6 @@ jobs:
           - name: tfstate
 
           params:
-            ORG: ($ .organization_canonical $)
-            ENV: ($ .environment $)
-            PROJECT: ($ .project $)
             GRAFANA_INSTALL: ((grafana_install))
             PROMETHEUS_INSTALL: ((prometheus_install))
             ALERTMANAGER_INSTALL: ((alertmanager_install))

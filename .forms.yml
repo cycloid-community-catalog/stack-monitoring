@@ -85,7 +85,7 @@ use_cases:
       technologies: [terraform]
       vars:
         - name: "Instance type"
-          description: "Instance type for the worker."
+          description: "Instance type for the machine to use."
           key: module.aws-vm.vm_size
           widget: auto_complete
           type: string
@@ -96,6 +96,11 @@ use_cases:
             - "t3.large"
             - "t3.xlarge"
             - "t3.2xlarge"
+        - name: "Instance type"
+          description: "Instance AMI for the machine to use. If not specified it uses the community debian."
+          key: module.aws-vm.vm_ami
+          widget: simple_text
+          type: string
         - name: "Disk size"
           unit: Go
           description: "Root Disk size for the instance."
@@ -563,6 +568,7 @@ use_cases:
           key: alertmanager_receivers
           widget: cy_cred
           type: string
+          required: true
     - name: External Alertmanager (not deployed in machine)
       technologies: [pipeline]
       condition: $alertmanager_install == false && $prometheus_install == true

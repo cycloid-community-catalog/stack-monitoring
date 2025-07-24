@@ -6,6 +6,7 @@ variable "component" {}
 
 # vm configuration variables
 variable "vm_size" {}
+variable "vm_ami" {}
 variable "os_disk_size" {}
 variable "os_disk_type" {
   default = "gp3"

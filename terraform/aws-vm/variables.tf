@@ -20,12 +20,22 @@ variable "aws_access_cred" {
 variable "aws_region" {
   sensitive = true
 }
-variable "aws_extra_tags" {}
+variable "aws_extra_tags" {
+  default = {}
+}
 
-variable "enable_tls" {}
-variable "create_self_signed_certificate" {}
-variable "tls_crt" {}
-variable "tls_key" {}
+variable "tls_crt" {
+  default = ""
+}
+variable "tls_key" {
+  default = ""
+}
+variable "enable_tls" {
+  default = false
+}
+variable "create_self_signed_certificate" {
+  default = true
+}
 
 # default tags to be applied in all created objects
 locals {

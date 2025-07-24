@@ -5,6 +5,7 @@
 # ami to use -> debian 12
 data "aws_ami" "debian" {
   count = var.vm_ami != "" ? 0 : 1
+
   most_recent = true
 
   filter {

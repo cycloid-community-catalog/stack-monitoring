@@ -1,3 +1,40 @@
 ###
 ## Pipeline vars to be filled by stackforms (stored in config repository)
 ###
+
+## AWS access to use to run terraform
+aws_extra_tags: {}
+
+## terraform version used to execute your code
+terraform_version: "1.6.3"
+ansible_version: "10.1"
+
+## SSH key to acess instance
+enable_ssh:  false
+
+## nginx certificates
+enable_tls: true
+create_self_signed_certificate: true
+tls_crt: ""
+tls_key: ""
+
+# alertmanager - external (not created with the stack)
+external_alertmanager_password: ""
+external_alertmanager_username: ""
+external_alertmanager_targets: ""
+alertmanager_receivers: ""
+
+# postgres exporter
+postgres_db_user: ""
+postgres_db_password: ""
+postgres_db_host: ""
+postgres_db_port: ""
+
+# mysql exporter
+mysql_db_user: ""
+mysql_db_password: ""
+mysql_db_host: ""
+mysql_db_port: ""
+
+# cycloid
+cycloid_api_key: ""

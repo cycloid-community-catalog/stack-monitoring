@@ -96,7 +96,7 @@ use_cases:
             - "t3.large"
             - "t3.xlarge"
             - "t3.2xlarge"
-        - name: "Instance type"
+        - name: "Instance AMI"
           description: "Instance AMI for the machine to use. If not specified it uses the community debian."
           key: module.aws-vm.vm_ami
           widget: simple_text

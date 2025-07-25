@@ -71,8 +71,6 @@ shared:
         key: aws_role_external_id
         type: string
         widget: cy_cred
-        widget_config:
-          display_keys: false
       - name: "Amazon AWS region"
         description: "Amazon AWS region to use for Terraform."
         key: aws_default_region

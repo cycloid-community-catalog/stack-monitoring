@@ -5,7 +5,7 @@ provider "aws" {
 
   # Conditionally assume the role
   dynamic "assume_role" {
-    for_each = var.aws_role_arn != "" ? [1] : []
+    for_each = var.aws_role_arn != "" ? ["enable"] : []
     content {
       role_arn = var.aws_role_arn
       external_id = var.aws_role_external_id != "" ? var.aws_role_external_id : ""

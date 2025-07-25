@@ -5,10 +5,10 @@ provider "aws" {
 
   # Conditionally assume the role
   dynamic "assume_role" {
-    for_each = var.aws_role_arn != "" ? ["enable"] : []
+    for_each = var.aws_role_arn != "" ? [enable = true] : []
     content {
       role_arn = var.aws_role_arn
-      external_id = var.aws_role_external_id != "" ? var.aws_role_external_id : ""
+      external_id = var.aws_role_external_id != "" ? var.aws_role_external_id : null
     }
   }
 

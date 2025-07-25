@@ -20,6 +20,13 @@ variable "aws_access_cred" {
 variable "aws_region" {
   sensitive = true
 }
+variable "aws_role_arn" {
+  sensitive = true
+}
+variable "aws_role_external_id" {
+  sensitive = true
+}
+
 variable "aws_extra_tags" {
   default = {}
 }

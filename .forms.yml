@@ -60,12 +60,19 @@ shared:
             - aws
         type: string
         default: "((aws))"
-      - name: "AWS Assume Role"
-        description: "Amazon AWS access key for Terraform."
+      - name: "AWS assume Role"
+        description: "Amazon assume role for Terraform."
         key: aws_role_arn
         widget: simple_text
         type: string
         default: ""
+      - name: "AWS Assume Role External ID"
+        description: "Amazon assume role external ID for Terraform."
+        key: aws_role_external_id
+        type: string
+        widget: cy_cred
+        widget_config:
+          display_keys: false
       - name: "Amazon AWS region"
         description: "Amazon AWS region to use for Terraform."
         key: aws_default_region

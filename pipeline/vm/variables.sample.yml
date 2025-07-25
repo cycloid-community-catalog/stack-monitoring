@@ -4,6 +4,8 @@
 
 ## AWS access to use to run terraform
 aws_extra_tags: {}
+aws_role_arn: ""
+aws_role_external_id: ""
 
 ## terraform version used to execute your code
 terraform_version: "1.6.3"

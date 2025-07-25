@@ -68,6 +68,8 @@ resources:
       aws_access_cred: ((aws_access_cred))
       aws_region: ((aws_default_region))
       aws_extra_tags: ((aws_extra_tags))
+      aws_role_arn: ((aws_role_arn))
+      aws_role_external_id: ((aws_role_external_id))
       enable_tls: ((enable_tls))
       create_self_signed_certificate: ((create_self_signed_certificate))
       tls_crt: ((tls_crt))

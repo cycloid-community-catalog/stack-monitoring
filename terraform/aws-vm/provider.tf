@@ -1,6 +1,7 @@
 provider "aws" {
-  access_key = var.aws_access_cred.access_key
-  secret_key = var.aws_access_cred.secret_key
+# Conditionally set access keys
+  access_key = var.aws_access_cred != "" ? var.aws_access_cred.access_key : null
+  secret_key = var.aws_access_cred != "" ? var.aws_access_cred.secret_key : null
   region     = var.aws_region
 
   # Conditionally assume the role

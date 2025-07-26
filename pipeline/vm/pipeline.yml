@@ -231,6 +231,7 @@ jobs:
 
                 cat merged-stack/inventory
 
+                mkdir merged-stack/ansible/files/grafana/
                 cp -r stack/grafana-dashboards/* merged-stack/ansible/files/grafana/
 
           inputs:

@@ -403,7 +403,7 @@ use_cases:
           key: prometheus_default_rules_custom
           widget: text_area
           type: map
-          default: []
+          default: {}
         - name: "Prometheus Data retention"
           description: "The time prometheus will retain data before deletion. Must match the regular expression [0-9]+(ms|s|m|h) (milliseconds seconds minutes hours)."
           key: prometheus_storage_retention

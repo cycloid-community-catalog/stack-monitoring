@@ -106,6 +106,7 @@ use_cases:
           key: module.aws-vm.vm_ami
           widget: simple_text
           type: string
+          default: ""
         - name: "Disk size"
           unit: Go
           description: "Root Disk size for the instance."
@@ -402,6 +403,7 @@ use_cases:
           key: prometheus_default_rules_custom
           widget: text_area
           type: map
+          default: []
         - name: "Prometheus Data retention"
           description: "The time prometheus will retain data before deletion. Must match the regular expression [0-9]+(ms|s|m|h) (milliseconds seconds minutes hours)."
           key: prometheus_storage_retention

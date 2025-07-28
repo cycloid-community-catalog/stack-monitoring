@@ -59,7 +59,6 @@ shared:
           cred_types:
             - aws
         type: string
-        default: ""
       - name: "AWS assume Role"
         description: "Amazon assume role for Terraform."
         key: aws_role_arn

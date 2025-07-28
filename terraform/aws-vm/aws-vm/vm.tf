@@ -33,10 +33,10 @@ data "aws_ami" "debian" {
 
 # vm instance
 resource "aws_instance" "vm" {
-  ami                  = var.vm_ami != "" ? var.vm_ami :data.aws_ami.debian[0].id
+  ami                  = var.vm_ami != "" ? var.vm_ami : data.aws_ami.debian[0].id
   iam_instance_profile = aws_iam_instance_profile.vm.name
   instance_type        = var.vm_size
-  key_name             = local.name_prefix
+  key_name             = var.enable_ssh ? local.name_prefix : null
 
   user_data_base64 = base64encode(templatefile("${path.module}/userdata.sh.tpl", {}))
 

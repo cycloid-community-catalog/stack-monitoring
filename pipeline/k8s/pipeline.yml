@@ -99,6 +99,12 @@ resources:
   source:
     uri: ($ .catalog_repository_url $)
     branch: ($ .catalog_repository_branch $)
+    ($- if eq .config_repository_credential_type "basic_auth" $)
+    username: ((($ .config_repository_credential_path $).username))
+    password: ((($ .config_repository_credential_path $).password))
+    ($- else $)
+    private_key: ((($ .config_repository_credential_path $).ssh_key))
+    ($- end $)
     # Include only the Terraform files in the specified directory.
     paths:
       - terraform/k8s/*

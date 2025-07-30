@@ -162,7 +162,7 @@ resource "helm_release" "kube_prometheus_stack" {
   }
   set {
     name  = "alertmanager.ingress.annotations.nginx\\.ingress\\.kubernetes\\.io/auth-secret"
-    value = "alertmanager-basic-auth-${var.project}-${var.env}"
+    value = kubernetes_secret.alertmanager_basic_auth[0].metadata[0].name
   }
   set {
     name  = "alertmanager.ingress.annotations.nginx\\.ingress\\.kubernetes\\.io/auth-secret-type"
@@ -284,7 +284,7 @@ resource "helm_release" "kube_prometheus_stack" {
   }
   set {
     name  = "prometheus.ingress.annotations.nginx\\.ingress\\.kubernetes\\.io/auth-secret"
-    value = "prometheus-basic-auth-${var.project}-${var.env}"
+    value = kubernetes_secret.prometheus_basic_auth[0].metadata[0].name
   }
   set {
     name  = "prometheus.ingress.annotations.nginx\\.ingress\\.kubernetes\\.io/auth-secret-type"

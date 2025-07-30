@@ -28,7 +28,7 @@ definitions:
           - name: merged-stack
             path: "merged-stack"
       params:
-        CONFIG_PATH: ($ .config_root $)/terraform/($ .environment $)
+        CONFIG_PATH: ($ .config_root $)/terraform
         STACK_PATH: terraform/($ .use_case $)
         KUBECONFIG_CONTENT: ((kubeconfig_content))
         KUBECONFIG_FILENAME: ((kubeconfig_filename))
@@ -72,6 +72,7 @@ resources:
       project: ($ .project $)
       organization: ($ .organization $)
       component: ($ .component $)
+      cycloid_api_url: ($ .api_url $)
       cycloid_api_key: ((cycloid_api_key))
       kubeconfig_filename: ((kubeconfig_filename))
       prometheus_install: ((prometheus_install))

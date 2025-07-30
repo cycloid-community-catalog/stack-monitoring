@@ -1,3 +1,48 @@
 ###
 ## Pipeline vars to be filled by stackforms (stored in config repository)
 ###
+
+###
+## To be filled by stackforms - in config repository
+## Example configuration
+###
+
+## kubeconfig to allow to connect to instance
+#kubeconfig_content
+kubeconfig_filename: "kubeconfig"
+namespace: "stack-monitoring"
+
+## terraform version used to execute your code
+terraform_version: "1.6.3"
+ansible_version: "10.1"
+# kubectl version used to run extra cmd. Using alpine/k8s image.
+# https://hub.docker.com/r/alpine/k8s/tags?page=1
+kubectl_version: "1.23.12"
+
+## monitoring tools
+grafana_install: false
+alertmanager_install: false
+prometheus_install: true
+
+# grafana SSO
+grafana_sso_enabled: true
+grafana_sso_provider_name: "google"
+grafana_sso_allowed_domains: ""
+grafana_sso_client_id: ""
+grafana_sso_client_secret: ""
+grafana_sso_api_url: "https://www.googleapis.com/oauth2/v1/userinfo"
+grafana_sso_auth_url: "https://accounts.google.com/o/oauth2/auth"
+grafana_sso_token_url: "https://accounts.google.com/o/oauth2/token"
+grafana_sso_scopes: "https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth"
+grafana_sso_role_atribute_path: ""
+grafana_additional_datasources: ""
+
+# alertmanager - external (not created with the stack)
+alertmanager_use_external: ""
+alertmanager_config_receivers: ""
+
+#heartbeat
+opsgenie_token: ""
+
+# cycloid
+cycloid_api_key: ""

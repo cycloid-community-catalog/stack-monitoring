@@ -170,7 +170,7 @@ prometheus_alerting_external:
           username: "{{external_alertmanager_username}}"
       scheme: https
       static_configs:
-      - targets:"{{external_alertmanager_targets}}"
+      - targets: "{{external_alertmanager_targets}}"
 prometheus_alertmanager_config: "{{ prometheus_alerting_local if alertmanager_install else prometheus_alerting_external }}"
 # disable default prometheus rules https://github.com/prometheus-community/ansible/blob/main/roles/prometheus/defaults/main.yml#L105C1-L105C23
 prometheus_alert_rules: []

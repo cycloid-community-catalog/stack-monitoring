@@ -82,6 +82,8 @@ cadvisor_docker_only: true
 # Prometheus role
 # Defaults here: https://github.com/prometheus-community/ansible/blob/main/roles/prometheus/defaults/main.yml
 ##
+prometheus_system_user: prometheus
+prometheus_system_group: prometheus
 prometheus_config_dir: /etc/prometheus
 prometheus_db_dir: /var/lib/prometheus
 prometheus_web_listen_address: "0.0.0.0:9090"
@@ -376,6 +378,8 @@ nginx_auth_basic_files:
 # Grafana
 # Default here: https://github.com/grafana/grafana-ansible-collection/blob/main/roles/grafana/defaults/main.yml
 ##
+
+
 grafana_ini:
   security:
     admin_user: "{{grafana_admin_user | default('admin') }}"
@@ -394,6 +398,6 @@ grafana_datasources: "{{
       + (grafana_default_prometheus_datasource if (prometheus_install | default(true)) else [])
     }}"
 grafana_dashboards_dir: "/var/lib/grafana/dashboards"
-grafana_dashboards_dir_to_copy: "{{ playbook_dir }}/files/grafana"
+grafana_dashboards_dir_to_copy: "{{ playbook_dir }}/grafana-dashboards"
 grafana_provisioning_dashboards_from_file_structure: true
 grafana_provisioning_synced: false

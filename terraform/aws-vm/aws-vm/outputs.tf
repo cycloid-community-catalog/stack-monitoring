@@ -1,11 +1,11 @@
 # machine IPs e SGs
 
 output "machine_ip_private_address" {
-  value = aws_eip.vm.private_ip
+  value = try(aws_eip.vm[0].private_ip, aws_instance.vm.private_ip)
 }
 
 output "machine_ip_public_address" {
-  value = var.use_public_ip ? aws_eip.vm.public_ip : ""
+  value = try(aws_eip.vm[0].public_ip, "")
 }
 
 output "machine_id" {

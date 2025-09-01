@@ -56,6 +56,8 @@ shared:
         widget: cy_cred
         widget_config:
           display_keys: false
+          cred_types:
+            - aws
         type: string
       - name: "AWS assume Role"
         description: "Amazon assume role for Terraform."
@@ -114,6 +116,12 @@ use_cases:
           values:
               - 30
               - 250
+        - name: "Create Public IP"
+          description: "Wheter to create a public IP for the VM."
+          key: module.aws-vm.use_public_ip
+          widget: switch
+          type: boolean
+          default: true
         - name: "Subnet ID"
           description: "Subnet ID where to create VM."
           key: module.aws-vm.subnet_id
@@ -572,7 +580,6 @@ use_cases:
           key: alertmanager_receivers
           widget: cy_cred
           type: string
-          required: true
     - name: External Alertmanager (not deployed in machine)
       technologies: [pipeline]
       condition: $alertmanager_install == false && $prometheus_install == true

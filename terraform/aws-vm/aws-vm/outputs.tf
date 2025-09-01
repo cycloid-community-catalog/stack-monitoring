@@ -5,7 +5,7 @@ output "machine_ip_private_address" {
 }
 
 output "machine_ip_public_address" {
-  value = aws_eip.vm.public_ip
+  value = var.use_public_ip ? aws_eip.vm.public_ip : ""
 }
 
 output "machine_id" {

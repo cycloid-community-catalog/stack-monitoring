@@ -55,6 +55,10 @@ variable "create_self_signed_certificate" {
   default = true
 }
 
+variable "use_public_ip" {
+  default = true
+}
+
 # vm dns variables
 variable "create_dns" {
   default = false

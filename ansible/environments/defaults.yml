@@ -215,6 +215,15 @@ prometheus_default_rules_predefined:
     disable: false
   # - watchdog.rules
   Watchdog:
+    disable: false  
+  # - cycloid.healthcheck.rules
+  ConcourseIsDown:
+  ElasticsearchIsDown:
+  EmailIsDown:
+  MysqlIsDown:
+  RedisIsDown:
+  RedisWorkerIsDown:
+  VaultIsDown:
 prometheus_default_rules_custom: {}
 
 ##

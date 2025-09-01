@@ -4,7 +4,7 @@
 ###
 
 resource "aws_eip" "vm" {
-  count    = var.use_public_ip ? 0 : 1
+  count    = var.use_public_ip ? 1 : 0
   instance = aws_instance.vm.id
   domain   = "vpc"
 }

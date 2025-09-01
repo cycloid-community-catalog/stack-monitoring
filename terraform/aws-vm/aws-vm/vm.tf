@@ -38,6 +38,8 @@ resource "aws_instance" "vm" {
   instance_type        = var.vm_size
   key_name             = var.enable_ssh ? local.name_prefix : null
 
+  associate_public_ip_address = var.use_public_ip
+
   user_data_base64 = base64encode(templatefile("${path.module}/userdata.sh.tpl", {}))
 
   vpc_security_group_ids = [aws_security_group.vm.id]

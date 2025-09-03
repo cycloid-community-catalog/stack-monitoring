@@ -229,7 +229,7 @@ use_cases:
       vars:
         - name: "Extra tags"
           description: "Dict of extra tags to add to resources."
-          key: module.aws-vm.aws_extra_tags
+          key: aws_extra_tags
           widget: text_area
           type: map
           default: {}

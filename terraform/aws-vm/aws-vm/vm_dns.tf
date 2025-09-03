@@ -7,7 +7,7 @@ resource "aws_route53_record" "prometheus" {
   name    = var.prometheus_domain_name
   type    = "A"
   ttl     = 300
-  records = [aws_eip.vm.public_ip]
+  records = [aws_eip.vm[0].public_ip]
 }
 
 resource "aws_route53_record" "alertmanager" {
@@ -16,7 +16,7 @@ resource "aws_route53_record" "alertmanager" {
   name    = var.alertmanager_domain_name
   type    = "A"
   ttl     = 300
-  records = [aws_eip.vm.public_ip]
+  records = [aws_eip.vm[0].public_ip]
 }
 
 resource "aws_route53_record" "grafana" {
@@ -25,5 +25,5 @@ resource "aws_route53_record" "grafana" {
   name    = var.grafana_domain_name
   type    = "A"
   ttl     = 300
-  records = [aws_eip.vm.public_ip]
+  records = [aws_eip.vm[0].public_ip]
 }

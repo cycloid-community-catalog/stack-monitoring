@@ -1,0 +1,34 @@
+# Defines the set of alerts connected to cycloid healthcheck metrics
+# Checks if:
+# - concourse is down
+# - elasticsearch is down
+# - email is down
+# - mysql is down
+# - redis is down
+# - redis_worker is down
+# - vault is down
+
+groups:
+- name: cycloid_health_check.rules
+  rules:
+    {% for service in ['concourse', 'elasticsearch', 'email', 'mysql', 'redis', 'redis_worker', 'vault'] %}
+		{% set joined_config = custom_config |
+							combine(prometheus_default_rules_predefined['{{ service|capitalize }}IsDown']) |
+							combine(prometheus_default_rules_global) %}
+		{% if not joined_config['disable'] %}
+      - alert: "{{ service|capitalize }}IsDown"
+        expr: "health_status_{{ service }} == 0"
+        for: "{{ joined_config['for'] }}"
+        labels:
+          organization: "{{ joined_config['organization'] }}"
+          project: "{{ joined_config['project'] }}"
+          role: "{{ joined_config['role'] }}"
+          env: "{{ joined_config['env'] }}"
+          component: "{{ joined_config['component'] }}"
+          severity: "{{ joined_config['severity'] }}"
+          receiver: "{{ joined_config['receiver'] }}"
+        annotations:
+          summary: "{{ service|capitalize }} service is Down"
+          description: "The {{ service }} service is Down for ."
+          		{% if not joined_config['disable'] %}
+    {% endfor %}

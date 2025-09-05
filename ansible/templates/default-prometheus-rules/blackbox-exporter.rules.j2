@@ -19,11 +19,11 @@ groups:
       for: "{{ joined_config['for'] }}"
       labels:
         {% raw -%}
-        organization: '{{ $labels.organization }}'
-        project: '{{ $labels.project }}'
-        role: '{{ $labels.role }}'
-        env: '{{ $labels.env }}'
-        component: '{{ $labels.component }}'
+        organization: "{{ joined_config['organization'] }}"
+        project: "{{ joined_config['project'] }}"
+        role: "{{ joined_config['role'] }}"
+        env: "{{ joined_config['env'] }}"
+        component: "{{ joined_config['component'] }}"
         {% endraw -%}
         severity: "{{ joined_config['severity'] }}"
         receiver: "{{ joined_config['receiver'] }}"
@@ -44,11 +44,11 @@ groups:
       for: "{{ joined_config['for'] }}"
       labels:
         {% raw -%}
-        organization: '{{ $labels.organization }}'
-        project: '{{ $labels.project }}'
-        role: '{{ $labels.role }}'
-        env: '{{ $labels.env }}'
-        component: '{{ $labels.component }}'
+        organization: "{{ joined_config['organization'] }}"
+        project: "{{ joined_config['project'] }}"
+        role: "{{ joined_config['role'] }}"
+        env: "{{ joined_config['env'] }}"
+        component: "{{ joined_config['component'] }}"
         {% endraw -%}
         severity: "{{ joined_config['severity'] }}"
         receiver: "{{ joined_config['receiver'] }}"
@@ -70,11 +70,11 @@ groups:
       for: "{{ joined_config['for'] }}"
       labels:
         {% raw -%}
-        organization: '{{ $labels.organization }}'
-        project: '{{ $labels.project }}'
-        role: '{{ $labels.role }}'
-        env: '{{ $labels.env }}'
-        component: '{{ $labels.component }}'
+        organization: "{{ joined_config['organization'] }}"
+        project: "{{ joined_config['project'] }}"
+        role: "{{ joined_config['role'] }}"
+        env: "{{ joined_config['env'] }}"
+        component: "{{ joined_config['component'] }}"
         {% endraw -%}
         severity: "{{ joined_config['severity'] }}"
         receiver: "{{ joined_config['receiver'] }}"
@@ -95,11 +95,11 @@ groups:
       for: "{{ joined_config['for'] }}"
       labels:
         {% raw -%}
-        organization: '{{ $labels.organization }}'
-        project: '{{ $labels.project }}'
-        role: '{{ $labels.role }}'
-        env: '{{ $labels.env }}'
-        component: '{{ $labels.component }}'
+        organization: "{{ joined_config['organization'] }}"
+        project: "{{ joined_config['project'] }}"
+        role: "{{ joined_config['role'] }}"
+        env: "{{ joined_config['env'] }}"
+        component: "{{ joined_config['component'] }}"
         {% endraw -%}
         severity: "{{ joined_config['severity'] }}"
         receiver: "{{ joined_config['receiver'] }}"

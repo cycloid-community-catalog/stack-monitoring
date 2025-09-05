@@ -286,9 +286,10 @@ jobs:
           - name: tfstate
             path: "terraform"
         params:
+          # env var to allow logs for the prometheus playbook
+          CI: true
           ANSIBLE_PLAYBOOK_PATH: ansible-playbook
           ANSIBLE_PLAYBOOK_NAME: main.yml
-          #ANSIBLE_INVENTORY: inventory
           EXTRA_ANSIBLE_ARGS: "-b -i inventory"
           ANSIBLE_FORCE_GALAXY: false
           # empty: disable the ssh user since we use ssm

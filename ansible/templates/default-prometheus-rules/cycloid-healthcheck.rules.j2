@@ -11,7 +11,7 @@
 groups:
 - name: cycloid_health_check.rules
   rules:
-    {% for service in ['concourse', 'elasticsearch', 'email', 'mysql', 'redis', 'redis_worker', 'vault'] %}
+    {% for service in ['concourse', 'elasticsearch', 'email', 'mysql', 'redis', 'redisworker', 'vault'] %}
 		{% set joined_config = custom_config |
 							combine(prometheus_default_rules_predefined['{{ service|capitalize }}IsDown']) |
 							combine(prometheus_default_rules_global) %}

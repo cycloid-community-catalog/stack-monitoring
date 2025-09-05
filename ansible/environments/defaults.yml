@@ -215,7 +215,7 @@ prometheus_default_rules_predefined:
     disable: false
   # - watchdog.rules
   Watchdog:
-    disable: false  
+    disable: false
   # - cycloid.healthcheck.rules
   ConcourseIsDown:
   ElasticsearchIsDown:

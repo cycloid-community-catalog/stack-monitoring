@@ -12,9 +12,10 @@ groups:
 - name: cycloid_health_check.rules
   rules:
   {% for service in ['concourse', 'elasticsearch', 'email', 'mysql', 'redis', 'redisworker', 'vault'] %}
-    {% for custom_config in prometheus_default_rules_custom.get('{{ service|capitalize }}IsDown', [{}]) %}
+    {% set alert = service|capitalize ~ 'IsDown' %}
+    {% for custom_config in prometheus_default_rules_custom.get(alert, [{}]) %}
     {% set joined_config = custom_config |
-              combine(prometheus_default_rules_predefined['{{ service|capitalize }}IsDown']) |
+              combine(prometheus_default_rules_predefined[alert]) |
               combine(prometheus_default_rules_global) %}
     {% if not joined_config['disable'] %}
       - alert: "{{ service|capitalize }}IsDown"
@@ -22,15 +23,15 @@ groups:
         for: "{{ joined_config['for'] }}"
         labels:
           organization: "{{ joined_config['organization'] }}"
-          project: "{{ joined_config['labels'].get('organization')  }}"
-          role: "{{ joined_config['labels'].get('role') }}"
-          env: "{{ joined_config['labels'].get('env') }}"
-          component: "{{ joined_config['labels'].get('component') }}"
+          project: "{{ joined_config['labels']['organization']}}"
+          role: "{{ joined_config['labels'].['role']}}"
+          env: "{{ joined_config['labels'].['env']}}"
+          component: "{{ joined_config['labels'].['component']}}"
           severity: "{{ joined_config['severity'] }}"
           receiver: "{{ joined_config['receiver'] }}"
         annotations:
-          summary: "{{ service|capitalize }} service is Down"
-          description: "The {{ service }} service is Down for ."
+          summary: "{{ service}} service is Down"
+          description: "The {{ service }} service is Down for {{ joined_config['for']}} min."
       {% endif %}
     {% endfor %}
   {% endfor %}

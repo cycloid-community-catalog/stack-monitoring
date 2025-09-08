@@ -222,7 +222,7 @@ prometheus_default_rules_predefined:
   EmailIsDown:
   MysqlIsDown:
   RedisIsDown:
-  RedisWorkerIsDown:
+  RedisworkerIsDown:
   VaultIsDown:
 prometheus_default_rules_custom: {}
 

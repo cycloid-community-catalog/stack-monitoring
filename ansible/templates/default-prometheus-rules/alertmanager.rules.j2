@@ -15,13 +15,10 @@ groups:
       expr: absent(up{job="alertmanager", {{ joined_config['selector'] }}})
       for: "{{ joined_config['for'] }}"
       labels:
-        {% raw -%}
-        organization: "{{ joined_config['organization'] }}"
-        project: "{{ joined_config['project'] }}"
-        role: "{{ joined_config['role'] }}"
-        env: "{{ joined_config['env'] }}"
-        component: "{{ joined_config['component'] }}"
-        {% endraw -%}
+        organization: "{{ joined_config['labels']['organization'] }}"
+        project: "{{ joined_config['labels']['project'] }}"
+        env: "{{ joined_config['labels']['env'] }}"
+        component: "{{ joined_config['labels']['component'] }}"
         severity: "{{ joined_config['severity'] }}"
         receiver: "{{ joined_config['receiver'] }}"
       annotations:

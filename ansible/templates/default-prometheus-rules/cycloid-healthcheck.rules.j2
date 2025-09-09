@@ -18,20 +18,19 @@ groups:
               combine(prometheus_default_rules_predefined[alert]) |
               combine(prometheus_default_rules_global) %}
     {% if not joined_config['disable'] %}
-      - alert: "{{ service|capitalize }}IsDown"
-        expr: "health_status_{{ service }} == 0"
-        for: "{{ joined_config['for'] }}"
-        labels:
-          organization: "{{ joined_config['organization'] }}"
-          project: "{{ joined_config['labels']['organization']}}"
-          role: "{{ joined_config['labels']['role']}}"
-          env: "{{ joined_config['labels']['env']}}"
-          component: "{{ joined_config['labels']['component']}}"
-          severity: "{{ joined_config['severity'] }}"
-          receiver: "{{ joined_config['receiver'] }}"
-        annotations:
-          summary: "{{ service }} service is Down"
-          description: "The {{ service }} service is Down for {{ joined_config['for'] }} min."
+    - alert: "{{ service|capitalize }}IsDown"
+      expr: "health_status_{{ service }} == 0"
+      for: "{{ joined_config['for'] }}"
+      labels:
+        organization: "{{ joined_config['labels']['organization'] }}"
+        project: "{{ joined_config['labels']['project'] }}"
+        env: "{{ joined_config['labels']['env'] }}"
+        component: "{{ joined_config['labels']['component'] }}"
+        severity: "{{ joined_config['severity'] }}"
+        receiver: "{{ joined_config['receiver'] }}"
+      annotations:
+        summary: "{{ service }} service is Down"
+        description: "The {{ service }} service is Down for {{ joined_config['for'] }}."
       {% endif %}
     {% endfor %}
   {% endfor %}

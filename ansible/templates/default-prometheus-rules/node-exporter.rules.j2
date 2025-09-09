@@ -16,13 +16,10 @@ groups:
       expr: (sum by (instance) (rate(node_cpu_seconds_total{mode!="idle", {{ joined_config['selector'] }} }[{{ joined_config['for'] }}])) * 100) > {{ joined_config['threshold'] }}
       for: "{{ joined_config['for'] }}"
       labels:
-        {% raw -%}
-        organization: "{{ joined_config['organization'] }}"
-        project: "{{ joined_config['project'] }}"
-        role: "{{ joined_config['role'] }}"
-        env: "{{ joined_config['env'] }}"
-        component: "{{ joined_config['component'] }}"
-        {% endraw -%}
+        organization: "{{ joined_config['labels']['organization'] }}"
+        project: "{{ joined_config['labels']['project'] }}"
+        env: "{{ joined_config['labels']['env'] }}"
+        component: "{{ joined_config['labels']['component'] }}"
         severity: "{{ joined_config['severity'] }}"
         receiver: "{{ joined_config['receiver'] }}"
       annotations:
@@ -41,13 +38,10 @@ groups:
       expr: (1 - (sum(node_filesystem_avail_bytes{{ joined_config['selector'] }}) / sum(node_filesystem_size_bytes{{ joined_config['selector'] }})) * 100) > {{ joined_config['threshold'] }}
       for: "{{ joined_config['for'] }}"
       labels:
-        {% raw -%}
-        organization: "{{ joined_config['organization'] }}"
-        project: "{{ joined_config['project'] }}"
-        role: "{{ joined_config['role'] }}"
-        env: "{{ joined_config['env'] }}"
-        component: "{{ joined_config['component'] }}"
-        {% endraw -%}
+        organization: "{{ joined_config['labels']['organization'] }}"
+        project: "{{ joined_config['labels']['project'] }}"
+        env: "{{ joined_config['labels']['env'] }}"
+        component: "{{ joined_config['labels']['component'] }}"
         severity: "{{ joined_config['severity'] }}"
         receiver: "{{ joined_config['receiver'] }}"
       annotations:

@@ -13,6 +13,7 @@ groups:
                            combine(prometheus_default_rules_predefined.get(alert, {})) |
                            combine(prometheus_default_rules_custom.get(alert, {})) %}
     {% if not joined_config['disable'] %}
+
     - alert: "Prometheus is down"
       expr: absent(up{job="prometheus", {{ joined_config['selector'] }} })
       for: "{{ joined_config['for'] }}"
@@ -24,8 +25,8 @@ groups:
         severity: "{{ joined_config['severity'] }}"
         receiver: "{{ joined_config['receiver'] }}"
       annotations:
-        summary: "{%- raw %}{{$labels.instance}}{% endraw %}: Prometheus is down"
-        description: "{%- raw %}{{$labels.instance}}{% endraw %}: The Prometheus job has disappeared"
+        summary: "Prometheus is down"
+        description: "The Prometheus job has disappeared"
     {% endif %}
 
     {% set alert = 'PrometheusTargetDown' %}
@@ -45,6 +46,6 @@ groups:
         severity: "{{ joined_config['severity'] }}"
         receiver: "{{ joined_config['receiver'] }}"
       annotations:
-        summary: "{%- raw %}{{$labels.instance}}{% endraw %}: Prometheus target missing"
-        description: "{%- raw %}{{$labels.instance}}{% endraw %}: A Prometheus target has disappeared. An exporter might be crashed"
+        summary: "Prometheus target missing"
+        description: "A Prometheus target has disappeared. An exporter might be crashed"
     {% endif %}

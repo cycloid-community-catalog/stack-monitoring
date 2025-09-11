@@ -22,6 +22,6 @@ groups:
         severity: "{{ joined_config['severity'] }}"
         receiver: "{{ joined_config['receiver'] }}"
       annotations:
-        summary: "{%- raw %}{{$labels.instance}}{% endraw %}: Alertmanager is down"
-        description: "{%- raw %}{{$labels.instance}}{% endraw %}: The Alertmanager job has disappeared"
+        summary: "Alertmanager is down"
+        description: "The Alertmanager job has disappeared"
     {% endif %}

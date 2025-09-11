@@ -398,7 +398,7 @@ use_cases:
 
         - name: "Configure default vaules for all rules"
           description: "These setup the rules arguments and values to use by default to all rules when its not override by the specific rule configuration. BEWARE! Only change the default values if you delete them it may cause the deploy task to fail since they're required in case the value is not set somewhere else in the configuration."
-          key: prometheus_default_rule_files
+          key: prometheus_default_rules_global
           widget: text_area
           type: map
           default:

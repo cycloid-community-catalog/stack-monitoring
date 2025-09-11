@@ -6,46 +6,44 @@
 groups:
 - name: node-exporter-default.rules
   rules:
-  {% for custom_config in prometheus_default_rules_custom.get('HighCpuUsage', [{}]) %}
-    {% set joined_config = custom_config |
-                           combine(prometheus_default_rules_predefined['HighCpuUsage']) |
-                           combine(prometheus_default_rules_global) %}
+    {% set alert = 'HighCpuUsage' %}
+    {% set joined_config = prometheus_default_rules_global |
+                           combine(prometheus_default_rules_predefined.get(alert, {})) |
+                           combine(prometheus_default_rules_custom.get(alert, {})) %}
     {% if not joined_config['disable'] %}
 
     - alert: "High CPU Usage"
       expr: (sum by (instance) (rate(node_cpu_seconds_total{mode!="idle", {{ joined_config['selector'] }} }[{{ joined_config['for'] }}])) * 100) > {{ joined_config['threshold'] }}
       for: "{{ joined_config['for'] }}"
       labels:
-        organization: "{{ joined_config['labels']['organization'] }}"
-        project: "{{ joined_config['labels']['project'] }}"
-        env: "{{ joined_config['labels']['env'] }}"
-        component: "{{ joined_config['labels']['component'] }}"
+        organization: "{{ joined_config['organization'] }}"
+        project: "{{ joined_config['project'] }}"
+        env: "{{ joined_config['env'] }}"
+        component: "{{ joined_config['component'] }}"
         severity: "{{ joined_config['severity'] }}"
         receiver: "{{ joined_config['receiver'] }}"
       annotations:
         summary: "{%- raw %}{{ $labels.instance }}{% endraw %}: CPU usage is above {{ joined_config['threshold'] }}% (current value is: {%- raw %}{{ $value }}{% endraw %})"
         description: "{%- raw %}{{ $labels.instance }}{% endraw %}: High CPU usage detected"
     {% endif %}
-  {% endfor %}
 
-  {% for custom_config in prometheus_default_rules_custom.get('HighDiskUsage', [{}]) %}
-    {% set joined_config = custom_config |
-                           combine(prometheus_default_rules_predefined['HighDiskUsage']) |
-                           combine(prometheus_default_rules_global) %}
+    {% set alert = 'HighDiskUsage' %}
+    {% set joined_config = prometheus_default_rules_global |
+                           combine(prometheus_default_rules_predefined.get(alert, {})) |
+                           combine(prometheus_default_rules_custom.get(alert, {})) %}
     {% if not joined_config['disable'] %}
 
     - alert: "High Disk Usage"
       expr: (1 - (sum(node_filesystem_avail_bytes{{ joined_config['selector'] }}) / sum(node_filesystem_size_bytes{{ joined_config['selector'] }})) * 100) > {{ joined_config['threshold'] }}
       for: "{{ joined_config['for'] }}"
       labels:
-        organization: "{{ joined_config['labels']['organization'] }}"
-        project: "{{ joined_config['labels']['project'] }}"
-        env: "{{ joined_config['labels']['env'] }}"
-        component: "{{ joined_config['labels']['component'] }}"
+        organization: "{{ joined_config['organization'] }}"
+        project: "{{ joined_config['project'] }}"
+        env: "{{ joined_config['env'] }}"
+        component: "{{ joined_config['component'] }}"
         severity: "{{ joined_config['severity'] }}"
         receiver: "{{ joined_config['receiver'] }}"
       annotations:
         summary: "{%- raw %}{{ $labels.instance }}{% endraw %}: Disk usage is above {{ joined_config['threshold'] }}% (current value is: {%- raw %}{{ $value }}{% endraw %})"
         description: "{%- raw %}{{ $labels.instance }}{% endraw %}: High Disk usage detected"
     {% endif %}
-  {% endfor %}

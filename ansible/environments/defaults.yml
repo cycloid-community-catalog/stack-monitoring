@@ -177,25 +177,25 @@ prometheus_alertmanager_config: "{{ prometheus_alerting_local if alertmanager_in
 # disable default prometheus rules https://github.com/prometheus-community/ansible/blob/main/roles/prometheus/defaults/main.yml#L105C1-L105C23
 prometheus_alert_rules: []
 # default rule files should be copied here {{ prometheus_config_dir }}/rules/
+
 prometheus_default_rules_global:
   for: 15m
   receiver: on_call
   selector: ""
   severity: critical
-  labels:
-    organization: "{{ organization }}"
-    project: "{{ project }}"
-    env: "{{ env }}"
-    component: "{{ component }}"
-  disable: false #to disable alert
+  organization: "{{ organization }}"
+  project: "{{ project }}"
+  env: "{{ env }}"
+  component: "{{ component }}"
+  disable: false
 prometheus_default_rules_predefined:
   # - alertmanager.rules
-  AlertmanagerIsDown:
+  #AlertmanagerIsDown:
   # - blackbox-exporter.rules
-  BlackboxProbeFailed:
-  BlackboxProbeHttpFailure:
-  BlackboxSslCertificateWillExpireWithin30Days:
-  BlackboxSslCertificateExpired:
+  #BlackboxProbeFailed:
+  #BlackboxProbeHttpFailure:
+  #BlackboxSslCertificateWillExpireWithin30Days:
+  #BlackboxSslCertificateExpired:
   # - cadvisor.rules
   ContainerHighCpuUtilization:
     threshold: 80
@@ -209,21 +209,19 @@ prometheus_default_rules_predefined:
   HighDiskUsage:
     threshold: 80
   # - prometheus.rules
-  PrometheusIsDown:
-    disable: false
-  PrometheusTargetDown:
-    disable: false
+  #PrometheusIsDown:
+  #PrometheusTargetDown:
   # - watchdog.rules
-  Watchdog:
-    disable: false
+  #Watchdog:
   # - cycloid.healthcheck.rules
-  ConcourseIsDown:
-  ElasticsearchIsDown:
-  EmailIsDown:
-  MysqlIsDown:
-  RedisIsDown:
-  RedisworkerIsDown:
-  VaultIsDown:
+  #ConcourseIsDown:
+  #ElasticsearchIsDown:
+  #EmailIsDown:
+  #MysqlIsDown:
+  #RedisIsDown:
+  #RedisworkerIsDown:
+  #VaultIsDown:
+
 prometheus_default_rules_custom: {}
 
 ##

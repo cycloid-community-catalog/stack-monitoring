@@ -8,68 +8,65 @@ groups:
 
 - name: cadvisor-default.rules
   rules:
-  {% for custom_config in prometheus_default_rules_custom.get('ContainerHighCpuUtilization', [{}]) %}
-    {% set joined_config = custom_config |
-                           combine(prometheus_default_rules_predefined['ContainerHighCpuUtilization']) |
-                           combine(prometheus_default_rules_global) %}
+    {% set alert = 'ContainerHighCpuUtilization' %}
+    {% set joined_config = prometheus_default_rules_global |
+                           combine(prometheus_default_rules_predefined.get(alert, {})) |
+                           combine(prometheus_default_rules_custom.get(alert, {})) %}
     {% if not joined_config['disable'] %}
 
     - alert: "Container High CPU Utilization"
       expr: (sum(rate(container_cpu_usage_seconds_total{container!=""}[5m])) by (pod, container) / sum(container_spec_cpu_quota{container!=""}/container_spec_cpu_period{container!=""}) by (pod, container) * 100) > {{ joined_config['threshold'] }}
       for: "{{ joined_config['for'] }}"
       labels:
-        organization: "{{ joined_config['labels']['organization'] }}"
-        project: "{{ joined_config['labels']['project'] }}"
-        env: "{{ joined_config['labels']['env'] }}"
-        component: "{{ joined_config['labels']['component'] }}"
+        organization: "{{ joined_config['organization'] }}"
+        project: "{{ joined_config['project'] }}"
+        env: "{{ joined_config['env'] }}"
+        component: "{{ joined_config['component'] }}"
         severity: "{{ joined_config['severity'] }}"
         receiver: "{{ joined_config['receiver'] }}"
       annotations:
         summary: "{%- raw %}{{ $labels.instance }}{% endraw %}: Container High CPU utilization"
         description: "Container CPU utilization is above {{ joined_config['threshold'] }}"
     {% endif %}
-  {% endfor %}
 
-  {% for custom_config in prometheus_default_rules_custom.get('ContainerHighMemoryUsage', [{}]) %}
-    {% set joined_config = custom_config |
-                           combine(prometheus_default_rules_predefined['ContainerHighMemoryUsage']) |
-                           combine(prometheus_default_rules_global) %}
+    {% set alert = 'ContainerHighMemoryUsage' %}
+    {% set joined_config = prometheus_default_rules_global |
+                           combine(prometheus_default_rules_predefined.get(alert, {})) |
+                           combine(prometheus_default_rules_custom.get(alert, {})) %}
     {% if not joined_config['disable'] %}
 
     - alert: "Container High Memory Usage"
       expr: (sum(container_memory_working_set_bytes{name!=""}) BY (instance, name) / sum(container_spec_memory_limit_bytes > 0) BY (instance, name) * 100) > {{ joined_config['threshold'] }}
       for: "{{ joined_config['for'] }}"
       labels:
-        organization: "{{ joined_config['labels']['organization'] }}"
-        project: "{{ joined_config['labels']['project'] }}"
-        env: "{{ joined_config['labels']['env'] }}"
-        component: "{{ joined_config['labels']['component'] }}"
+        organization: "{{ joined_config['organization'] }}"
+        project: "{{ joined_config['project'] }}"
+        env: "{{ joined_config['env'] }}"
+        component: "{{ joined_config['component'] }}"
         severity: "{{ joined_config['severity'] }}"
         receiver: "{{ joined_config['receiver'] }}"
       annotations:
         summary: "{%- raw %}{{ $labels.instance }}{% endraw %}: Container High Memory usage"
         description: "Container Memory usage is above {{ joined_config['threshold'] }}"
     {% endif %}
-  {% endfor %}
 
-  {% for custom_config in prometheus_default_rules_custom.get('ContainerHighVolumeUsage', [{}]) %}
-    {% set joined_config = custom_config |
-                           combine(prometheus_default_rules_predefined['ContainerHighVolumeUsage']) |
-                           combine(prometheus_default_rules_global) %}
+    {% set alert = 'ContainerHighVolumeUsage' %}
+    {% set joined_config = prometheus_default_rules_global |
+                           combine(prometheus_default_rules_predefined.get(alert, {})) |
+                           combine(prometheus_default_rules_custom.get(alert, {})) %}
     {% if not joined_config['disable'] %}
 
     - alert: "Container High Volume Usage"
       expr: (1 - (sum(container_fs_inodes_free{name!=""}) BY (instance) / sum(container_fs_inodes_total) BY (instance))) * 100 > {{ joined_config['threshold'] }}
       for: "{{ joined_config['for'] }}"
       labels:
-        organization: "{{ joined_config['labels']['organization'] }}"
-        project: "{{ joined_config['labels']['project'] }}"
-        env: "{{ joined_config['labels']['env'] }}"
-        component: "{{ joined_config['labels']['component'] }}"
+        organization: "{{ joined_config['organization'] }}"
+        project: "{{ joined_config['project'] }}"
+        env: "{{ joined_config['env'] }}"
+        component: "{{ joined_config['component'] }}"
         severity: "{{ joined_config['severity'] }}"
         receiver: "{{ joined_config['receiver'] }}"
       annotations:
         summary: "{%- raw %}{{ $labels.instance }}{% endraw %}: Container High Volume usage"
         description: "Container Volume usage is above {{ joined_config['threshold'] }}"
     {% endif %}
-  {% endfor %}

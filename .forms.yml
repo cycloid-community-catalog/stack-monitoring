@@ -101,7 +101,7 @@ use_cases:
             - "t3.xlarge"
             - "t3.2xlarge"
         - name: "Instance AMI"
-          description: "Instance AMI for the machine to use. If not specified it uses the community debian."
+          description: "Instance AMI for the machine to use. If not specified it uses the community debian 12."
           key: module.aws-vm.vm_ami
           widget: simple_text
           type: string
@@ -135,7 +135,7 @@ use_cases:
           type: string
           required: true
         - name: "IAM policies"
-          description: "Array of IAM ARN policies to associate to the VM."
+          description: "Array of IAM ARN policies to associate to the VM instance profile."
           key: module.aws-vm.vm_iam_policies
           widget: text_area
           type: array
@@ -171,12 +171,12 @@ use_cases:
               - 0.0.0.0/0
             sg: []
 
-    - name: Enable SSL
+    - name: Enable HTTPs
       condition: $advanced_opt == true
       technologies: [pipeline]
       vars:
         - name: "Enable HTTPs"
-          description: "Select wheter to enable HTTPs traffic and use SSL certificates."
+          description: "Select wheter to enable HTTPs traffic and use SSL certificates endpoints to be used for the machine."
           key: enable_tls
           type: boolean
           widget: switch
@@ -386,8 +386,42 @@ use_cases:
               # Remove cycloid_tag_* labels
               - regex: 'cycloid_tag_.*'
                 action: labeldrop
-        - name: "Prometheus custom rules"
-          description: "Definition of custom prometheus alert rules that will be saved at templates/rules/$organization.rules file. The syntax to follow can be find in the [prometheus doc](https://prometheus.io/docs/prometheus/latest/configuration/alerting_rules/). You just need to specify the set of group array without the groups keyword.  "
+
+        - name: "Enable default prometheus rules"
+          description: "Default prometheus rules to use. You can see all the values available [here](https://github.com/cycloid-community-catalog/stack-monitoring/tree/master/ansible/templates/default-prometheus-rules)."
+          key: prometheus_default_rule_files
+          widget: text_area
+          type: array
+          default:
+            - prometheus.rules
+            - watchdog.rules
+
+        - name: "Configure default vaules for all rules"
+          description: "These setup the rules arguments and values to use by default to all rules when its not override by the specific rule configuration. BEWARE! Only change the default values if you delete them it may cause the deploy task to fail since they're required in case the value is not set somewhere else in the configuration."
+          key: prometheus_default_rule_files
+          widget: text_area
+          type: map
+          default:
+            for: 15m
+            receiver: on_call
+            selector: ""
+            severity: critical
+            organization: "{{ organization }}"
+            project: "{{ project }}"
+            env: "{{ env }}"
+            component: "{{ component }}"
+            disable: false
+
+        - name: "Configure individual prometheus rules"
+          description: "Change the default prometheus values that are defined. You can see all the values available [here](https://github.com/cycloid-community-catalog/stack-monitoring/blob/master/ansible/environments/default_vm_monitoring.yml#L183)."
+          key: prometheus_default_rules_custom
+          widget: text_area
+          type: map
+          default: {}
+
+
+        - name: "Create new prometheus rules"
+          description: "Configure custom prometheus alert rules that will be saved at rules/$organization.rules file. The syntax to follow can be find in the [prometheus doc](https://prometheus.io/docs/prometheus/latest/configuration/alerting_rules/). You just need to specify the set of group array without the groups keyword.  "
           key: prometheus_custom_rules
           widget: text_area
           type: array
@@ -395,20 +429,6 @@ use_cases:
             - name: example_empty
               rules: []
 
-        - name: "Default prometheus rules"
-          description: "Default prometheus rules to use. You can see all the values available [here](https://github.com/cycloid-community-catalog/stack-monitoring/tree/master/ansible/templates/default-prometheus-rules)."
-          key: prometheus_default_rule_files
-          widget: text_area
-          type: array
-          default:
-            - alertmanager.rules
-
-        - name: "Default prometheus rules configuration"
-          description: "Change the default prometheus values that are defined. You can see all the values available [here](https://github.com/cycloid-community-catalog/stack-monitoring/blob/master/ansible/environments/default_vm_monitoring.yml#L183)."
-          key: prometheus_default_rules_custom
-          widget: text_area
-          type: map
-          default: {}
         - name: "Prometheus Data retention"
           description: "The time prometheus will retain data before deletion. Must match the regular expression [0-9]+(ms|s|m|h) (milliseconds seconds minutes hours)."
           key: prometheus_storage_retention

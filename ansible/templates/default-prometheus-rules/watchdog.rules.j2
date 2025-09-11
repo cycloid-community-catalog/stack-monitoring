@@ -5,24 +5,23 @@
 groups:
 - name: watchdog.rules
   rules:
-  {% for custom_config in prometheus_default_rules_custom.get('Watchdog', [{}]) %}
-    {% set joined_config = custom_config |
-                           combine(prometheus_default_rules_predefined['Watchdog']) |
-                           combine(prometheus_default_rules_global) %}
+    {% set alert = 'Watchdog' %}
+    {% set joined_config = prometheus_default_rules_global |
+                           combine(prometheus_default_rules_predefined.get(alert, {})) |
+                           combine(prometheus_default_rules_custom.get(alert, {})) %}
     {% if not joined_config['disable'] %}
 
     - alert: "Watchdog Alert"
       expr: vector(1)  # This expression always evaluates to true
       for: "{{ joined_config['for'] }}"
       labels:
-        organization: "{{ joined_config['labels']['organization'] }}"
-        project: "{{ joined_config['labels']['project'] }}"
-        env: "{{ joined_config['labels']['env'] }}"
-        component: "{{ joined_config['labels']['component'] }}"
+        organization: "{{ joined_config['organization'] }}"
+        project: "{{ joined_config['project'] }}"
+        env: "{{ joined_config['env'] }}"
+        component: "{{ joined_config['component'] }}"
         severity: "{{ joined_config['severity'] }}"
         receiver: "{{ joined_config['receiver'] }}"
       annotations:
         summary: "Watchdog alert is active"
         description: "This is a watchdog alert to ensure the alerting pipeline is functional."
     {% endif %}
-  {% endfor %}

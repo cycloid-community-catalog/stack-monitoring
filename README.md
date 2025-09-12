@@ -21,3 +21,20 @@ This stack allows to install:
 
 - **Metrics Exporters**: Set of metrics exporters compatible with Prometheus
 
+## Usecase documention
+
+To get more documentation for each of these usecases please go to the readme corresponding sections:
+- [vm usecase doc](docs/vm_usecase.md)
+- [k8s usecase doc](docs/k8s_usecase.md)
+
+## Official documentation
+
+- [Prometheus Template examples](https://prometheus.io/docs/prometheus/latest/configuration/template_examples/)
+- [Prometheus Alerting rules](https://prometheus.io/docs/prometheus/latest/configuration/alerting_rules/)
+- [Alertmanager Configuration](https://prometheus.io/docs/alerting/latest/configuration/)
+
+## Other interesting docs
+
+- If you need ideas/inspiration of alerts to put in place for alerting:
+	- https://monitoring.mixins.dev/
+	-https://samber.github.io/awesome-prometheus-alerts/

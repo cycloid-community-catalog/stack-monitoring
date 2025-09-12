@@ -71,14 +71,6 @@ postgres_exporter_port: "{{postgres_db_port}}"
 node_exporter_web_listen_address: "0.0.0.0:9100"
 
 ##
-# cAdvisor role
-## Defaults at https://github.com/prometheus-community/ansible/blob/main/roles/cadvisor/defaults/main.yml
-##
-cadvisor_listen_ip: "0.0.0.0"
-cadvisor_port: "8080"
-cadvisor_docker_only: true
-
-##
 # Prometheus role
 # Defaults here: https://github.com/prometheus-community/ansible/blob/main/roles/prometheus/defaults/main.yml
 ##

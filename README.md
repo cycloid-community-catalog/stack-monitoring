@@ -37,4 +37,4 @@ To get more documentation for each of these usecases please go to the readme cor
 
 - If you need ideas/inspiration of alerts to put in place for alerting:
 	- https://monitoring.mixins.dev/
-	-https://samber.github.io/awesome-prometheus-alerts/
+	- https://samber.github.io/awesome-prometheus-alerts/

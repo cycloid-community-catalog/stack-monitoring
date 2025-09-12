@@ -11,7 +11,7 @@ groups:
                            combine(prometheus_default_rules_custom.get(alert, {})) %}
     {% if not joined_config['disable'] %}
 
-    - alert: "Watchdog Alert"
+    - alert: "Watchdog"
       expr: vector(1)  # This expression always evaluates to true
       for: "{{ joined_config['for'] }}"
       labels:

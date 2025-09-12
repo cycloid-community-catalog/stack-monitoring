@@ -15,6 +15,7 @@ groups:
       expr: vector(1)  # This expression always evaluates to true
       for: "{{ joined_config['for'] }}"
       labels:
+        customer: "{{ joined_config['organization'] }}"
         organization: "{{ joined_config['organization'] }}"
         project: "{{ joined_config['project'] }}"
         env: "{{ joined_config['env'] }}"

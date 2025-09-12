@@ -7,39 +7,46 @@
   - name: Install Blackbox exporter
     include_role:
       name: prometheus.prometheus.blackbox_exporter
-    tags: blackbox_exporter
     when: blackbox_exporter_install
+    tags: blackbox_exporter
 
   - name: Install MYSQL exporter
     include_role:
       name: prometheus.prometheus.mysqld_exporter
-    tags: mysqld_exporter
     when: mysqld_exporter_install
+    tags: mysqld_exporter
 
   - name: Install PostgreSQL exporter
     include_role:
       name: prometheus.prometheus.postgres_exporter
-    tags: postgres_exporter
     when: postgres_exporter_install
+    tags: postgres_exporter
 
   - name: Install Node exporter
     include_role:
       name: prometheus.prometheus.node_exporter
-    tags: node_exporter
     when: node_exporter_install
+    tags: node_exporter
 
   - name: Install Cadvisor exporter
     include_role:
       name: prometheus.prometheus.cadvisor
-    tags: cadvisor
     when: cadvisor_install
+    tags: cadvisor
 
   # Install Prometheus
+  - name: Remove prometheus rules dir (to avoid having old dashboards inside)
+    file:
+      path: "{{ prometheus_config_dir }}/rules/"
+      state: absent
+    when: prometheus_install
+    tags: prometheus
+
   - name: Install Prometheus
     include_role:
       name: prometheus.prometheus.prometheus
-    tags: prometheus
     when: prometheus_install
+    tags: prometheus
 
   - name: "Create custom alert rule file"
     template:
@@ -57,6 +64,7 @@
       owner: "{{ prometheus_system_user }}"
       group: "{{ prometheus_system_group }}"
     with_items: "{{ prometheus_default_rule_files }}"
+    when: prometheus_install
     tags:
       - prometheus
 
@@ -67,6 +75,7 @@
       name: prometheus
       state: restarted
       enabled: true
+    when: prometheus_install
     tags:
       - prometheus
 
@@ -91,6 +100,15 @@
       file_type: file
     register: dashboard_files_to_copy
     delegate_to: localhost
+    when: grafana_install
+    tags: grafana
+
+  - name: Remove grafana dashboard dir (to avoid having old dashboards inside)
+    file:
+      path: "{{ grafana_dashboards_dir_to_copy }}"
+      state: absent
+    when: grafana_install
+    tags: grafana
 
   - name: Ensure destination directory structure exists
     file:

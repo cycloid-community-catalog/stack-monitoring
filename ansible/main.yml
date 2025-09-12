@@ -10,8 +10,8 @@
     ansible_python_interpreter: /usr/bin/python3
 
   vars_files:
-    - ["environments/stackforms.yml","environments/stackforms.sample.yml"]
     - "environments/defaults.yml"
+    - ["environments/stackforms.yml","environments/stackforms.sample.yml"]
 
   tasks:
     - name: Setup AWS VM

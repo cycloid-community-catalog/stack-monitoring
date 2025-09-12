@@ -133,26 +133,9 @@ prometheus_postgres_exporter_config:
     - source_labels: [__name__]
       action: drop
       regex: go_(.*)
-prometheus_local_cadvisor_config:
-  ## Prometheus
-  - job_name: 'cadvisor'
-    static_configs:
-      - targets: ['localhost:8080']
-        labels:
-          Name: "local cadvisor"
-          project: "{{ project }}"
-          env: "{{ env }}"
-          role: "{{ role }}"
-          organization: "{{ organization }}"
-          component: "{{ component }}"
 
-    metric_relabel_configs:
-    # Not store unwanted metrics
-    - source_labels: [__name__]
-      action: drop
-      regex: go_(.*)
 # merge default scrapings with custom ones
-prometheus_scrape_configs: "{{ prometheus_scrape_configs_global + prometheus_custom_configs + (prometheus_scrape_config_alertmanager if  alertmanager_install else []) + (prometheus_blackbox_config if blackbox_exporter_install else []) + (prometheus_mysql_exporter_config if mysqld_exporter_install else []) + (prometheus_postgres_exporter_config if postgres_exporter_install else [])+ (prometheus_local_cadvisor_config if cadvisor_install else [])}}"
+prometheus_scrape_configs: "{{ prometheus_scrape_configs_global + prometheus_custom_configs + (prometheus_scrape_config_alertmanager if  alertmanager_install else []) + (prometheus_blackbox_config if blackbox_exporter_install else []) + (prometheus_mysql_exporter_config if mysqld_exporter_install else []) + (prometheus_postgres_exporter_config if postgres_exporter_install else [])}}"
 prometheus_alerting_local:
   - scheme: http
     static_configs:

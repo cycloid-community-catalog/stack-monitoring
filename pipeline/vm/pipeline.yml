@@ -87,6 +87,13 @@ resources:
   source:
     uri: ($ .catalog_repository_url $)
     branch: ($ .catalog_repository_branch $)
+    ($- if eq .catalog_repository_credential_type "basic_auth" $)
+    username: ((($ .catalog_repository_credential_path $).username))
+    password: ((($ .catalog_repository_credential_path $).password))
+    ($- end $)
+    ($- if eq .catalog_repository_credential_type "ssh" $)
+    private_key: ((($ .catalog_repository_credential_path $).ssh_key))
+    ($- end $)
     paths:
       - ansible/*
       - grafana-dashboards/*
@@ -99,7 +106,8 @@ resources:
     ($- if eq .config_repository_credential_type "basic_auth" $)
     username: ((($ .config_repository_credential_path $).username))
     password: ((($ .config_repository_credential_path $).password))
-    ($- else $)
+    ($- end $)
+    ($- if eq .config_repository_credential_type "ssh" $)
     private_key: ((($ .config_repository_credential_path $).ssh_key))
     ($- end $)
     paths:
@@ -116,6 +124,13 @@ resources:
   source:
     uri: ($ .catalog_repository_url $)
     branch: ($ .catalog_repository_branch $)
+    ($- if eq .catalog_repository_credential_type "basic_auth" $)
+    username: ((($ .catalog_repository_credential_path $).username))
+    password: ((($ .catalog_repository_credential_path $).password))
+    ($- end $)
+    ($- if eq .catalog_repository_credential_type "ssh" $)
+    private_key: ((($ .catalog_repository_credential_path $).ssh_key))
+    ($- end $)
     # Include only the Terraform files in the specified directory.
     paths:
 #($- if eq .use_case "aws-vm" $)
@@ -133,7 +148,8 @@ resources:
     ($- if eq .config_repository_credential_type "basic_auth" $)
     username: ((($ .config_repository_credential_path $).username))
     password: ((($ .config_repository_credential_path $).password))
-    ($- else $)
+    ($- end $)
+    ($- if eq .config_repository_credential_type "ssh" $)
     private_key: ((($ .config_repository_credential_path $).ssh_key))
     ($- end $)
     # Include only the Terraform files in the specified directory.

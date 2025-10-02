@@ -247,8 +247,9 @@ jobs:
                 EOF
 
                 cat merged-stack/inventory
-
+                if [ -d "stack/files/grafana-dashboards/" ]; then
                 cp -r stack/files/grafana-dashboards/* merged-stack/files/grafana-dashboards/
+                fi
 
           inputs:
             - name: git_config_ansible

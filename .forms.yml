@@ -634,6 +634,12 @@ use_cases:
       technologies: [ansible]
       condition: $grafana_install == true
       vars:
+        - name: Extra datasource list to use
+          description: "Credential containing an array of extra datasources to use."
+          key: grafana_extra_datasources
+          widget: cy_cred
+          type: string
+
         - name: "Grafana Dashboards"
           description: "List of dashboards which should be imported by ID, available publicly at [grafana](https://grafana.com/grafana/dashboards/)"
           key: grafana_dashboards

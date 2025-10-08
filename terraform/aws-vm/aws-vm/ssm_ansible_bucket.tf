@@ -6,7 +6,6 @@
 ###
 
 resource "aws_s3_bucket" "ansible" {
-
   bucket = local.name_prefix
 
   tags = {

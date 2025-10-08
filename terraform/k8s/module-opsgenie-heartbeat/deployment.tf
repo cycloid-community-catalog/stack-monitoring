@@ -5,7 +5,6 @@
 ################################################################################
 
 resource "kubernetes_deployment" "opsgenie_heartbeat_gw" {
-
   count = var.opsgenie_heartbeat_install ? 1 : 0
 
   metadata {

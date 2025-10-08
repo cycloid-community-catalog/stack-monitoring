@@ -8,7 +8,6 @@
 # https://github.com/hashicorp/terraform-provider-helm/issues/669
 # all the map variables need to apply this little trick
 locals {
-
   blackbox_helm_vars = {
     node_selector = var.stack_monitoring_node_selector
     config = {
@@ -18,7 +17,6 @@ locals {
 }
 
 resource "helm_release" "prometheus_blackbox" {
-
   count = var.blackbox_exporter_install ? 1 : 0
 
   name       = "prometheus-blackbox-exporter"

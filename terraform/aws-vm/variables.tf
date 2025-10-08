@@ -24,7 +24,7 @@ variable "aws_role_arn" {
   default = ""
 }
 variable "aws_role_external_id" {
-  default = ""
+  default   = ""
   sensitive = true
 }
 

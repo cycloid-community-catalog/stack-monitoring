@@ -20,7 +20,7 @@ resource "aws_route53_record" "alertmanager" {
 }
 
 resource "aws_route53_record" "grafana" {
-  count   = var.create_dns && var.grafana_install && var.use_public_ip? 1 : 0
+  count   = var.create_dns && var.grafana_install && var.use_public_ip ? 1 : 0
   zone_id = var.aws_dns_zone_id
   name    = var.grafana_domain_name
   type    = "A"

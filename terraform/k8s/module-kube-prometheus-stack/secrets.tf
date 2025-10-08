@@ -11,7 +11,6 @@ resource "random_password" "prometheus_basic_auth_password" {
 }
 
 resource "kubernetes_secret" "prometheus_basic_auth" {
-
   count = var.prometheus_install ? 1 : 0
 
   metadata {

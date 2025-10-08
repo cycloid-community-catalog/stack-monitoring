@@ -8,7 +8,7 @@ resource "azurerm_linux_virtual_machine" "vm" {
   resource_group_name   = var.resource_group_name
   network_interface_ids = [azurerm_network_interface.vm.id]
   size                  = var.vm_size
-  admin_username 		    = local.admin_username
+  admin_username        = local.admin_username
 
   source_image_reference {
     publisher = var.os_image_publisher
@@ -17,9 +17,9 @@ resource "azurerm_linux_virtual_machine" "vm" {
     version   = var.os_image_version
   }
 
-  admin_ssh_key	{
-	public_key = var.keypair_public
-	username = local.admin_username
+  admin_ssh_key {
+    public_key = var.keypair_public
+    username   = local.admin_username
   }
 
   os_disk {

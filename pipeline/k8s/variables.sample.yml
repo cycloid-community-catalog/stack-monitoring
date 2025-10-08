@@ -13,11 +13,11 @@ kubeconfig_filename: "kubeconfig"
 namespace: "stack-monitoring"
 
 ## terraform version used to execute your code
-terraform_version: "1.6.3"
+terraform_version: "1.11.4"
 ansible_version: "10.1"
 # kubectl version used to run extra cmd. Using alpine/k8s image.
 # https://hub.docker.com/r/alpine/k8s/tags?page=1
-kubectl_version: "1.23.12"
+kubectl_version: "1.31.13"
 
 ## monitoring tools
 grafana_install: false

@@ -330,6 +330,7 @@ jobs:
             postgres_db_password: ((postgres_db_password))
             postgres_db_host: ((postgres_db_host))
             postgres_db_port: ((postgres_db_port))
+            grafana_extra_datasources: ((grafana_extra_datasources))
             mysql_db_user: ((mysql_db_user))
             mysql_db_password: ((mysql_db_password))
             mysql_db_host: ((mysql_db_host))

@@ -646,8 +646,8 @@ use_cases:
                 type: string
                 default: grafana.local
 
-          - name: Grafana Configuration
-            technologies: [ansible]
+          - name: Grafana Configuration datasource
+            technologies: [pipeline]
             condition: $grafana_install == true
             vars:
               - name: Extra datasource list to use
@@ -656,6 +656,10 @@ use_cases:
                 widget: cy_cred
                 type: string
 
+          - name: Grafana Configuration
+            technologies: [ansible]
+            condition: $grafana_install == true
+            vars:
               - name: "Grafana Dashboards"
                 description: "List of dashboards which should be imported by ID, available publicly at [grafana](https://grafana.com/grafana/dashboards/)"
                 key: grafana_dashboards

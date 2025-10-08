@@ -41,3 +41,6 @@ mysql_db_port: ""
 
 # cycloid
 cycloid_api_key: ""
+
+# grafana
+grafana_extra_datasources: ""

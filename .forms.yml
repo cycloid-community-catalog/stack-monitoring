@@ -1,1181 +1,1194 @@
 shared:
-- &cycloid-api-key
-  name: Cycloid API key
-  groups:
-  - name: API KEY
-    technologies: [pipeline]
-    vars:
-    - name: "Cycloid API Key"
-      description: "Cycloid API Key with full rigths to manage credentials"
-      key: cycloid_api_key
-      type: string
-      widget: cy_cred
-      required: true
-      widget_config:
-        cred_types: [custom]
-      default: "((cycloid_io_api_key.api_key))"
-- &advanced
-  name: Advanced
-  groups:
-  - name: Enable Advanced
-    technologies: [pipeline]
-    vars:
-      - name: Display stack advanced options
-        description: Check to see stack options.
-        key: advanced_opt
-        widget: switch
-        type: boolean
-        default: false
-  - name: Version selection
-    condition: $advanced_opt == true
-    technologies: [pipeline]
-    vars:
-      - name: "Terraform version"
-        description: "Terraform version to use."
-        key: terraform_version
-        widget: simple_text
-        type: string
-        default: "1.11.4"
-      - name: "Ansible version"
-        description: "Ansible version to use."
-        key: ansible_version
-        widget: simple_text
-        type: string
-        default: "10.1"
+  - &cycloid-api-key
+    name: Cycloid API key
+    groups:
+      - name: API KEY
+        technologies: [pipeline]
+        vars:
+          - name: "Cycloid API Key"
+            description: "Cycloid API Key with full rigths to manage credentials"
+            key: cycloid_api_key
+            type: string
+            widget: cy_cred
+            required: true
+            widget_config:
+              cred_types: [custom]
+            default: "((cycloid_io_api_key.api_key))"
+  - &advanced
+    name: Advanced
+    groups:
+      - name: Enable Advanced
+        technologies: [pipeline]
+        vars:
+          - name: Display stack advanced options
+            description: Check to see stack options.
+            key: advanced_opt
+            widget: switch
+            type: boolean
+            default: false
+      - name: Version selection
+        condition: $advanced_opt == true
+        technologies: [pipeline]
+        vars:
+          - name: "Terraform version"
+            description: "Terraform version to use."
+            key: terraform_version
+            widget: simple_text
+            type: string
+            default: "1.11.4"
+          - name: "Ansible version"
+            description: "Ansible version to use."
+            key: ansible_version
+            widget: simple_text
+            type: string
+            default: "10.1"
 
-
-- &aws-creds
-  name: AWS Credentials
-  groups:
-  - name: Setup
-    technologies: [pipeline]
-    vars:
-      - name: "AWS access credential"
-        description: "AWS access credential which should be used"
-        key: aws_access_cred
-        widget: cy_cred
-        widget_config:
-          display_keys: false
-          cred_types:
-            - aws
-        type: string
-      - name: "AWS assume Role"
-        description: "Amazon assume role for Terraform."
-        key: aws_role_arn
-        widget: simple_text
-        type: string
-        default: ""
-      - name: "AWS Assume Role External ID"
-        description: "Amazon assume role external ID for Terraform."
-        key: aws_role_external_id
-        type: string
-        widget: cy_cred
-      - name: "Amazon AWS region"
-        description: "Amazon AWS region to use for Terraform."
-        key: aws_default_region
-        widget: auto_complete
-        type: string
-        values: ["eu-north-1","ap-south-1","eu-west-3","eu-west-2","eu-west-1","ap-northeast-2","ap-northeast-1","sa-east-1","ca-central-1","ap-southeast-1","ap-southeast-2","eu-central-1","us-east-1","us-east-2","us-west-1","us-west-2"]
-        default: eu-west-1
+  - &aws-creds
+    name: AWS Credentials
+    groups:
+      - name: Setup
+        technologies: [pipeline]
+        vars:
+          - name: "AWS access credential"
+            description: "AWS access credential which should be used"
+            key: aws_access_cred
+            widget: cy_cred
+            widget_config:
+              display_keys: false
+              cred_types:
+                - aws
+            type: string
+          - name: "AWS assume Role"
+            description: "Amazon assume role for Terraform."
+            key: aws_role_arn
+            widget: simple_text
+            type: string
+            default: ""
+          - name: "AWS Assume Role External ID"
+            description: "Amazon assume role external ID for Terraform."
+            key: aws_role_external_id
+            type: string
+            widget: cy_cred
+          - name: "Amazon AWS region"
+            description: "Amazon AWS region to use for Terraform."
+            key: aws_default_region
+            widget: auto_complete
+            type: string
+            values:
+              [
+                "eu-north-1",
+                "ap-south-1",
+                "eu-west-3",
+                "eu-west-2",
+                "eu-west-1",
+                "ap-northeast-2",
+                "ap-northeast-1",
+                "sa-east-1",
+                "ca-central-1",
+                "ap-southeast-1",
+                "ap-southeast-2",
+                "eu-central-1",
+                "us-east-1",
+                "us-east-2",
+                "us-west-1",
+                "us-west-2",
+              ]
+            default: eu-west-1
 version: "2"
 use_cases:
-- name: aws-vm
-  sections:
-  - *cycloid-api-key
-  - *aws-creds
-  - name: VM Configuration
-    groups:
-    - name: General
-      technologies: [terraform]
-      vars:
-        - name: "Instance type"
-          description: "Instance type for the machine to use."
-          key: module.aws-vm.vm_size
-          widget: auto_complete
-          type: string
-          default: "t3.small"
-          values:
-            - "t3.small"
-            - "t3.medium"
-            - "t3.large"
-            - "t3.xlarge"
-            - "t3.2xlarge"
-        - name: "Instance AMI"
-          description: "Instance AMI for the machine to use. If not specified it uses the community debian 12."
-          key: module.aws-vm.vm_ami
-          widget: simple_text
-          type: string
-          default: ""
-        - name: "Disk size"
-          unit: Go
-          description: "Root Disk size for the instance."
-          key: module.aws-vm.os_disk_size
-          widget: slider_range
-          type: integer
-          default: 30
-          values:
-              - 30
-              - 250
-        - name: "Create Public IP"
-          description: "Wheter to create a public IP for the VM."
-          key: module.aws-vm.use_public_ip
-          widget: switch
-          type: boolean
-          default: true
-        - name: "Subnet ID"
-          description: "Subnet ID where to create VM."
-          key: module.aws-vm.subnet_id
-          widget: simple_text
-          type: string
-          required: true
-        - name: "VPC ID"
-          description: "VPC ID where to create VM."
-          key: module.aws-vm.vpc_id
-          widget: simple_text
-          type: string
-          required: true
-        - name: "IAM policies"
-          description: "Array of IAM ARN policies to associate to the VM instance profile."
-          key: module.aws-vm.vm_iam_policies
-          widget: text_area
-          type: array
-          default:
-            [
-              "ec2:DescribeTags",
-              "ec2:DescribeInstances",
-              "ec2:DescribeInstanceStatus",
-              "cloudwatch:ListMetrics",
-              "cloudwatch:GetMetricData",
-            ]
-    - name: VM remote access
-      technologies: [pipeline, terraform]
-      vars:
-        - name: "Enable SSH access"
-          description: "Wheter to enable ssh access to machine"
-          key: enable_ssh
-          type: boolean
-          widget: switch
-          default: true
+  - name: aws-vm
+    sections:
+      - *cycloid-api-key
+      - *aws-creds
+      - name: VM Configuration
+        groups:
+          - name: General
+            technologies: [terraform]
+            vars:
+              - name: "Instance type"
+                description: "Instance type for the machine to use."
+                key: module.aws-vm.vm_size
+                widget: auto_complete
+                type: string
+                default: "t3.small"
+                values:
+                  - "t3.small"
+                  - "t3.medium"
+                  - "t3.large"
+                  - "t3.xlarge"
+                  - "t3.2xlarge"
+              - name: "Instance AMI"
+                description: "Instance AMI for the machine to use. If not specified it uses the community debian 12."
+                key: module.aws-vm.vm_ami
+                widget: simple_text
+                type: string
+                default: ""
+              - name: "Disk size"
+                unit: Go
+                description: "Root Disk size for the instance."
+                key: module.aws-vm.os_disk_size
+                widget: slider_range
+                type: integer
+                default: 30
+                values:
+                  - 30
+                  - 250
+              - name: "Create Public IP"
+                description: "Wheter to create a public IP for the VM."
+                key: module.aws-vm.use_public_ip
+                widget: switch
+                type: boolean
+                default: true
+              - name: "Subnet ID"
+                description: "Subnet ID where to create VM."
+                key: module.aws-vm.subnet_id
+                widget: simple_text
+                type: string
+                required: true
+              - name: "VPC ID"
+                description: "VPC ID where to create VM."
+                key: module.aws-vm.vpc_id
+                widget: simple_text
+                type: string
+                required: true
+              - name: "IAM policies"
+                description: "Array of IAM ARN policies to associate to the VM instance profile."
+                key: module.aws-vm.vm_iam_policies
+                widget: text_area
+                type: array
+                default:
+                  [
+                    "ec2:DescribeTags",
+                    "ec2:DescribeInstances",
+                    "ec2:DescribeInstanceStatus",
+                    "cloudwatch:ListMetrics",
+                    "cloudwatch:GetMetricData",
+                  ]
+          - name: VM remote access
+            technologies: [pipeline, terraform]
+            vars:
+              - name: "Enable SSH access"
+                description: "Wheter to enable ssh access to machine"
+                key: enable_ssh
+                type: boolean
+                widget: switch
+                default: true
 
-    - name: SSH access
-      technologies: [terraform]
-      condition: enable_ssh == true
-      vars:
-        - name: "SSH CIDR and CIDR to allow"
-          description: "Map containing the CIDR and security groups IDs to allow SSH access to the monitoring VM, use the map keys cidr and sg. Default CIDR:0.0.0.0/0"
-          key: module.aws-vm.ssh_to_allow
-          widget: text_area
-          type: map
-          default:
-            cidr:
-              - 0.0.0.0/0
-            sg: []
+          - name: SSH access
+            technologies: [terraform]
+            condition: enable_ssh == true
+            vars:
+              - name: "SSH CIDR and CIDR to allow"
+                description: "Map containing the CIDR and security groups IDs to allow SSH access to the monitoring VM, use the map keys cidr and sg. Default CIDR:0.0.0.0/0"
+                key: module.aws-vm.ssh_to_allow
+                widget: text_area
+                type: map
+                default:
+                  cidr:
+                    - 0.0.0.0/0
+                  sg: []
 
-    - name: Enable HTTPs
-      condition: $advanced_opt == true
-      technologies: [pipeline]
-      vars:
-        - name: "Enable HTTPs"
-          description: "Select wheter to enable HTTPs traffic and use SSL certificates endpoints to be used for the machine."
-          key: enable_tls
-          type: boolean
-          widget: switch
-          default: true
-        - name: "Create self signed certificate"
-          description: "Wheter to create a self signed certificate automatically. Otherwise a certificate needs to be imported"
-          key: create_self_signed_certificate
-          type: boolean
-          widget: switch
-          default: true
+          - name: Enable HTTPs
+            condition: $advanced_opt == true
+            technologies: [pipeline]
+            vars:
+              - name: "Enable HTTPs"
+                description: "Select wheter to enable HTTPs traffic and use SSL certificates endpoints to be used for the machine."
+                key: enable_tls
+                type: boolean
+                widget: switch
+                default: true
+              - name: "Create self signed certificate"
+                description: "Wheter to create a self signed certificate automatically. Otherwise a certificate needs to be imported"
+                key: create_self_signed_certificate
+                type: boolean
+                widget: switch
+                default: true
 
-    - name: SSL certificate import
-      condition: $advanced_opt == true && $enable_tls == true && $create_self_signed_certificate == false
-      technologies: [pipeline]
-      vars:
-        - name: "Certificate"
-          description: "Credential containing certificate"
-          key: tls_crt
-          type: string
-          widget: cy_cred
-        - name: "Certificate key"
-          description: "Credential containing ssl certificate"
-          key: tls_key
-          type: string
-          widget: cy_cred
+          - name: SSL certificate import
+            condition: $advanced_opt == true && $enable_tls == true && $create_self_signed_certificate == false
+            technologies: [pipeline]
+            vars:
+              - name: "Certificate"
+                description: "Credential containing certificate"
+                key: tls_crt
+                type: string
+                widget: cy_cred
+              - name: "Certificate key"
+                description: "Credential containing ssl certificate"
+                key: tls_key
+                type: string
+                widget: cy_cred
 
-    - name: DNS record creation
-      technologies: [terraform]
-      vars:
-        - name: Create DNS
-          description: Wheter to create DNS records for prometheus, alertmanager and grafana using AWS Route53. Note! Requires a DNS Zone
-          key: module.aws-vm.create_dns
-          widget: switch
-          type: boolean
-          default: false
-    - name: DNS Zone
-      technologies: [terraform]
-      condition: $module.aws-vm.create_dns == true
-      vars:
-        - name: "AWS Route53 Zone ID"
-          description: "AWS Route53 Zone ID to use for creating the different monitoring records."
-          key: module.aws-vm.aws_dns_zone_id
-          widget: simple_text
-          type: string
-          default: ""
+          - name: DNS record creation
+            technologies: [terraform]
+            vars:
+              - name: Create DNS
+                description: Wheter to create DNS records for prometheus, alertmanager and grafana using AWS Route53. Note! Requires a DNS Zone
+                key: module.aws-vm.create_dns
+                widget: switch
+                type: boolean
+                default: false
+          - name: DNS Zone
+            technologies: [terraform]
+            condition: $module.aws-vm.create_dns == true
+            vars:
+              - name: "AWS Route53 Zone ID"
+                description: "AWS Route53 Zone ID to use for creating the different monitoring records."
+                key: module.aws-vm.aws_dns_zone_id
+                widget: simple_text
+                type: string
+                default: ""
 
-    - name: Optional VM parameters
-      condition: $advanced_opt == true
-      technologies: [pipeline]
-      vars:
-        - name: "Extra tags"
-          description: "Dict of extra tags to add to resources."
-          key: aws_extra_tags
-          widget: text_area
-          type: map
-          default: {}
+          - name: Optional VM parameters
+            condition: $advanced_opt == true
+            technologies: [pipeline]
+            vars:
+              - name: "Extra tags"
+                description: "Dict of extra tags to add to resources."
+                key: aws_extra_tags
+                widget: text_area
+                type: map
+                default: {}
 
-  - name: Monitoring tools
-    groups:
-    - name: Tools to install
-      technologies: [terraform, ansible, pipeline]
-      vars:
-        - name: "Grafana install"
-          description: "Wheter to install [Grafana](https://github.com/grafana/grafana-ansible-collection/tree/main/roles/grafana) on the machine as a service."
-          key: grafana_install
-          widget: switch
-          type: boolean
-          default: false
-        - name: "Alertmanager install"
-          description: "Wheter to install [Alertmanager](https://github.com/prometheus-community/ansible/tree/main/roles/alertmanager) on the machine as a service."
-          key: alertmanager_install
-          widget: switch
-          type: boolean
-          default: false
-        - name: "Prometheus install"
-          description: "Wheter to skip install [Prometheus](https://github.com/prometheus-community/ansible/tree/main/roles/prometheus) on the machine as a service."
-          key: prometheus_install
-          widget: switch
-          type: boolean
-          default: true
+      - name: Monitoring tools
+        groups:
+          - name: Tools to install
+            technologies: [terraform, ansible, pipeline]
+            vars:
+              - name: "Grafana install"
+                description: "Wheter to install [Grafana](https://github.com/grafana/grafana-ansible-collection/tree/main/roles/grafana) on the machine as a service."
+                key: grafana_install
+                widget: switch
+                type: boolean
+                default: false
+              - name: "Alertmanager install"
+                description: "Wheter to install [Alertmanager](https://github.com/prometheus-community/ansible/tree/main/roles/alertmanager) on the machine as a service."
+                key: alertmanager_install
+                widget: switch
+                type: boolean
+                default: false
+              - name: "Prometheus install"
+                description: "Wheter to skip install [Prometheus](https://github.com/prometheus-community/ansible/tree/main/roles/prometheus) on the machine as a service."
+                key: prometheus_install
+                widget: switch
+                type: boolean
+                default: true
 
-  - name: Exporters
-    groups:
-    - name: Select exporters to install
-      technologies: [ansible]
-      vars:
-        - name: "Blackbox exporter install"
-          description: "Wheter to install [blackbox exporter](https://github.com/prometheus-community/ansible/tree/main/roles/blackbox_exporter) on the machine as a service."
-          key: blackbox_exporter_install
-          widget: switch
-          type: boolean
-          default: true
-        - name: "MYSQL exporter install"
-          description: "Wheter to install [mysql exporter](https://github.com/prometheus-community/ansible/tree/main/roles/mysqld_exporter) on the machine as a service."
-          key: mysqld_exporter_install
-          widget: switch
-          type: boolean
-          default: false
-        - name: "Postgres exporter install"
-          description: "Wheter to install [postgres exporter](https://github.com/prometheus-community/ansible/tree/main/roles/postgres_exporter) on the machine as a service."
-          key: postgres_exporter_install
-          widget: switch
-          type: boolean
-          default: false
-        - name: "Node exporter install"
-          description: "Wheter to install [node exporter](https://github.com/prometheus-community/ansible/tree/main/roles/node_exporter) on the machine as a service."
-          key: node_exporter_install
-          widget: switch
-          type: boolean
-          default: true
+      - name: Exporters
+        groups:
+          - name: Select exporters to install
+            technologies: [ansible]
+            vars:
+              - name: "Blackbox exporter install"
+                description: "Wheter to install [blackbox exporter](https://github.com/prometheus-community/ansible/tree/main/roles/blackbox_exporter) on the machine as a service."
+                key: blackbox_exporter_install
+                widget: switch
+                type: boolean
+                default: true
+              - name: "MYSQL exporter install"
+                description: "Wheter to install [mysql exporter](https://github.com/prometheus-community/ansible/tree/main/roles/mysqld_exporter) on the machine as a service."
+                key: mysqld_exporter_install
+                widget: switch
+                type: boolean
+                default: false
+              - name: "Postgres exporter install"
+                description: "Wheter to install [postgres exporter](https://github.com/prometheus-community/ansible/tree/main/roles/postgres_exporter) on the machine as a service."
+                key: postgres_exporter_install
+                widget: switch
+                type: boolean
+                default: false
+              - name: "Node exporter install"
+                description: "Wheter to install [node exporter](https://github.com/prometheus-community/ansible/tree/main/roles/node_exporter) on the machine as a service."
+                key: node_exporter_install
+                widget: switch
+                type: boolean
+                default: true
 
-  - name: Prometheus
-    groups:
-    - name: Prometheus login
-      condition: $prometheus_install == true
-      technologies: [terraform]
-      vars:
-        - name: "Prometheus DNS"
-          description: "DNS to use for Prometheus."
-          key: module.aws-vm.prometheus_domain_name
-          widget: simple_text
-          type: string
-          default: prometheus.local
-    - name: General Configuration
-      condition: $prometheus_install == true
-      technologies: [ansible]
-      vars:
-        - name: "Prometheus scraping config"
-          description: "Prometheus scraping config to use. Note! prometheus, alertmanager and the database exporters are scraped. For more information check [prometheus wiki](https://prometheus.io/docs/prometheus/latest/configuration/configuration/)"
-          key: prometheus_custom_configs
-          widget: text_area
-          type: array
-          default:
-            ## Node_exporter
-            - job_name: 'Node_exporter'
-              scheme: http
-              ec2_sd_configs:
-              - region: "{{ aws_default_region }}"
-                port: 9100
+      - name: Prometheus
+        groups:
+          - name: Prometheus login
+            condition: $prometheus_install == true
+            technologies: [terraform]
+            vars:
+              - name: "Prometheus DNS"
+                description: "DNS to use for Prometheus."
+                key: module.aws-vm.prometheus_domain_name
+                widget: simple_text
+                type: string
+                default: prometheus.local
+          - name: General Configuration
+            condition: $prometheus_install == true
+            technologies: [ansible]
+            vars:
+              - name: "Prometheus scraping additional config"
+                description: "Prometheus scraping additional config to use. Note! prometheus, alertmanager and the database exporters are scraped. For more information check [prometheus wiki](https://prometheus.io/docs/prometheus/latest/configuration/configuration/)"
+                key: prometheus_custom_configs
+                widget: text_area
+                type: array
+                default:
+                  ## Node_exporter
+                  - job_name: "Node_exporter"
+                    scheme: http
+                    ec2_sd_configs:
+                      - region: "{{ aws_default_region }}"
+                        port: 9100
 
-              relabel_configs:
-              - source_labels: [__meta_ec2_tag_monitoring_discovery]
-                action: drop
-                regex: false
+                    relabel_configs:
+                      - source_labels: [__meta_ec2_tag_monitoring_discovery]
+                        action: drop
+                        regex: false
 
-              - source_labels: [__meta_ec2_private_ip]
-                regex: '^(.+)$'
-                replacement: '${1}:9100'
-                target_label: __address__
+                      - source_labels: [__meta_ec2_private_ip]
+                        regex: "^(.+)$"
+                        replacement: "${1}:9100"
+                        target_label: __address__
 
-              # Force labels on metrics
-              # Instance label : Public IP, if not, default private IP
-              - source_labels: [__meta_ec2_private_ip]
-                action: replace
-                target_label: instance
-              - source_labels: [__meta_ec2_public_ip]
-                regex: '^(.+)$'
-                replacement: '${1}'
-                target_label: instance
+                      # Force labels on metrics
+                      # Instance label : Public IP, if not, default private IP
+                      - source_labels: [__meta_ec2_private_ip]
+                        action: replace
+                        target_label: instance
+                      - source_labels: [__meta_ec2_public_ip]
+                        regex: "^(.+)$"
+                        replacement: "${1}"
+                        target_label: instance
 
-              # Get some ec2 labels
-              - source_labels: [__meta_ec2_tag_Name]
-                target_label: Name
-              - source_labels: [__meta_ec2_tag_project]
-                target_label: project
-              - source_labels: [__meta_ec2_tag_env]
-                target_label: env
-              - source_labels: [__meta_ec2_tag_role]
-                target_label: role
-              - source_labels: [__meta_ec2_tag_organization]
-                target_label: organization
-              - source_labels: [__meta_ec2_instance_id]
-                target_label: instance_id
+                      # Get some ec2 labels
+                      - source_labels: [__meta_ec2_tag_Name]
+                        target_label: Name
+                      - source_labels: [__meta_ec2_tag_project]
+                        target_label: project
+                      - source_labels: [__meta_ec2_tag_env]
+                        target_label: env
+                      - source_labels: [__meta_ec2_tag_role]
+                        target_label: role
+                      - source_labels: [__meta_ec2_tag_organization]
+                        target_label: organization
+                      - source_labels: [__meta_ec2_instance_id]
+                        target_label: instance_id
 
-              metric_relabel_configs:
-              # Don't store unwanted metrics
-              - source_labels: [__name__]
-                action: drop
-                regex: go_(.*)
+                    metric_relabel_configs:
+                      # Don't store unwanted metrics
+                      - source_labels: [__name__]
+                        action: drop
+                        regex: go_(.*)
 
-              # Overrides mechanism of ec2 labels on the metric scope
-              - source_labels: [cycloid_tag_Name]
-                regex: '(.+)'
-                target_label: Name
-              - source_labels: [cycloid_tag_project]
-                regex: '(.+)'
-                target_label: project
-              - source_labels: [cycloid_tag_env]
-                regex: '(.+)'
-                target_label: env
-              - source_labels: [cycloid_tag_role]
-                regex: '(.+)'
-                target_label: role
-              - source_labels: [cycloid_tag_organization]
-                regex: '(.+)'
-                target_label: organization
-              - source_labels: [cycloid_tag_instance_id]
-                regex: '(.+)'
-                target_label: instance_id
+                      # Overrides mechanism of ec2 labels on the metric scope
+                      - source_labels: [cycloid_tag_Name]
+                        regex: "(.+)"
+                        target_label: Name
+                      - source_labels: [cycloid_tag_project]
+                        regex: "(.+)"
+                        target_label: project
+                      - source_labels: [cycloid_tag_env]
+                        regex: "(.+)"
+                        target_label: env
+                      - source_labels: [cycloid_tag_role]
+                        regex: "(.+)"
+                        target_label: role
+                      - source_labels: [cycloid_tag_organization]
+                        regex: "(.+)"
+                        target_label: organization
+                      - source_labels: [cycloid_tag_instance_id]
+                        regex: "(.+)"
+                        target_label: instance_id
 
-              # Remove cycloid_tag_* labels
-              - regex: 'cycloid_tag_.*'
-                action: labeldrop
+                      # Remove cycloid_tag_* labels
+                      - regex: "cycloid_tag_.*"
+                        action: labeldrop
 
-        - name: "Enable default prometheus rules"
-          description: "Default prometheus rules to use. You can see all the values available [here](https://github.com/cycloid-community-catalog/stack-monitoring/tree/master/ansible/templates/default-prometheus-rules)."
-          key: prometheus_default_rule_files
-          widget: text_area
-          type: array
-          default:
-            - prometheus.rules
-            - watchdog.rules
+              - name: "Enable default prometheus rules"
+                description: "Default prometheus rules to use. You can see all the values available [here](https://github.com/cycloid-community-catalog/stack-monitoring/tree/master/ansible/templates/default-prometheus-rules)."
+                key: prometheus_default_rule_files
+                widget: text_area
+                type: array
+                default:
+                  - prometheus.rules
+                  - watchdog.rules
 
-        - name: "Configure default vaules for all rules"
-          description: "These setup the rules arguments and values to use by default to all rules when its not override by the specific rule configuration. BEWARE! Only change the default values if you delete them it may cause the deploy task to fail since they're required in case the value is not set somewhere else in the configuration."
-          key: prometheus_default_rules_global
-          widget: text_area
-          type: map
-          default:
-            for: 15m
-            receiver: on_call
-            selector: ""
-            severity: critical
-            organization: "{{ organization }}"
-            project: "{{ project }}"
-            env: "{{ env }}"
-            component: "{{ component }}"
-            disable: false
+              - name: "Configure default vaules for all rules"
+                description: "These setup the rules arguments and values to use by default to all rules when its not override by the specific rule configuration. BEWARE! Only change the default values if you delete them it may cause the deploy task to fail since they're required in case the value is not set somewhere else in the configuration."
+                key: prometheus_default_rules_global
+                widget: text_area
+                type: map
+                default:
+                  for: 15m
+                  receiver: on_call
+                  selector: ""
+                  severity: critical
+                  organization: "{{ organization }}"
+                  project: "{{ project }}"
+                  env: "{{ env }}"
+                  component: "{{ component }}"
+                  disable: false
 
-        - name: "Configure individual prometheus rules"
-          description: "Change the default prometheus values that are defined. You can see all the values available [here](https://github.com/cycloid-community-catalog/stack-monitoring/blob/master/ansible/environments/default_vm_monitoring.yml#L183)."
-          key: prometheus_default_rules_custom
-          widget: text_area
-          type: map
-          default: {}
+              - name: "Configure individual prometheus rules"
+                description: "Change the default prometheus values that are defined. You can see all the values available [here](https://github.com/cycloid-community-catalog/stack-monitoring/blob/master/ansible/environments/default_vm_monitoring.yml#L183)."
+                key: prometheus_default_rules_custom
+                widget: text_area
+                type: map
+                default: {}
 
+              - name: "Create new prometheus rules"
+                description: "Configure custom prometheus alert rules that will be saved at rules/$organization.rules file. The syntax to follow can be find in the [prometheus doc](https://prometheus.io/docs/prometheus/latest/configuration/alerting_rules/). You just need to specify the set of group array without the groups keyword.  "
+                key: prometheus_custom_rules
+                widget: text_area
+                type: array
+                default:
+                  - name: example_empty
+                    rules: []
 
-        - name: "Create new prometheus rules"
-          description: "Configure custom prometheus alert rules that will be saved at rules/$organization.rules file. The syntax to follow can be find in the [prometheus doc](https://prometheus.io/docs/prometheus/latest/configuration/alerting_rules/). You just need to specify the set of group array without the groups keyword.  "
-          key: prometheus_custom_rules
-          widget: text_area
-          type: array
-          default:
-            - name: example_empty
-              rules: []
+              - name: "Prometheus Data retention"
+                description: "The time prometheus will retain data before deletion. Must match the regular expression [0-9]+(ms|s|m|h) (milliseconds seconds minutes hours)."
+                key: prometheus_storage_retention
+                widget: simple_text
+                type: string
+                default: "30d"
 
-        - name: "Prometheus Data retention"
-          description: "The time prometheus will retain data before deletion. Must match the regular expression [0-9]+(ms|s|m|h) (milliseconds seconds minutes hours)."
-          key: prometheus_storage_retention
-          widget: simple_text
-          type: string
-          default: "30d"
+      - name: Blackbox Exporter
+        groups:
+          - name: Configuration
+            condition: $blackbox_exporter_install == true
+            technologies: [ansible]
+            vars:
+              - name: "Blackbox exporter modules"
+                description: "Blackbox exporter modules to be used, for more information please check the [official documentation](https://github.com/prometheus/blackbox_exporter/blob/master/CONFIGURATION.md)"
+                key: blackbox_exporter_configuration_modules
+                widget: text_area
+                type: map
+                default:
+                  http_2xx:
+                    prober: http
+                    timeout: 15s
+                    http:
+                      method: GET
+                      valid_http_versions:
+                        - HTTP/1.1
+                        - HTTP/2.0
+                      fail_if_not_ssl: true
+                      no_follow_redirects: false
+                      preferred_ip_protocol: ip4
 
-  - name: Blackbox Exporter
-    groups:
-    - name: Configuration
-      condition: $blackbox_exporter_install == true
-      technologies: [ansible]
-      vars:
-        - name: "Blackbox exporter modules"
-          description: "Blackbox exporter modules to be used, for more information please check the [official documentation](https://github.com/prometheus/blackbox_exporter/blob/master/CONFIGURATION.md)"
-          key: blackbox_exporter_configuration_modules
-          widget: text_area
-          type: map
-          default:
-            http_2xx:
-              prober: http
-              timeout: 15s
-              http:
-                method: GET
-                valid_http_versions:
-                  - HTTP/1.1
-                  - HTTP/2.0
-                fail_if_not_ssl: true
-                no_follow_redirects: false
-                preferred_ip_protocol: ip4
+              - name: "Prometheus blackbox scraping"
+                description: "Blackbox scraping configuration to be added to prometheus, for more information please check the [official documentation](https://github.com/prometheus/blackbox_exporter/tree/master)"
+                key: prometheus_blackbox_config
+                widget: text_area
+                type: array
+                default:
+                  - job_name: "blackbox-targets"
+                    params:
+                      module: [http_2xx]
+                    metrics_path: /probe
+                    relabel_configs:
+                      - source_labels: ["__address__"]
+                        target_label: "__param_target"
+                      - target_label: "__address__"
+                        replacement: "localhost:9115"
+                    static_configs:
+                      - targets: ["https://cycloid.io"]
+                        labels:
+                          Name: "cycloid-website"
+                          organization: "{{organization}}"
+                          project: "website"
+                          env: "prod"
 
-        - name: "Prometheus blackbox scraping"
-          description: "Blackbox scraping configuration to be added to prometheus, for more information please check the [official documentation](https://github.com/prometheus/blackbox_exporter/tree/master)"
-          key: prometheus_blackbox_config
-          widget: text_area
-          type: array
-          default:
-            - job_name: 'blackbox-targets'
-              params:
-                module: [http_2xx]
-              metrics_path: /probe
-              relabel_configs:
-                - source_labels: [ "__address__" ]
-                  target_label: "__param_target"
-                - target_label: "__address__"
-                  replacement: "localhost:9115"
-              static_configs:
-                - targets: ["https://cycloid.io"]
-                  labels:
-                    Name: "cycloid-website"
-                    organization: "{{organization}}"
-                    project: "website"
-                    env: "prod"
+      - name: MySQL Exporter
+        groups:
+          - name: Configuration
+            condition: $mysqld_exporter_install == true
+            technologies: [pipeline]
+            vars:
+              - name: "DB Username"
+                description: "MySQL database username to be used to connect to the database."
+                key: mysql_db_user
+                widget: cy_cred
+                type: string
+              - name: "DB Username"
+                description: "MySQL Database password to be used to connect to the database"
+                key: mysql_db_password
+                widget: cy_cred
+                type: string
+              - name: "DB host"
+                description: "MySQL Database host where the metrics should be collected"
+                key: mysql_db_host
+                widget: simple_text
+                type: string
+              - name: "DB port"
+                description: "MySQL Database port where the metrics should be collected"
+                key: mysql_db_port
+                widget: simple_text
+                type: string
 
-  - name: MySQL Exporter
-    groups:
-    - name: Configuration
-      condition: $mysqld_exporter_install == true
-      technologies: [pipeline]
-      vars:
-        - name: "DB Username"
-          description: "MySQL database username to be used to connect to the database."
-          key: mysql_db_user
-          widget: cy_cred
-          type: string
-        - name: "DB Username"
-          description: "MySQL Database password to be used to connect to the database"
-          key: mysql_db_password
-          widget: cy_cred
-          type: string
-        - name: "DB host"
-          description: "MySQL Database host where the metrics should be collected"
-          key: mysql_db_host
-          widget: simple_text
-          type: string
-        - name: "DB port"
-          description: "MySQL Database port where the metrics should be collected"
-          key: mysql_db_port
-          widget: simple_text
-          type: string
+      - name: PostgreSQL Exporter
+        groups:
+          - name: Configuration
+            condition: $postgres_exporter_install == true
+            technologies: [pipeline]
+            vars:
+              - name: "DB Username"
+                description: "PostgreSQL database username to be used to connect to the database."
+                key: postgres_db_user
+                widget: cy_cred
+                type: string
+              - name: "DB Username"
+                description: "PostgreSQL Database password to be used to connect to the database"
+                key: postgres_db_password
+                widget: cy_cred
+                type: string
+              - name: "DB host"
+                description: "PostgreSQL Database host where the metrics should be collected"
+                key: postgres_db_host
+                widget: simple_text
+                type: string
+              - name: "DB port"
+                description: "PostgreSQL Database port where the metrics should be collected"
+                key: postgres_db_port
+                widget: simple_text
+                type: string
 
-  - name: PostgreSQL Exporter
-    groups:
-    - name: Configuration
-      condition: $postgres_exporter_install == true
-      technologies: [pipeline]
-      vars:
-        - name: "DB Username"
-          description: "PostgreSQL database username to be used to connect to the database."
-          key: postgres_db_user
-          widget: cy_cred
-          type: string
-        - name: "DB Username"
-          description: "PostgreSQL Database password to be used to connect to the database"
-          key: postgres_db_password
-          widget: cy_cred
-          type: string
-        - name: "DB host"
-          description: "PostgreSQL Database host where the metrics should be collected"
-          key: postgres_db_host
-          widget: simple_text
-          type: string
-        - name: "DB port"
-          description: "PostgreSQL Database port where the metrics should be collected"
-          key: postgres_db_port
-          widget: simple_text
-          type: string
+      - name: Alertmanager
+        groups:
+          - name: Alertmanager DNS
+            condition: $alertmanager_install == true
+            technologies: [terraform]
+            vars:
+              - name: "Alertmanager DNS"
+                description: "DNS to use for Alertmanager."
+                key: module.aws-vm.alertmanager_domain_name
+                widget: simple_text
+                type: string
+                default: alertmanager.local
+          - name: Alertmanager Configuration
+            technologies: [ansible]
+            condition: $alertmanager_install == true
+            vars:
+              - name: "Alertmanager route"
+                description: "The root node of the routing tree. More info about the syntax can be found in the [oficial documentation](https://prometheus.io/docs/alerting/latest/configuration/#route)."
+                key: alertmanager_route
+                widget: text_area
+                type: map
+                default:
+                  receiver: on_call
+                  group_by:
+                    - organization
+                    - project
+                    - env
+                    - alertname
+                  group_wait: 30s
+                  group_interval: 5m
+                  repeat_interval: 15m
+                  routes:
+                    - match: # Send "critical" alerts to the default receiver
+                        severity: critical
+                      receiver: on_call
+                    - match: # Send other alerts to a dummy receiver (no action)
+                        receiver: "null"
+                      receiver: null
+              - name: "Alertmanager inhibition rules"
+                description: "A list of inhibition rules to mute existing alerts. More info about the syntax can be found in the [oficial documentation](https://prometheus.io/docs/alerting/latest/configuration/#inhibit_rule)."
+                key: alertmanager_inhibit_rules
+                widget: text_area
+                type: array
+                default:
+                  - source_match: # mutes alerts warning when a critical alert related is active
+                      severity: critical
+                    target_match:
+                      severity: warning
+                    equal:
+                      - instance
+                      - organization
+                      - project
+                      - env
+                      - alertname
+          - name: Alertmanager Secret Configuration
+            technologies: [pipeline]
+            condition: $alertmanager_install == true
+            vars:
+              - name: "Alertmanager receivers"
+                description: "A cycloid credential containing a list of notification receivers.For more information about syntax check the [official alertmanager documentation](https://prometheus.io/docs/alerting/latest/configuration/#general-receiver-related-settings). Note! BY default it should always have a reciever -name: 'null'"
+                key: alertmanager_receivers
+                widget: cy_cred
+                type: string
+          - name: External Alertmanager (not deployed in machine)
+            technologies: [pipeline]
+            condition: $alertmanager_install == false && $prometheus_install == true
+            vars:
+              - name: "Username"
+                description: "Basic authentification username to use to connect to external alertmanager"
+                key: external_alertmanager_username
+                widget: cy_cred
+                type: string
+              - name: "Password"
+                description: "Basic authentification password to use to connect to external alertmanager"
+                key: external_alertmanager_password
+                widget: cy_cred
+                type: string
+              - name: "External Alertmanager list"
+                description: "Array of targets to connect to external alertmanager"
+                key: external_alertmanager_targets
+                widget: text_area
+                type: array
+                default:
+                  - alertmanager-0.test.com
+                  - alertmanager-1.test.com
 
-  - name: Alertmanager
-    groups:
-    - name: Alertmanager DNS
-      condition: $alertmanager_install == true
-      technologies: [terraform]
-      vars:
-        - name: "Alertmanager DNS"
-          description: "DNS to use for Alertmanager."
-          key: module.aws-vm.alertmanager_domain_name
-          widget: simple_text
-          type: string
-          default: alertmanager.local
-    - name: Alertmanager Configuration
-      technologies: [ansible]
-      condition: $alertmanager_install == true
-      vars:
-        - name: "Alertmanager route"
-          description: "The root node of the routing tree. More info about the syntax can be found in the [oficial documentation](https://prometheus.io/docs/alerting/latest/configuration/#route)."
-          key: alertmanager_route
-          widget: text_area
-          type: map
-          default:
-            receiver: on_call
-            group_by:
-              - organization
-              - project
-              - env
-              - alertname
-            group_wait: 30s
-            group_interval: 5m
-            repeat_interval: 15m
-            routes:
-            - match: # Send "critical" alerts to the default receiver
-                severity: critical
-              receiver: on_call
-            - match: # Send other alerts to a dummy receiver (no action)
-                receiver: 'null'
-              receiver: null
-        - name: "Alertmanager inhibition rules"
-          description: "A list of inhibition rules to mute existing alerts. More info about the syntax can be found in the [oficial documentation](https://prometheus.io/docs/alerting/latest/configuration/#inhibit_rule)."
-          key: alertmanager_inhibit_rules
-          widget: text_area
-          type: array
-          default:
-            - source_match: # mutes alerts warning when a critical alert related is active
-                severity: critical
-              target_match:
-                severity: warning
-              equal:
-                - instance
-                - organization
-                - project
-                - env
-                - alertname
-    - name: Alertmanager Secret Configuration
-      technologies: [pipeline]
-      condition: $alertmanager_install == true
-      vars:
-        - name: "Alertmanager receivers"
-          description: "A cycloid credential containing a list of notification receivers.For more information about syntax check the [official alertmanager documentation](https://prometheus.io/docs/alerting/latest/configuration/#general-receiver-related-settings). Note! BY default it should always have a reciever -name: 'null'"
-          key: alertmanager_receivers
-          widget: cy_cred
-          type: string
-    - name: External Alertmanager (not deployed in machine)
-      technologies: [pipeline]
-      condition: $alertmanager_install == false && $prometheus_install == true
-      vars:
-        - name: "Username"
-          description: "Basic authentification username to use to connect to external alertmanager"
-          key: external_alertmanager_username
-          widget: cy_cred
-          type: string
-        - name: "Password"
-          description: "Basic authentification password to use to connect to external alertmanager"
-          key: external_alertmanager_password
-          widget: cy_cred
-          type: string
-        - name: "External Alertmanager list"
-          description: "Array of targets to connect to external alertmanager"
-          key: external_alertmanager_targets
-          widget: text_area
-          type: array
-          default:
-            - alertmanager-0.test.com
-            - alertmanager-1.test.com
+      - name: Grafana
+        groups:
+          - name: Grafana DNS
+            condition: $grafana_install == true
+            technologies: [terraform]
+            vars:
+              - name: "Grafana DNS"
+                description: "DNS to use for Grafana."
+                key: module.aws-vm.grafana_domain_name
+                widget: simple_text
+                type: string
+                default: grafana.local
 
-  - name: Grafana
-    groups:
-    - name: Grafana DNS
-      condition: $grafana_install == true
-      technologies: [terraform]
-      vars:
-        - name: "Grafana DNS"
-          description: "DNS to use for Grafana."
-          key: module.aws-vm.grafana_domain_name
-          widget: simple_text
-          type: string
-          default: grafana.local
+          - name: Grafana Configuration
+            technologies: [ansible]
+            condition: $grafana_install == true
+            vars:
+              - name: Extra datasource list to use
+                description: "Credential containing an array of extra datasources to use."
+                key: grafana_extra_datasources
+                widget: cy_cred
+                type: string
 
-    - name: Grafana Configuration
-      technologies: [ansible]
-      condition: $grafana_install == true
-      vars:
-        - name: Extra datasource list to use
-          description: "Credential containing an array of extra datasources to use."
-          key: grafana_extra_datasources
-          widget: cy_cred
-          type: string
+              - name: "Grafana Dashboards"
+                description: "List of dashboards which should be imported by ID, available publicly at [grafana](https://grafana.com/grafana/dashboards/)"
+                key: grafana_dashboards
+                type: array
+                widget: text_area
+                default:
+                  - dashboard_id: 1860 #node-exporter
+                    revision_id: 37
+                    datasource: prometheus
+                  - dashboard_id: 13659
+                    revision_id: 1
+                    datasource: prometheus
 
-        - name: "Grafana Dashboards"
-          description: "List of dashboards which should be imported by ID, available publicly at [grafana](https://grafana.com/grafana/dashboards/)"
-          key: grafana_dashboards
-          type: array
-          widget: text_area
-          default:
-            - dashboard_id: 1860 #node-exporter
-              revision_id: 37
-              datasource: prometheus
-            - dashboard_id: 13659
-              revision_id: 1
-              datasource: prometheus
+      - *advanced
 
-  - *advanced
+  - name: k8s
+    sections:
+      - *cycloid-api-key
+      - name: K8s config
+        groups:
+          - name: k8s config
+            technologies: [pipeline]
+            vars:
+              - name: "K8s config file"
+                description: "The k8s config file content to be used to connect to the cluster and deploy the different monitoring resources."
+                key: kubeconfig_content
+                widget: cy_cred
+                type: string
+                required: true
+              - name: "K8s namespace"
+                description: "The name of the namespace to create, where the resources will be created. Defaults to 'stack-monitoring'. Beware that changing this value may destroy previously deployed elements."
+                key: namespace
+                widget: simple_text
+                type: string
+                default: "stack-monitoring"
 
-- name: k8s
-  sections:
-  - *cycloid-api-key
-  - name: K8s config
-    groups:
-    - name: k8s config
-      technologies: [pipeline]
-      vars:
-      - name: "K8s config file"
-        description: "The k8s config file content to be used to connect to the cluster and deploy the different monitoring resources."
-        key: kubeconfig_content
-        widget: cy_cred
-        type: string
-        required: true
-      - name: "K8s namespace"
-        description: "The name of the namespace to create, where the resources will be created. Defaults to 'stack-monitoring'. Beware that changing this value may destroy previously deployed elements."
-        key: namespace
-        widget: simple_text
-        type: string
-        default: "stack-monitoring"
+      - name: Monitoring tools
+        groups:
+          - name: Tools to install
+            technologies: [pipeline]
+            vars:
+              - name: "Grafana install"
+                description: "Wheter to install [Grafana](https://github.com/grafana/grafana-ansible-collection/tree/main/roles/grafana) on the k8s cluster."
+                key: grafana_install
+                widget: switch
+                type: boolean
+                default: false
+              - name: "Alertmanager install"
+                description: "Wheter to install [Alertmanager](https://github.com/prometheus-community/ansible/tree/main/roles/alertmanager) on the k8s cluster."
+                key: alertmanager_install
+                widget: switch
+                type: boolean
+                default: false
+              - name: "Prometheus install"
+                description: "Wheter to skip install [Prometheus](https://github.com/prometheus-community/ansible/tree/main/roles/prometheus) on the k8s cluster."
+                key: prometheus_install
+                widget: switch
+                type: boolean
+                default: true
 
-  - name: Monitoring tools
-    groups:
-    - name: Tools to install
-      technologies: [pipeline]
-      vars:
-        - name: "Grafana install"
-          description: "Wheter to install [Grafana](https://github.com/grafana/grafana-ansible-collection/tree/main/roles/grafana) on the k8s cluster."
-          key: grafana_install
-          widget: switch
-          type: boolean
-          default: false
-        - name: "Alertmanager install"
-          description: "Wheter to install [Alertmanager](https://github.com/prometheus-community/ansible/tree/main/roles/alertmanager) on the k8s cluster."
-          key: alertmanager_install
-          widget: switch
-          type: boolean
-          default: false
-        - name: "Prometheus install"
-          description: "Wheter to skip install [Prometheus](https://github.com/prometheus-community/ansible/tree/main/roles/prometheus) on the k8s cluster."
-          key: prometheus_install
-          widget: switch
-          type: boolean
-          default: true
+      - name: Blackbox Exporter
+        groups:
+          - name: Install
+            technologies: [terraform]
+            vars:
+              - name: "Blackbox exporter install"
+                description: "Wheter to install [blackbox exporter](https://github.com/prometheus-community/ansible/tree/main/roles/blackbox_exporter) on the machine as a service."
+                key: module.prometheus-blackbox-exporter.blackbox_exporter_install
+                widget: switch
+                type: boolean
+                default: false
 
-  - name: Blackbox Exporter
-    groups:
-    - name: Install
-      technologies: [terraform]
-      vars:
-        - name: "Blackbox exporter install"
-          description: "Wheter to install [blackbox exporter](https://github.com/prometheus-community/ansible/tree/main/roles/blackbox_exporter) on the machine as a service."
-          key: module.prometheus-blackbox-exporter.blackbox_exporter_install
-          widget: switch
-          type: boolean
-          default: false
+          - name: Configuration
+            condition: $module.prometheus-blackbox-exporter.blackbox_exporter_install == true
+            technologies: [terraform]
+            vars:
+              - name: "Blackbox exporter modules"
+                description: "Blackbox exporter modules to be used, for more information please check the [official documentation](https://github.com/prometheus/blackbox_exporter/blob/master/CONFIGURATION.md)"
+                key: module.prometheus-blackbox-exporter.blackbox_exporter_modules
+                widget: text_area
+                type: map
+                default:
+                  http_2xx:
+                    prober: http
+                    timeout: 5s
+                    http:
+                      valid_http_versions: ["HTTP/1.1", "HTTP/2.0"]
+                      follow_redirects: true
+                      preferred_ip_protocol: "ip4"
 
-    - name: Configuration
-      condition: $module.prometheus-blackbox-exporter.blackbox_exporter_install == true
-      technologies: [terraform]
-      vars:
-        - name: "Blackbox exporter modules"
-          description: "Blackbox exporter modules to be used, for more information please check the [official documentation](https://github.com/prometheus/blackbox_exporter/blob/master/CONFIGURATION.md)"
-          key: module.prometheus-blackbox-exporter.blackbox_exporter_modules
-          widget: text_area
-          type: map
-          default:
-            http_2xx:
-              prober: http
-              timeout: 5s
-              http:
-                valid_http_versions: ["HTTP/1.1", "HTTP/2.0"]
-                follow_redirects: true
-                preferred_ip_protocol: "ip4"
+              - name: "Prometheus blackbox scraping"
+                description: "Blackbox scraping configuration to be added to prometheus, for more information please check the [official documentation](https://github.com/prometheus/blackbox_exporter/tree/master)"
+                key: module.kube-prometheus.prometheus_blackbox_scrape
+                widget: text_area
+                type: array
+                default:
+                  - job_name: blackbox-targets
+                    metrics_path: /probe
+                    params:
+                      module:
+                        - http_2xx
+                    relabel_configs:
+                      - source_labels:
+                          - __address__
+                        target_label: __param_target
+                      - source_labels:
+                          - __param_target
+                        target_label: instance
+                      - replacement: blackbox-exporter:9115
+                        target_label: __address__
+                    static_configs:
+                      - labels:
+                          aws_region: eu-west-3
+                          ip_priv: 10.3.5.16
+                          org: cycloid
+                          project: cycloidio-website
+                          provider_service: aws-vm
+                          vm_name: cycloidio-website-front-prod
+                          wiki: https://github.com/cycloidio/cycloid/wiki/cycloidio-website
+                        targets:
+                          - https://cycloid.io/
 
-        - name: "Prometheus blackbox scraping"
-          description: "Blackbox scraping configuration to be added to prometheus, for more information please check the [official documentation](https://github.com/prometheus/blackbox_exporter/tree/master)"
-          key: module.kube-prometheus.prometheus_blackbox_scrape
-          widget: text_area
-          type: array
-          default:
-            - job_name: blackbox-targets
-              metrics_path: /probe
-              params:
-                module:
-                  - http_2xx
-              relabel_configs:
-                - source_labels:
-                    - __address__
-                  target_label: __param_target
-                - source_labels:
-                    - __param_target
-                  target_label: instance
-                - replacement: blackbox-exporter:9115
-                  target_label: __address__
-              static_configs:
-                - labels:
-                    aws_region: eu-west-3
-                    ip_priv: 10.3.5.16
-                    org: cycloid
-                    project: cycloidio-website
-                    provider_service: aws-vm
-                    vm_name: cycloidio-website-front-prod
-                    wiki: https://github.com/cycloidio/cycloid/wiki/cycloidio-website
-                  targets:
-                    - https://cycloid.io/
+      - name: Prometheus
+        groups:
+          - name: Prometheus login
+            condition: $prometheus_install == true
+            technologies: [terraform]
+            vars:
+              - name: "Prometheus DNS"
+                description: "DNS to use for Prometheus."
+                key: module.kube-prometheus.prometheus_domain_name
+                widget: simple_text
+                type: string
+                default: prometheus.local
+          - name: General Configuration
+            condition: $prometheus_install == true
+            technologies: [terraform]
+            vars:
+              - name: "Prometheus disable k8s component scraping"
+                description: "Prometheus disable default k8s compponent scraping. Go on the values of helm chart and search for all enable ones"
+                key: module.kube-prometheus.disable_component_scraping
+                widget: text_area
+                type: array
+                default: []
+              - name: "Prometheus scraping additional config"
+                description: "Prometheus scraping additional config to use"
+                key: module.kube-prometheus.prometheus_additional_scrape
+                widget: text_area
+                type: array
+                default: []
+              - name: "Prometheus disable default rules"
+                description: "Customize the default rules to disable. For more information about syntax and default rules check the k8s prometheus stack [chart default rules](https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/values.yaml#L49C3-L49C8)"
+                key: module.kube-prometheus.prometheus_default_rules_disabled
+                widget: text_area
+                type: array
+                default: []
+              - name: "Prometheus default rules customize"
+                description: "Customize the default enabled rules for and severity parameters. For more information about syntax and default rules check the k8s prometheus stack [chart default values](https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/values.yaml#L38)"
+                key: module.kube-prometheus.prometheus_change_default_rules
+                widget: text_area
+                type: map
+                default: {}
+              - name: "Prometheus disable default alerts"
+                description: "Customize the default alerts to disable. For more information about syntax check the k8s prometheus stack [here](https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/values.yaml#L181)"
+                key: module.kube-prometheus.prometheus_default_alerts_disabled
+                widget: text_area
+                type: array
+                default: []
+              - name: "Prometheus aditional rules"
+                description: "Provide custom rules to be deployed in the cluster. For more information about syntax and default rules check the k8s prometheus stack [chart default values](https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/values.yaml#L198)"
+                key: module.kube-prometheus.prometheus_additional_rules
+                widget: text_area
+                type: map
+                default: {}
+              - name: "Prometheus Namespace scope"
+                description: "Regex to reduce the namespace scope to which the prometheus rules will apply"
+                key: module.kube-prometheus.prometheus_rules_namespaces
+                widget: simple_text
+                type: string
+                default: ".*"
 
+          - name: Data persistency
+            condition: $prometheus_install == true
+            technologies: [terraform]
+            vars:
+              - name: "Persist data"
+                description: "Wheter to persist prometheus data on the k8s cluster, by creating a PVC."
+                key: module.kube-prometheus.enable_prometheus_persistence
+                widget: switch
+                type: boolean
+                default: false
+          - name: PVC Configuration
+            condition: $prometheus_install == true && $module.kube-prometheus.enable_prometheus_persistence == true
+            technologies: [terraform]
+            vars:
+              - name: "Prometheus PVC size"
+                description: "The size of the persisent volume claim to create in Gb."
+                key: module.kube-prometheus.prometheus_pvc_size
+                widget: simple_text
+                type: string
+                default: "10"
+              - name: "Prometheus Data retention"
+                description: "The time prometheus will retain data before deletion. Must match the regular expression [0-9]+(ms|s|m|h) (milliseconds seconds minutes hours)."
+                key: module.kube-prometheus.prometheus_data_retention
+                widget: simple_text
+                type: string
+                default: "10d"
 
-  - name: Prometheus
-    groups:
-    - name: Prometheus login
-      condition: $prometheus_install == true
-      technologies: [terraform]
-      vars:
-        - name: "Prometheus DNS"
-          description: "DNS to use for Prometheus."
-          key: module.kube-prometheus.prometheus_domain_name
-          widget: simple_text
-          type: string
-          default: prometheus.local
-    - name: General Configuration
-      condition: $prometheus_install == true
-      technologies: [terraform]
-      vars:
-        - name: "Prometheus disable k8s component scraping"
-          description: "Prometheus disable default k8s compponent scraping. Go on the values of helm chart and search for all enable ones"
-          key: module.kube-prometheus.disable_component_scraping
-          widget: text_area
-          type: array
-          default: []
-        - name: "Prometheus scraping extra config"
-          description: "Prometheus scraping extra config to use"
-          key: module.kube-prometheus.prometheus_additional_scrape
-          widget: text_area
-          type: array
-          default: []
-        - name: "Prometheus disable default rules"
-          description: "Customize the default rules to disable. For more information about syntax and default rules check the k8s prometheus stack [chart default rules](https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/values.yaml#L49C3-L49C8)"
-          key: module.kube-prometheus.prometheus_default_rules_disabled
-          widget: text_area
-          type: array
-          default: []
-        - name: "Prometheus default rules customize"
-          description: "Customize the default enabled rules for and severity parameters. For more information about syntax and default rules check the k8s prometheus stack [chart default values](https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/values.yaml#L38)"
-          key: module.kube-prometheus.prometheus_change_default_rules
-          widget: text_area
-          type: map
-          default: {}
-        - name: "Prometheus disable default alerts"
-          description: "Customize the default alerts to disable. For more information about syntax check the k8s prometheus stack [here](https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/values.yaml#L181)"
-          key: module.kube-prometheus.prometheus_default_alerts_disabled
-          widget: text_area
-          type: array
-          default: []
-        - name: "Prometheus aditional rules"
-          description: "Provide custom rules to be deployed in the cluster. For more information about syntax and default rules check the k8s prometheus stack [chart default values](https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/values.yaml#L198)"
-          key: module.kube-prometheus.prometheus_additional_rules
-          widget: text_area
-          type: map
-          default: {}
-        - name: "Prometheus Namespace scope"
-          description: "Regex to reduce the namespace scope to which the prometheus rules will apply"
-          key: module.kube-prometheus.prometheus_rules_namespaces
-          widget: simple_text
-          type: string
-          default: ".*"
+      - name: Alertmanager
+        groups:
+          - name: Alertmanager DNS
+            condition: $alertmanager_install == true
+            technologies: [terraform]
+            vars:
+              - name: "Alertmanager DNS"
+                description: "DNS to use for Alertmanager."
+                key: module.kube-prometheus.alertmanager_domain_name
+                widget: simple_text
+                type: string
+                default: alertmanager.local
+          - name: Alertmanager Secret Configuration
+            technologies: [pipeline]
+            condition: $alertmanager_install == true
+            vars:
+              - name: "Alertmanager receivers"
+                description: "Alertmanager receivers configuration. Note! BY default it should always have a recevier -name: 'null' for example to be used as default. corresponds to the helm chart default value for the config of alertmanager. For more information about syntax check the [official alertmanager documentation](https://prometheus.io/docs/alerting/latest/configuration/#general-receiver-related-settings)"
+                key: alertmanager_config_receivers
+                widget: cy_cred
+                type: string
 
-    - name: Data persistency
-      condition: $prometheus_install == true
-      technologies: [terraform]
-      vars:
-        - name: "Persist data"
-          description: "Wheter to persist prometheus data on the k8s cluster, by creating a PVC."
-          key: module.kube-prometheus.enable_prometheus_persistence
-          widget: switch
-          type: boolean
-          default: false
-    - name: PVC Configuration
-      condition: $prometheus_install == true && $module.kube-prometheus.enable_prometheus_persistence == true
-      technologies: [terraform]
-      vars:
-        - name: "Prometheus PVC size"
-          description: "The size of the persisent volume claim to create in Gb."
-          key: module.kube-prometheus.prometheus_pvc_size
-          widget: simple_text
-          type: string
-          default: "10"
-        - name: "Prometheus Data retention"
-          description: "The time prometheus will retain data before deletion. Must match the regular expression [0-9]+(ms|s|m|h) (milliseconds seconds minutes hours)."
-          key: module.kube-prometheus.prometheus_data_retention
-          widget: simple_text
-          type: string
-          default: "10d"
+          - name: Alertmanager Configuration
+            technologies: [terraform]
+            condition: $alertmanager_install == true
+            vars:
+              - name: "Alertmanager intervals"
+                description: "Alertmanager intervals configuration. For more information about syntax check the [official alertmanager documentation](https://prometheus.io/docs/alerting/latest/configuration/#time_interval)"
+                key: module.kube-prometheus.alertmanager_time_intervals
+                widget: text_area
+                type: array
+                default: []
 
-  - name: Alertmanager
-    groups:
-    - name: Alertmanager DNS
-      condition: $alertmanager_install == true
-      technologies: [terraform]
-      vars:
-        - name: "Alertmanager DNS"
-          description: "DNS to use for Alertmanager."
-          key: module.kube-prometheus.alertmanager_domain_name
-          widget: simple_text
-          type: string
-          default: alertmanager.local
-    - name: Alertmanager Secret Configuration
-      technologies: [pipeline]
-      condition: $alertmanager_install == true
-      vars:
-        - name: "Alertmanager receivers"
-          description: "Alertmanager receivers configuration. Note! BY default it should always have a recevier -name: 'null' for example to be used as default. corresponds to the helm chart default value for the config of alertmanager. For more information about syntax check the [official alertmanager documentation](https://prometheus.io/docs/alerting/latest/configuration/#general-receiver-related-settings)"
-          key: alertmanager_config_receivers
-          widget: cy_cred
-          type: string
+              - name: "Alertmanager routes"
+                description: "Alertmanager route configuration. Note! The default value corresponds to the helm chart default value for the config of alertmanager. For more information about syntax check the [official alertmanager documentation](https://prometheus.io/docs/alerting/latest/configuration/#route-related-settings)"
+                key: module.kube-prometheus.alertmanager_config_route
+                widget: text_area
+                type: map
+                default:
+                  group_by: ["namespace"]
+                  group_wait: 30s
+                  group_interval: 5m
+                  repeat_interval: 12h
+                  receiver: "null"
+                  routes:
+                    - receiver: "null"
+                      matchers:
+                        - alertname = "Watchdog"
 
-    - name: Alertmanager Configuration
-      technologies: [terraform]
-      condition: $alertmanager_install == true
-      vars:
-        - name: "Alertmanager intervals"
-          description: "Alertmanager intervals configuration. For more information about syntax check the [official alertmanager documentation](https://prometheus.io/docs/alerting/latest/configuration/#time_interval)"
-          key: module.kube-prometheus.alertmanager_time_intervals
-          widget: text_area
-          type: array
-          default: []
+              - name: "Alertmanager inhibit rules"
+                description: "Alertmanager inhibit rules configuration. Note! The default value corresponds to the helm chart default value for the config of alertmanager. For more information about syntax check the [official alertmanager documentation](https://prometheus.io/docs/alerting/latest/configuration/#inhibition-related-settings)"
+                key: module.kube-prometheus.alertmanager_config_inhibit_rules
+                widget: text_area
+                type: array
+                default:
+                  - source_matchers:
+                      - "severity = critical"
+                    target_matchers:
+                      - "severity =~ warning|info"
+                    equal:
+                      - "namespace"
+                      - "alertname"
+                  - source_matchers:
+                      - "severity = warning"
+                    target_matchers:
+                      - "severity = info"
+                    equal:
+                      - "namespace"
+                      - "alertname"
+                  - source_matchers:
+                      - "alertname = InfoInhibitor"
+                    target_matchers:
+                      - "severity = info"
+                    equal:
+                      - "namespace"
+                  - target_matchers:
+                      - "alertname = InfoInhibitor"
 
-        - name: "Alertmanager routes"
-          description: "Alertmanager route configuration. Note! The default value corresponds to the helm chart default value for the config of alertmanager. For more information about syntax check the [official alertmanager documentation](https://prometheus.io/docs/alerting/latest/configuration/#route-related-settings)"
-          key: module.kube-prometheus.alertmanager_config_route
-          widget: text_area
-          type: map
-          default:
-            group_by: ['namespace']
-            group_wait: 30s
-            group_interval: 5m
-            repeat_interval: 12h
-            receiver: 'null'
-            routes:
-            - receiver: 'null'
-              matchers:
-                - alertname = "Watchdog"
+          - name: Basic Auth users
+            condition: $alertmanager_install == true
+            technologies: [terraform]
+            vars:
+              - name: "Basic Auth extra users"
+                description: "By default a admin user is created to access alertmanager but you can specify an array of usernames to create also accesses."
+                key: module.kube-prometheus.alertmanager_users
+                widget: text_area
+                type: array
+                default: []
 
-        - name: "Alertmanager inhibit rules"
-          description: "Alertmanager inhibit rules configuration. Note! The default value corresponds to the helm chart default value for the config of alertmanager. For more information about syntax check the [official alertmanager documentation](https://prometheus.io/docs/alerting/latest/configuration/#inhibition-related-settings)"
-          key: module.kube-prometheus.alertmanager_config_inhibit_rules
-          widget: text_area
-          type: array
-          default:
-              - source_matchers:
-                  - 'severity = critical'
-                target_matchers:
-                  - 'severity =~ warning|info'
-                equal:
-                  - 'namespace'
-                  - 'alertname'
-              - source_matchers:
-                  - 'severity = warning'
-                target_matchers:
-                  - 'severity = info'
-                equal:
-                  - 'namespace'
-                  - 'alertname'
-              - source_matchers:
-                  - 'alertname = InfoInhibitor'
-                target_matchers:
-                  - 'severity = info'
-                equal:
-                  - 'namespace'
-              - target_matchers:
-                  - 'alertname = InfoInhibitor'
+          - name: Data persistency
+            condition: $alertmanager_install == true
+            technologies: [terraform]
+            vars:
+              - name: "Persist data"
+                description: "Wheter to persist alertmanager data on the k8s cluster, by creating a PVC."
+                key: module.kube-prometheus.enable_alertmanager_persistence
+                widget: switch
+                type: boolean
+                default: false
+          - name: PVC Configuration
+            condition: $alertmanager_install == true && $module.kube-prometheus.enable_alertmanager_persistence == true
+            technologies: [terraform]
+            vars:
+              - name: "Alertmanager PVC size"
+                description: "The size of the persisent volume claim to create in Gb."
+                key: module.kube-prometheus.alertmanager_pvc_size
+                widget: simple_text
+                type: string
+                default: "10"
+              - name: "Alertmanager Data retention"
+                description: "The time alertmanager will retain data before deletion. Must match the regular expression [0-9]+(ms|s|m|h) (milliseconds seconds minutes hours)."
+                key: module.kube-prometheus.alertmanager_data_retention
+                widget: simple_text
+                type: string
+                default: "10d"
 
-    - name: Basic Auth users
-      condition: $alertmanager_install == true
-      technologies: [terraform]
-      vars:
-        - name: "Basic Auth extra users"
-          description: "By default a admin user is created to access alertmanager but you can specify an array of usernames to create also accesses."
-          key: module.kube-prometheus.alertmanager_users
-          widget: text_area
-          type: array
-          default: []
+          - name: External Alertmanager (not deployed in k8s cluster)
+            technologies: [pipeline]
+            condition: $alertmanager_install == false && $prometheus_install == true
+            vars:
+              - name: "External endpoint"
+                description: "External alertmanager endpoints to be used to send prometheus alerts. You should create a credential that allows to specify how to connet to it. For more information on the parameters check the [following link](https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/api.md#alertmanagerendpoints)"
+                key: alertmanager_use_external
+                widget: cy_cred
+                type: string
 
-    - name: Data persistency
-      condition: $alertmanager_install == true
-      technologies: [terraform]
-      vars:
-        - name: "Persist data"
-          description: "Wheter to persist alertmanager data on the k8s cluster, by creating a PVC."
-          key: module.kube-prometheus.enable_alertmanager_persistence
-          widget: switch
-          type: boolean
-          default: false
-    - name: PVC Configuration
-      condition: $alertmanager_install == true && $module.kube-prometheus.enable_alertmanager_persistence == true
-      technologies: [terraform]
-      vars:
-        - name: "Alertmanager PVC size"
-          description: "The size of the persisent volume claim to create in Gb."
-          key: module.kube-prometheus.alertmanager_pvc_size
-          widget: simple_text
-          type: string
-          default: "10"
-        - name: "Alertmanager Data retention"
-          description: "The time alertmanager will retain data before deletion. Must match the regular expression [0-9]+(ms|s|m|h) (milliseconds seconds minutes hours)."
-          key: module.kube-prometheus.alertmanager_data_retention
-          widget: simple_text
-          type: string
-          default: "10d"
+      - name: Grafana
+        groups:
+          - name: Grafana DNS
+            condition: $grafana_install == true
+            technologies: [terraform]
+            vars:
+              - name: "Grafana DNS"
+                description: "DNS to use for Grafana."
+                key: module.kube-prometheus.grafana_domain_name
+                widget: simple_text
+                type: string
+                default: grafana.local
 
+          - name: Grafana Parameters
+            condition: $grafana_install == true
+            technologies: [terraform]
+            vars:
+              - name: Grafana Feature togle
+                description: "Define a list of grafana features togles to activate, e.g.: 'panelTitleSearch nestedFolders'. Full list of features available to activate [here](https://grafana.com/docs/grafana/latest/setup-grafana/configure-grafana/feature-toggles/)"
+                key: module.kube-prometheus.grafana_feature_toggles
+                widget: simple_text
+                type: string
 
-    - name: External Alertmanager (not deployed in k8s cluster)
-      technologies: [pipeline]
-      condition: $alertmanager_install == false && $prometheus_install == true
-      vars:
-        - name: "External endpoint"
-          description: "External alertmanager endpoints to be used to send prometheus alerts. You should create a credential that allows to specify how to connet to it. For more information on the parameters check the [following link](https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/api.md#alertmanagerendpoints)"
-          key: alertmanager_use_external
-          widget: cy_cred
-          type: string
+          - name: Grafana Oauth SSO
+            condition: $grafana_install == true
+            technologies: [pipeline]
+            vars:
+              - name: Grafana SSO
+                description: "Enable Grafana Oauth SSO."
+                key: grafana_sso_enabled
+                widget: switch
+                type: boolean
+                default: false
 
-  - name: Grafana
-    groups:
-    - name: Grafana DNS
-      condition: $grafana_install == true
-      technologies: [terraform]
-      vars:
-        - name: "Grafana DNS"
-          description: "DNS to use for Grafana."
-          key: module.kube-prometheus.grafana_domain_name
-          widget: simple_text
-          type: string
-          default: grafana.local
+          - name: Grafana OAuth SSO configuration
+            condition: $grafana_sso_enabled == true && $grafana_install == true
+            technologies: [pipeline]
+            vars:
+              - name: "Grafana SSO provider name"
+                description: "The SSO provider to use for Grafana."
+                key: grafana_sso_provider_name
+                widget: dropdown
+                type: "string"
+                default: "google"
+                values:
+                  - "google"
+                  - "github"
+                  - "gitlab"
+                  - "azuread"
+                  - "okta"
+                  - "generic_oauth"
+              - name: "Grafana SSO allowed domains"
+                description: "List of comma- or space-separated domains. The user should belong to at least one domain to log in, e.g.: 'example.com, example.org'"
+                key: grafana_sso_allowed_domains
+                widget: simple_text
+                type: string
+              - name: "Grafana SSO client ID"
+                description: "The client ID to use for the SSO provider."
+                key: grafana_sso_client_id
+                widget: cy_cred
+                type: string
+              - name: "Grafana SSO client secret"
+                description: "The client secret to use for the SSO provider."
+                key: grafana_sso_client_secret
+                widget: cy_cred
+                type: string
+              - name: "Grafana SSO API URL"
+                description: "The API URL to use for the SSO provider."
+                key: grafana_sso_api_url
+                widget: simple_text
+                type: string
+              - name: "Grafana SSO Auth URL"
+                description: "The Auth URL to use for the SSO provider."
+                key: grafana_sso_auth_url
+                widget: simple_text
+                type: string
+              - name: "Grafana SSO Token URL"
+                description: "The Token URL to use for the SSO provider."
+                key: grafana_sso_token_url
+                widget: simple_text
+                type: string
+              - name: "Grafana SSO Scopes"
+                description: "The scopes to use for the SSO provider. In the format of a list with comma or space separated values"
+                key: grafana_sso_scopes
+                widget: simple_text
+                type: string
+                default: "openid email profile https://www.googleapis.com/auth/cloud-identity.groups.readonly"
+              - name: "Grafana Role Mapping"
+                description: "JMESPath expression to use for Grafana role lookup. More information [here](https://grafana.com/docs/grafana/latest/setup-grafana/configure-security/configure-authentication/google/#configure-role-mapping)"
+                key: grafana_sso_role_atribute_path
+                widget: simple_text
+                type: string
 
-    - name: Grafana Parameters
-      condition: $grafana_install == true
-      technologies: [terraform]
-      vars:
-        - name: Grafana Feature togle
-          description: "Define a list of grafana features togles to activate, e.g.: 'panelTitleSearch nestedFolders'. Full list of features available to activate [here](https://grafana.com/docs/grafana/latest/setup-grafana/configure-grafana/feature-toggles/)"
-          key: module.kube-prometheus.grafana_feature_toggles
-          widget: simple_text
-          type: string
+          - name: Grafana extra datasources
+            technologies: [pipeline]
+            condition: $grafana_install == true
+            vars:
+              - name: Extra datasource list to use
+                description: "Array of extra datasources to use. [Official doc example](https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/values.yaml#L1255) on how to do it"
+                key: grafana_additional_datasources
+                widget: cy_cred
+                type: string
 
-    - name: Grafana Oauth SSO
-      condition: $grafana_install == true
-      technologies: [pipeline]
-      vars:
-        - name: Grafana SSO
-          description: "Enable Grafana Oauth SSO."
-          key: grafana_sso_enabled
-          widget: switch
-          type: boolean
-          default: false
+          - name: Grafana Dashboard Configuration
+            technologies: [terraform]
+            condition: $grafana_install == true
+            vars:
+              - name: "Grafana Dashboard Timezone"
+                description: "Timezone for the default dashboards"
+                key: module.kube-prometheus.grafana_default_timezone
+                type: string
+                widget: simple_text
+                default: Europe/France
+              - name: Use default grafana dashboards
+                description: "Wheter to use of not the default grafana dashboards"
+                key: module.kube-prometheus.enable_default_grafana_dashboards
+                widget: switch
+                type: boolean
+                default: true
+              - name: Default dashboards to delete
+                description: "Array of all default dashboard corresponding configmaps to delete. The full list of dashboards is [here](https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack/templates/grafana/dashboards-1.14)"
+                key: module.kube-prometheus.grafana_cms_to_remove
+                widget: text_area
+                type: array
+                default: []
+              - name: Grafana dashboards import
+                description: "Defines the public dashboards to import. Check the [official docs](https://github.com/grafana/helm-charts/blob/main/charts/grafana/values.yaml#L831) on how to do it"
+                key: module.kube-prometheus.grafana_dashboard_import
+                widget: text_area
+                type: map
+                default: {}
+              # TODO doesnt seem to work properly
+              #- name: Grafana alert list
+              #  description: "Defines a list of alerts to implement. TODO add link in doc on how to add"
+              #  key: module.kube-prometheus.grafana_alerts
+              #  widget: text_area
+              #  type: map
+              #  default: {}
 
-    - name: Grafana OAuth SSO configuration
-      condition: $grafana_sso_enabled == true && $grafana_install == true
-      technologies: [pipeline]
-      vars:
-        - name: "Grafana SSO provider name"
-          description: "The SSO provider to use for Grafana."
-          key: grafana_sso_provider_name
-          widget: dropdown
-          type: "string"
-          default: "google"
-          values:
-            - "google"
-            - "github"
-            - "gitlab"
-            - "azuread"
-            - "okta"
-            - "generic_oauth"
-        - name: "Grafana SSO allowed domains"
-          description: "List of comma- or space-separated domains. The user should belong to at least one domain to log in, e.g.: 'example.com, example.org'"
-          key: grafana_sso_allowed_domains
-          widget: simple_text
-          type: string
-        - name: "Grafana SSO client ID"
-          description: "The client ID to use for the SSO provider."
-          key: grafana_sso_client_id
-          widget: cy_cred
-          type: string
-        - name: "Grafana SSO client secret"
-          description: "The client secret to use for the SSO provider."
-          key: grafana_sso_client_secret
-          widget: cy_cred
-          type: string
-        - name: "Grafana SSO API URL"
-          description: "The API URL to use for the SSO provider."
-          key: grafana_sso_api_url
-          widget: simple_text
-          type: string
-        - name: "Grafana SSO Auth URL"
-          description: "The Auth URL to use for the SSO provider."
-          key: grafana_sso_auth_url
-          widget: simple_text
-          type: string
-        - name: "Grafana SSO Token URL"
-          description: "The Token URL to use for the SSO provider."
-          key: grafana_sso_token_url
-          widget: simple_text
-          type: string
-        - name: "Grafana SSO Scopes"
-          description: "The scopes to use for the SSO provider. In the format of a list with comma or space separated values"
-          key: grafana_sso_scopes
-          widget: simple_text
-          type: string
-          default: "openid email profile https://www.googleapis.com/auth/cloud-identity.groups.readonly"
-        - name: "Grafana Role Mapping"
-          description: "JMESPath expression to use for Grafana role lookup. More information [here](https://grafana.com/docs/grafana/latest/setup-grafana/configure-security/configure-authentication/google/#configure-role-mapping)"
-          key: grafana_sso_role_atribute_path
-          widget: simple_text
-          type: string
+          - name: Data persistency
+            condition: $grafana_install == true
+            technologies: [terraform]
+            vars:
+              - name: "Persist data"
+                description: "Wheter to persist grafana data on the k8s cluster, by creating a PVC."
+                key: module.kube-prometheus.enable_grafana_persistence
+                widget: switch
+                type: boolean
+                default: false
+          - name: PVC Configuration
+            condition: $grafana_install == true && $module.kube-prometheus.enable_grafana_persistence == true
+            technologies: [terraform]
+            vars:
+              - name: "Grafana PVC size"
+                description: "The size of the persisent volume claim to create in Gb."
+                key: module.kube-prometheus.grafana_pvc_size
+                widget: simple_text
+                type: string
+                default: "10"
 
-    - name: Grafana extra datasources
-      technologies: [pipeline]
-      condition: $grafana_install == true
-      vars:
-        - name: Extra datasource list to use
-          description: "Array of extra datasources to use. [Official doc example](https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/values.yaml#L1255) on how to do it"
-          key: grafana_additional_datasources
-          widget: cy_cred
-          type: string
+      - name: Opsgenie
+        groups:
+          - name: Opsgenie gateway install
+            technologies: [terraform]
+            vars:
+              - name: "Opsgenie gateway install"
+                description: "Wheter to install [opsgenie gateway](https://hub.docker.com/r/cycloid/opsgenie-heartbeat-gw) on the k8s cluster."
+                key: module.opsgenie-heartbeat.opsgenie_heartbeat_install
+                widget: switch
+                type: boolean
+                default: true
 
-    - name: Grafana Dashboard Configuration
-      technologies: [terraform]
-      condition: $grafana_install == true
-      vars:
-        - name: "Grafana Dashboard Timezone"
-          description: "Timezone for the default dashboards"
-          key: module.kube-prometheus.grafana_default_timezone
-          type: string
-          widget: simple_text
-          default: Europe/France
-        - name: Use default grafana dashboards
-          description: "Wheter to use of not the default grafana dashboards"
-          key: module.kube-prometheus.enable_default_grafana_dashboards
-          widget: switch
-          type: boolean
-          default: true
-        - name: Default dashboards to delete
-          description: "Array of all default dashboard corresponding configmaps to delete. The full list of dashboards is [here](https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack/templates/grafana/dashboards-1.14)"
-          key: module.kube-prometheus.grafana_cms_to_remove
-          widget: text_area
-          type: array
-          default: []
-        - name: Grafana dashboards import
-          description: "Defines the public dashboards to import. Check the [official docs](https://github.com/grafana/helm-charts/blob/main/charts/grafana/values.yaml#L831) on how to do it"
-          key: module.kube-prometheus.grafana_dashboard_import
-          widget: text_area
-          type: map
-          default: {}
-        # TODO doesnt seem to work properly
-        #- name: Grafana alert list
-        #  description: "Defines a list of alerts to implement. TODO add link in doc on how to add"
-        #  key: module.kube-prometheus.grafana_alerts
-        #  widget: text_area
-        #  type: map
-        #  default: {}
+          - name: Opsgenie gateway configuration
+            condition: $module.opsgenie-heartbeat.opsgenie_heartbeat_install == true
+            technologies: [pipeline]
+            vars:
+              - name: "Heartbeat Access Token"
+                description: "Opsgenie heartbeat access token"
+                key: opsgenie_token
+                widget: cy_cred
+                type: string
 
+      - *advanced
 
-    - name: Data persistency
-      condition: $grafana_install == true
-      technologies: [terraform]
-      vars:
-        - name: "Persist data"
-          description: "Wheter to persist grafana data on the k8s cluster, by creating a PVC."
-          key: module.kube-prometheus.enable_grafana_persistence
-          widget: switch
-          type: boolean
-          default: false
-    - name: PVC Configuration
-      condition: $grafana_install == true && $module.kube-prometheus.enable_grafana_persistence == true
-      technologies: [terraform]
-      vars:
-        - name: "Grafana PVC size"
-          description: "The size of the persisent volume claim to create in Gb."
-          key: module.kube-prometheus.grafana_pvc_size
-          widget: simple_text
-          type: string
-          default: "10"
-
-  - name: Opsgenie
-    groups:
-    - name: Opsgenie gateway install
-      technologies: [terraform]
-      vars:
-        - name: "Opsgenie gateway install"
-          description: "Wheter to install [opsgenie gateway](https://hub.docker.com/r/cycloid/opsgenie-heartbeat-gw) on the k8s cluster."
-          key: module.opsgenie-heartbeat.opsgenie_heartbeat_install
-          widget: switch
-          type: boolean
-          default: true
-
-    - name: Opsgenie gateway configuration
-      condition: $module.opsgenie-heartbeat.opsgenie_heartbeat_install == true
-      technologies: [pipeline]
-      vars:
-        - name: "Heartbeat Access Token"
-          description: "Opsgenie heartbeat access token"
-          key: opsgenie_token
-          widget: cy_cred
-          type: string
-
-  - *advanced
-
-  - name: Optional parameters
-    groups:
-    - name: Other k8s parameters
-      condition: $advanced_opt == true
-      technologies: [terraform]
-      vars:
-        - name: "Extra tags"
-          description: "Dict of extra tags to add to cluster resources crated."
-          key: module.kube-prometheus.extra_labels
-          widget: text_area
-          type: map
-          default: {}
-        - name: "K8s node selector"
-          description: "The k8s node selector to be used to select in which node to deploy the different resources. More information in the [k8s official pages](https://kubernetes.io/docs/user-guide/node-selection/)"
-          key: module.kube-prometheus.stack_monitoring_node_selector
-          widget: text_area
-          type: map
-          default: {}
+      - name: Optional parameters
+        groups:
+          - name: Other k8s parameters
+            condition: $advanced_opt == true
+            technologies: [terraform]
+            vars:
+              - name: "Extra tags"
+                description: "Dict of extra tags to add to cluster resources crated."
+                key: module.kube-prometheus.extra_labels
+                widget: text_area
+                type: map
+                default: {}
+              - name: "K8s node selector"
+                description: "The k8s node selector to be used to select in which node to deploy the different resources. More information in the [k8s official pages](https://kubernetes.io/docs/user-guide/node-selection/)"
+                key: module.kube-prometheus.stack_monitoring_node_selector
+                widget: text_area
+                type: map
+                default: {}

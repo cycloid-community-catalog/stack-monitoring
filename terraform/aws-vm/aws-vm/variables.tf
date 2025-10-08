@@ -35,7 +35,7 @@ variable "ssh_to_allow" {
 
   default = {
     cidr = ["0.0.0.0/0"]
-    sg  = []
+    sg   = []
   }
 }
 

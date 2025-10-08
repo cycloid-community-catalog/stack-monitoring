@@ -51,7 +51,7 @@ resource "azurerm_network_security_rule" "allow-http-https" {
   access                      = "Allow"
   protocol                    = "Tcp"
   source_port_range           = "*"
-  destination_port_ranges     = ["80","443"]
+  destination_port_ranges     = ["80", "443"]
   source_address_prefix       = "*"
   destination_address_prefix  = "*"
   resource_group_name         = var.resource_group_name
@@ -60,29 +60,29 @@ resource "azurerm_network_security_rule" "allow-http-https" {
 
 
 resource "azurerm_network_security_rule" "allow-self-scraping" {
-  name                                  = "allow-self-scraping"
-  priority                              = 101
-  direction                             = "Inbound"
-  access                                = "Allow"
-  protocol                              = "Tcp"
-  source_port_range                     = "*"
-  destination_port_ranges               = ["9100"]
-  source_address_prefix                 = azurerm_linux_virtual_machine.vm.private_ip_address
-  destination_address_prefix            = "*"
-  resource_group_name                   = var.resource_group_name
-  network_security_group_name           = azurerm_network_security_group.vm.name
+  name                        = "allow-self-scraping"
+  priority                    = 101
+  direction                   = "Inbound"
+  access                      = "Allow"
+  protocol                    = "Tcp"
+  source_port_range           = "*"
+  destination_port_ranges     = ["9100"]
+  source_address_prefix       = azurerm_linux_virtual_machine.vm.private_ip_address
+  destination_address_prefix  = "*"
+  resource_group_name         = var.resource_group_name
+  network_security_group_name = azurerm_network_security_group.vm.name
 }
 
 resource "azurerm_network_security_rule" "allow-ssh" {
-  name                          = "allow-ssh"
-  priority                      = 102
-  direction                     = "Inbound"
-  access                        = "Allow"
-  protocol                      = "Tcp"
-  source_port_range             = "*"
-  source_address_prefixes       = var.ssh_ips_to_allow
-  destination_port_range        = "22"
-  destination_address_prefix    = "*"
-  resource_group_name           = var.resource_group_name
-  network_security_group_name   = azurerm_network_security_group.vm.name
+  name                        = "allow-ssh"
+  priority                    = 102
+  direction                   = "Inbound"
+  access                      = "Allow"
+  protocol                    = "Tcp"
+  source_port_range           = "*"
+  source_address_prefixes     = var.ssh_ips_to_allow
+  destination_port_range      = "22"
+  destination_address_prefix  = "*"
+  resource_group_name         = var.resource_group_name
+  network_security_group_name = azurerm_network_security_group.vm.name
 }

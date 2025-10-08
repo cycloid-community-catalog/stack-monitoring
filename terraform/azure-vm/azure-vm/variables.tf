@@ -45,7 +45,7 @@ variable "install_grafana" {}
 variable "install_alertmanager" {}
 variable "install_prometheus" {}
 variable "azure_dns_zone_name" {
-    default = ""
+  default = ""
 }
 variable "prometheus_domain_name" {
   default = ""
@@ -59,7 +59,7 @@ variable "alertmanager_domain_name" {
 
 locals {
   admin_username = "admin"
-  standard_tags  = {
+  standard_tags = {
     "cycloid.io" = "true"
     env          = var.env
     project      = var.project

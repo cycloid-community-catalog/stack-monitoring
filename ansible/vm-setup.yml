@@ -1,156 +1,156 @@
 ---
-  - name: Update apt cache (equivalent to apt-get update)
-    apt:
-      update_cache: yes
+- name: Update apt cache (equivalent to apt-get update)
+  apt:
+    update_cache: yes
 
-    # Install exporters
-  - name: Install Blackbox exporter
-    include_role:
-      name: prometheus.prometheus.blackbox_exporter
-    when: blackbox_exporter_install
-    tags: blackbox_exporter
+  # Install exporters
+- name: Install Blackbox exporter
+  include_role:
+    name: prometheus.prometheus.blackbox_exporter
+  when: blackbox_exporter_install
+  tags: blackbox_exporter
 
-  - name: Install MYSQL exporter
-    include_role:
-      name: prometheus.prometheus.mysqld_exporter
-    when: mysqld_exporter_install
-    tags: mysqld_exporter
+- name: Install MYSQL exporter
+  include_role:
+    name: prometheus.prometheus.mysqld_exporter
+  when: mysqld_exporter_install
+  tags: mysqld_exporter
 
-  - name: Install PostgreSQL exporter
-    include_role:
-      name: prometheus.prometheus.postgres_exporter
-    when: postgres_exporter_install
-    tags: postgres_exporter
+- name: Install PostgreSQL exporter
+  include_role:
+    name: prometheus.prometheus.postgres_exporter
+  when: postgres_exporter_install
+  tags: postgres_exporter
 
-  - name: Install Node exporter
-    include_role:
-      name: prometheus.prometheus.node_exporter
-    when: node_exporter_install
-    tags: node_exporter
+- name: Install Node exporter
+  include_role:
+    name: prometheus.prometheus.node_exporter
+  when: node_exporter_install
+  tags: node_exporter
 
-  # Install Prometheus
-  - name: Remove prometheus rules dir (to avoid having old dashboards inside)
-    file:
-      path: "{{ prometheus_config_dir }}/rules/"
-      state: absent
-    when: prometheus_install
-    tags: prometheus
+# Install Prometheus
+- name: Remove prometheus rules dir (to avoid having old dashboards inside)
+  file:
+    path: "{{ prometheus_config_dir }}/rules/"
+    state: absent
+  when: prometheus_install
+  tags: prometheus
 
-  - name: Install Prometheus
-    include_role:
-      name: prometheus.prometheus.prometheus
-    when: prometheus_install
-    tags: prometheus
+- name: Install Prometheus
+  include_role:
+    name: prometheus.prometheus.prometheus
+  when: prometheus_install
+  tags: prometheus
 
-  - name: "Create custom alert rule file"
-    template:
-      src: templates/organization.rules
-      dest: "{{ prometheus_config_dir }}/rules/{{organization}}.rules"
-      owner: "{{ prometheus_system_user }}"
-      group: "{{ prometheus_system_group }}"
-    when: prometheus_install | bool and prometheus_custom_rules != ""
-    tags: prometheus
+- name: "Create custom alert rule file"
+  template:
+    src: templates/organization.rules
+    dest: "{{ prometheus_config_dir }}/rules/{{organization}}.rules"
+    owner: "{{ prometheus_system_user }}"
+    group: "{{ prometheus_system_group }}"
+  when: prometheus_install | bool and prometheus_custom_rules != ""
+  tags: prometheus
 
-  - name: copy prometheus rules
-    template:
-      src: "templates/default-prometheus-rules/{{ item }}.j2"
-      dest: "{{ prometheus_config_dir }}/rules/{{ item }}"
-      owner: "{{ prometheus_system_user }}"
-      group: "{{ prometheus_system_group }}"
-    with_items: "{{ prometheus_default_rule_files }}"
-    when: prometheus_install
-    tags:
-      - prometheus
+- name: copy prometheus rules
+  template:
+    src: "templates/default-prometheus-rules/{{ item }}.j2"
+    dest: "{{ prometheus_config_dir }}/rules/{{ item }}"
+    owner: "{{ prometheus_system_user }}"
+    group: "{{ prometheus_system_group }}"
+  with_items: "{{ prometheus_default_rule_files }}"
+  when: prometheus_install
+  tags:
+    - prometheus
 
-  - name: Reload prometheus
-    become: true
-    ansible.builtin.systemd:
-      daemon_reload: true
-      name: prometheus
-      state: restarted
-      enabled: true
-    when: prometheus_install
-    tags:
-      - prometheus
+- name: Reload prometheus
+  become: true
+  ansible.builtin.systemd:
+    daemon_reload: true
+    name: prometheus
+    state: restarted
+    enabled: true
+  when: prometheus_install
+  tags:
+    - prometheus
 
-  # Install Alertmanager
-  - name: Install Alertmanager
-    include_role:
-      name: prometheus.prometheus.alertmanager
-    tags: alertmanager
-    when: alertmanager_install
+# Install Alertmanager
+- name: Install Alertmanager
+  include_role:
+    name: prometheus.prometheus.alertmanager
+  tags: alertmanager
+  when: alertmanager_install
 
- # Install Grafana
-  - name: Install Grafana
-    include_role:
-      name: grafana.grafana.grafana
-    when: grafana_install
-    tags: grafana
+# Install Grafana
+- name: Install Grafana
+  include_role:
+    name: grafana.grafana.grafana
+  when: grafana_install
+  tags: grafana
 
-  - name: Find all grafana dashboard files to copy
-    find:
-      paths: "{{grafana_dashboards_dir_to_copy}}"
-      recurse: yes
-      file_type: file
-    register: dashboard_files_to_copy
-    delegate_to: localhost
-    when: grafana_install
-    tags: grafana
+- name: Find all grafana dashboard files to copy
+  find:
+    paths: "{{grafana_dashboards_dir_to_copy}}"
+    recurse: yes
+    file_type: file
+  register: dashboard_files_to_copy
+  delegate_to: localhost
+  when: grafana_install
+  tags: grafana
 
-  - name: Remove grafana dashboard dir (to avoid having old dashboards inside)
-    file:
-      path: "{{ grafana_dashboards_dir_to_copy }}"
-      state: absent
-    when: grafana_install
-    tags: grafana
+- name: Remove grafana dashboard dir (to avoid having old dashboards inside)
+  file:
+    path: "{{ grafana_dashboards_dir_to_copy }}"
+    state: absent
+  when: grafana_install
+  tags: grafana
 
-  - name: Ensure destination directory structure exists
-    file:
-      path: "{{ grafana_dashboards_dir }}/{{ item.path | dirname | relpath(grafana_dashboards_dir_to_copy) }}"
-      state: directory
-      mode: '0755'
-    loop: "{{ dashboard_files_to_copy.files }}"
-    when: grafana_install
-    tags: grafana
+- name: Ensure destination directory structure exists
+  file:
+    path: "{{ grafana_dashboards_dir }}/{{ item.path | dirname | relpath(grafana_dashboards_dir_to_copy) }}"
+    state: directory
+    mode: "0755"
+  loop: "{{ dashboard_files_to_copy.files }}"
+  when: grafana_install
+  tags: grafana
 
-  - name: Copy grafana dashboards JSON files to the target directory
-    copy:
-      src: "{{ item.path }}"
-      dest: "{{ grafana_dashboards_dir }}/{{ item.path | relpath(grafana_dashboards_dir_to_copy) }}"
-      mode: '0644'
-    loop: "{{ dashboard_files_to_copy.files }}"
-    when: grafana_install
-    tags: grafana
+- name: Copy grafana dashboards JSON files to the target directory
+  copy:
+    src: "{{ item.path }}"
+    dest: "{{ grafana_dashboards_dir }}/{{ item.path | relpath(grafana_dashboards_dir_to_copy) }}"
+    mode: "0644"
+  loop: "{{ dashboard_files_to_copy.files }}"
+  when: grafana_install
+  tags: grafana
 
-  - name: "Restart grafana"
-    service:
-      name: grafana-server
-      state: restarted
-    when: grafana_install
-    tags:
-      - grafana
+- name: "Restart grafana"
+  service:
+    name: grafana-server
+    state: restarted
+  when: grafana_install
+  tags:
+    - grafana
 
-  # Install NGINX
-  # Install SSL certificates for nginx
-  - name: "Create SSL directory"
-    file:
-      path: "{{ certificates_dest }}"
-      state: directory
-    when: enable_tls | bool
-    tags: nginx
+# Install NGINX
+# Install SSL certificates for nginx
+- name: "Create SSL directory"
+  file:
+    path: "{{ certificates_dest }}"
+    state: directory
+  when: enable_tls | bool
+  tags: nginx
 
-  - name: "Install SSL certificates"
-    copy:
-      src: "{{ item }}"
-      dest: "{{ certificates_dest }}/{{ item | basename }}"
-      mode: '0600'
-    with_items:
-      - "tls.crt"
-      - "tls.key"
-    when: enable_tls | bool
-    tags: nginx
+- name: "Install SSL certificates"
+  copy:
+    src: "{{ item }}"
+    dest: "{{ certificates_dest }}/{{ item | basename }}"
+    mode: "0600"
+  with_items:
+    - "tls.crt"
+    - "tls.key"
+  when: enable_tls | bool
+  tags: nginx
 
-  - name: Install NGINX
-    include_role:
-      name: jdauphant.nginx
-    tags: nginx
+- name: Install NGINX
+  include_role:
+    name: jdauphant.nginx
+  tags: nginx

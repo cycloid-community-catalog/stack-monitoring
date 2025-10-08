@@ -1,22 +1,22 @@
 ---
-version: '4'
+version: "4"
 # Configuration of the Cycloid stack
-name: 'Monitoring'
-canonical: 'stack-monitoring'
+name: "Monitoring"
+canonical: "stack-monitoring"
 description: |
   Deploy a monitoring solution based on Alertmanager, Grafana and Prometheus.
 keywords:
-  - 'prometheus'
-  - 'grafana'
-  - 'alertmanager'
-  - 'monitoring'
-  - 'alerting'
-  - 'observability'
-  - 'k8s'
-  - 'kubernetes'
-  - 'aws'
-  - 'amazon'
-author: 'Cycloid'
+  - "prometheus"
+  - "grafana"
+  - "alertmanager"
+  - "monitoring"
+  - "alerting"
+  - "observability"
+  - "k8s"
+  - "kubernetes"
+  - "aws"
+  - "amazon"
+author: "Cycloid"
 image: |
   https://raw.githubusercontent.com/cycloid-community-catalog/stack-prometheus/master/icon.png
 technologies:
@@ -29,34 +29,34 @@ technologies:
 config:
   # 1-VM MODE
   aws-vm:
-    name: 'AWS VM'
-    description: 'Deploys a VM in AWS with the different monitoring services'
+    name: "AWS VM"
+    description: "Deploys a VM in AWS with the different monitoring services"
     pipeline:
       pipeline:
         path: pipeline/vm/pipeline.yml
       variables:
         path: pipeline/vm/variables.sample.yml
-        destination: '($ .config_root $)/pipeline/variables.yml'
+        destination: "($ .config_root $)/pipeline/variables.yml"
     terraform:
       aws-vm:
         path: terraform/aws-vm/monitoring.tf.sample
-        destination: '($ .config_root $)/terraform/monitoring.tf'
+        destination: "($ .config_root $)/terraform/monitoring.tf"
     ansible:
       aws-vm:
         path: ansible/environments/stackforms.sample.yml
-        destination: '($ .config_root $)/ansible/environments/stackforms.yml'
+        destination: "($ .config_root $)/ansible/environments/stackforms.yml"
 
   # 2-K8S mode
   k8s:
-    name: 'Kubernetes'
-    description: 'Deploys the monitoring solutions in a k8s cluster'
+    name: "Kubernetes"
+    description: "Deploys the monitoring solutions in a k8s cluster"
     pipeline:
       pipeline:
-        path: 'pipeline/k8s/pipeline.yml'
+        path: "pipeline/k8s/pipeline.yml"
       variables:
-        path: 'pipeline/k8s/variables.sample.yml'
-        destination: '($ .config_root $)/pipeline/variables.yml'
+        path: "pipeline/k8s/variables.sample.yml"
+        destination: "($ .config_root $)/pipeline/variables.yml"
     terraform:
       k8s:
-        path: 'terraform/k8s/monitoring.tf.sample'
-        destination: '($ .config_root $)/terraform/monitoring.tf'
+        path: "terraform/k8s/monitoring.tf.sample"
+        destination: "($ .config_root $)/terraform/monitoring.tf"

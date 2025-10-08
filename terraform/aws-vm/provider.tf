@@ -1,5 +1,5 @@
 provider "aws" {
-# Conditionally set access keys
+  # Conditionally set access keys
   access_key = var.aws_access_cred != "" ? var.aws_access_cred.access_key : null
   secret_key = var.aws_access_cred != "" ? var.aws_access_cred.secret_key : null
   region     = var.aws_region
@@ -8,7 +8,7 @@ provider "aws" {
   dynamic "assume_role" {
     for_each = var.aws_role_arn != "" ? ["enable"] : []
     content {
-      role_arn = var.aws_role_arn
+      role_arn    = var.aws_role_arn
       external_id = var.aws_role_external_id != "" ? var.aws_role_external_id : null
     }
   }

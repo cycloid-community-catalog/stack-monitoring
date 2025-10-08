@@ -1,13 +1,13 @@
 ---
 roles:
-- src: https://github.com/geerlingguy/ansible-role-docker
-  version: master
-  name: geerlingguy.docker
-  scm: git
+  - src: https://github.com/geerlingguy/ansible-role-docker
+    version: master
+    name: geerlingguy.docker
+    scm: git
 
-- src: https://github.com/jdauphant/ansible-role-nginx.git
-  name: jdauphant.nginx
-  scm: git
+  - src: https://github.com/jdauphant/ansible-role-nginx.git
+    name: jdauphant.nginx
+    scm: git
 
 collections:
   # Install a collection from Ansible Galaxy.

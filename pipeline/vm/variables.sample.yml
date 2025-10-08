@@ -9,11 +9,11 @@ aws_role_arn: ""
 aws_role_external_id: ""
 
 ## terraform version used to execute your code
-terraform_version: "1.6.3"
+terraform_version: "1.11.4"
 ansible_version: "10.1"
 
 ## SSH key to acess instance
-enable_ssh:  false
+enable_ssh: false
 
 ## nginx certificates
 enable_tls: true

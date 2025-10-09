@@ -374,7 +374,7 @@ grafana_default_prometheus_datasource:
     isDefault: true
     version: 1
 grafana_datasources: "{{
-  (grafana_extra_datasources | default([]))
+  (grafana_extra_datasources | from_yaml | default([]))
   + (grafana_default_prometheus_datasource if (prometheus_install | default(true)) else [])
   }}"
 grafana_dashboards_dir: "/var/lib/grafana/dashboards"

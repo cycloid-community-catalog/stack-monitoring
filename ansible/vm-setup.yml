@@ -81,13 +81,13 @@
   when: alertmanager_install
 
 # Install Grafana
-- name: Install Grafana
+- name: Install Grafana | grafana
   include_role:
     name: grafana.grafana.grafana
   when: grafana_install
   tags: grafana
 
-- name: Find all grafana dashboard files to copy
+- name: Find all grafana dashboard files to copy | grafana
   find:
     paths: "{{grafana_dashboards_dir_to_copy}}"
     recurse: yes
@@ -97,14 +97,14 @@
   when: grafana_install
   tags: grafana
 
-- name: Remove grafana dashboard dir (to avoid having old dashboards inside)
+- name: Remove grafana dashboard dir (to avoid having old dashboards inside) | grafana
   file:
     path: "{{ grafana_dashboards_dir_to_copy }}"
     state: absent
   when: grafana_install
   tags: grafana
 
-- name: Ensure destination directory structure exists
+- name: Ensure destination directory structure exists | grafana
   file:
     path: "{{ grafana_dashboards_dir }}/{{ item.path | dirname | relpath(grafana_dashboards_dir_to_copy) }}"
     state: directory
@@ -113,7 +113,7 @@
   when: grafana_install
   tags: grafana
 
-- name: Copy grafana dashboards JSON files to the target directory
+- name: Copy grafana dashboards JSON files to the target directory | grafana
   copy:
     src: "{{ item.path }}"
     dest: "{{ grafana_dashboards_dir }}/{{ item.path | relpath(grafana_dashboards_dir_to_copy) }}"
@@ -122,7 +122,16 @@
   when: grafana_install
   tags: grafana
 
-- name: "Restart grafana"
+- name: Define Alert rules Grafana managed | grafana
+  ansible.builtin.template:
+    inline: |
+      {{ grafana_alert_rules | to_nice_yaml }}
+    dest: /etc/grafana/provisioning/alerting/alert_rules.yml
+    owner: grafana
+    group: grafana
+    mode: "0644"
+
+- name: "Restart grafana | grafana"
   service:
     name: grafana-server
     state: restarted

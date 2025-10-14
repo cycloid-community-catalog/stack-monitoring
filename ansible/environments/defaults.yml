@@ -381,3 +381,5 @@ grafana_dashboards_dir: "/var/lib/grafana/dashboards"
 grafana_dashboards_dir_to_copy: "{{ playbook_dir }}/grafana-dashboards"
 grafana_provisioning_dashboards_from_file_structure: true
 grafana_provisioning_synced: false
+
+grafana_alert_rules:

@@ -673,6 +673,13 @@ use_cases:
                     revision_id: 1
                     datasource: prometheus
 
+              - name: "Grafana Alert rules"
+                description: "Rules that determine whether an alert will fire. Import YAML format"
+                key: grafana_alert_rules
+                type: map
+                widget: text_area
+                default:
+
       - *advanced
 
   - name: k8s

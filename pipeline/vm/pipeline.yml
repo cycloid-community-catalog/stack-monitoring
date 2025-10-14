@@ -374,19 +374,19 @@ jobs:
               echo -n "Here are your connection credentials for VM at "; perror "$(jq -r .machine_ip_public_address tfstate/metadata):"
 
               if [ "$PROMETHEUS_INSTALL" = "true" ]; then
-                echo -n "Prometheus available at "; pwarning "$(jq -r .prometheus_domain_name tfstate/metadata)"
+                echo -n "Prometheus available at "; pwarning "https://$(jq -r .prometheus_domain_name tfstate/metadata)"
                 echo -n "Basic credential : "; pwarning  "$(jq -r .prometheus_basic_auth_cred_cannonical tfstate/metadata)"
               fi
 
               if [ "$ALERTMANAGER_INSTALL" = "true" ]; then
                 echo -e "\n"
-                echo -n "Alertmanager available at "; pwarning "$(jq -r .alertmanager_domain_name tfstate/metadata)"
+                echo -n "Alertmanager available at "; pwarning "https://$(jq -r .alertmanager_domain_name tfstate/metadata)"
                 echo -n "Basic credential : "; pwarning  "$(jq -r .alertmanager_basic_auth_cred_cannonical tfstate/metadata)"
               fi
 
               if [ "$GRAFANA_INSTALL" = "true" ]; then
                 echo -e "\n"
-                echo -n "Grafana available at "; pwarning "$(jq -r .grafana_domain_name tfstate/metadata)"
+                echo -n "Grafana available at "; pwarning "https://$(jq -r .grafana_domain_name tfstate/metadata)"
                 echo -n "Basic credential : "; pwarning  "$(jq -r .grafana_basic_auth_cred_cannonical tfstate/metadata)"
               fi
 
@@ -396,7 +396,7 @@ jobs:
               pinfo "export AWS_ACCESS_KEY_ID=..."
               pinfo "export AWS_SECRET_ACCESS_KEY=..."
               pinfo "export AWS_DEFAULT_REGION=..."
-              pinfo "aws ssm start-session --target (jq -r .machine_id tfstate/metadata)"
+              pinfo "aws ssm start-session --target $(jq -r .machine_id tfstate/metadata)"
 
               if [ "$ENABLE_SSH" = "true" ]; then
                 echo -e "Connect to the VM using SSH:"

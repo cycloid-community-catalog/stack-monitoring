@@ -122,10 +122,17 @@
   when: grafana_install
   tags: grafana
 
+# - name: Define Alert rules Grafana managed | grafana
+#   ansible.builtin.copy:
+#     content: |
+#       {{ grafana_alert_rules | to_nice_yaml }}
+#     dest: /etc/grafana/provisioning/alerting/alert_rules.yml
+#     owner: grafana
+#     group: grafana
+#     mode: "0644"
 - name: Define Alert rules Grafana managed | grafana
   ansible.builtin.copy:
-    content: |
-      {{ grafana_alert_rules | to_nice_yaml }}
+    src: files/grafana_alert_rules.yml
     dest: /etc/grafana/provisioning/alerting/alert_rules.yml
     owner: grafana
     group: grafana

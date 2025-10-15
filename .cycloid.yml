@@ -46,6 +46,15 @@ config:
         path: ansible/environments/stackforms.sample.yml
         destination: "($ .config_root $)/ansible/environments/stackforms.yml"
 
+    custom:
+      var_path: ($ .config_root $)/custom/vars.json
+      templates:
+        # Generate the Grafana alert rules yml file
+        # We do it with custom because the yml contains {{ }} which are interpolated by ansible
+        - paths:
+            - ansible/custom_template/grafana_alert_rules.tmpl
+          destination: ($ .config_root $)/ansible/files/grafana_alert_rules.yml
+
   # 2-K8S mode
   k8s:
     name: "Kubernetes"

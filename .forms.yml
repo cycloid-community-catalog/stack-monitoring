@@ -673,8 +673,21 @@ use_cases:
                     revision_id: 1
                     datasource: prometheus
 
-              - name: "Grafana Alert rules"
-                description: "Rules that determine whether an alert will fire. Import YAML format"
+          - name: Grafana alerts
+            technologies: [custom]
+            condition: $grafana_install == true
+            vars:
+              - name: "Alert rules"
+                description: |
+                  Rules that determine whether an alert will fire. Import YAML format.
+                  If your rules contains ansible delimiter such `{{ }}` please escape it with `{{ '{{' }}`
+                  example:
+                  ```
+                  sed -i "s/{{/{{@start/g" rule_to_escape.yaml
+                  sed -i "s/}}/{{ '}}' }}/g" rule_to_escape.yaml
+                  sed -i "s/{{@start/{{ '{{' }}/g" rule_to_escape.yaml
+                  ```
+                  result:: `description: "High CPU on server {{ '{{' }} $labels.resource_name {{ '}}' }}"`
                 key: grafana_alert_rules
                 type: map
                 widget: text_area

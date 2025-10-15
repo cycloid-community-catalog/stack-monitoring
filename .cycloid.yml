@@ -53,7 +53,7 @@ config:
         # We do it with custom because the yml contains {{ }} which are interpolated by ansible
         - paths:
             - ansible/custom_template/grafana_alert_rules.tmpl
-          destination: ($ .config_root $)/ansible/files/grafana_alert_rules.yml
+          destination: ($ .config_root $)/ansible/files/grafana_alert_rules.json
           config:
             destination_is_file: true
 

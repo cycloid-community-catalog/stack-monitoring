@@ -54,6 +54,8 @@ config:
         - paths:
             - ansible/custom_template/grafana_alert_rules.tmpl
           destination: ($ .config_root $)/ansible/files/grafana_alert_rules.yml
+          config:
+            destination_is_file: true
 
   # 2-K8S mode
   k8s:

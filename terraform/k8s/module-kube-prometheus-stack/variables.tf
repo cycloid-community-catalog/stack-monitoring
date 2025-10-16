@@ -100,7 +100,7 @@ variable "grafana_feature_toggles" {
 variable "grafana_additional_datasources" {
   default = []
 }
-variable "grafana_alerts" {
+variable "grafana_alert_rules" {
   default = {}
 }
 

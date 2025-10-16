@@ -79,6 +79,7 @@ alertmanager:
       ${join("\n      ", split("\n", var.alertmanager_config_receivers))}
 EOL
 
+  # https://github.com/grafana/helm-charts/blob/main/charts/grafana/values.yaml
   grafana_helm_vars = {
     grafana = {
       nodeSelector = var.stack_monitoring_node_selector
@@ -93,7 +94,10 @@ EOL
           root_url = "https://${var.grafana_domain_name}"
         }
       }
-      alerting = var.grafana_alerts
+      alerting = {
+        # rules template can contains {{}}. This need to be escaped to avoid helm rendering it
+        "rules.yaml" = yamldecode(replace(replace(replace(yamlencode(var.grafana_alert_rules), "{{", "@@Start@@"), "}}", "{{`}}`}}"), "@@Start@@", "{{`{{`}}"))
+      }
     }
   }
 

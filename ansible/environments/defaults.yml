@@ -173,16 +173,16 @@ prometheus_default_rules_predefined:
   #BlackboxSslCertificateExpired:
   # - cadvisor.rules
   ContainerHighCpuUtilization:
-    threshold: 80
+    threshold: 90
   ContainerHighMemoryUsage:
-    threshold: 80
+    threshold: 90
   ContainerHighVolumeUsage:
-    threshold: 80
+    threshold: 90
   # - node-exporter.rules
   HighCpuUsage:
-    threshold: 80
+    threshold: 90
   HighDiskUsage:
-    threshold: 80
+    threshold: 90
   # - prometheus.rules
   #PrometheusIsDown:
   #PrometheusTargetDown:

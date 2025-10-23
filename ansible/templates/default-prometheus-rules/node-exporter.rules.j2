@@ -12,7 +12,7 @@ groups:
                            combine(prometheus_default_rules_custom.get(alert, {})) %}
     {% if not joined_config['disable'] %}
 
-    - alert: "High CPU Usage"
+    - alert: "HighCpuUsage"
       expr: (sum by (instance) (rate(node_cpu_seconds_total{mode!="idle", {{ joined_config['selector'] }} }[{{ joined_config['for'] }}])) * 100) > {{ joined_config['threshold'] }}
       for: "{{ joined_config['for'] }}"
       labels:
@@ -33,7 +33,7 @@ groups:
                            combine(prometheus_default_rules_custom.get(alert, {})) %}
     {% if not joined_config['disable'] %}
 
-    - alert: "High Disk Usage"
+    - alert: "HighDiskUsage"
       expr: (1 - (sum(node_filesystem_avail_bytes{{ joined_config['selector'] }}) / sum(node_filesystem_size_bytes{{ joined_config['selector'] }})) * 100) > {{ joined_config['threshold'] }}
       for: "{{ joined_config['for'] }}"
       labels:

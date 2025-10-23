@@ -424,7 +424,7 @@ use_cases:
                   disable: false
 
               - name: "Configure individual prometheus rules"
-                description: "Change the default prometheus values that are defined. You can see all the values available [here](https://github.com/cycloid-community-catalog/stack-monitoring/blob/master/ansible/environments/default_vm_monitoring.yml#L183)."
+                description: "Change the default prometheus values that are defined. You can see all the values available [here](https://github.com/cycloid-community-catalog/stack-monitoring/blob/master/ansible/environments/defaults.yml#L166) and template [here](https://github.com/cycloid-community-catalog/stack-monitoring/tree/master/ansible/templates/default-prometheus-rules)"
                 key: prometheus_default_rules_custom
                 widget: text_area
                 type: map

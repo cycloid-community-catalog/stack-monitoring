@@ -102,13 +102,11 @@ EOL
   }
 
   # with credential gets always interpreted as string
-  grafana_additional_datasources = <<EOL
----
-grafana:
-  additionalDataSources:
-    ${join("\n    ", split("\n", var.grafana_additional_datasources))}
-EOL
-
+  grafana_additional_datasources = yamlencode({
+    grafana = {
+      additionalDataSources = var.grafana_additional_datasources
+    }
+  })
 }
 
 resource "helm_release" "kube_prometheus_stack" {

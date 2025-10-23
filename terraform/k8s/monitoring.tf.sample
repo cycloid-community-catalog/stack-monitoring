@@ -12,7 +12,7 @@ module "kube-prometheus" {
   prometheus_install = var.prometheus_install
 
   grafana_install = var.grafana_install
-  grafana_additional_datasources = var.grafana_additional_datasources
+  grafana_additional_datasources = var.grafana_extra_datasources
 
   alertmanager_install          = var.alertmanager_install
   alertmanager_use_external     = var.alertmanager_use_external

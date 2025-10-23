@@ -651,10 +651,23 @@ use_cases:
             condition: $grafana_install == true
             vars:
               - name: Extra datasource list to use
-                description: "Credential containing an array of extra datasources to use."
+                description: |
+                  Array of extra datasources to use. Can contains [Cycloid URI](https://docs.cycloid.io/reference/cli/concepts/cycloid_uri_references) schemes to render credentials.
+                  Example
+                  ```yaml
+                  - name: CloudWatch
+                    type: cloudwatch
+                    uid: cloudwatch
+                    jsonData:
+                      authType: keys
+                      defaultRegion: us-east-1
+                    secureJsonData:
+                      accessKey: 'cy://organizations/($ .organization $)/credentials/aws_credential?key=.raw.access_key'
+                      secretKey: 'cy://organizations/($ .organization $)/credentials/aws_credential?key=.raw.secret_key'
+                  ```
                 key: grafana_extra_datasources
-                widget: cy_cred
-                type: string
+                widget: text_area
+                type: array
 
           - name: Grafana Configuration
             technologies: [ansible]
@@ -1110,10 +1123,23 @@ use_cases:
             condition: $grafana_install == true
             vars:
               - name: Extra datasource list to use
-                description: "Array of extra datasources to use. [Official doc example](https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/values.yaml#L1255) on how to do it"
-                key: grafana_additional_datasources
-                widget: cy_cred
-                type: string
+                description: |
+                  Array of extra datasources to use. Can contains [Cycloid URI](https://docs.cycloid.io/reference/cli/concepts/cycloid_uri_references) schemes to render credentials.
+                  Example
+                  ```yaml
+                  - name: CloudWatch
+                    type: cloudwatch
+                    uid: cloudwatch
+                    jsonData:
+                      authType: keys
+                      defaultRegion: us-east-1
+                    secureJsonData:
+                      accessKey: 'cy://organizations/($ .organization $)/credentials/aws_credential?key=.raw.access_key'
+                      secretKey: 'cy://organizations/($ .organization $)/credentials/aws_credential?key=.raw.secret_key'
+                  ```
+                key: grafana_extra_datasources
+                widget: text_area
+                type: array
 
           - name: Grafana Configuration
             technologies: [terraform]

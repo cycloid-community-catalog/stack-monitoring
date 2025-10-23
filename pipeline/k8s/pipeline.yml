@@ -18,6 +18,15 @@ definitions:
           - |
             echo -e "${KUBECONFIG_CONTENT}" > stack/${STACK_PATH}/${KUBECONFIG_FILENAME}
             cp -r stack/grafana-dashboards/ stack/${STACK_PATH}/grafana-dashboards/
+
+            # TODO: use jq . to interpolate linked to cli issue.
+            # jq . -c used to re-compact the json to be easily used by ansible
+            # Both should be removed once cli issue fixed
+            echo $GRAFANA_DATASOURCE_TMPL | jq . > grafana_datasource.tmpl
+            cy uri interpolate --in-place grafana_datasource.tmpl
+            echo "grafana_extra_datasources = $(jq . -c grafana_datasource.tmpl)" >> stack/${STACK_PATH}/terraform.tfvars
+            cat stack/${STACK_PATH}/terraform.tfvars
+
             /usr/bin/merge-stack-and-config
         inputs:
           - name: git_config_terraform
@@ -32,6 +41,9 @@ definitions:
         STACK_PATH: terraform/($ .use_case $)
         KUBECONFIG_CONTENT: ((kubeconfig_content))
         KUBECONFIG_FILENAME: ((kubeconfig_filename))
+        GRAFANA_DATASOURCE_TMPL: ((grafana_extra_datasources))
+        CY_API_KEY: ((cycloid_api_key))
+        CY_ORG: ($ .api_url $)
         #($- if eq .use_case "aws-vm" $)
 #($- else if eq .use_case "azure-vm" $)
 #        CONFIG_PATH: ((project))/terraform/((env))
@@ -92,7 +104,6 @@ resources:
       grafana_sso_token_url: ((grafana_sso_token_url))
       grafana_sso_scopes: ((grafana_sso_scopes))
       grafana_sso_role_atribute_path: ((grafana_sso_role_atribute_path))
-      grafana_additional_datasources: ((grafana_additional_datasources))
 
 - name: git_stack_terraform
   type: git

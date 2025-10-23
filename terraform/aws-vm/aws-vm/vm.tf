@@ -52,6 +52,6 @@ resource "aws_instance" "vm" {
   }
 
   lifecycle {
-    ignore_changes = [ami]
+    ignore_changes = [ami, associate_public_ip_address]
   }
 }

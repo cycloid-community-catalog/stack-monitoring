@@ -277,7 +277,7 @@ jobs:
           run:
             path: /bin/bash
             args:
-              - '-exc'
+              - '-ec'
               - |
                 #issue with gnu run locally
                 #https://stackoverflow.com/questions/54377305/tar-not-found-in-archive-error-when-using-docker-alpine
@@ -287,7 +287,16 @@ jobs:
                 jq -r '.nginx_cert' terraform/metadata > ansible-playbook/tls.crt
                 jq -r '.nginx_cert_key' terraform/metadata > ansible-playbook/tls.key
 
+                # TODO: use jq . to interpolate linked to cli issue.
+                # jq . -c used to re-compact the json to be easily used by ansible
+                # Both should be removed once cli issue fixed
+                echo $GRAFANA_DATASOURCE_TMPL | jq . > grafana_datasource.tmpl
+                cy uri interpolate --in-place grafana_datasource.tmpl
+                echo "grafana_extra_datasources: $(jq . -c grafana_datasource.tmpl)" >> ansible-playbook/group_vars/all
+                cat ansible-playbook/group_vars/all
+
                 # Static inventory
+                set -x
                 ansible-inventory -i ansible-playbook/inventory --graph
                 # unset AWS var to not trigger the ansible aws dynamic inventory
                 unset AWS_ACCESS_KEY_ID
@@ -303,6 +312,9 @@ jobs:
           - name: tfstate
             path: "terraform"
         params:
+          GRAFANA_DATASOURCE_TMPL: ((grafana_extra_datasources))
+          CY_API_KEY: ((cycloid_api_key))
+          CY_ORG: ($ .api_url $)
           # env var to allow logs for the prometheus playbook
           CI: true
           ANSIBLE_PLAYBOOK_PATH: ansible-playbook
@@ -330,7 +342,6 @@ jobs:
             postgres_db_password: ((postgres_db_password))
             postgres_db_host: ((postgres_db_host))
             postgres_db_port: ((postgres_db_port))
-            grafana_extra_datasources: ((grafana_extra_datasources))
             mysql_db_user: ((mysql_db_user))
             mysql_db_password: ((mysql_db_password))
             mysql_db_host: ((mysql_db_host))

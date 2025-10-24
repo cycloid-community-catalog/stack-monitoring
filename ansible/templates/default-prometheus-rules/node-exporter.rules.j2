@@ -24,7 +24,7 @@ groups:
         receiver: "{{ joined_config['receiver'] }}"
       annotations:
         summary: "{%- raw %}{{ $labels.instance }}{% endraw %}: CPU usage is above {{ joined_config['threshold'] }}% (current value is: {%- raw %}{{ $value }}{% endraw %})"
-        description: "{%- raw %}{{ $labels.instance }}{% endraw %}: High CPU usage detected"
+        description: "{%- raw %}{{ $labels.instance }}{% endraw %}: High CPU usage detected (current value is: {%- raw %}{{ $value }}{% endraw %})"
     {% endif %}
 
     {% set alert = 'HighDiskUsage' %}
@@ -33,8 +33,9 @@ groups:
                            combine(prometheus_default_rules_custom.get(alert, {})) %}
     {% if not joined_config['disable'] %}
 
+
     - alert: "HighDiskUsage"
-      expr: (1 - (sum(node_filesystem_avail_bytes{{ joined_config['selector'] }}) / sum(node_filesystem_size_bytes{{ joined_config['selector'] }})) * 100) > {{ joined_config['threshold'] }}
+      expr: (1 - (node_filesystem_avail_bytes{{ '{' }}{{ joined_config['selector'] }}{{ '}' }} / node_filesystem_size_bytes{{ '{' }}{{ joined_config['selector'] }}{{ '}' }})) * 100 > {{ joined_config['threshold'] }}
       for: "{{ joined_config['for'] }}"
       labels:
         organization: "{{ joined_config['organization'] }}"
@@ -45,5 +46,5 @@ groups:
         receiver: "{{ joined_config['receiver'] }}"
       annotations:
         summary: "{%- raw %}{{ $labels.instance }}{% endraw %}: Disk usage is above {{ joined_config['threshold'] }}% (current value is: {%- raw %}{{ $value }}{% endraw %})"
-        description: "{%- raw %}{{ $labels.instance }}{% endraw %}: High Disk usage detected"
+        description: "{%- raw %}{{ $labels.instance }}{% endraw %}: High Disk usage detected (current value is: {%- raw %}{{ $value }}{% endraw %})"
     {% endif %}

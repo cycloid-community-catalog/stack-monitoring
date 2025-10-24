@@ -27,6 +27,11 @@ definitions:
             echo "grafana_extra_datasources = $(jq . -c grafana_datasource.tmpl)" >> stack/${STACK_PATH}/terraform.tfvars
             cat stack/${STACK_PATH}/terraform.tfvars
 
+            echo $PROMETHEUS_ADDITIONAL_SCRAPE_TMPL | jq . > prometheus_additional_scrape.tmpl
+            cy uri interpolate --in-place prometheus_additional_scrape.tmpl
+            echo "prometheus_additional_scrape = $(jq . -c prometheus_additional_scrape.tmpl)" >> stack/${STACK_PATH}/terraform.tfvars
+            cat stack/${STACK_PATH}/terraform.tfvars
+
             /usr/bin/merge-stack-and-config
         inputs:
           - name: git_config_terraform
@@ -42,6 +47,7 @@ definitions:
         KUBECONFIG_CONTENT: ((kubeconfig_content))
         KUBECONFIG_FILENAME: ((kubeconfig_filename))
         GRAFANA_DATASOURCE_TMPL: ((grafana_extra_datasources))
+        PROMETHEUS_ADDITIONAL_SCRAPE_TMPL: ((prometheus_additional_scrape))
         CY_API_KEY: ((cycloid_api_key))
         CY_ORG: ($ .api_url $)
         #($- if eq .use_case "aws-vm" $)

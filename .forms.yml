@@ -840,6 +840,28 @@ use_cases:
                 widget: simple_text
                 type: string
                 default: prometheus.local
+
+          - name: Scraping Configuration
+            condition: $prometheus_install == true
+            technologies: [pipeline]
+            vars:
+              - name: "Prometheus scraping additional config"
+                description: |
+                  Prometheus scraping additional config to use. Note! prometheus, alertmanager and the database exporters are scraped. For more information check [prometheus wiki](https://prometheus.io/docs/prometheus/latest/configuration/configuration/)
+                  Can contains [Cycloid URI](https://docs.cycloid.io/reference/cli/concepts/cycloid_uri_references) schemes to render credentials.
+                  Example
+                  ```yaml
+                  - ec2_sd_configs:
+                      - port: 9100
+                        region: '{{ aws_default_region }}'
+                        access_key: 'cy://organizations/($ .organization $)/credentials/aws_credential?key=.raw.access_key'
+                        secret_key: 'cy://organizations/($ .organization $)/credentials/aws_credential?key=.raw.secret_key'
+                  ```
+                key: prometheus_additional_scrape
+                widget: text_area
+                type: array
+                default: []
+
           - name: General Configuration
             condition: $prometheus_install == true
             technologies: [terraform]
@@ -847,12 +869,6 @@ use_cases:
               - name: "Prometheus disable k8s component scraping"
                 description: "Prometheus disable default k8s compponent scraping. Go on the values of helm chart and search for all enable ones"
                 key: module.kube-prometheus.disable_component_scraping
-                widget: text_area
-                type: array
-                default: []
-              - name: "Prometheus scraping additional config"
-                description: "Prometheus scraping additional config to use"
-                key: module.kube-prometheus.prometheus_additional_scrape
                 widget: text_area
                 type: array
                 default: []

@@ -10,6 +10,7 @@ module "kube-prometheus" {
   namespace = var.namespace
 
   prometheus_install = var.prometheus_install
+  prometheus_additional_scrape = var.prometheus_additional_scrape
 
   grafana_install = var.grafana_install
   grafana_additional_datasources = var.grafana_extra_datasources

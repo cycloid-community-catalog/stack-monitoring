@@ -317,12 +317,23 @@ use_cases:
                 widget: simple_text
                 type: string
                 default: prometheus.local
-          - name: General Configuration
+
+          - name: Scraping Configuration
             condition: $prometheus_install == true
-            technologies: [ansible]
+            technologies: [pipeline]
             vars:
               - name: "Prometheus scraping additional config"
-                description: "Prometheus scraping additional config to use. Note! prometheus, alertmanager and the database exporters are scraped. For more information check [prometheus wiki](https://prometheus.io/docs/prometheus/latest/configuration/configuration/)"
+                description: |
+                  Prometheus scraping additional config to use. Note! prometheus, alertmanager and the database exporters are scraped. For more information check [prometheus wiki](https://prometheus.io/docs/prometheus/latest/configuration/configuration/)
+                  Can contains [Cycloid URI](https://docs.cycloid.io/reference/cli/concepts/cycloid_uri_references) schemes to render credentials.
+                  Example
+                  ```yaml
+                  - ec2_sd_configs:
+                      - port: 9100
+                        region: '{{ aws_default_region }}'
+                        access_key: 'cy://organizations/($ .organization $)/credentials/aws_credential?key=.raw.access_key'
+                        secret_key: 'cy://organizations/($ .organization $)/credentials/aws_credential?key=.raw.secret_key'
+                  ```
                 key: prometheus_custom_configs
                 widget: text_area
                 type: array
@@ -398,6 +409,10 @@ use_cases:
                       - regex: "cycloid_tag_.*"
                         action: labeldrop
 
+          - name: General Configuration
+            condition: $prometheus_install == true
+            technologies: [ansible]
+            vars:
               - name: "Enable default prometheus rules"
                 description: "Default prometheus rules to use. You can see all the values available [here](https://github.com/cycloid-community-catalog/stack-monitoring/tree/master/ansible/templates/default-prometheus-rules)."
                 key: prometheus_default_rule_files

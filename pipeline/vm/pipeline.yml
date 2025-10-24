@@ -293,7 +293,10 @@ jobs:
                 echo $GRAFANA_DATASOURCE_TMPL | jq . > grafana_datasource.tmpl
                 cy uri interpolate --in-place grafana_datasource.tmpl
                 echo "grafana_extra_datasources: $(jq . -c grafana_datasource.tmpl)" >> ansible-playbook/group_vars/all
-                cat ansible-playbook/group_vars/all
+
+                echo $PROMETHEUS_CUSTOM_CONFIG | jq . > prometheus_custom_configs.tmpl
+                cy uri interpolate --in-place prometheus_custom_configs.tmpl
+                echo "prometheus_custom_configs: $(jq . -c prometheus_custom_configs.tmpl)" >> ansible-playbook/group_vars/all
 
                 # Static inventory
                 set -x
@@ -313,6 +316,7 @@ jobs:
             path: "terraform"
         params:
           GRAFANA_DATASOURCE_TMPL: ((grafana_extra_datasources))
+          PROMETHEUS_CUSTOM_CONFIG: ((prometheus_custom_configs))
           CY_API_KEY: ((cycloid_api_key))
           CY_ORG: ($ .api_url $)
           # env var to allow logs for the prometheus playbook

@@ -183,6 +183,7 @@ prometheus_default_rules_predefined:
     threshold: 90
   HighDiskUsage:
     threshold: 90
+    selector: 'fstype!~"tmpfs|overlay"'
   # - prometheus.rules
   #PrometheusIsDown:
   #PrometheusTargetDown:

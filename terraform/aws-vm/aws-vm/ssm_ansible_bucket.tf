@@ -12,3 +12,33 @@ resource "aws_s3_bucket" "ansible" {
     Role = "ansible"
   }
 }
+
+data "aws_iam_policy_document" "ansible_secure_transport" {
+  statement {
+    sid    = "DenyInsecureTransport"
+    effect = "Deny"
+
+    principals {
+      type        = "*"
+      identifiers = ["*"]
+    }
+
+    actions = ["s3:*"]
+
+    resources = [
+      "arn:aws:s3:::${aws_s3_bucket.ansible.id}",
+      "arn:aws:s3:::${aws_s3_bucket.ansible.id}/*"
+    ]
+
+    condition {
+      test     = "Bool"
+      variable = "aws:SecureTransport"
+      values   = ["false"]
+    }
+  }
+}
+
+resource "aws_s3_bucket_policy" "ansible_secure" {
+  bucket = aws_s3_bucket.ansible.id
+  policy = data.aws_iam_policy_document.ansible_secure_transport.json
+}

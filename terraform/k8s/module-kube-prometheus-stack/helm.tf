@@ -2,6 +2,7 @@
 # Helm-release: kube-prometheus-stack
 # CHART: https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack
 # VALUES: https://raw.githubusercontent.com/prometheus-community/helm-charts/main/charts/kube-prometheus-stack/values.yaml
+# UPGRADE: https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack#upgrading-an-existing-release-to-a-new-major-version
 # NOTE! The value specification follows the order of the values.yaml to be more easy to follow the params setup and add new ones
 ################################################################################
 
@@ -82,7 +83,6 @@ EOL
   # https://github.com/grafana/helm-charts/blob/main/charts/grafana/values.yaml
   grafana_helm_vars = {
     grafana = {
-      nodeSelector = var.stack_monitoring_node_selector
       dashboards = {
         default = var.grafana_dashboard_import
       }
@@ -107,6 +107,148 @@ EOL
       additionalDataSources = var.grafana_additional_datasources
     }
   })
+
+
+  global_values = yamlencode(provider::deepmerge::mergo(
+    {
+      crds = {
+        upgradeJob = {
+          enabled = true
+        }
+      }
+
+      # ALERTMANAGER
+      alertmanager = {
+        enabled = var.alertmanager_install
+        ingress = {
+          enabled = var.alertmanager_install
+          hosts = [
+            var.alertmanager_domain_name
+          ]
+          annotations = {
+            "nginx.ingress.kubernetes.io/auth-type"        = "basic"
+            "nginx.ingress.kubernetes.io/auth-secret"      = kubernetes_secret.alertmanager_basic_auth[0].metadata[0].name
+            "nginx.ingress.kubernetes.io/auth-secret-type" = "auth-map"
+          }
+        }
+        # Prometheus data retention
+        alertmanagerSpec = {
+          retention = var.enable_alertmanager_persistence ? var.alertmanager_data_retention : "120h"
+        }
+
+
+      }
+
+      # GRAFANA
+      grafana = {
+        enabled                   = var.grafana_install
+        defaultDashboardsEnabled  = var.enable_default_grafana_dashboards
+        defaultDashboardsTimezone = var.grafana_default_timezone
+        adminPassword             = var.grafana_install ? random_password.grafana_basic_auth_password[0].result : ""
+        adminUser                 = local.username
+
+        nodeSelector = var.stack_monitoring_node_selector
+
+        ingress = {
+          enabled = var.grafana_install
+          hosts = [
+            var.grafana_domain_name
+          ]
+        }
+
+        sidecar = {
+          datasources = {
+            alertmanager = {
+              handleGrafanaManagedAlerts = true
+            }
+          }
+        }
+
+        # Grafana data persistency
+        persistence = {
+          enabled = var.enable_grafana_persistence
+          type    = "pvc"
+          accessModes = [
+            "ReadWriteOnce"
+          ]
+          size = "${var.grafana_pvc_size}Gi"
+        }
+
+        operator = {
+          folder = "Kubernetes"
+        }
+      }
+
+      # PROMETHEUS
+      prometheus = {
+        enabled = var.prometheus_install
+
+        ingress = {
+          enabled = var.prometheus_install
+          hosts = [
+            var.prometheus_domain_name
+          ]
+          annotations = {
+            "nginx.ingress.kubernetes.io/auth-type"        = "basic"
+            "nginx.ingress.kubernetes.io/auth-secret"      = kubernetes_secret.prometheus_basic_auth[0].metadata[0].name
+            "nginx.ingress.kubernetes.io/auth-secret-type" = "auth-map"
+          }
+        }
+
+        prometheusSpec = {
+          serviceMonitorSelectorNilUsesHelmValues = false
+          # Prometheus data retention
+          retention = var.enable_prometheus_persistence ? var.prometheus_data_retention : "10d"
+        }
+
+
+      }
+
+      defaultRules = {
+        appNamespacesTarget = var.prometheus_rules_namespaces
+      }
+
+
+      # kube-state-metrics
+      # In order to get annotations on kube_namespace_annotations metrics, we need to allow it on kube-state-metrics
+      # https://github.com/kubernetes/kube-state-metrics/issues/1582
+
+      kube-state-metrics = {
+        metricAnnotationsAllowList = [
+          "namespaces=[*]"
+        ]
+      }
+    },
+
+    {
+      for k, v in toset(var.disable_component_scraping) :
+      k => {
+        enabled = false
+      }
+    },
+    # Disable monitoring rule
+    # https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack/templates/prometheus/rules-1.14
+    {
+      defaultRules = {
+        rules = {
+          for k, v in toset(local.default_rules_disabled) :
+          k => false
+        }
+      }
+    },
+    # Disable specific Alert from rules
+    # Usefull if alert not used or overrided
+    try(length(local.default_alerts_disabled) > 0, false) ?
+    {
+      defaultRules = {
+        disabled = {
+          for k, v in toset(local.default_alerts_disabled) :
+          k => false
+        }
+      }
+    } : null,
+
+  ))
 }
 
 resource "helm_release" "kube_prometheus_stack" {
@@ -131,185 +273,8 @@ resource "helm_release" "kube_prometheus_stack" {
 
     # prometheus
     yamlencode(local.prometheus_helm_vars),
-    local.grafana_additional_datasources
+    local.grafana_additional_datasources,
+
+    local.global_values
   ]
-
-  dynamic "set" {
-    for_each = toset(var.disable_component_scraping)
-    content {
-      name  = "${set.key}.enabled"
-      value = false
-    }
-  }
-
-  # ALERTMANAGER
-  set {
-    name  = "alertmanager.enabled"
-    value = var.alertmanager_install
-  }
-
-  set {
-    name  = "alertmanager.ingress.enabled"
-    value = var.alertmanager_install
-  }
-
-  set {
-    name  = "alertmanager.ingress.hosts[0]"
-    value = var.alertmanager_domain_name
-  }
-
-  set {
-    name  = "alertmanager.ingress.annotations.nginx\\.ingress\\.kubernetes\\.io/auth-type"
-    value = "basic"
-  }
-  set {
-    name  = "alertmanager.ingress.annotations.nginx\\.ingress\\.kubernetes\\.io/auth-secret"
-    value = kubernetes_secret.alertmanager_basic_auth[0].metadata[0].name
-  }
-  set {
-    name  = "alertmanager.ingress.annotations.nginx\\.ingress\\.kubernetes\\.io/auth-secret-type"
-    value = "auth-map"
-  }
-
-  # Prometheus data retention
-  set {
-    name  = "alertmanager.alertmanagerSpec.retention"
-    value = var.enable_alertmanager_persistence ? var.alertmanager_data_retention : "120h"
-  }
-  # GRAFANA
-  set {
-    name  = "grafana.enabled"
-    value = var.grafana_install
-  }
-
-  set {
-    name  = "grafana.defaultDashboardsEnabled"
-    value = var.enable_default_grafana_dashboards
-  }
-
-  set {
-    name  = "grafana.defaultDashboardsTimezone"
-    value = var.grafana_default_timezone
-  }
-
-  set {
-    name  = "grafana.adminPassword"
-    value = var.grafana_install ? random_password.grafana_basic_auth_password[0].result : ""
-  }
-
-  set {
-    name  = "grafana.adminUser"
-    value = local.username
-  }
-
-  set {
-    name  = "grafana.ingress.enabled"
-    value = var.grafana_install
-  }
-
-  set {
-    name  = "grafana.ingress.hosts[0]"
-    value = var.grafana_domain_name
-  }
-
-  set {
-    name  = "grafana.sidecar.datasources.alertmanager.handleGrafanaManagedAlerts"
-    value = true
-  }
-
-  # Grafana data persistency
-  set {
-    name  = "grafana.persistence.enabled"
-    value = var.enable_grafana_persistence
-  }
-  set {
-    name  = "grafana.persistence.type"
-    value = "pvc"
-  }
-  set {
-    name  = "grafana.persistence.accessModes[0]"
-    value = "ReadWriteOnce"
-  }
-  set {
-    name  = "grafana.persistence.size"
-    value = "${var.grafana_pvc_size}Gi"
-  }
-  set {
-    name  = "grafana.operator.folder"
-    value = "Kubernetes"
-  }
-
-  # PROMETHEUS
-  set {
-    name  = "prometheus.enabled"
-    value = var.prometheus_install
-  }
-
-  set {
-    name  = "defaultRules.appNamespacesTarget"
-    value = var.prometheus_rules_namespaces
-  }
-
-  # Disable monitoring rule
-  # https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack/templates/prometheus/rules-1.14
-  dynamic "set" {
-    for_each = toset(local.default_rules_disabled)
-    content {
-      name  = "defaultRules.rules.${set.key}"
-      value = false
-    }
-  }
-
-  # Disable specific Alert from rules
-  # Usefull if alert not used or overrided
-  dynamic "set" {
-    for_each = length(local.default_alerts_disabled) > 0 ? toset(local.default_alerts_disabled) : toset([])
-    content {
-      name  = "defaultRules.disabled.${set.key}"
-      value = true
-    }
-  }
-
-  set {
-    name  = "prometheus.ingress.enabled"
-    value = var.prometheus_install
-  }
-
-  set {
-    name  = "prometheus.ingress.hosts[0]"
-    value = var.prometheus_domain_name
-  }
-
-  set {
-    name  = "prometheus.ingress.annotations.nginx\\.ingress\\.kubernetes\\.io/auth-type"
-    value = "basic"
-  }
-  set {
-    name  = "prometheus.ingress.annotations.nginx\\.ingress\\.kubernetes\\.io/auth-secret"
-    value = kubernetes_secret.prometheus_basic_auth[0].metadata[0].name
-  }
-  set {
-    name  = "prometheus.ingress.annotations.nginx\\.ingress\\.kubernetes\\.io/auth-secret-type"
-    value = "auth-map"
-  }
-
-  set {
-    name  = "prometheus.prometheusSpec.serviceMonitorSelectorNilUsesHelmValues"
-    value = "false"
-  }
-
-  # Prometheus data retention
-  set {
-    name  = "prometheus.prometheusSpec.retention"
-    value = var.enable_prometheus_persistence ? var.prometheus_data_retention : "10d"
-  }
-
-  # kube-state-metrics
-  # In order to get annotations on kube_namespace_annotations metrics, we need to allow it on kube-state-metrics
-  # https://github.com/kubernetes/kube-state-metrics/issues/1582
-  set {
-    name  = "kube-state-metrics.metricAnnotationsAllowList[0]"
-    value = "namespaces=[*]"
-  }
-
 }

@@ -10,7 +10,7 @@ definitions:
           type: registry-image
           source:
             repository: cycloid/cycloid-toolkit
-            tag: latest
+            tag: "a12"
         run:
           path: /usr/bin/merge-stack-and-config
         inputs:
@@ -35,7 +35,7 @@ resource_types:
   type: registry-image
   source:
     repository: cycloid/terraform-resource
-    tag: ((terraform_version))
+    tag: 1.13.5
 
 groups:
 - name: setup
@@ -220,7 +220,7 @@ jobs:
             type: registry-image
             source:
               repository: cycloid/cycloid-toolkit
-              tag: latest
+              tag: "a12"
           run:
             path: /bin/bash
             args:
@@ -273,7 +273,7 @@ jobs:
             type: registry-image
             source:
               repository: cycloid/cycloid-toolkit
-              tag: "v((ansible_version))"
+              tag: "a12"
           run:
             path: /bin/bash
             args:
@@ -378,7 +378,7 @@ jobs:
             type: registry-image
             source:
               repository: cycloid/cycloid-toolkit
-              tag: latest
+              tag: "a12"
           run:
             path: /bin/bash
             args:

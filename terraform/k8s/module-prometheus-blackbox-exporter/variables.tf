@@ -19,9 +19,6 @@ variable "blackbox_exporter_install" {
   default = false
 }
 
-variable "blackbox_helm_version" {
-  default = "8.17.0"
-}
 variable "blackbox_exporter_modules" {
   default = []
 }

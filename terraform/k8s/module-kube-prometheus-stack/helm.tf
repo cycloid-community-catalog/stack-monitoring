@@ -255,11 +255,11 @@ resource "helm_release" "kube_prometheus_stack" {
   name       = "kube-prometheus-stack"
   repository = "https://prometheus-community.github.io/helm-charts"
   chart      = "kube-prometheus-stack"
-  version    = "72.0.0"
+  version    = "79.5.0"
   namespace  = var.namespace
 
   values = [
-    file("${path.module}/values.yaml"),
+    # file("${path.module}/values.yaml"),
     # general vars
     yamlencode(local.global_helm_vars),
 

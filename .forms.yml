@@ -695,7 +695,7 @@ use_cases:
                 widget: text_area
                 default:
                   - dashboard_id: 1860 #node-exporter
-                    revision_id: 37
+                    revision_id: 42
                     datasource: prometheus
                   - dashboard_id: 13659
                     revision_id: 1
@@ -1195,7 +1195,9 @@ use_cases:
                 type: array
                 default: []
               - name: Grafana dashboards import
-                description: "Defines the public dashboards to import. Check the [official docs](https://github.com/grafana/helm-charts/blob/main/charts/grafana/values.yaml#L831) on how to do it"
+                description: |
+                  Defines the public dashboards to import. Check the [official docs](https://github.com/grafana/helm-charts/blob/main/charts/grafana/values.yaml#L831) on how to do it"
+                  To clean dashboard, rm from grafana pod `rm /var/lib/grafana/dashboards/default/*`
                 key: module.kube-prometheus.grafana_dashboard_import
                 widget: text_area
                 type: map

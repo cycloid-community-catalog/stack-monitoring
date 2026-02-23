@@ -2,6 +2,10 @@
 # Creates the VM used to deploy grafana, prometheus and alertmanager
 ###
 
+variable "ami_search_name" {
+  default = "debian-13-*"
+}
+
 # ami to use -> debian 12
 data "aws_ami" "debian" {
   count = var.vm_ami != "" ? 0 : 1
@@ -10,7 +14,7 @@ data "aws_ami" "debian" {
 
   filter {
     name   = "name"
-    values = ["debian-12-*"]
+    values = [var.ami_search_name]
   }
 
   filter {

@@ -80,7 +80,7 @@ alertmanager:
       ${join("\n      ", split("\n", var.alertmanager_config_receivers))}
 EOL
 
-  # https://github.com/grafana/helm-charts/blob/main/charts/grafana/values.yaml
+  # https://github.com/grafana-community/helm-charts/blob/main/charts/grafana/values.yaml
   grafana_helm_vars = {
     grafana = {
       dashboards = {

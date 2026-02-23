@@ -1196,8 +1196,11 @@ use_cases:
                 default: []
               - name: Grafana dashboards import
                 description: |
-                  Defines the public dashboards to import. Check the [official docs](https://github.com/grafana/helm-charts/blob/main/charts/grafana/values.yaml#L831) on how to do it"
+                  Defines the public dashboards to import. Check the [official docs](https://github.com/grafana-community/helm-charts/blob/main/charts/grafana/values.yaml#L833) on how to do it"
                   To clean dashboard, rm from grafana pod `rm /var/lib/grafana/dashboards/default/*`
+                  imported by ID, available publicly at [grafana](https://grafana.com/grafana/dashboards/)
+                  Check last revision from the list
+                  `for id in $(grep gnetId forms_list | awk '{print $2}');do echo "gnetId: $id"; echo "revision: $(curl -s https://grafana.com/api/dashboards/$id | jq '.revision')"; echo "";done`
                 key: module.kube-prometheus.grafana_dashboard_import
                 widget: text_area
                 type: map

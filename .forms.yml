@@ -689,7 +689,10 @@ use_cases:
             condition: $grafana_install == true
             vars:
               - name: "Grafana Dashboards"
-                description: "List of dashboards which should be imported by ID, available publicly at [grafana](https://grafana.com/grafana/dashboards/)"
+                description: |
+                  List of dashboards which should be imported by ID, available publicly at [grafana](https://grafana.com/grafana/dashboards/)
+                  Check last revision from the list
+                  `for id in $(grep dashboard_id forms_list | awk '{print $3}');do echo "dashboard_id: $id"; echo "revision_id: $(curl -s https://grafana.com/api/dashboards/$id | jq '.revision')"; echo "";done`
                 key: grafana_dashboards
                 type: array
                 widget: text_area

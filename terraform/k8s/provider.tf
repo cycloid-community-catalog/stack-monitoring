@@ -10,11 +10,11 @@ provider "helm" {
 
 provider "cycloid" {
   # The Cycloid API URL to use.
-  url = var.cycloid_api_url
+  api_url = var.cycloid_api_url
   # The Cycloid API key to use.
-  jwt = var.cycloid_api_key
+  api_key = var.cycloid_api_key
 
-  organization_canonical = var.organization
+  default_organization = var.organization
 }
 
 # provider declared here since the variables are defined in another module

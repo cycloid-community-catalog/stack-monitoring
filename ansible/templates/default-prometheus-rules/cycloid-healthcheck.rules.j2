@@ -1,17 +1,17 @@
 # Defines the set of alerts connected to cycloid healthcheck metrics
 # Checks if:
-# - concourse is down
+# - pipeline is down
 # - elasticsearch is down
 # - email is down
-# - mysql is down
-# - redis is down
-# - redis_worker is down
-# - vault is down
+# - database is down
+# - queue is down
+# - queue_worker is down
+# - secret is down
 
 groups:
 - name: cycloid_health_check.rules
   rules:
-    {% for service in ['concourse', 'elasticsearch', 'email', 'mysql', 'redis', 'redis_worker', 'vault'] %}
+    {% for service in ['pipeline', 'elasticsearch', 'email', 'database', 'queue', 'queue_worker', 'secret'] %}
     {% set alert = service|capitalize ~ 'IsDown' %}
     {% set joined_config = prometheus_default_rules_global |
             combine(prometheus_default_rules_predefined.get(alert, {})) |

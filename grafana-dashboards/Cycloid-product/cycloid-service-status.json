@@ -96,7 +96,7 @@
 					},
 					"disableTextWrap": false,
 					"editorMode": "builder",
-					"expr": "health_status_concourse{job=\"cycloid-health-check\", env=\"$Environment\"}",
+					"expr": "health_status_pipeline{job=\"cycloid-health-check\", env=\"$Environment\"}",
 					"fullMetaSearch": false,
 					"includeNullMetadata": true,
 					"instant": false,
@@ -106,7 +106,7 @@
 					"useBackend": false
 				}
 			],
-			"title": "Concourse status",
+			"title": "Pipeline status",
 			"type": "gauge"
 		},
 		{
@@ -321,7 +321,7 @@
 					},
 					"disableTextWrap": false,
 					"editorMode": "builder",
-					"expr": "health_status_mysql{job=\"cycloid-health-check\", env=\"$Environment\"}",
+					"expr": "health_status_database{job=\"cycloid-health-check\", env=\"$Environment\"}",
 					"fullMetaSearch": false,
 					"includeNullMetadata": true,
 					"instant": false,
@@ -331,7 +331,7 @@
 					"useBackend": false
 				}
 			],
-			"title": "MySQL status",
+			"title": "Database status",
 			"type": "gauge"
 		},
 		{
@@ -396,7 +396,7 @@
 					},
 					"disableTextWrap": false,
 					"editorMode": "builder",
-					"expr": "health_status_redis{job=\"cycloid-health-check\", env=\"$Environment\"}",
+					"expr": "health_status_queue{job=\"cycloid-health-check\", env=\"$Environment\"}",
 					"fullMetaSearch": false,
 					"includeNullMetadata": true,
 					"instant": false,
@@ -406,7 +406,7 @@
 					"useBackend": false
 				}
 			],
-			"title": "Redis status",
+			"title": "Queue status",
 			"type": "gauge"
 		},
 		{
@@ -471,7 +471,7 @@
 					},
 					"disableTextWrap": false,
 					"editorMode": "builder",
-					"expr": "health_status_redis_worker{job=\"cycloid-health-check\", env=\"$Environment\"}",
+					"expr": "health_status_queue_worker{job=\"cycloid-health-check\", env=\"$Environment\"}",
 					"fullMetaSearch": false,
 					"includeNullMetadata": true,
 					"instant": false,
@@ -481,7 +481,7 @@
 					"useBackend": false
 				}
 			],
-			"title": "Redis Worker status",
+			"title": "Queue Worker status",
 			"type": "gauge"
 		},
 		{
@@ -546,7 +546,7 @@
 					},
 					"disableTextWrap": false,
 					"editorMode": "builder",
-					"expr": "health_status_vault{job=\"cycloid-health-check\", env=\"$Environment\"}",
+					"expr": "health_status_secret{job=\"cycloid-health-check\", env=\"$Environment\"}",
 					"fullMetaSearch": false,
 					"includeNullMetadata": true,
 					"instant": false,
@@ -556,7 +556,7 @@
 					"useBackend": false
 				}
 			],
-			"title": "Vault status",
+			"title": "Secret status",
 			"type": "gauge"
 		},
 		{
@@ -639,11 +639,11 @@
 					},
 					"disableTextWrap": false,
 					"editorMode": "builder",
-					"expr": "health_status_concourse{env=\"$Environment\"}",
+					"expr": "health_status_pipeline{env=\"$Environment\"}",
 					"fullMetaSearch": false,
 					"includeNullMetadata": true,
 					"instant": false,
-					"legendFormat": "Concourse",
+					"legendFormat": "Pipeline",
 					"range": true,
 					"refId": "Concourse",
 					"useBackend": false
@@ -689,12 +689,12 @@
 					},
 					"disableTextWrap": false,
 					"editorMode": "builder",
-					"expr": "health_status_mysql{env=\"$Environment\"}",
+					"expr": "health_status_database{env=\"$Environment\"}",
 					"fullMetaSearch": false,
 					"hide": false,
 					"includeNullMetadata": true,
 					"instant": false,
-					"legendFormat": "MySQL",
+					"legendFormat": "Database",
 					"range": true,
 					"refId": "MySQL",
 					"useBackend": false
@@ -706,12 +706,12 @@
 					},
 					"disableTextWrap": false,
 					"editorMode": "builder",
-					"expr": "health_status_redis{env=\"$Environment\"}",
+					"expr": "health_status_queue{env=\"$Environment\"}",
 					"fullMetaSearch": false,
 					"hide": false,
 					"includeNullMetadata": true,
 					"instant": false,
-					"legendFormat": "Redis",
+					"legendFormat": "Queue",
 					"range": true,
 					"refId": "Redis",
 					"useBackend": false
@@ -723,12 +723,12 @@
 					},
 					"disableTextWrap": false,
 					"editorMode": "builder",
-					"expr": "health_status_redis_worker{env=\"$Environment\"}",
+					"expr": "health_status_queue_worker{env=\"$Environment\"}",
 					"fullMetaSearch": false,
 					"hide": false,
 					"includeNullMetadata": true,
 					"instant": false,
-					"legendFormat": "Redis Worker",
+					"legendFormat": "Queue Worker",
 					"range": true,
 					"refId": "Redis Worker",
 					"useBackend": false
@@ -754,7 +754,7 @@
 					"type": "prometheus",
 					"uid": "prometheus"
 				},
-				"definition": "label_values(health_status_concourse,env)",
+				"definition": "label_values(health_status_pipeline,env)",
 				"hide": 0,
 				"includeAll": false,
 				"label": "env",
@@ -763,7 +763,7 @@
 				"options": [],
 				"query": {
 					"qryType": 1,
-					"query": "label_values(health_status_concourse,env)",
+					"query": "label_values(health_status_pipeline,env)",
 					"refId": "PrometheusVariableQueryEditor-VariableQuery"
 				},
 				"refresh": 1,

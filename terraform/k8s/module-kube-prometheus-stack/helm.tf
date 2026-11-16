@@ -72,13 +72,30 @@ locals {
     }
   }
   # with credential gets always interpreted as string
-  alertmanager_config_receivers = <<EOL
+  alertmanager_config_receivers_legacy = <<EOL
 ---
 alertmanager:
   config:
     receivers:
       ${join("\n      ", split("\n", var.alertmanager_config_receivers))}
 EOL
+
+  # Helm replaces lists instead of merging them: legacy and extra receivers are
+  # concatenated here. Without extra receivers the legacy text is used as is,
+  # so existing deployments render exactly the same values.
+  alertmanager_legacy_receivers = try([for r in yamldecode(local.alertmanager_config_receivers_legacy).alertmanager.config.receivers : r], [])
+  alertmanager_extra_receivers  = var.alertmanager_extra_receivers == null ? [] : var.alertmanager_extra_receivers
+  alertmanager_receiver_names = concat(
+    [for r in local.alertmanager_legacy_receivers : r.name],
+    [for r in local.alertmanager_extra_receivers : r.name],
+  )
+  alertmanager_config_receivers = length(local.alertmanager_extra_receivers) == 0 ? local.alertmanager_config_receivers_legacy : yamlencode({
+    alertmanager = {
+      config = {
+        receivers = concat(local.alertmanager_legacy_receivers, local.alertmanager_extra_receivers)
+      }
+    }
+  })
 
   # https://github.com/grafana-community/helm-charts/blob/main/charts/grafana/values.yaml
   grafana_helm_vars = {
@@ -252,6 +269,13 @@ EOL
 }
 
 resource "helm_release" "kube_prometheus_stack" {
+  lifecycle {
+    precondition {
+      condition     = length(local.alertmanager_receiver_names) == length(distinct(local.alertmanager_receiver_names))
+      error_message = "Alertmanager receiver names must be unique across alertmanager_config_receivers and alertmanager_extra_receivers."
+    }
+  }
+
   name       = "kube-prometheus-stack"
   repository = "https://prometheus-community.github.io/helm-charts"
   chart      = "kube-prometheus-stack"

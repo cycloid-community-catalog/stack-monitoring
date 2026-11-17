@@ -18,6 +18,7 @@ module "kube-prometheus" {
   alertmanager_install          = var.alertmanager_install
   alertmanager_use_external     = var.alertmanager_use_external
   alertmanager_config_receivers = var.alertmanager_config_receivers
+  alertmanager_receivers        = var.alertmanager_receivers
 }
 
 module "prometheus-blackbox-exporter" {

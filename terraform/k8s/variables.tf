@@ -36,6 +36,13 @@ variable "alertmanager_use_external" {}
 variable "alertmanager_config_receivers" {
   sensitive = false
 }
+# Receivers as a list from the form, secrets as Cycloid URIs resolved by the
+# pipeline (cy uri interpolate). Replaces alertmanager_config_receivers.
+variable "alertmanager_receivers" {
+  type     = any
+  default  = []
+  nullable = false
+}
 # opsgenie
 variable "opsgenie_token" {}
 

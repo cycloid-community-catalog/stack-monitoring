@@ -80,6 +80,16 @@ alertmanager:
       ${join("\n      ", split("\n", var.alertmanager_config_receivers))}
 EOL
 
+  # alertmanager_receivers (form, list) replaces the credential text above;
+  # without it the rendering is exactly the previous one.
+  alertmanager_receivers_values = length(var.alertmanager_receivers) == 0 ? local.alertmanager_config_receivers : yamlencode({
+    alertmanager = {
+      config = {
+        receivers = var.alertmanager_receivers
+      }
+    }
+  })
+
   # https://github.com/grafana-community/helm-charts/blob/main/charts/grafana/values.yaml
   grafana_helm_vars = {
     grafana = {
@@ -252,6 +262,13 @@ EOL
 }
 
 resource "helm_release" "kube_prometheus_stack" {
+  lifecycle {
+    precondition {
+      condition     = length(var.alertmanager_receivers) == 0 || trimspace(coalesce(var.alertmanager_config_receivers, " ")) == ""
+      error_message = "alertmanager_receivers replaces alertmanager_config_receivers: empty the receivers credential field when the form field is used."
+    }
+  }
+
   name       = "kube-prometheus-stack"
   repository = "https://prometheus-community.github.io/helm-charts"
   chart      = "kube-prometheus-stack"
@@ -265,7 +282,7 @@ resource "helm_release" "kube_prometheus_stack" {
 
     # alertmanager
     yamlencode(local.alertmanager_helm_vars),
-    local.alertmanager_config_receivers,
+    local.alertmanager_receivers_values,
 
     # grafana
     yamlencode(local.grafana_helm_vars),

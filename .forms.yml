@@ -955,6 +955,25 @@ use_cases:
                 widget: cy_cred
                 type: string
 
+              - name: "Alertmanager receivers (YAML)"
+                description: |
+                  Replaces the credential above (leave the credential empty when this is used).
+                  Receivers as a YAML list, readable and versioned in the config repository; secrets are
+                  [Cycloid URIs](https://docs.cycloid.io/reference/cli/concepts/cycloid_uri_references) resolved
+                  by the pipeline. Custom credentials: `?key=.raw.raw.<field>`, single-line values.
+                  Keep a `null`-like default receiver. Example
+                  ```yaml
+                  - name: default_empty
+                  - name: zulip
+                    slack_configs:
+                      - channel: on_call
+                        api_url: 'cy://organizations/($ .organization $)/credentials/monitoring-receivers-secrets?key=.raw.raw.zulip_cycloid_api_url'
+                  ```
+                key: alertmanager_receivers
+                widget: text_area
+                type: array
+                default: []
+
           - name: Alertmanager Configuration
             technologies: [terraform]
             condition: $alertmanager_install == true

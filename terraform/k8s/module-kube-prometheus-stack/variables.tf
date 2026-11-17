@@ -122,6 +122,12 @@ variable "alertmanager_config_route" {}
 variable "alertmanager_config_receivers" {
   sensitive = false
 }
+variable "alertmanager_receivers" {
+  description = "Alertmanager receivers (list), replaces alertmanager_config_receivers. Not sensitive: secrets are Cycloid URIs resolved by the pipeline (marking it would hide every plan diff of the chart)."
+  type        = any
+  default     = []
+  nullable    = false
+}
 variable "enable_alertmanager_persistence" {
   default = false
 }

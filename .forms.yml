@@ -955,26 +955,21 @@ use_cases:
                 widget: cy_cred
                 type: string
 
-              - name: "Alertmanager extra receivers"
+              - name: "Alertmanager receivers (YAML)"
                 description: |
-                  Receivers added to the ones above, as a YAML list. Secrets are given as
-                  [Cycloid URIs](https://docs.cycloid.io/reference/cli/concepts/cycloid_uri_references),
-                  resolved by the pipeline: each application keeps its own credential and the
-                  configuration stays readable. Names must be unique across both fields.
-                  Lets the big receivers credential be emptied little by little.
-                  Custom credentials are read with `?key=.raw.raw.<field>`. Values are inserted
-                  without JSON escaping: single-line values only (tokens, URLs).
-                  Example
+                  Replaces the credential above (leave the credential empty when this is used).
+                  Receivers as a YAML list, readable and versioned in the config repository; secrets are
+                  [Cycloid URIs](https://docs.cycloid.io/reference/cli/concepts/cycloid_uri_references) resolved
+                  by the pipeline. Custom credentials: `?key=.raw.raw.<field>`, single-line values.
+                  Keep a `null`-like default receiver. Example
                   ```yaml
-                  - name: goalert
-                    webhook_configs:
-                      - url: http://goalert.infra.svc.cluster.local:8081/api/v2/prometheusalertmanager/incoming
-                        send_resolved: true
-                        http_config:
-                          authorization:
-                            credentials: 'cy://organizations/($ .organization $)/credentials/goalert-alertmanager?key=.raw.raw.token'
+                  - name: default_empty
+                  - name: zulip
+                    slack_configs:
+                      - channel: on_call
+                        api_url: 'cy://organizations/($ .organization $)/credentials/monitoring-receivers-secrets?key=.raw.raw.zulip_cycloid_api_url'
                   ```
-                key: alertmanager_extra_receivers
+                key: alertmanager_receivers
                 widget: text_area
                 type: array
                 default: []

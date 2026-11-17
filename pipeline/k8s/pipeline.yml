@@ -31,11 +31,14 @@ definitions:
             cy uri interpolate --in-place prometheus_additional_scrape.tmpl
             echo "prometheus_additional_scrape = $(jq . -c prometheus_additional_scrape.tmpl)" >> stack/${STACK_PATH}/terraform.tfvars
             cat stack/${STACK_PATH}/terraform.tfvars
+            ($- if .alertmanager_receivers $)
 
-            # Secrets are resolved here: never print this file.
-            echo "${ALERTMANAGER_EXTRA_RECEIVERS_TMPL:-[]}" | jq . > alertmanager_extra_receivers.tmpl
-            cy uri interpolate --in-place alertmanager_extra_receivers.tmpl
-            echo "alertmanager_extra_receivers = $(jq . -c alertmanager_extra_receivers.tmpl)" >> stack/${STACK_PATH}/terraform.tfvars
+            # Alertmanager receivers: secrets are resolved here, never print this
+            # file. ${ and %{ are escaped for HCL.
+            echo "$ALERTMANAGER_RECEIVERS_TMPL" | jq . > alertmanager_receivers.tmpl
+            cy uri interpolate --in-place alertmanager_receivers.tmpl
+            echo "alertmanager_receivers = $(jq -c . alertmanager_receivers.tmpl | sed -e 's/\${/$${/g' -e 's/%{/%%{/g')" >> stack/${STACK_PATH}/terraform.tfvars
+            ($- end $)
 
             /usr/bin/merge-stack-and-config
         inputs:
@@ -53,7 +56,9 @@ definitions:
         KUBECONFIG_FILENAME: ((kubeconfig_filename))
         GRAFANA_DATASOURCE_TMPL: ((grafana_extra_datasources))
         PROMETHEUS_ADDITIONAL_SCRAPE_TMPL: ((prometheus_additional_scrape))
-        ALERTMANAGER_EXTRA_RECEIVERS_TMPL: ((alertmanager_extra_receivers))
+        ($- if .alertmanager_receivers $)
+        ALERTMANAGER_RECEIVERS_TMPL: ((alertmanager_receivers))
+        ($- end $)
         CY_API_KEY: ((cycloid_api_key))
         CY_ORG: ($ .api_url $)
         #($- if eq .use_case "aws-vm" $)

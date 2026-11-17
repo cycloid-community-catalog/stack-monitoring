@@ -80,19 +80,12 @@ alertmanager:
       ${join("\n      ", split("\n", var.alertmanager_config_receivers))}
 EOL
 
-  # Helm replaces lists instead of merging them: both receiver sources are
-  # concatenated here. Without extra receivers the text above is used as is,
-  # so existing deployments render exactly the same values.
-  alertmanager_config_receivers_list = try([for r in yamldecode(local.alertmanager_config_receivers).alertmanager.config.receivers : r], [])
-  alertmanager_extra_receivers       = var.alertmanager_extra_receivers == null ? [] : var.alertmanager_extra_receivers
-  alertmanager_receiver_names = concat(
-    [for r in local.alertmanager_config_receivers_list : r.name],
-    [for r in local.alertmanager_extra_receivers : r.name],
-  )
-  alertmanager_receivers_values = length(local.alertmanager_extra_receivers) == 0 ? local.alertmanager_config_receivers : yamlencode({
+  # alertmanager_receivers (form, list) replaces the credential text above;
+  # without it the rendering is exactly the previous one.
+  alertmanager_receivers_values = length(var.alertmanager_receivers) == 0 ? local.alertmanager_config_receivers : yamlencode({
     alertmanager = {
       config = {
-        receivers = concat(local.alertmanager_config_receivers_list, local.alertmanager_extra_receivers)
+        receivers = var.alertmanager_receivers
       }
     }
   })
@@ -271,8 +264,8 @@ EOL
 resource "helm_release" "kube_prometheus_stack" {
   lifecycle {
     precondition {
-      condition     = length(local.alertmanager_receiver_names) == length(distinct(local.alertmanager_receiver_names))
-      error_message = "Alertmanager receiver names must be unique across alertmanager_config_receivers and alertmanager_extra_receivers."
+      condition     = length(var.alertmanager_receivers) == 0 || trimspace(coalesce(var.alertmanager_config_receivers, " ")) == ""
+      error_message = "alertmanager_receivers replaces alertmanager_config_receivers: empty the receivers credential field when the form field is used."
     }
   }
 

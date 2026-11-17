@@ -36,13 +36,12 @@ variable "alertmanager_use_external" {}
 variable "alertmanager_config_receivers" {
   sensitive = false
 }
-# Receivers given as a list in the form, with secrets as Cycloid URIs resolved
-# by the pipeline (cy uri interpolate). Appended to alertmanager_config_receivers.
-# Not sensitive, like alertmanager_config_receivers: marking it would make the
-# whole Helm values sensitive and hide every plan diff of the chart.
-variable "alertmanager_extra_receivers" {
-  type    = any
-  default = []
+# Receivers as a list from the form, secrets as Cycloid URIs resolved by the
+# pipeline (cy uri interpolate). Replaces alertmanager_config_receivers.
+variable "alertmanager_receivers" {
+  type     = any
+  default  = []
+  nullable = false
 }
 # opsgenie
 variable "opsgenie_token" {}

@@ -72,7 +72,7 @@ locals {
     }
   }
   # with credential gets always interpreted as string
-  alertmanager_config_receivers_legacy = <<EOL
+  alertmanager_config_receivers = <<EOL
 ---
 alertmanager:
   config:
@@ -80,19 +80,19 @@ alertmanager:
       ${join("\n      ", split("\n", var.alertmanager_config_receivers))}
 EOL
 
-  # Helm replaces lists instead of merging them: legacy and extra receivers are
-  # concatenated here. Without extra receivers the legacy text is used as is,
+  # Helm replaces lists instead of merging them: both receiver sources are
+  # concatenated here. Without extra receivers the text above is used as is,
   # so existing deployments render exactly the same values.
-  alertmanager_legacy_receivers = try([for r in yamldecode(local.alertmanager_config_receivers_legacy).alertmanager.config.receivers : r], [])
-  alertmanager_extra_receivers  = var.alertmanager_extra_receivers == null ? [] : var.alertmanager_extra_receivers
+  alertmanager_config_receivers_list = try([for r in yamldecode(local.alertmanager_config_receivers).alertmanager.config.receivers : r], [])
+  alertmanager_extra_receivers       = var.alertmanager_extra_receivers == null ? [] : var.alertmanager_extra_receivers
   alertmanager_receiver_names = concat(
-    [for r in local.alertmanager_legacy_receivers : r.name],
+    [for r in local.alertmanager_config_receivers_list : r.name],
     [for r in local.alertmanager_extra_receivers : r.name],
   )
-  alertmanager_config_receivers = length(local.alertmanager_extra_receivers) == 0 ? local.alertmanager_config_receivers_legacy : yamlencode({
+  alertmanager_receivers_values = length(local.alertmanager_extra_receivers) == 0 ? local.alertmanager_config_receivers : yamlencode({
     alertmanager = {
       config = {
-        receivers = concat(local.alertmanager_legacy_receivers, local.alertmanager_extra_receivers)
+        receivers = concat(local.alertmanager_config_receivers_list, local.alertmanager_extra_receivers)
       }
     }
   })
@@ -289,7 +289,7 @@ resource "helm_release" "kube_prometheus_stack" {
 
     # alertmanager
     yamlencode(local.alertmanager_helm_vars),
-    local.alertmanager_config_receivers,
+    local.alertmanager_receivers_values,
 
     # grafana
     yamlencode(local.grafana_helm_vars),

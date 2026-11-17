@@ -950,34 +950,13 @@ use_cases:
             condition: $alertmanager_install == true
             vars:
               - name: "Alertmanager receivers"
-                description: "Alertmanager receivers configuration. Note! BY default it should always have a recevier -name: 'null' for example to be used as default. corresponds to the helm chart default value for the config of alertmanager. For more information about syntax check the [official alertmanager documentation](https://prometheus.io/docs/alerting/latest/configuration/#general-receiver-related-settings)"
+                description: |
+                  Alertmanager receivers configuration. Note! BY default it should always have a recevier -name: 'null' for example to be used as default. corresponds to the helm chart default value for the config of alertmanager. For more information about syntax check the [official alertmanager documentation](https://prometheus.io/docs/alerting/latest/configuration/#general-receiver-related-settings)
+                  Secrets can be [Cycloid URIs](https://docs.cycloid.io/reference/cli/concepts/cycloid_uri_references), resolved by the pipeline, so each application keeps its own credential:
+                  `url: 'cy://organizations/<org>/credentials/<credential>?key=.raw.raw.<field>'` (custom credential). Single-line values only.
                 key: alertmanager_config_receivers
                 widget: cy_cred
                 type: string
-
-              - name: "Alertmanager extra receivers"
-                description: |
-                  Receivers added to the ones above, as a YAML list. Secrets are given as
-                  [Cycloid URIs](https://docs.cycloid.io/reference/cli/concepts/cycloid_uri_references),
-                  resolved by the pipeline: each application keeps its own credential and the
-                  configuration stays readable. Names must be unique across both fields.
-                  Lets the big receivers credential be emptied little by little.
-                  Custom credentials are read with `?key=.raw.raw.<field>`. Values are inserted
-                  without JSON escaping: single-line values only (tokens, URLs).
-                  Example
-                  ```yaml
-                  - name: goalert
-                    webhook_configs:
-                      - url: http://goalert.infra.svc.cluster.local:8081/api/v2/prometheusalertmanager/incoming
-                        send_resolved: true
-                        http_config:
-                          authorization:
-                            credentials: 'cy://organizations/($ .organization $)/credentials/goalert-alertmanager?key=.raw.raw.token'
-                  ```
-                key: alertmanager_extra_receivers
-                widget: text_area
-                type: array
-                default: []
 
           - name: Alertmanager Configuration
             technologies: [terraform]

@@ -32,10 +32,14 @@ definitions:
             echo "prometheus_additional_scrape = $(jq . -c prometheus_additional_scrape.tmpl)" >> stack/${STACK_PATH}/terraform.tfvars
             cat stack/${STACK_PATH}/terraform.tfvars
 
-            # Secrets are resolved here: never print this file.
-            echo "${ALERTMANAGER_EXTRA_RECEIVERS_TMPL:-[]}" | jq . > alertmanager_extra_receivers.tmpl
-            cy uri interpolate --in-place alertmanager_extra_receivers.tmpl
-            echo "alertmanager_extra_receivers = $(jq . -c alertmanager_extra_receivers.tmpl)" >> stack/${STACK_PATH}/terraform.tfvars
+            # Alertmanager receivers credential: Cycloid URIs (cy://...) inside it are
+            # resolved here, so app secrets can live in their own credentials.
+            # Secrets are resolved: never print this file. jq -Rs makes a JSON string
+            # (dropping the trailing newline cy adds), ${ and %{ are escaped for HCL;
+            # content without cy:// stays byte for byte the same.
+            printf '%s' "$ALERTMANAGER_CONFIG_RECEIVERS" > alertmanager_config_receivers.tmpl
+            cy uri interpolate --in-place alertmanager_config_receivers.tmpl
+            echo "alertmanager_config_receivers = $(jq -Rs 'if ($ENV.ALERTMANAGER_CONFIG_RECEIVERS | endswith("\n")) then . else rtrimstr("\n") end' alertmanager_config_receivers.tmpl | sed -e 's/\${/$${/g' -e 's/%{/%%{/g')" >> stack/${STACK_PATH}/terraform.tfvars
 
             /usr/bin/merge-stack-and-config
         inputs:
@@ -53,7 +57,7 @@ definitions:
         KUBECONFIG_FILENAME: ((kubeconfig_filename))
         GRAFANA_DATASOURCE_TMPL: ((grafana_extra_datasources))
         PROMETHEUS_ADDITIONAL_SCRAPE_TMPL: ((prometheus_additional_scrape))
-        ALERTMANAGER_EXTRA_RECEIVERS_TMPL: ((alertmanager_extra_receivers))
+        ALERTMANAGER_CONFIG_RECEIVERS: ((alertmanager_config_receivers))
         CY_API_KEY: ((cycloid_api_key))
         CY_ORG: ($ .api_url $)
         #($- if eq .use_case "aws-vm" $)
@@ -103,7 +107,8 @@ resources:
       grafana_install: ((grafana_install))
       alertmanager_install: ((alertmanager_install))
       alertmanager_use_external: ((alertmanager_use_external))
-      alertmanager_config_receivers: ((alertmanager_config_receivers))
+      # alertmanager_config_receivers: written to terraform.tfvars by the merge task
+      # (after cy uri interpolate); a var here would override it.
       opsgenie_token: ((opsgenie_token))
       namespace: ((namespace))
       grafana_sso_enabled: ((grafana_sso_enabled))

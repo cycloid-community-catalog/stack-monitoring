@@ -122,11 +122,6 @@ variable "alertmanager_config_route" {}
 variable "alertmanager_config_receivers" {
   sensitive = false
 }
-variable "alertmanager_extra_receivers" {
-  description = "Extra receivers (list of Alertmanager receiver objects), merged with alertmanager_config_receivers. Names must be unique across both."
-  type        = any
-  default     = []
-}
 variable "enable_alertmanager_persistence" {
   default = false
 }

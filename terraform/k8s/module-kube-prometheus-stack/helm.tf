@@ -93,6 +93,17 @@ EOL
   # https://github.com/grafana-community/helm-charts/blob/main/charts/grafana/values.yaml
   grafana_helm_vars = {
     grafana = {
+      # Grafana storage is a RWO PVC: a RollingUpdate deadlocks when the new pod
+      # lands on another node (Multi-Attach error). Stop the old pod first.
+      deploymentStrategy = {
+        type = "Recreate"
+      }
+      # k8s-sidecar >= 2.x (Python 3.13+) enforces strict X.509 and rejects
+      # API server certificates without Authority Key Identifier (Scaleway
+      # Kapsule): "certificate verify failed: Missing Authority Key Identifier".
+      sidecar = {
+        skipTlsVerify = true
+      }
       dashboards = {
         default = var.grafana_dashboard_import
       }

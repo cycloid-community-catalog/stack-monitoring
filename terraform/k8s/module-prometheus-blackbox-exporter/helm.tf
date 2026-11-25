@@ -23,7 +23,7 @@ resource "helm_release" "prometheus_blackbox" {
   name       = "prometheus-blackbox-exporter"
   repository = "https://prometheus-community.github.io/helm-charts"
   chart      = "prometheus-blackbox-exporter"
-  version    = "11.4.2"
+  version    = "11.24.0"
   namespace  = var.namespace
 
   values = [

@@ -7,7 +7,7 @@
 locals {
   blackbox_helm_vars = {
     fullnameOverride = "blackbox-exporter"
-    node_selector    = var.stack_monitoring_node_selector
+    nodeSelector     = var.stack_monitoring_node_selector
     serviceMonitor = {
       enabled = true
     }
